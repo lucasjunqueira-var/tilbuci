@@ -1,0 +1,8 @@
+{
+	"server": true, 
+	"base": "http://tilbuci/", 
+	"ws": "http://tilbuci/ws/",
+	"font": "http://tilbuci/font/", 
+	"start": "", 
+	"secret": "00000000000000000000000000000000"
+}

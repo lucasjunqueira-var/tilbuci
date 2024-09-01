@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+
+	<!-- app setup -->
+	<meta title="TilBuci" package="br.com.tilbuci" version="1.0.0" company="VAR" />
+	<app main="Main" path="Export" file="TilBuci" />
+	
+	<!-- code source -->
+	<source path="Source" />
+	
+	<!-- used libraries -->
+	<haxelib name="openfl" />
+	<haxelib name="actuate" />
+	<haxelib name="feathersui" />
+	<haxelib name="crypto" />
+	<haxelib name="moonshine-feathersui-text-editor" />
+
+	<!-- renderer -->
+	<define name="dom" if="html5" />
+
+	<!-- javascript externs -->
+	<dependency path="Externs/browser.js" embed="true" />
+	<dependency path="Externs/upload.js" embed="true" />
+	<dependency path="Externs/overlayplugin.js" embed="true" />
+	
+	<!-- assets path -->
+	<assets path="Assets" rename="assets" />
+
+	<!-- build info -->
+	<assets id="buildInfo" path="assets/build.json"/>
+
+	<!-- license -->
+	<assets id="license" path="assets/license.html"/>
+
+	<!-- language assets -->
+	<assets id="langDefault" path="assets/language/default.json"/>
+
+	<!-- graphic assets -->
+	<assets id="buci" path="assets/icons/buci.png"/>
+	<assets id="tilBuci01" path="assets/icons/tilBuci01.png"/>
+	<assets id="tilBuci02" path="assets/icons/tilBuci02.png"/>
+	<assets id="tilBuci03" path="assets/icons/tilBuci03.png"/>
+	<assets id="tilBuci04" path="assets/icons/tilBuci04.png"/>
+	<assets id="tilBuci05" path="assets/icons/tilBuci05.png"/>
+	<assets id="btBack" path="assets/icons/btBack.png"/>
+	<assets id="btClose" path="assets/icons/btClose.png"/>
+	<assets id="btOk" path="assets/icons/btOk.png"/>
+	<assets id="btMovie" path="assets/icons/btMovie.png"/>
+	<assets id="btScene" path="assets/icons/btScene.png"/>
+	<assets id="btMovieScene" path="assets/icons/btMovieScene.png"/>
+	<assets id="btData" path="assets/icons/btData.png"/>
+	<assets id="icData" path="assets/icons/icData.png"/>
+	<assets id="icInput" path="assets/icons/icInput.png"/>
+	<assets id="icSystem" path="assets/icons/icSystem.png"/>
+	<assets id="icReplace" path="assets/icons/icReplace.png"/>
+	<assets id="icSnippets" path="assets/icons/icSnippets.png"/>
+	<assets id="icText" path="assets/icons/icText.png"/>
+	<assets id="icTimer" path="assets/icons/icTimer.png"/>
+	<assets id="icUser" path="assets/icons/icUser.png"/>
+	<assets id="icDebug" path="assets/icons/icDebug.png"/>
+	<assets id="icShare" path="assets/icons/icShare.png"/>
+	<assets id="icGoogle" path="assets/icons/icGoogle.png"/>
+	<assets id="icServer" path="assets/icons/icServer.png"/>
+	<assets id="btPlus" path="assets/icons/btPlus.png"/>
+	<assets id="btPlugin" path="assets/icons/btPlugin.png"/>
+	<assets id="btSetup" path="assets/icons/btSetup.png"/>
+	<assets id="btToggle" path="assets/icons/btToggle.png"/>
+	<assets id="btZoomP" path="assets/icons/btZoomP.png"/>
+	<assets id="btZoomM" path="assets/icons/btZoomM.png"/>
+	<assets id="btZoomFit" path="assets/icons/btZoomFit.png"/>
+	<assets id="btZoom100" path="assets/icons/btZoom100.png"/>
+	<assets id="btMedia" path="assets/icons/btMedia.png"/>
+	<assets id="btFolder" path="assets/icons/btFolder.png"/>
+	<assets id="iconFolder" path="assets/icons/iconFolder.png"/>
+	<assets id="iconUpLevel" path="assets/icons/iconUpLevel.png"/>
+	<assets id="iconPublished" path="assets/icons/iconPublished.png"/>
+	<assets id="btPlay" path="assets/icons/btPlay.png"/>
+	<assets id="btPause" path="assets/icons/btPause.png"/>
+	<assets id="btStop" path="assets/icons/btStop.png"/>
+	<assets id="btLeft" path="assets/icons/btLeft.png"/>
+	<assets id="btRight" path="assets/icons/btRight.png"/>
+	<assets id="btUp" path="assets/icons/btUp.png"/>
+	<assets id="btDown" path="assets/icons/btDown.png"/>
+	<assets id="btKeyframe" path="assets/icons/btKeyframe.png"/>
+	<assets id="btFullscreen" path="assets/icons/btFullscreen.png"/>
+	<assets id="btScreen" path="assets/icons/btScreen.png"/>
+	<assets id="btOpenfile" path="assets/icons/btOpenfile.png"/>
+	<assets id="btCopy" path="assets/icons/btCopy.png"/>
+	<assets id="btBool" path="assets/icons/btBool.png"/>
+	<assets id="btInteger" path="assets/icons/btInteger.png"/>
+	<assets id="btFloat" path="assets/icons/btFloat.png"/>
+	<assets id="btString" path="assets/icons/btString.png"/>
+	<assets id="btVariables" path="assets/icons/btVariables.png"/>
+	<assets id="btToLeft" path="assets/icons/btToLeft.png"/>
+	<assets id="btToRight" path="assets/icons/btToRight.png"/>
+	<assets id="btToCenter" path="assets/icons/btToCenter.png"/>
+	<assets id="btToTop" path="assets/icons/btToTop.png"/>
+	<assets id="btToDown" path="assets/icons/btToDown.png"/>
+	<assets id="btToMiddle" path="assets/icons/btToMiddle.png"/>
+	<assets id="iconMove" path="assets/icons/iconMove.png"/>
+	<assets id="iconResizeH" path="assets/icons/iconResizeH.png"/>
+	<assets id="iconResizeV" path="assets/icons/iconResizeV.png"/>
+	<assets id="iconResize" path="assets/icons/iconResize.png"/>
+	<assets id="iconPlus" path="assets/icons/iconPlus.png"/>
+	<assets id="iconMinus" path="assets/icons/iconMinus.png"/>
+	<assets id="iconDown" path="assets/icons/iconDown.png"/>
+	<assets id="iconUp" path="assets/icons/iconUp.png"/>
+	<assets id="landscape" path="assets/icons/iconLandscape.png"/>
+	<assets id="portrait" path="assets/icons/iconPortrait.png"/>
+	
+</project>

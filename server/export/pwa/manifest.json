@@ -1,0 +1,17 @@
+{
+    "name": "[APPNAME]",
+    "short_name": "[APPSHORTNAME]",
+    "start_url": "[APPSTART]",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "[APPCOLOR]",
+    "orientation": "[APPORIENTATION]",
+	"scope": "/",
+	"lang": "[APPLANG]",
+    "icons": [{
+            "src": "favicon.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ]
+}

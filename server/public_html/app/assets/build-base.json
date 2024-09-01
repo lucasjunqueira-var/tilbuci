@@ -1,0 +1,13 @@
+﻿{
+	"version": "2", 
+	"build": "BNUM", 
+	"languages": {
+		"default": "English"
+	}, 
+	"thanks": [
+		"Álvaro Andrade Garcia", 
+		"Chico Marinho", 
+		"Lucas Nascimento", 
+		"Marília Lyra Bergamo"
+	]
+}

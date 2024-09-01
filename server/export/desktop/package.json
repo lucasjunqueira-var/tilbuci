@@ -1,0 +1,19 @@
+{
+  "name": "[PKGNAME]",
+  "version": "[PKGVERSION]",
+  "main": "index.html", 
+  "window": {
+      "id": "[PKGID]", 
+	  "title": "[PKGNAME]", 
+	  "icon": "favicon.png",
+	  "width": [PKGWIDTH], 
+	  "height": [PKGHEIGHT], 
+	  "position": "center", 
+	  "kiosk": [PKGKIOSK], 
+      "resizable": [PKGRESIZABLE], 
+      "fullscreen": [PKGFULLSCREEN]
+  }, 
+  "icons": {
+	  "256": "favicon.png"
+  }
+}

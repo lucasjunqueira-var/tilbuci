@@ -1,0 +1,12 @@
+{
+    "base": "http://tilbuci/editor/",
+	"player": "http://tilbuci/",
+	"ws": "http://tilbuci/ws/",
+	"font": "http://tilbuci/font/",
+	"secret": "00000000000000000000000000000000", 
+    "language": [{
+            "name": "English",
+            "file": "default"
+        }
+    ]
+}
