@@ -1,6 +1,7 @@
 package com.tilbuci.ui;
 
 /** OPENFL **/
+import feathers.core.FocusManager;
 import com.tilbuci.ui.component.IDButton;
 import feathers.skins.RectangleSkin;
 import feathers.text.TextFormat;
@@ -393,6 +394,7 @@ class PlayerInput extends Panel {
             this.addChild(idbt);
             this._buttons.push(idbt);
         }
+        FocusManager.setFocus(this._inputText);
     }
 
     private function onEmailDomain(evt:TriggerEvent):Void {

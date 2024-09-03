@@ -1,6 +1,7 @@
 package com.tilbuci.script;
 
 /** TILBUCI **/
+import com.tilbuci.js.ExternBrowser;
 import openfl.external.ExternalInterface;
 import openfl.net.URLRequest;
 import com.tilbuci.data.Global;
@@ -448,7 +449,7 @@ class ScriptParser {
 
                     // system actions
                     case 'system.fullscreen':
-                        if (GlobalPlayer.area.stage != null) {
+                        /*if (GlobalPlayer.area.stage != null) {
                             if (GlobalPlayer.area.stage.displayState == StageDisplayState.NORMAL) {
                                 GlobalPlayer.area.stage.displayState = StageDisplayState.FULL_SCREEN;
                             } else {
@@ -457,7 +458,8 @@ class ScriptParser {
                             return (true);
                         } else {
                             return (false);
-                        }
+                        }*/
+                        return (GlobalPlayer.fullscreen());
                     case 'system.logout':
                         GlobalPlayer.ws.clearUser();
                            return (true);

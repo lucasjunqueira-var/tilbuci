@@ -23,6 +23,11 @@ extern class ExternBrowser {
     **/
     static function TBB_appQuit():Void;
 
+    /**
+        Shows the entire page on fullscreen.
+    **/
+    static function TBB_fullscreen():Void;
+
 }
 
 #end
