@@ -1,6 +1,7 @@
 package com.tilbuci.data;
 
 /** HAXE **/
+import openfl.geom.Point;
 import com.tilbuci.ui.PlayerTheme;
 import haxe.io.Bytes;
 
@@ -153,6 +154,21 @@ class GlobalPlayer {
         callback function for events
     **/
     public static var callback:Dynamic = null;
+
+    /**
+        actual content position relative to the stage area
+    **/
+    public static var contentPosition:Point = new Point();
+
+    /**
+        actual content width
+    **/
+    public static var contentWidth:Float = 0;
+
+    /**
+        actual content height
+    **/
+    public static var contentHeight:Float = 0;
 
     /**
         Copies a text to the clipboard.

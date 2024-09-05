@@ -1,6 +1,9 @@
 package com.tilbuci;
 
 /** HAXE **/
+import feathers.controls.ToggleSwitch;
+import feathers.controls.NumericStepper;
+import feathers.controls.TextInput;
 import com.tilbuci.font.EmbedFont;
 import com.tilbuci.font.EmbedFont.FontInfo;
 import haxe.Timer;
@@ -175,6 +178,26 @@ class Player extends Sprite {
         user interface area
     **/
     private var _uiArea:Sprite;
+
+    /**
+        input elements area
+    **/
+    public var inputArea:Sprite = null;
+
+    /**
+        text inputs
+    **/
+    private var _inputs:Map<String, TextInput> = [ ];
+
+    /**
+        numeric inputs
+    **/
+    private var _numerics:Map<String, NumericStepper> = [ ];
+
+    /**
+        toggle inputs
+    **/
+    private var _toggles:Map<String, ToggleSwitch> = [ ];
 
     /**
         Constructor.
@@ -661,5 +684,280 @@ class Player extends Sprite {
     **/
     public function runAction(ac:String):Bool {
         return (GlobalPlayer.parser.run(ac));
+    }
+
+    /**
+        Adds a text input.
+        @param  name    the input name
+        @param  px  x position
+        @param  py  y position
+        @param  width   input width
+        @param  placeholder placeholder text
+    **/
+    public function addInput(name:String, px:Float, py:Float, width:Float, placeholder:String = ''):Void {
+        if (this.inputArea != null) {
+            if (!this._inputs.exists(name)) {
+                this._inputs[name] = new TextInput();
+                if (placeholder != '') this._inputs[name].prompt = placeholder;
+                this.inputArea.addChild(this._inputs[name]);
+            }
+            this.placeInput(name, px, py, width);
+        }   
+    }
+
+    /**
+        Places an existing text input.
+        @param  name    the input name
+        @param  px  x position
+        @param  py  y position
+        @param  width   input width
+    **/
+    public function placeInput(name:String, px:Float, py:Float, width:Float):Void {
+        if (this.inputArea != null) {
+            if (this._inputs.exists(name)) {
+                this._inputs[name].x = px;
+                this._inputs[name].y = py;
+                this._inputs[name].width = width;
+            }
+        }
+    }
+
+    /**
+        Removes a text input.
+        @param  name    the input name
+    **/
+    public function removeInput(name:String):Void {
+        if (this.inputArea != null) {
+            if (this._inputs.exists(name)) {
+                this.inputArea.removeChild(this._inputs[name]);
+                this._inputs.remove(name);
+            }
+        }
+    }
+
+    /**
+        Removes all text inputs.
+    **/
+    public function removeAllInputs():Void {
+        if (this.inputArea != null) {
+            for (k in this._inputs.keys()) this.removeInput(k);
+        }
+    }
+
+    /**
+        Gets a text input current value.
+        @param  name    the input name
+    **/
+    public function getInputText(name:String):String {
+        if (this._inputs.exists(name)) {
+            return (this._inputs[name].text);
+        } else {
+            return ('');
+        }
+    }
+
+    /**
+        Sets a text input value.
+        @param  name    the input name
+        @param  value   the new text
+    **/
+    public function setInputText(name:String, value:String):Void {
+        if (this._inputs.exists(name)) {
+            this._inputs[name].text = value;
+        }
+    }
+
+    /**
+        Sets an input password mask display.
+        @param  name    the input name
+        @param  pass    show as password?
+    **/
+    public function setInputPassword(name:String, pass:Bool):Void {
+        if (this._inputs.exists(name)) {
+            this._inputs[name].displayAsPassword = pass;
+        }
+    }
+
+    /**
+        Adds a numeric input.
+        @param  name    the input name
+        @param  value   inicial value
+        @param  minimum stepper minimum
+        @param  maximum stepper maximum
+        @param  step    stepper increase
+    **/
+    public function addNumeric(name:String, value:Int, minimum:Int, maximum:Int, step:Int):Void {
+        if (this.inputArea != null) {
+            if (!this._numerics.exists(name)) {
+                this._numerics[name] = new NumericStepper(value, minimum, maximum);
+                this._numerics[name].step = step;
+                this._numerics[name].value = value;
+                this.inputArea.addChild(this._numerics[name]);
+            }
+        }   
+    }
+
+    /**
+        Places an existing numeric input.
+        @param  name    the input name
+        @param  px  x position
+        @param  py  y position
+        @param  width   input width
+    **/
+    public function placeNumeric(name:String, px:Float, py:Float, width:Float):Void {
+        if (this.inputArea != null) {
+            if (this._numerics.exists(name)) {
+                this._numerics[name].x = px;
+                this._numerics[name].y = py;
+                this._numerics[name].width = width;
+            }
+        }
+    }
+
+    /**
+        Removes a numeric input.
+        @param  name    the input name
+    **/
+    public function removeNumeric(name:String):Void {
+        if (this.inputArea != null) {
+            if (this._numerics.exists(name)) {
+                this.inputArea.removeChild(this._numerics[name]);
+                this._numerics.remove(name);
+            }
+        }
+    }
+
+    /**
+        Removes all numeric inputs.
+    **/
+    public function removeAllNumerics():Void {
+        if (this.inputArea != null) {
+            for (k in this._numerics.keys()) this.removeNumeric(k);
+        }
+    }
+
+    /**
+        Gets a numeric input current value.
+        @param  name    the input name
+    **/
+    public function getNumericValue(name:String):Int {
+        if (this._numerics.exists(name)) {
+            return (Math.round(this._numerics[name].value));
+        } else {
+            return (0);
+        }
+    }
+
+    /**
+        Sets a numeric input value.
+        @param  name    the input name
+        @param  value   the new value
+    **/
+    public function setNumericValue(name:String, value:Int):Void {
+        if (this._numerics.exists(name)) {
+            this._numerics[name].value = value;
+        }
+    }
+
+    /**
+        Sets a numeric input bounds.
+        @param  name    the input name
+        @param  minimum stepper minimum
+        @param  maximum stepper maximum
+        @param  step    stepper increase
+    **/
+    public function setNumericBounds(name:String, minimum:Int, maximum:Int, step:Int):Void {
+        if (this._numerics.exists(name)) {
+            this._numerics[name].minimum = minimum;
+            this._numerics[name].maximum = maximum;
+            this._numerics[name].step = step;
+        }
+    }
+
+    /**
+        Adds a toggle input.
+        @param  name    the input name
+        @param  value   the toggle value
+        @param  px  x position
+        @param  py  y position
+    **/
+    public function addToggle(name:String, value:Bool, px:Float, py:Float):Void {
+        if (this.inputArea != null) {
+            if (!this._toggles.exists(name)) {
+                this._toggles[name] = new ToggleSwitch(value);
+                this.inputArea.addChild(this._toggles[name]);
+            }
+            this.placeToggle(name, px, py);
+        }   
+    }
+
+    /**
+        Places an existing toggle input.
+        @param  name    the input name
+        @param  px  x position
+        @param  py  y position
+    **/
+    public function placeToggle(name:String, px:Float, py:Float):Void {
+        if (this.inputArea != null) {
+            if (this._toggles.exists(name)) {
+                this._toggles[name].x = px;
+                this._toggles[name].y = py;
+            }
+        }
+    }
+
+    /**
+        Removes a toggle input.
+        @param  name    the input name
+    **/
+    public function removeToggle(name:String):Void {
+        if (this.inputArea != null) {
+            if (this._toggles.exists(name)) {
+                this.inputArea.removeChild(this._toggles[name]);
+                this._toggles.remove(name);
+            }
+        }
+    }
+
+    /**
+        Removes all toggle inputs.
+    **/
+    public function removeAllToggles():Void {
+        if (this.inputArea != null) {
+            for (k in this._toggles.keys()) this.removeToggle(k);
+        }
+    }
+
+    /**
+        Gets a toggle input current value.
+        @param  name    the input name
+    **/
+    public function getToggleValue(name:String):Bool {
+        if (this._toggles.exists(name)) {
+            return (this._toggles[name].selected);
+        } else {
+            return (false);
+        }
+    }
+
+    /**
+        Sets a toggle input value.
+        @param  name    the input name
+        @param  value   the new text
+    **/
+    public function setToggleValue(name:String, value:Bool):Void {
+        if (this._toggles.exists(name)) {
+            this._toggles[name].selected = value;
+        }
+    }
+
+    /**
+        Inverts a toggle input value.
+        @param  name    the input name
+    **/
+    public function invertToggle(name:String):Void {
+        if (this._toggles.exists(name)) {
+            this._toggles[name].selected = !this._toggles[name].selected;
+        }
     }
 }

@@ -462,7 +462,9 @@ class WSVisitor extends Webservice
 	private function event() {
 		// required fields received?
 		if ($this->requiredFields(['name', 'data', 'movieid', 'sceneid', 'movietitle', 'scenetitle', 'visitor'])) {
-			$this->data->execute('INSERT INTO events (ev_name, ev_movie, ev_moviename, ev_scene, ev_scenename, ev_visitor, ev_extra) VALUES (:nm, :mv, :mvname, :sc, :scname, :vis, :ex)', [
+            if (!isset($this->req['when'])) $this->req['when'] = date('Y-m-d H:i:s');
+			$this->data->execute('INSERT INTO events (ev_when, ev_name, ev_movie, ev_moviename, ev_scene, ev_scenename, ev_visitor, ev_extra) VALUES (:wh, :nm, :mv, :mvname, :sc, :scname, :vis, :ex)', [
+                ':wh' => $this->req['when'], 
                 ':nm' => $this->req['name'], 
                 ':mv' => $this->req['movieid'], 
                 ':mvname' => $this->req['movietitle'], 

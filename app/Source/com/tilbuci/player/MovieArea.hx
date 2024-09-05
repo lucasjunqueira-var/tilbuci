@@ -135,6 +135,11 @@ class MovieArea extends Sprite {
     private var _scene:Sprite;
 
     /**
+        input area
+    **/
+    private var _inputArea:Sprite;
+
+    /**
         display area above the scene
     **/
     private var _overlay:Sprite;
@@ -203,6 +208,8 @@ class MovieArea extends Sprite {
         this._bgarea = bgarea;
         this._bg = new Shape();
         this._scene = new Sprite();
+        this._inputArea = new Sprite();
+        this._player.inputArea = this._inputArea;
         this._mask = new Shape();
         this._holder = new Sprite();
         this._overlay = new Sprite();
@@ -217,6 +224,7 @@ class MovieArea extends Sprite {
         this._uiArea.addChild(this._inputPanel);
         this._holder.addChild(this._bg);
         this._holder.addChild(this._scene);
+        this._holder.addChild(this._inputArea);
         this._holder.addChild(this._overlay);
         this.addChild(this._holder);
         this.addChild(this._mask);
@@ -1201,6 +1209,12 @@ class MovieArea extends Sprite {
             this._uiArea.y = this.y = 0;
         }
 
+        // getting actual content position
+        GlobalPlayer.contentPosition.x = this._uiArea.x;
+        GlobalPlayer.contentPosition.y = this._uiArea.y;
+        GlobalPlayer.contentWidth = this._uiBg.width;
+        GlobalPlayer.contentHeight = this._uiBg.height;
+
         // holding values
         if (this._player.rWidth >= this._player.rHeight) {
             GlobalPlayer.orientation = 'horizontal';
@@ -1221,4 +1235,197 @@ class MovieArea extends Sprite {
         }
     }
 
+    /**
+        Adds a text input.
+        @param  name    the input name
+        @param  px  x position
+        @param  py  y position
+        @param  width   input width
+        @param  placeholder placeholder text
+    **/
+    public function addInput(name:String, px:Float, py:Float, width:Float, placeholder:String = ''):Void {
+        this._player.addInput(name, px, py, width, placeholder);
+    }
+
+    /**
+        Places an existing text input.
+        @param  name    the input name
+        @param  px  x position
+        @param  py  y position
+        @param  width   input width
+    **/
+    public function placeInput(name:String, px:Float, py:Float, width:Float):Void {
+        this._player.placeInput(name, px, py, width);
+    }
+
+    /**
+        Removes a text input.
+        @param  name    the input name
+    **/
+    public function removeInput(name:String):Void {
+        this._player.removeInput(name);
+    }
+
+    /**
+        Removes all text inputs.
+    **/
+    public function removeAllInputs():Void {
+        this._player.removeAllInputs();
+    }
+
+    /**
+        Gets a text input current value.
+        @param  name    the input name
+    **/
+    public function getInputText(name):String {
+        return (this._player.getInputText(name));
+    }
+
+    /**
+        Sets a text input value.
+        @param  name    the input name
+        @param  value   the new text
+    **/
+    public function setInputText(name:String, value:String):Void {
+        this._player.setInputText(name, value);
+    }
+
+    /**
+        Sets an input password mask display.
+        @param  name    the input name
+        @param  pass    show as password?
+    **/
+    public function setInputPassword(name:String, pass:Bool):Void {
+        this._player.setInputPassword(name, pass);
+    }
+
+    /**
+        Adds a numeric input.
+        @param  name    the input name
+        @param  value   inicial value
+        @param  minimum stepper minimum
+        @param  maximum stepper maximum
+        @param  step    stepper increase
+        @param  px  x position
+        @param  py  y position
+        @param  width   input width
+    **/
+    public function addNumeric(name:String, value:Int, minimum:Int, maximum:Int, step:Int):Void {
+        this._player.addNumeric(name, value, minimum, maximum, step);
+    }
+
+    /**
+        Places an existing numeric input.
+        @param  name    the input name
+        @param  px  x position
+        @param  py  y position
+        @param  width   input width
+    **/
+    public function placeNumeric(name:String, px:Float, py:Float, width:Float):Void {
+        this._player.placeNumeric(name, px, py, width);
+    }
+
+    /**
+        Removes a numeric input.
+        @param  name    the input name
+    **/
+    public function removeNumeric(name:String):Void {
+        this._player.removeNumeric(name);
+    }
+
+    /**
+        Removes all numeric inputs.
+    **/
+    public function removeAllNumerics():Void {
+        this._player.removeAllNumerics();
+    }
+
+    /**
+        Gets a numeric input current value.
+        @param  name    the input name
+    **/
+    public function getNumericValue(name:String):Int {
+        return(this._player.getNumericValue(name));
+    }
+
+    /**
+        Sets a numeric input value.
+        @param  name    the input name
+        @param  value   the new value
+    **/
+    public function setNumericValue(name:String, value:Int):Void {
+        this._player.setNumericValue(name, value);
+    }
+
+    /**
+        Sets a numeric input bounds.
+        @param  name    the input name
+        @param  minimum stepper minimum
+        @param  maximum stepper maximum
+        @param  step    stepper increase
+    **/
+    public function setNumericBounds(name:String, minimum:Int, maximum:Int, step:Int):Void {
+        this._player.setNumericBounds(name, minimum, maximum, step);
+    }
+
+    /**
+        Adds a toggle input.
+        @param  name    the input name
+        @param  value   the toggle value
+        @param  px  x position
+        @param  py  y position
+    **/
+    public function addToggle(name:String, value:Bool, px:Float, py:Float):Void {
+        this._player.addToggle(name, value, px, py);   
+    }
+
+    /**
+        Places an existing toggle input.
+        @param  name    the input name
+        @param  px  x position
+        @param  py  y position
+    **/
+    public function placeToggle(name:String, px:Float, py:Float):Void {
+        this._player.placeToggle(name, px, py);
+    }
+
+    /**
+        Removes a toggle input.
+        @param  name    the input name
+    **/
+    public function removeToggle(name:String):Void {
+        this._player.removeToggle(name);
+    }
+
+    /**
+        Removes all toggle inputs.
+    **/
+    public function removeAllToggles():Void {
+        this._player.removeAllToggles();
+    }
+
+    /**
+        Gets a toggle input current value.
+        @param  name    the input name
+    **/
+    public function getToggleValue(name:String):Bool {
+        return(this._player.getToggleValue(name));
+    }
+
+    /**
+        Sets a toggle input value.
+        @param  name    the input name
+        @param  value   the new text
+    **/
+    public function setToggleValue(name:String, value:Bool):Void {
+        this._player.setToggleValue(name, value);
+    }
+
+    /**
+        Inverts a toggle input value.
+        @param  name    the input name
+    **/
+    public function invertToggle(name:String):Void {
+        this._player.invertToggle(name);
+    }
 }

@@ -542,7 +542,7 @@ class Visitor extends Data
             }
             // prepare the new file
             $fname = 'events_'.date('Y-m-d_h-m-s').'.csv';
-            $content = [ 'Date;Event name;Movie ID;Movie title;Scene ID;Scene title;Visitor;Additional information' ];
+            $content = [ 'Recorded date;Event date;Event name;Movie ID;Movie title;Scene ID;Scene title;Visitor;Additional information' ];
             $cols = [ ];
             $vals = [ ];
             if ($movie != '') {
@@ -557,6 +557,7 @@ class Visitor extends Data
             foreach ($ck as $v) {
                 $content[] = implode(';', [
                     $v['ev_date'], 
+                    $v['ev_when'], 
                     str_replace(';', ',', trim($v['ev_name'])), 
                     str_replace(';', ',', trim($v['ev_movie'])), 
                     str_replace(';', ',', trim($v['ev_moviename'])), 

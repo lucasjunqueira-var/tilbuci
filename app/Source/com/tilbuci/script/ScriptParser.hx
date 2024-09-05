@@ -91,6 +91,11 @@ class ScriptParser {
     private var _acError:Dynamic;
 
     /**
+        last event sent
+    **/
+    private var _lastEvent:Map<String, String> = [ ];
+
+    /**
         Constructor.
     **/
     public function new() { }
@@ -449,16 +454,6 @@ class ScriptParser {
 
                     // system actions
                     case 'system.fullscreen':
-                        /*if (GlobalPlayer.area.stage != null) {
-                            if (GlobalPlayer.area.stage.displayState == StageDisplayState.NORMAL) {
-                                GlobalPlayer.area.stage.displayState = StageDisplayState.FULL_SCREEN;
-                            } else {
-                                GlobalPlayer.area.stage.displayState = StageDisplayState.NORMAL;
-                            }
-                            return (true);
-                        } else {
-                            return (false);
-                        }*/
                         return (GlobalPlayer.fullscreen());
                     case 'system.logout':
                         GlobalPlayer.ws.clearUser();
@@ -488,16 +483,38 @@ class ScriptParser {
                             return (true);
                         }
                     case 'system.openembed':
-                        if (param.length > 0) {
-                            #if tilbuciplayer
-                                ExternEmbed.embed_place('movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
-                            #else
-                                ExternEmbed.embed_place('../movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
-                            #end                            
+                        if (GlobalPlayer.mode == Player.MODE_EDITOR) {
+                            return (true);
+                        } else {
+                            if (param.length > 0) {
+                                #if tilbuciplayer
+                                    ExternEmbed.embed_place('movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
+                                #else
+                                    ExternEmbed.embed_place('../movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
+                                #end                            
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        }
+                    case 'system.closeembed':
+                        ExternEmbed.embed_close();
+                        return (true);
+                    case 'system.embedplace':
+                        if (param.length > 3) {
+                            ExternEmbed.embed_setposition(
+                                this.parseInt(param[0]),
+                                this.parseInt(param[1]), 
+                                this.parseInt(param[2]), 
+                                this.parseInt(param[3])
+                            );
                             return (true);
                         } else {
                             return (false);
                         }
+                    case 'system.embedreset':
+                        ExternEmbed.embed_setfull();
+                        return (true);
                     case 'system.quit':
                         return (GlobalPlayer.appQuit());
 
@@ -885,6 +902,140 @@ class ScriptParser {
                         if (Reflect.hasField(inf, 'cancel')) acCancel = Reflect.field(inf, 'cancel');
                         GlobalPlayer.area.showLoginInput(acOk, acCancel);
                         return (true);
+                    case 'input.add':
+                        if (GlobalPlayer.mode == Player.MODE_EDITOR) {
+                            return (true);
+                        } else {
+                            if (param.length == 4) {
+                                GlobalPlayer.area.addInput(
+                                    this.parseString(param[0]), 
+                                    this.parseInt(param[1]), 
+                                    this.parseInt(param[2]), 
+                                    this.parseInt(param[3])
+                                );
+                                return (true);
+                            } else if (param.length > 4) {
+                                GlobalPlayer.area.addInput(
+                                    this.parseString(param[0]), 
+                                    this.parseInt(param[1]), 
+                                    this.parseInt(param[2]), 
+                                    this.parseInt(param[3]), 
+                                    this.parseString(param[4])
+                                );
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        }
+                    case 'input.addnumeric':
+                        if (GlobalPlayer.mode == Player.MODE_EDITOR) {
+                            return (true);
+                        } else {
+                            if (param.length > 4) {
+                                GlobalPlayer.area.addNumeric(
+                                    this.parseString(param[0]), 
+                                    this.parseInt(param[1]), 
+                                    this.parseInt(param[2]), 
+                                    this.parseInt(param[3]), 
+                                    this.parseInt(param[4])
+                                );
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        }
+                    case 'input.placenumeric':
+                        if (param.length > 3) {
+                            GlobalPlayer.area.placeNumeric(
+                                this.parseString(param[0]), 
+                                this.parseInt(param[1]), 
+                                this.parseInt(param[2]), 
+                                this.parseInt(param[3])
+                            );
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'input.removenumeric':
+                        if (param.length > 0) {
+                            GlobalPlayer.area.removeNumeric(this.parseString(param[0]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'input.removeallnumerics':
+                        GlobalPlayer.area.removeAllNumerics();
+                        return (true);
+                    case 'input.setnumeric':
+                        if (param.length > 1) {
+                            GlobalPlayer.area.setNumericValue(this.parseString(param[0]), this.parseInt(param[1]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'input.setnumericbounds':
+                        if (param.length > 1) {
+                            GlobalPlayer.area.setNumericBounds(
+                                this.parseString(param[0]), 
+                                this.parseInt(param[1]), 
+                                this.parseInt(param[2]), 
+                                this.parseInt(param[3])
+                            );
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'input.addtoggle':
+                        if (GlobalPlayer.mode == Player.MODE_EDITOR) {
+                            return (true);
+                        } else {
+                            if (param.length > 3) {
+                                GlobalPlayer.area.addToggle(
+                                    this.parseString(param[0]), 
+                                    this.parseBool(param[1]), 
+                                    this.parseInt(param[2]), 
+                                    this.parseInt(param[3])
+                                );
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        }
+                    case 'input.placetoggle':
+                        if (param.length > 2) {
+                            GlobalPlayer.area.placeToggle(
+                                this.parseString(param[0]), 
+                                this.parseInt(param[1]), 
+                                this.parseInt(param[2])
+                            );
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'input.removetoggle':
+                        if (param.length > 0) {
+                            GlobalPlayer.area.removeToggle(this.parseString(param[0]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'input.removealltoggles':
+                        GlobalPlayer.area.removeAllToggles();
+                        return (true);
+                    case 'input.settoggle':
+                        if (param.length > 1) {
+                            GlobalPlayer.area.setToggleValue(this.parseString(param[0]), this.parseBool(param[1]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'input.inverttoggle':
+                        if (param.length > 0) {
+                            GlobalPlayer.area.invertToggle(this.parseString(param[0]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
 
                     // data
                     case 'data.save':
@@ -1135,16 +1286,26 @@ class ScriptParser {
                             if (param.length > 1) {
                                 for (i in 1...param.length) prData.push(this.parseString(param[i]));
                             }
-                            GlobalPlayer.ws.send('Visitor/Event', [
+                            this._lastEvent = [
                                 'name' => this.parseString(param[0]), 
+                                'when' => Date.now().toString(), 
                                 'data' => StringStatic.jsonStringify(prData), 
                                 'movieid' => GlobalPlayer.movie.mvId, 
                                 'sceneid' => GlobalPlayer.movie.scId, 
                                 'movietitle' => GlobalPlayer.mdata.title, 
                                 'scenetitle' => GlobalPlayer.movie.scene.title, 
                                 'visitor' => GlobalPlayer.ws.user, 
-                            ], null);
+                            ];
+                            GlobalPlayer.ws.send('Visitor/Event', this._lastEvent, onDataEvent);
                             return (true);
+                    case 'data.eventclear':
+                        try {
+                            var eventData:SharedObject = SharedObject.getLocal(GlobalPlayer.movie.mvId + '_eventsheld');
+                            eventData.data.events = [ ];
+                            eventData.flush();
+                            eventData.close();
+                        } catch (e) { }
+                        return (true);
 
                     // timers
                     case 'timer.clearall':
@@ -1446,6 +1607,20 @@ class ScriptParser {
                     case 'if.stringstartswith':
                         if ((param.length > 1) && Reflect.hasField(inf, 'then')) {
                             if (StringTools.startsWith(this.parseString(param[0]), this.parseString(param[1]))) {
+                                return (this.run(Reflect.field(inf, 'then'), true));
+                            } else {
+                                if (Reflect.hasField(inf, 'else')) {
+                                    return (this.run(Reflect.field(inf, 'else'), true));
+                                } else {
+                                    return (true);
+                                }
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'if.stringemail':
+                        if ((param.length > 0) && Reflect.hasField(inf, 'then')) {
+                            if (StringStatic.validateEmail(this.parseString(param[0]))) {
                                 return (this.run(Reflect.field(inf, 'then'), true));
                             } else {
                                 if (Reflect.hasField(inf, 'else')) {
@@ -2008,6 +2183,13 @@ class ScriptParser {
                 } else {
                     return (str);
                 }
+            } else if (str.substr(0, 7) == "$_INPUT") {
+                var arstr:Array<String> = str.split(':');
+                if (arstr.length == 2) {
+                    return (GlobalPlayer.area.getInputText(arstr[1]));
+                } else {
+                    return (str);
+                }
             } else if (str.substr(0, 7) == "$_TEXTS") {
                 var arstr:Array<String> = str.split(':');
                 if (arstr.length == 2) {
@@ -2105,6 +2287,13 @@ class ScriptParser {
                 } else {
                     return (false);
                 }
+            } else if (str.substr(0, 8) == "?_TOGGLE") {
+                var arstr:Array<String> = str.split(':');
+                if (arstr.length == 2) {
+                    return (GlobalPlayer.area.getToggleValue(this.parseString(arstr[1])));
+                } else {
+                    return (false);
+                }
             } else if (str.substr(0, 7) == "?_FLAGS") {
                 var arstr:Array<String> = str.split(':');
                 if (arstr.length == 2) {
@@ -2189,6 +2378,13 @@ class ScriptParser {
                 } else {
                     return (0);
                 }
+            } else if (str.substr(0, 9) == "#_NUMERIC") {
+                var arstr:Array<String> = str.split(':');
+                if (arstr.length == 2) {
+                    return (GlobalPlayer.area.getNumericValue(this.parseString(arstr[1])));
+                } else {
+                    return (0);
+                }
             } else if (str.substr(0, 9) == "#_NUMBERS") {
                 var arstr:Array<String> = str.split(':');
                 if (arstr.length == 2) {
@@ -2206,6 +2402,10 @@ class ScriptParser {
                     case "#_KEYFRAME": return(GlobalPlayer.area.currentKf * 1.0);
                     case "#_AREABIG": return(GlobalPlayer.mdata.screen.big * 1.0);
                     case "#_AREASMALL": return(GlobalPlayer.mdata.screen.small * 1.0);
+                    case "#_CONTENTX": return(GlobalPlayer.contentPosition.x);
+                    case "#_CONTENTY": return(GlobalPlayer.contentPosition.y);
+                    case "#_CONTENTWIDTH": return(GlobalPlayer.contentWidth);
+                    case "#_CONTENTHEIGHT": return(GlobalPlayer.contentHeight);
                     default:
                         // look on stantard variables
                         if (this._floats.exists(str.substr(1))) {
@@ -2273,6 +2473,13 @@ class ScriptParser {
                 } else {
                     return (0);
                 }
+            } else if (str.substr(0, 9) == "#_NUMERIC") {
+                var arstr:Array<String> = str.split(':');
+                if (arstr.length == 2) {
+                    return (GlobalPlayer.area.getNumericValue(this.parseString(arstr[1])));
+                } else {
+                    return (0);
+                }
             } else if (str.substr(0, 9) == "#_NUMBERS") {
                 var arstr:Array<String> = str.split(':');
                 if (arstr.length == 2) {
@@ -2290,6 +2497,10 @@ class ScriptParser {
                     case "#_KEYFRAME": return(GlobalPlayer.area.currentKf);
                     case "#_AREABIG": return(GlobalPlayer.mdata.screen.big);
                     case "#_AREASMALL": return(GlobalPlayer.mdata.screen.small);
+                    case "#_CONTENTX": return(Math.round(GlobalPlayer.contentPosition.x));
+                    case "#_CONTENTY": return(Math.round(GlobalPlayer.contentPosition.y));
+                    case "#_CONTENTWIDTH": return(Math.round(GlobalPlayer.contentWidth));
+                    case "#_CONTENTHEIGHT": return(Math.round(GlobalPlayer.contentHeight));
                     default:
                         // look on stantard variables
                         if (this._ints.exists(str.substr(1))) {
@@ -2396,6 +2607,50 @@ class ScriptParser {
                 if (this._acError != null) this.run(this._acError, true);
             }
         }
+    }
+
+    /**
+        Event recording return.
+    **/
+    private function onDataEvent(ok:Bool, ld:DataLoader):Void {
+        var hold:Bool = false;
+        var eventheld:Array<Map<String, String>> = [ ];
+        try {
+            var eventData:SharedObject = SharedObject.getLocal(GlobalPlayer.movie.mvId + '_eventsheld');
+            for (k in Reflect.fields(eventData.data.events)) {
+                eventheld.push(Reflect.field(eventData.data.events, k));
+            }
+            eventData.close();
+        } catch (e) { }
+        if (!ok) {
+            if (this._lastEvent.exists('name')) hold = true;
+        } else {
+            if (ld.map['e'] != 0) {
+                if (this._lastEvent.exists('name')) hold = true;
+            } else {
+                // are there held events so send?
+                if (eventheld.length > 0) {
+                    // remove previous event?
+                    if (!this._lastEvent.exists('name')) eventheld.shift();
+                    // another one to send?
+                    if (eventheld.length > 0) {
+                        GlobalPlayer.ws.send('Visitor/Event', eventheld[0], onDataEvent);
+                    }
+                }
+            }
+        }
+        // hold event to send later?
+        if (hold) {
+            eventheld.push(this._lastEvent);
+            while(eventheld.length > 100) eventheld.shift();
+            try {
+                var eventData:SharedObject = SharedObject.getLocal(GlobalPlayer.movie.mvId + '_eventsheld');
+                eventData.data.events = eventheld;
+                eventData.flush();
+                eventData.close();
+            } catch (e) { }
+        }
+        this._lastEvent = [ ];
     }
 
     #if (js && html5)
@@ -2569,6 +2824,16 @@ extern class ExternEmbed {
     **/
     static function embed_close():Void;
 
+    /**
+        Sets the embed content size and position.
+    **/
+    static function embed_setposition(x:Int, y:Int, width:Int, height:Int):Void;
+
+    /**
+        Returns the embed content to full size.
+    **/
+    static function embed_setfull():Void;
+
 }
 #else
 class ExternEmbed {
@@ -2583,6 +2848,16 @@ class ExternEmbed {
         Closes the embed window.
     **/
     static function embed_close():Void { trace ('HTML5 embed content not supported on this platform.'); }
+
+    /**
+        Sets the embed content size and position.
+    **/
+    static function embed_setposition(x:Int, y:Int, width:Int, height:Int):Void { trace ('HTML5 embed content not supported on this platform.'); }
+
+    /**
+        Returns the embed content to full size.
+    **/
+    static function embed_setfull():Void { trace ('HTML5 embed content not supported on this platform.'); }
 
 }
 #end

@@ -83,6 +83,7 @@ class AssistVariables extends AssistBase {
             'if.stringsdifferent' => { p: ['s', 's'], c: true, t: false, i: false, d:false, ic: 'btString' }, 
             'if.stringsequal' => { p: ['s', 's'], c: true, t: false, i: false, d:false, ic: 'btString' }, 
             'if.stringstartswith' => { p: ['s', 's'], c: true, t: false, i: false, d:false, ic: 'btString' }, 
+            'if.stringemail' => { p: ['s'], c: true, t: false, i: false, d:false, ic: 'btString' }, 
         ]);
     }
 

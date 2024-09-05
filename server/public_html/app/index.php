@@ -156,8 +156,8 @@ if (isset($_GET['rd'])) {
 		html,body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
 		#TilBuciArea { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: #000000; }
 		#openfl-content { background: #000000; width: 100%; height: 100%; }
-        #embed_area { position: absolute; left: 0; top: 0; display: none; background-color: #000000; padding: 0; width: 100%; height: 100%; box-sizing: content-box; }
-        #embed_frame { display: none; }
+        #embed_area { position: absolute; left: 0; top: 0; display: none; padding: 0; width: 100%; height: 100%; box-sizing: content-box; margin: 0; border: none; overflow: hidden; background-color: transparent; }
+        #embed_frame { display: none; padding: 0; box-sizing: content-box; margin: 0; border: none; width: 100%; height: 100%; background-color: transparent; }
 	</style>
 </head>
 <body>
@@ -173,7 +173,7 @@ if (isset($_GET['rd'])) {
 				echo("\r\n" . $pl->indexEndBody() . "\r\n\r\n");
 			}
 		?>
-		<div id="embed_area"><iframe id="embed_frame" width="0" height="0" src=""></iframe></div>
+		<div id="embed_area"><iframe id="embed_frame" width="0" height="0" src="" frameborder="0"></iframe></div>
 	</div>
 </body>
 </html>
