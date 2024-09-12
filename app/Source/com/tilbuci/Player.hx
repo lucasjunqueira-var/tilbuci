@@ -15,6 +15,7 @@ import openfl.display.Shape;
 import openfl.text.StyleSheet;
 import openfl.events.KeyboardEvent;
 import openfl.events.Event;
+import openfl.display.Stage;
 
 /** FEATHERS UI **/
 import feathers.style.Theme;
@@ -609,21 +610,21 @@ class Player extends Sprite {
     **/
     private function onStage(evt:Event):Void {
         if (this.hasEventListener(Event.ADDED_TO_STAGE)) this.removeEventListener(Event.ADDED_TO_STAGE, onStage);
-        if (GlobalPlayer.mode == Player.MODE_PLAYER) this.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyboard);
+        if (GlobalPlayer.mode == Player.MODE_PLAYER) {
+            this.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyboard);
+        }
     }
 
     /**
         A key was pressed.
     **/
     private function onKeyboard(evt:KeyboardEvent):Void {
-        var found:Bool = false;
-        switch (evt.keyCode) {
-            default:
-                found = false;
-        }
-        if (!found) {
-            for (p in GlobalPlayer.plugins) {
-                if (p.active && !found) found = p.checkKeyboard(evt.keyCode);
+        if (this.stage.focus is Stage) {
+            var found:Bool = GlobalPlayer.parser.checkKeyboard(evt.keyCode);
+            if (!found) {
+                for (p in GlobalPlayer.plugins) {
+                    if (p.active && !found) found = p.checkKeyboard(evt.keyCode);
+                }
             }
         }
     }

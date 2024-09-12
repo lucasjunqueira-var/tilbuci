@@ -67,7 +67,7 @@ class WindowMovieProperties extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-movieprop-title'), 1100, 560, true);
+        super(ac, Global.ln.get('window-movieprop-title'), 1200, 560, true);
     }
 
     /**
@@ -178,7 +178,11 @@ class WindowMovieProperties extends PopupWindow {
                 { text: 'Sine.easeOut', value: "sine.out" }, 
                 { text: 'Sine.easeInOut', value: "sine.inout" }
                 ], sl: 'linear' }, 
-                { tp: 'Spacer', id: 'animspacer', ht: 248 }, 
+
+                { tp: 'Label', id: 'moviehighlight', tx: Global.ln.get('window-movieprop-highlight'), vr: Label.VARIANT_DETAIL }, 
+                { tp: 'TInput', id: 'moviehighlight', tx: '', vr: '' },  
+
+                { tp: 'Spacer', id: 'animspacer', ht: 183 }, 
                 { tp: 'Button', id: 'saveanim', tx: Global.ln.get('window-movieprop-saveanim'), ac: this.onSaveAnim }
         ]));
 
@@ -208,7 +212,7 @@ class WindowMovieProperties extends PopupWindow {
         cssform.addChild(this.ui.createLabel('csslabel', Global.ln.get('window-movieprop-cssabout'), Label.VARIANT_DETAIL));
         this._cssArea = new CodeArea('css');
         cssform.addChild(this._cssArea);
-        this._cssArea.width = 1056;
+        this._cssArea.width = 1156;
         this._cssArea.height = 376;
         cssform.addChild(this.ui.createSpacer('cssspacer', 15));
         cssform.addChild(this.ui.createButton('savecss', Global.ln.get('window-movieprop-savecss'), this.onSaveCss ));
@@ -218,11 +222,11 @@ class WindowMovieProperties extends PopupWindow {
         var cont:HInterfaceContainer = new HInterfaceContainer();
         cont.addChild(this.ui.createButton('fontmoviecopy', Global.ln.get('window-movieprop-fontcopymv'), this.onFontMovie));
         cont.addChild(this.ui.createButton('fontmovieremove', Global.ln.get('window-movieprop-fontdeletemv'), this.onFontMovie));
-        cont.width = 510;
+        cont.width = 560;
         var upfont:HInterfaceContainer = new HInterfaceContainer();
         upfont.addChild(this.ui.createButton('fontadd', Global.ln.get('window-movieprop-fontselect'), this.onFontAdd));
         upfont.addChild(this.ui.createButton('fontupload', Global.ln.get('window-movieprop-fontupload'), this.onFontUpload));
-        upfont.width = 510;
+        upfont.width = 560;
         var fnts:Array<Dynamic> = [ ];
         for (n in 0...Global.fonts.length) fnts.push({ text: Global.fonts[n], value: Global.fonts[n] });
         var arf:Array<Dynamic> = [ ];
@@ -251,8 +255,8 @@ class WindowMovieProperties extends PopupWindow {
         var snlist:HInterfaceContainer = new HInterfaceContainer();
         snlist.addChild(this.ui.createButton('snippetsload', Global.ln.get('window-movieprop-snippetsload'), this.onSnLoad));
         snlist.addChild(this.ui.createButton('snippetsdel', Global.ln.get('window-movieprop-snippetsdel'), this.onSnDel));
-        snlist.width = 510;
-        this._acsnippet = new ActionArea(510, 280);
+        snlist.width = 560;
+        this._acsnippet = new ActionArea(560, 280);
         this.addForm(Global.ln.get('window-movieprop-snippets'), this.ui.createColumnHolder('snippets', 
             this.ui.forge('leftsnippets', [
                 { tp: 'Label', id: 'snippetslist', tx: Global.ln.get('window-movieprop-snippetslist'), vr: Label.VARIANT_DETAIL }, 
@@ -270,13 +274,13 @@ class WindowMovieProperties extends PopupWindow {
                 { tp: 'Button', id: 'snippetssave', tx: Global.ln.get('window-movieprop-snippetssave'), ac: this.onSaveSnippets }
             ]), 420
         ));
-        this.ui.containers['bottomsnippets'].width = 1100;
+        this.ui.containers['bottomsnippets'].width = 1200;
         this.snippetsList();
 
         // start actions
         var acstart:InterfaceContainer = this.ui.createContainer('acstart');
         acstart.addChild(this.ui.createLabel('acstartlabel', Global.ln.get('window-movieprop-acstartabout'), Label.VARIANT_DETAIL));
-        this._acstart = new ActionArea(1056, 376);
+        this._acstart = new ActionArea(1156, 376);
         this._acstart.setText(GlobalPlayer.mdata.acstart);
         acstart.addChild(this._acstart);
         acstart.addChild(this.ui.createSpacer('acstartspacer', 15));
@@ -287,7 +291,7 @@ class WindowMovieProperties extends PopupWindow {
         var txlist:HInterfaceContainer = new HInterfaceContainer();
         txlist.addChild(this.ui.createButton('textsload', Global.ln.get('window-movieprop-textsload'), this.onTxtLoad));
         txlist.addChild(this.ui.createButton('textsdel', Global.ln.get('window-movieprop-textsdel'), this.onTxtDel));
-        txlist.width = 510;
+        txlist.width = 560;
         this.addForm(Global.ln.get('window-movieprop-texts'), this.ui.createColumnHolder('texts', 
             this.ui.forge('lefttexts', [
                 { tp: 'Label', id: 'textslist', tx: Global.ln.get('window-movieprop-textslist'), vr: Label.VARIANT_DETAIL }, 
@@ -307,14 +311,14 @@ class WindowMovieProperties extends PopupWindow {
                 { tp: 'Button', id: 'textsssave', tx: Global.ln.get('window-movieprop-textssave'), ac: this.onSaveTexts }
             ]), 420
         ));
-        this.ui.containers['bottomtexts'].width = 1100;
+        this.ui.containers['bottomtexts'].width = 1200;
         this.textsList();
 
         // numbers
         var numlist:HInterfaceContainer = new HInterfaceContainer();
         numlist.addChild(this.ui.createButton('numbersload', Global.ln.get('window-movieprop-numbersload'), this.onNumLoad));
         numlist.addChild(this.ui.createButton('numbersdel', Global.ln.get('window-movieprop-numbersdel'), this.onNumDel));
-        numlist.width = 510;
+        numlist.width = 560;
         this.addForm(Global.ln.get('window-movieprop-numbers'), this.ui.createColumnHolder('numbers', 
             this.ui.forge('leftnumbers', [
                 { tp: 'Label', id: 'numberslist', tx: Global.ln.get('window-movieprop-numberslist'), vr: Label.VARIANT_DETAIL }, 
@@ -333,14 +337,14 @@ class WindowMovieProperties extends PopupWindow {
                 { tp: 'Button', id: 'numbersssave', tx: Global.ln.get('window-movieprop-numberssave'), ac: this.onSaveNumbers }
             ]), 420
         ));
-        this.ui.containers['bottomnumbers'].width = 1100;
+        this.ui.containers['bottomnumbers'].width = 1200;
         this.numbersList();
 
         // flags
         var flaglist:HInterfaceContainer = new HInterfaceContainer();
         flaglist.addChild(this.ui.createButton('flagsload', Global.ln.get('window-movieprop-flagsload'), this.onFlagLoad));
         flaglist.addChild(this.ui.createButton('flagsdel', Global.ln.get('window-movieprop-flagsdel'), this.onFlagDel));
-        flaglist.width = 510;
+        flaglist.width = 560;
         this.addForm(Global.ln.get('window-movieprop-flags'), this.ui.createColumnHolder('flags', 
             this.ui.forge('leftflags', [
                 { tp: 'Label', id: 'flagslist', tx: Global.ln.get('window-movieprop-flagslist'), vr: Label.VARIANT_DETAIL }, 
@@ -359,7 +363,7 @@ class WindowMovieProperties extends PopupWindow {
                 { tp: 'Button', id: 'flagsssave', tx: Global.ln.get('window-movieprop-flagssave'), ac: this.onSaveFlags }
             ]), 420
         ));
-        this.ui.containers['bottomflags'].width = 1100;
+        this.ui.containers['bottomflags'].width = 1200;
         this.flagsList();
 
         // theme
@@ -368,7 +372,7 @@ class WindowMovieProperties extends PopupWindow {
             this.ui.createLabel(fn, Global.ln.get('window-movieprop-theme-'+fn), Label.VARIANT_DETAIL, thArea);
             this.ui.createTInput(fn, '', '', thArea);
         }
-        thArea.width = 1060;
+        thArea.width = 1160;
         thArea.height = 370;
         this.addForm(Global.ln.get('window-movieprop-theme'), this.ui.forge('theme', [
             { tp: 'Label', id: 'themeabout', tx: Global.ln.get('window-movieprop-themeabout'), vr: '' }, 
@@ -377,6 +381,36 @@ class WindowMovieProperties extends PopupWindow {
             { tp: 'Button', id: 'themesave', tx: Global.ln.get('window-movieprop-themesave'), ac: this.onThemeSave }
         ]));
         this.ui.labels['themeabout'].wordWrap = true;
+
+        // input
+        var inOptions:Array<Dynamic> = [
+            { text: Global.ln.get('window-movieprop-input-opup'), value: 'up' }, 
+            { text: Global.ln.get('window-movieprop-input-opdown'), value: 'down' }, 
+            { text: Global.ln.get('window-movieprop-input-opleft'), value: 'left' }, 
+            { text: Global.ln.get('window-movieprop-input-opright'), value: 'right' }, 
+            { text: Global.ln.get('window-movieprop-input-opnin'), value: 'nin' }, 
+            { text: Global.ln.get('window-movieprop-input-opnout'), value: 'nout' }, 
+            { text: Global.ln.get('window-movieprop-input-opsnippet'), value: '' }, 
+        ];
+        var inArea:InterfaceContainer = new InterfaceContainer('v', 0, 0x666666);
+        for (k in GlobalPlayer.mdata.inputs.keys()) {
+            this.ui.createLabel(('input-'+k), Global.ln.get('window-movieprop-input-'+k), Label.VARIANT_DETAIL, inArea);
+            var inLine:HInterfaceContainer = new HInterfaceContainer();
+            this.ui.createSelect(('input-'+k), inOptions, null, inLine);
+            this.ui.createTInput(('input-'+k), '', '', inLine);
+            inLine.width = 1140;
+            inArea.addChild(inLine);
+            this.ui.createSpacer(('input-'+k), 5, false, inArea);
+        }
+        inArea.width = 1160;
+        inArea.height = 350;
+        this.addForm(Global.ln.get('window-movieprop-input'), this.ui.forge('input', [
+            { tp: 'Label', id: 'inputabout', tx: Global.ln.get('window-movieprop-inputabout'), vr: '' }, 
+            { tp: 'Custom', cont: inArea }, 
+            { tp: 'Spacer', id: 'inputspacer', ht: 10, ln: false }, 
+            { tp: 'Button', id: 'inputsave', tx: Global.ln.get('window-movieprop-inputsave'), ac: this.onInputSave }
+        ]));
+        this.ui.labels['inputabout'].wordWrap = true;
 
         // plugins
         var plArea:InterfaceContainer = new InterfaceContainer('v', 10, 0x666666);
@@ -469,6 +503,11 @@ class WindowMovieProperties extends PopupWindow {
         this.ui.setSelectValue('movietime', GlobalPlayer.mdata.time);
         this.ui.setSelectValue('movieorigin', GlobalPlayer.mdata.origin);
         this.ui.setSelectValue('movieanimation', GlobalPlayer.mdata.animation);
+        if (GlobalPlayer.mdata.highlightInt == null) {
+            this.ui.inputs['moviehighlight'].text = '';
+        } else {
+            this.ui.inputs['moviehighlight'].text = '0x' + StringTools.hex(GlobalPlayer.mdata.highlightInt);
+        }
 
         // diplay
         this.ui.numerics['moviesizebig'].value = GlobalPlayer.mdata.screen.big;
@@ -486,6 +525,33 @@ class WindowMovieProperties extends PopupWindow {
                 if (this.ui.inputs.exists(n)) {
                     this.ui.inputs[n].text = Reflect.field(json, n);
                 }
+            }
+        }
+
+        // input
+        for (k in GlobalPlayer.mdata.inputs.keys()) {
+            switch (GlobalPlayer.mdata.inputs[k]) {
+                case 'up':
+                    this.ui.setSelectValue(('input-'+k), 'up');
+                    this.ui.inputs['input-'+k].text = '';
+                case 'down':
+                    this.ui.setSelectValue(('input-'+k), 'down');
+                    this.ui.inputs['input-'+k].text = '';
+                case 'left':
+                    this.ui.setSelectValue(('input-'+k), 'left');
+                    this.ui.inputs['input-'+k].text = '';
+                case 'right':
+                    this.ui.setSelectValue(('input-'+k), 'right');
+                    this.ui.inputs['input-'+k].text = '';
+                case 'nin':
+                    this.ui.setSelectValue(('input-'+k), 'nin');
+                    this.ui.inputs['input-'+k].text = '';
+                case 'nout':
+                    this.ui.setSelectValue(('input-'+k), 'nout');
+                    this.ui.inputs['input-'+k].text = '';
+                default:
+                    this.ui.setSelectValue(('input-'+k), '');
+                    this.ui.inputs['input-'+k].text = GlobalPlayer.mdata.inputs[k];
             }
         }
 
@@ -556,11 +622,22 @@ class WindowMovieProperties extends PopupWindow {
         Saves the movie animation settings.
     **/
     private function onSaveAnim(evt:TriggerEvent):Void {
+        var color:String = StringTools.replace(this.ui.inputs['moviehighlight'].text, '#', '0x');
+        if (color.substr(0, 2) != '0x') color = '0x' + color;
+        if (Std.parseInt(color) == null) {
+            this.ui.inputs['moviehighlight'].text = '';
+        } else {
+            this.ui.inputs['moviehighlight'].text = color;
+        }
         var data:String = StringStatic.jsonStringify({
             time: this.ui.selects['movietime'].selectedItem.value,
             origin: this.ui.selects['movieorigin'].selectedItem.value,
-            animation: this.ui.selects['movieanimation'].selectedItem.value
+            animation: this.ui.selects['movieanimation'].selectedItem.value, 
+            highlight: this.ui.inputs['moviehighlight'].text
         });
+
+trace ('data', data);
+
         Global.ws.send(
             'Movie/Update', 
             [
@@ -639,6 +716,9 @@ class WindowMovieProperties extends PopupWindow {
                         case 'animation': 
                             GlobalPlayer.mdata.animation = Reflect.field(ar, k);
                             GlobalPlayer.area.setAnimation(GlobalPlayer.mdata.animation);
+                        case 'highlight': 
+                            GlobalPlayer.mdata.highlight = Reflect.field(ar, k);
+                            GlobalPlayer.mdata.highlightInt = Std.parseInt(GlobalPlayer.mdata.highlight);
                         case 'css':
                             GlobalPlayer.mdata.style = Reflect.field(ar, k);
                             GlobalPlayer.style.clear();
@@ -670,6 +750,13 @@ class WindowMovieProperties extends PopupWindow {
                             }
                         case 'theme':
                             GlobalPlayer.mdata.theme = Reflect.field(ar, k);
+                        case 'inputs':
+                            var json:Dynamic = StringStatic.jsonParse(Reflect.field(ar, k));
+                            if (json != false) {
+                                for (n in Reflect.fields(json)) {
+                                    GlobalPlayer.mdata.inputs[n] = cast(Reflect.field(json, n), String);
+                                }
+                            }
                         case 'plugins':
                             for (n in GlobalPlayer.mdata.plugins.keys()) {
                                 GlobalPlayer.mdata.plugins[n].active = false;
@@ -1157,6 +1244,42 @@ class WindowMovieProperties extends PopupWindow {
         }
         var data:String = StringStatic.jsonStringify({
             theme: StringStatic.jsonStringify(colors)
+        });
+        Global.ws.send(
+            'Movie/Update', 
+            [
+                'id' => GlobalPlayer.movie.mvId, 
+                'data' => data
+            ], 
+            this.onSaveReturn
+        );
+    }
+
+    /**
+        Saves the input settings.
+    **/
+    private function onInputSave(evt:TriggerEvent):Void {
+        var inputs:Map<String, String> = [ ];
+        for (k in GlobalPlayer.mdata.inputs.keys()) {
+            switch (this.ui.selects[('input-'+k)].selectedItem.value) {
+                case 'up':
+                    inputs[k] = 'up';
+                case 'down':
+                    inputs[k] = 'down';
+                case 'left':
+                    inputs[k] = 'left';
+                case 'right':
+                    inputs[k] = 'right';
+                case 'nin':
+                    inputs[k] = 'nin';
+                case 'nout':
+                    inputs[k] = 'nout';
+                default:
+                    inputs[k] = this.ui.inputs[('input-'+k)].text;
+            }
+        }
+        var data:String = StringStatic.jsonStringify({
+            inputs: StringStatic.jsonStringify(inputs)
         });
         Global.ws.send(
             'Movie/Update', 

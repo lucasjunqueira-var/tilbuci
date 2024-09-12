@@ -31,13 +31,40 @@ class MenuExchange extends DrawerMenu {
     **/
     override public function onShow():Void {
         super.onShow();
-        this.ui.buttons['btExport'].enabled = ((GlobalPlayer.movie.mvId != '') && (Global.mvOwner));
-        this.ui.buttons['btWebsite'].enabled = ((GlobalPlayer.movie.mvId != '') && (Global.mvOwner));
-        this.ui.buttons['btPwa'].enabled = ((GlobalPlayer.movie.mvId != '') && (Global.mvOwner));
-        this.ui.buttons['btPublish'].enabled = ((GlobalPlayer.movie.mvId != '') && (Global.mvOwner));
-        this.ui.buttons['btDesktop'].enabled = ((GlobalPlayer.movie.mvId != '') && (Global.mvOwner));
-        this.ui.buttons['btCordova'].enabled = ((GlobalPlayer.movie.mvId != '') && (Global.mvOwner));
-        this.ui.buttons['btImport'].enabled = Global.ws.level <= 50;
+        if (Global.ws.level <= 50) {
+            this.ui.buttons['btImport'].enabled = true;
+            this.ui.buttons['btImport'].toolTip = null;
+        } else {
+            this.ui.buttons['btImport'].enabled = false;
+            this.ui.buttons['btImport'].toolTip = Global.ln.get('tooltip-movie-nolevel');
+        }
+        if ((GlobalPlayer.movie.mvId != '') && (Global.mvOwner)) {
+            this.ui.buttons['btExport'].enabled = true;
+            this.ui.buttons['btWebsite'].enabled = true;
+            this.ui.buttons['btPwa'].enabled = true;
+            this.ui.buttons['btPublish'].enabled = true;
+            this.ui.buttons['btDesktop'].enabled = true;
+            this.ui.buttons['btCordova'].enabled = true;
+            this.ui.buttons['btExport'].toolTip = null;
+            this.ui.buttons['btWebsite'].toolTip = null;
+            this.ui.buttons['btPwa'].toolTip = null;
+            this.ui.buttons['btPublish'].toolTip = null;
+            this.ui.buttons['btDesktop'].toolTip = null;
+            this.ui.buttons['btCordova'].toolTip = null;
+        } else {
+            this.ui.buttons['btExport'].enabled = false;
+            this.ui.buttons['btWebsite'].enabled = false;
+            this.ui.buttons['btPwa'].enabled = false;
+            this.ui.buttons['btPublish'].enabled = false;
+            this.ui.buttons['btDesktop'].enabled = false;
+            this.ui.buttons['btCordova'].enabled = false;
+            this.ui.buttons['btExport'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
+            this.ui.buttons['btWebsite'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
+            this.ui.buttons['btPwa'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
+            this.ui.buttons['btPublish'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
+            this.ui.buttons['btDesktop'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
+            this.ui.buttons['btCordova'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
+        }
     }
 
     /**

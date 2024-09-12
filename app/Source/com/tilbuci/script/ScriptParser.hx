@@ -1,6 +1,8 @@
 package com.tilbuci.script;
 
 /** TILBUCI **/
+import feathers.core.FocusManager;
+import openfl.ui.Keyboard;
 import com.tilbuci.js.ExternBrowser;
 import openfl.external.ExternalInterface;
 import openfl.net.URLRequest;
@@ -429,6 +431,51 @@ class ScriptParser {
                 return (this.exec(json));
             }
         }
+    }
+
+    /**
+        Runs keyboard-assigned actions.
+    **/
+    public function checkKeyboard(keyCode:Int):Bool {
+        var found:Bool = false;
+        switch (keyCode) {
+            case Keyboard.UP:
+                found = this.runInput('keyup');
+            case Keyboard.DOWN:
+                found = this.runInput('keydown');
+            case Keyboard.LEFT:
+                found = this.runInput('keyleft');
+            case Keyboard.RIGHT:
+                found = this.runInput('keyright');
+            case Keyboard.PAGE_UP:
+                found = this.runInput('keypup');
+            case Keyboard.PAGE_DOWN:
+                found = this.runInput('keypdown');
+            case Keyboard.SPACE:
+                found = this.runInput('keyspace');
+            case Keyboard.ENTER:
+                found = this.runInput('keyenter');
+        }
+        return (found);
+    }
+
+    /**
+        Runs an input action.
+    **/
+    private function runInput(name:String):Bool {
+        var found:Bool = false;
+        if (GlobalPlayer.mdata.inputs.exists(name)) {
+            switch (GlobalPlayer.mdata.inputs[name]) {
+                case 'up': this.run('{ "ac": "scene.navigate", "param": [ "up" ] }'); found = true;
+                case 'down': this.run('{ "ac": "scene.navigate", "param": [ "down" ] }'); found = true;
+                case 'left': this.run('{ "ac": "scene.navigate", "param": [ "left" ] }'); found = true;
+                case 'right': this.run('{ "ac": "scene.navigate", "param": [ "right" ] }'); found = true;
+                case 'nin': this.run('{ "ac": "scene.navigate", "param": [ "nin" ] }'); found = true;
+                case 'nout': this.run('{ "ac": "scene.navigate", "param": [ "nout" ] }'); found = true;
+                default: found = this.run('{ "ac": "run", "param": [ "' + GlobalPlayer.mdata.inputs[name] + '" ] }');
+            }
+        }
+        return (found);
     }
 
     /**

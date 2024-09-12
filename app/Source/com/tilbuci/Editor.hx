@@ -1,6 +1,7 @@
 package com.tilbuci;
 
 /** HAXE **/
+import feathers.core.ToolTipManager;
 import com.tilbuci.script.AssistVariables;
 import com.tilbuci.script.AssistScene;
 import com.tilbuci.script.AssistInstance;
@@ -83,6 +84,7 @@ import com.tilbuci.ui.window.movie.WindowMoviePlugins;
 import com.tilbuci.plugin.Plugin;
 import com.tilbuci.data.GlobalPlayer;
 import com.tilbuci.ui.window.movie.WindowMovieUsers;
+import com.tilbuci.ui.window.movie.WindowMovieRemove;
 import com.tilbuci.ui.PlayerControls;
 
 /**
@@ -465,9 +467,9 @@ class Editor extends Drawer {
             case 'users':
                 this.opened = false;
                 this.showWindow('usermovie');
-            case 'plugins':
+            case 'remove':
                 this.opened = false;
-                this.showWindow('pluginmovie');
+                this.showWindow('removemovie');
             case 'menu-close':
                 this.opened = false;
         }
@@ -1197,6 +1199,7 @@ class Editor extends Drawer {
                 case 'openmovie': this._windows['openmovie'] = new WindowMovieOpen(actionMovie);
                 case 'propmovie': this._windows['propmovie'] = new WindowMovieProperties(actionMovie);
                 case 'usermovie': this._windows['usermovie'] = new WindowMovieUsers(actionMovie);
+                case 'removemovie': this._windows['removemovie'] = new WindowMovieRemove(actionMovie);
                 case 'pluginmovie': this._windows['pluginmovie'] = new WindowMoviePlugins(actionMovie);
 
                 case 'newscene': this._windows['newscene'] = new WindowSceneNew(actionScene);

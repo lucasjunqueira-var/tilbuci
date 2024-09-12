@@ -132,7 +132,7 @@ class Main extends Application
 			this._player.setSize(this.stage.stageWidth, this.stage.stageHeight);
 			this.stage.addChild(this._player);
 			this.stage.addEventListener(Event.RESIZE, onStageResize);
-			this.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			//this.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		}
 	}
 

@@ -26,6 +26,42 @@ function embed_place(src) {
 }
 
 /**
+ * Sets the embed content position and size
+ * @param {*} x x position
+ * @param {*} y y position
+ * @param {*} width new width
+ * @param {*} height new height
+ */
+function embed_setposition(x, y, width, height) {
+	if (embed_area == null) embed_area = document.getElementById("embed_area");
+	if (embed_frame == null) embed_frame = document.getElementById("embed_frame");
+	if ((embed_area != null) && (embed_frame != null)) {
+		embed_area.style.marginLeft = (x + "px");
+		embed_area.style.marginTop = (y + "px");
+		embed_area.style.width = (width + "px");
+		embed_area.style.height = (height + "px");
+		embed_frame.style.width = (width + "px");
+		embed_frame.style.height = (height + "px");
+	}
+}
+
+/**
+ * Sets the embed content in full area.
+ */
+function embed_setfull() {
+	if (embed_area == null) embed_area = document.getElementById("embed_area");
+	if (embed_frame == null) embed_frame = document.getElementById("embed_frame");
+	if ((embed_area != null) && (embed_frame != null)) {
+		embed_area.style.marginLeft = ("0px");
+		embed_area.style.marginTop = ("0px");
+		embed_area.style.width = ("100%");
+		embed_area.style.height = ("100%");
+		embed_frame.style.width = ("100%");
+		embed_frame.style.height = ("100%");
+	}
+}
+
+/**
  * Adjusts the embed area on stage resize.
  */
 function embed_resize() {

@@ -305,54 +305,58 @@ class WindowCollections extends PopupWindow {
         this.ui.setListValues('assets', [ ]);
         var list = [ ];
         this._collections = [ ];
-        for (k in GlobalPlayer.movie.collections.keys()) {
-            var col:CollectionData = GlobalPlayer.movie.collections[k];
-            var info:CollectionInfo = {
-                uid: GlobalPlayer.movie.mvId + k, 
-                id: k, 
-                title: col.name, 
-                transition: col.transition, 
-                time: col.time, 
-                num: col.assetOrder.length
-            };
-            list.push({
-                text: col.name, 
-                value: info, 
-                user: (col.assetOrder.length + ' ' + Global.ln.get('window-collection-numassets'))
-            });
+        for (k in GlobalPlayer.movie.scene.collections) {
+            if (GlobalPlayer.movie.collections.exists(k)) {
 
-            var asts:Map<String, AssetInfo> = [ ];
-            for (i in 0...GlobalPlayer.movie.collections[k].assetOrder.length) {
-                var asid:String = GlobalPlayer.movie.collections[k].assetOrder[i];
-                if (GlobalPlayer.movie.collections[k].assets.exists(asid)) {
-                    var adata:AssetData = GlobalPlayer.movie.collections[k].assets[asid];
-                    var ainfo:AssetInfo = {
-                        uid: '-' + Std.string(i), 
-                        id: asid, 
-                        order: i, 
-                        name: adata.name, 
-                        type: adata.type, 
-                        time: adata.time, 
-                        frames: adata.frames, 
-                        frtime: adata.frtime, 
-                        file1: adata.file['@1'], 
-                        file2: adata.file['@2'], 
-                        file3: adata.file['@3'], 
-                        file4: adata.file['@4'], 
-                        file5: adata.file['@5'], 
-                        action: adata.action
-                    };
-                    asts[asid] = ainfo;
+                var col:CollectionData = GlobalPlayer.movie.collections[k];
+                var info:CollectionInfo = {
+                    uid: GlobalPlayer.movie.mvId + k, 
+                    id: k, 
+                    title: col.name, 
+                    transition: col.transition, 
+                    time: col.time, 
+                    num: col.assetOrder.length
+                };
+                list.push({
+                    text: col.name, 
+                    value: info, 
+                    user: (col.assetOrder.length + ' ' + Global.ln.get('window-collection-numassets'))
+                });
+
+                var asts:Map<String, AssetInfo> = [ ];
+                for (i in 0...GlobalPlayer.movie.collections[k].assetOrder.length) {
+                    var asid:String = GlobalPlayer.movie.collections[k].assetOrder[i];
+                    if (GlobalPlayer.movie.collections[k].assets.exists(asid)) {
+                        var adata:AssetData = GlobalPlayer.movie.collections[k].assets[asid];
+                        var ainfo:AssetInfo = {
+                            uid: '-' + Std.string(i), 
+                            id: asid, 
+                            order: i, 
+                            name: adata.name, 
+                            type: adata.type, 
+                            time: adata.time, 
+                            frames: adata.frames, 
+                            frtime: adata.frtime, 
+                            file1: adata.file['@1'], 
+                            file2: adata.file['@2'], 
+                            file3: adata.file['@3'], 
+                            file4: adata.file['@4'], 
+                            file5: adata.file['@5'], 
+                            action: adata.action
+                        };
+                        asts[asid] = ainfo;
+                    }
                 }
-            }
 
-            this._collections[k] = {
-                collection: info, 
-                assets: asts, 
+                this._collections[k] = {
+                    collection: info, 
+                    assets: asts, 
+                }
+
             }
+            this.ui.setListValues('collections', list);
 
         }
-        this.ui.setListValues('collections', list);
     }
 
     /**

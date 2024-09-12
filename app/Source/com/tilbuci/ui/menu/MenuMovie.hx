@@ -1,6 +1,7 @@
 package com.tilbuci.ui.menu;
 
 /** FEATHERS UI **/
+import com.tilbuci.data.GlobalPlayer;
 import feathers.controls.Button;
 import feathers.events.TriggerEvent;
 
@@ -20,7 +21,7 @@ class MenuMovie extends DrawerMenu {
         this.addButton('btOpen', Global.ln.get('menu-movie-open'), onOpen);
         this.addButton('btProperties', Global.ln.get('menu-movie-properties'), onProp);
         this.addButton('btUsers', Global.ln.get('menu-movie-users'), onUsers);
-        //this.addButton('btPlugins', Global.ln.get('menu-movie-plugins'), onPlugins);
+        this.addButton('btRemove', Global.ln.get('menu-movie-remove'), onRemove);
     }
 
     /**
@@ -28,10 +29,40 @@ class MenuMovie extends DrawerMenu {
     **/
     override public function onShow():Void {
         super.onShow();
-        this.ui.buttons['btNew'].enabled = Global.ws.level <= 50;
-        this.ui.buttons['btProperties'].enabled = Global.mvOwner;
-        this.ui.buttons['btUsers'].enabled = Global.mvOwner;
-        //this.ui.buttons['btPlugins'].enabled = Global.mvOwner;
+        if (Global.ws.level <= 50) {
+            this.ui.buttons['btNew'].enabled = true;
+            this.ui.buttons['btNew'].toolTip = null;
+        } else {
+            this.ui.buttons['btNew'].enabled = false;
+            this.ui.buttons['btNew'].toolTip = Global.ln.get('tooltip-movie-nolevel');
+        }
+        if (GlobalPlayer.movie.mvId != '') {
+            this.ui.buttons['btRemove'].toolTip = Global.ln.get('tooltip-movie-remove');
+            this.ui.buttons['btRemove'].enabled = false;
+            if (Global.mvOwner) {
+                this.ui.buttons['btProperties'].enabled = true;
+                this.ui.buttons['btUsers'].enabled = true;
+                this.ui.buttons['btProperties'].toolTip = null;
+                this.ui.buttons['btUsers'].toolTip = null;
+            } else {
+                this.ui.buttons['btProperties'].enabled = false;
+                this.ui.buttons['btUsers'].enabled = false;
+                this.ui.buttons['btProperties'].toolTip = Global.ln.get('tooltip-movie-noowner');
+                this.ui.buttons['btUsers'].toolTip = Global.ln.get('tooltip-movie-noowner');
+            }
+        } else {
+            if (Global.ws.level <= 50) {
+                this.ui.buttons['btRemove'].enabled = true;
+                this.ui.buttons['btRemove'].toolTip = null;
+            } else {
+                this.ui.buttons['btRemove'].enabled = false;
+                this.ui.buttons['btRemove'].toolTip = Global.ln.get('tooltip-movie-nolevel');
+            }
+            this.ui.buttons['btProperties'].enabled = false;
+            this.ui.buttons['btUsers'].enabled = false;
+            this.ui.buttons['btProperties'].toolTip = Global.ln.get('tooltip-movie-nomovie');
+            this.ui.buttons['btUsers'].toolTip = Global.ln.get('tooltip-movie-nomovie');
+        }
     }
 
     /**
@@ -70,10 +101,10 @@ class MenuMovie extends DrawerMenu {
     }
 
     /**
-        Shows the movie plugin setup.
+        Shows the movie removal window.
     **/
-    private  function onPlugins(evt:TriggerEvent):Void {
-        this._ac('plugins');
+    private  function onRemove(evt:TriggerEvent):Void {
+        this._ac('remove');
     }
 
 }

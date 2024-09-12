@@ -1,6 +1,7 @@
 package com.tilbuci.display;
 
 /** OPENFL **/
+import openfl.filters.GlowFilter;
 import openfl.Assets;
 import openfl.display.Bitmap;
 import com.tilbuci.data.Global;
@@ -230,6 +231,8 @@ class InstanceImage extends Sprite {
 
         // interaction
         this.addEventListener(MouseEvent.CLICK, onClick);
+        this.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+        this.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
     }
 
     public function changeId(oldid:String, newid:String):Bool {
@@ -340,6 +343,8 @@ class InstanceImage extends Sprite {
     **/
     public function kill():Void {
         this.removeEventListener(MouseEvent.CLICK, onClick);
+        this.removeEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+        this.removeEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
         this.removeChildren();
         this._display.mask = null;
         this._display.removeChildren();
@@ -922,6 +927,24 @@ class InstanceImage extends Sprite {
                 GlobalPlayer.callback('selectimage', ['nm' => this._name]);
             }
         }
+    }
+
+    /**
+        Mouse over instance.
+    **/
+    private function onMouseOver(evt:MouseEvent):Void {
+        if ((GlobalPlayer.mode != Player.MODE_EDITOR) && (this._data.action != '') && (GlobalPlayer.mdata.highlightInt != null)) {
+            this._imCurrent.filters = this._imOther.filters = [
+                new GlowFilter(GlobalPlayer.mdata.highlightInt, 1, 4, 4, 255, 1, true)
+            ];
+        }
+    }
+
+    /**
+        Mouse out instance.
+    **/
+    private function onMouseOut(evt:MouseEvent):Void {
+        this._imCurrent.filters = this._imOther.filters = [ ];
     }
 
     /**

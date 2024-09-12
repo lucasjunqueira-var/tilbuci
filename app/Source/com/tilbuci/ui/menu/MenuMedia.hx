@@ -35,18 +35,60 @@ class MenuMedia extends DrawerMenu {
     **/
     override public function onShow():Void {
         super.onShow();
-        this.ui.buttons['btCollections'].enabled = (GlobalPlayer.movie.mvId != '');
-        this.ui.buttons['btCollectionsAdd'].enabled = (GlobalPlayer.movie.mvId != '');
-        this.ui.buttons['btCollectionsRm'].enabled = (GlobalPlayer.movie.mvId != '');
-        this.ui.buttons['btAudio'].enabled = (GlobalPlayer.movie.scId != '');
-        this.ui.buttons['btHtml'].enabled = (GlobalPlayer.movie.scId != '');
-        this.ui.buttons['btParagraph'].enabled = (GlobalPlayer.movie.scId != '');
-        this.ui.buttons['btPicture'].enabled = (GlobalPlayer.movie.scId != '');
-        this.ui.buttons['btShape'].enabled = (GlobalPlayer.movie.scId != '');
-        this.ui.buttons['btSpritemap'].enabled = (GlobalPlayer.movie.scId != '');
-        //this.ui.buttons['btText'].enabled = (GlobalPlayer.movie.scId != '');
-        this.ui.buttons['btVideo'].enabled = (GlobalPlayer.movie.scId != '');
-        this.ui.buttons['btEmbed'].enabled = (GlobalPlayer.movie.mvId != '');
+        if (GlobalPlayer.movie.mvId == '') {
+            this.ui.buttons['btCollectionsRm'].enabled = false;
+            this.ui.buttons['btCollectionsRm'].toolTip = Global.ln.get('tooltip-movie-nomovie');
+        } else {
+            this.ui.buttons['btCollectionsRm'].enabled = true;
+            this.ui.buttons['btCollectionsRm'].toolTip = null;
+        }
+        if (GlobalPlayer.movie.scId == '') {
+            this.ui.buttons['btCollections'].enabled = false;
+            this.ui.buttons['btCollectionsAdd'].enabled = false;
+            this.ui.buttons['btAudio'].enabled = false;
+            this.ui.buttons['btHtml'].enabled = false;
+            this.ui.buttons['btParagraph'].enabled = false;
+            this.ui.buttons['btPicture'].enabled = false;
+            this.ui.buttons['btShape'].enabled = false;
+            this.ui.buttons['btSpritemap'].enabled = false;
+            //this.ui.buttons['btText'].enabled = false;
+            this.ui.buttons['btVideo'].enabled = false;
+            this.ui.buttons['btEmbed'].enabled = false;
+            this.ui.buttons['btCollections'].toolTip = Global.ln.get('tooltip-movie-noscene');
+            this.ui.buttons['btCollectionsAdd'].toolTip = Global.ln.get('tooltip-movie-noscene');
+            this.ui.buttons['btAudio'].toolTip = Global.ln.get('tooltip-movie-noscene');
+            this.ui.buttons['btHtml'].toolTip = Global.ln.get('tooltip-movie-noscene');
+            this.ui.buttons['btParagraph'].toolTip = Global.ln.get('tooltip-movie-noscene');
+            this.ui.buttons['btPicture'].toolTip = Global.ln.get('tooltip-movie-noscene');
+            this.ui.buttons['btShape'].toolTip = Global.ln.get('tooltip-movie-noscene');
+            this.ui.buttons['btSpritemap'].toolTip = Global.ln.get('tooltip-movie-noscene');
+            //this.ui.buttons['btText'].toolTip = Global.ln.get('tooltip-movie-noscene');
+            this.ui.buttons['btVideo'].toolTip = Global.ln.get('tooltip-movie-noscene');
+            this.ui.buttons['btEmbed'].toolTip = Global.ln.get('tooltip-movie-noscene');
+        } else {
+            this.ui.buttons['btCollections'].enabled = true;
+            this.ui.buttons['btCollectionsAdd'].enabled = true;
+            this.ui.buttons['btAudio'].enabled = true;
+            this.ui.buttons['btHtml'].enabled = true;
+            this.ui.buttons['btParagraph'].enabled = true;
+            this.ui.buttons['btPicture'].enabled = true;
+            this.ui.buttons['btShape'].enabled = true;
+            this.ui.buttons['btSpritemap'].enabled = true;
+            //this.ui.buttons['btText'].enabled = true;
+            this.ui.buttons['btVideo'].enabled = true;
+            this.ui.buttons['btEmbed'].enabled = true;
+            this.ui.buttons['btCollections'].toolTip = null;
+            this.ui.buttons['btCollectionsAdd'].toolTip = null;
+            this.ui.buttons['btAudio'].toolTip = null;
+            this.ui.buttons['btHtml'].toolTip = null;
+            this.ui.buttons['btParagraph'].toolTip = null;
+            this.ui.buttons['btPicture'].toolTip = null;
+            this.ui.buttons['btShape'].toolTip = null;
+            this.ui.buttons['btSpritemap'].toolTip = null;
+            //this.ui.buttons['btText'].toolTip = null;
+            this.ui.buttons['btVideo'].toolTip = null;
+            this.ui.buttons['btEmbed'].toolTip = null;
+        }
     }
 
     /**

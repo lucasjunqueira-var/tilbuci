@@ -35,14 +35,51 @@ class MenuScene extends DrawerMenu {
     **/
     override public function onShow():Void {
         super.onShow();
-        this.ui.buttons['btNew'].enabled = (GlobalPlayer.movie.mvId != '');
-        this.ui.buttons['btOpen'].enabled = (GlobalPlayer.movie.mvId != '');
-        this.ui.buttons['btProperties'].enabled = (GlobalPlayer.movie.scId != '');
-        this.ui.buttons['btSave'].enabled = (GlobalPlayer.movie.scId != '');
-        this.ui.buttons['btSaveAs'].enabled = (GlobalPlayer.movie.scId != '');
-        this.ui.buttons['btPublish'].enabled = (GlobalPlayer.movie.scId != '');
-        this.ui.buttons['btVersions'].enabled = (GlobalPlayer.movie.scId != '');
-        this.ui.buttons['btPlayer'].enabled = (GlobalPlayer.movie.scId != '');
+        if (GlobalPlayer.movie.mvId == '') {
+            this.ui.buttons['btNew'].enabled = false;
+            this.ui.buttons['btOpen'].enabled = false;
+            this.ui.buttons['btProperties'].enabled = false;
+            this.ui.buttons['btSave'].enabled = false;
+            this.ui.buttons['btSaveAs'].enabled = false;
+            this.ui.buttons['btPublish'].enabled = false;
+            this.ui.buttons['btVersions'].enabled = false;
+            this.ui.buttons['btPlayer'].enabled = false;
+            for (b in this.ui.buttons) {
+                b.toolTip = Global.ln.get('tooltip-movie-nomovie');
+            }
+        } else {
+            this.ui.buttons['btNew'].enabled = true;
+            this.ui.buttons['btOpen'].enabled = true;
+            this.ui.buttons['btNew'].toolTip = null;
+            this.ui.buttons['btOpen'].toolTip = null;
+            if (GlobalPlayer.movie.scId == '') {
+                this.ui.buttons['btProperties'].enabled = false;
+                this.ui.buttons['btSave'].enabled = false;
+                this.ui.buttons['btSaveAs'].enabled = false;
+                this.ui.buttons['btPublish'].enabled = false;
+                this.ui.buttons['btVersions'].enabled = false;
+                this.ui.buttons['btPlayer'].enabled = false;
+                this.ui.buttons['btProperties'].toolTip = Global.ln.get('tooltip-movie-noscene');
+                this.ui.buttons['btSave'].toolTip = Global.ln.get('tooltip-movie-noscene');
+                this.ui.buttons['btSaveAs'].toolTip = Global.ln.get('tooltip-movie-noscene');
+                this.ui.buttons['btPublish'].toolTip = Global.ln.get('tooltip-movie-noscene');
+                this.ui.buttons['btVersions'].toolTip = Global.ln.get('tooltip-movie-noscene');
+                this.ui.buttons['btPlayer'].toolTip = Global.ln.get('tooltip-movie-noscene');
+            } else {
+                this.ui.buttons['btProperties'].enabled = true;
+                this.ui.buttons['btSave'].enabled = true;
+                this.ui.buttons['btSaveAs'].enabled = true;
+                this.ui.buttons['btPublish'].enabled = true;
+                this.ui.buttons['btVersions'].enabled = true;
+                this.ui.buttons['btPlayer'].enabled = true;
+                this.ui.buttons['btProperties'].toolTip = null;
+                this.ui.buttons['btSave'].toolTip = null;
+                this.ui.buttons['btSaveAs'].toolTip = null;
+                this.ui.buttons['btPublish'].toolTip = null;
+                this.ui.buttons['btVersions'].toolTip = null;
+                this.ui.buttons['btPlayer'].toolTip = null;
+            }
+        }
     }
 
     /**

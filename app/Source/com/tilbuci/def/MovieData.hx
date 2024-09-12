@@ -167,6 +167,21 @@ class MovieData extends DefBase {
     public var plugins:Map<String, PluginConf> = [ ];
 
     /**
+        highlight color
+    **/
+    public var highlight:String = '';
+
+    /**
+        highlight color (int value)
+    **/
+    public var highlightInt:Null<Int> = null;
+
+    /**
+        input settings
+    **/
+    public var inputs:Map<String, String> = [ ];
+
+    /**
         Creator.
     **/
     public function new() {
@@ -197,6 +212,8 @@ class MovieData extends DefBase {
         this.time = 1;
         this.origin = 'center';
         this.animation = 'linear';
+        this.highlight = '';
+        this.highlightInt = null;
         this.screen.clear();
         while (this.fonts.length > 0) {
             var ft:FontInfo = this.fonts.shift();
@@ -224,6 +241,16 @@ class MovieData extends DefBase {
         GlobalPlayer.style.clear();
         for (ac in GlobalPlayer.mvActions.keys()) GlobalPlayer.mvActions.remove(ac);
         Actuate.defaultEase = Linear.easeNone;
+        this.inputs = [
+            'keyup' => 'up', 
+            'keydown' => 'down', 
+            'keyletf' => 'left', 
+            'keyright' => 'right', 
+            'keypup' => 'nout', 
+            'keypdown' => 'nin', 
+            'keyspace' => '', 
+            'keyenter' => '', 
+        ];
     }
 
     /**
@@ -265,6 +292,18 @@ class MovieData extends DefBase {
             if (data.exists('vsgroups')) this.vsgroups = data['vsgroups'];
                 else this.vsgroups = [ ];
             if (this.vsgroups.length > 0) this.identify = true;
+            if (data.exists('highlight')) {
+                this.highlight = data['highlight'];
+                this.highlightInt = Std.parseInt(this.highlight);
+            } else {
+                this.highlight = '';
+                this.highlightInt = null;
+            }
+            if (data.exists('inputs')) {
+                for (t in Reflect.fields(data['inputs'])) {
+                    this.inputs[t] = Reflect.field(data['inputs'], t);
+                }
+            }
             GlobalPlayer.mdata = this;
             // setting animation transition
             switch (this.animation) {
@@ -431,7 +470,9 @@ class MovieData extends DefBase {
             time: this.time, 
             origin: this.origin, 
             animation: this.animation, 
-            fonts: this.fonts
+            fonts: this.fonts, 
+            highlight: this.highlight, 
+            inputs: this.inputs
         }));
     }
 
@@ -482,6 +523,10 @@ class MovieData extends DefBase {
             this.plugins.remove(t);
         }
         this.plugins = null;
+        this.highlight = null;
+        this.highlightInt = null;
+        for (k in this.inputs.keys()) this.inputs.remove(k);
+        this.inputs = null;
     }
 }
 

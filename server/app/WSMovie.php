@@ -91,6 +91,9 @@ class WSMovie extends Webservice
                 case 'Movie/ExportCordova':
 					$this->exportCordova();
 					break;
+                case 'Movie/Remove':
+					$this->remove();
+					break;
 				default:
 					$this->returnRequest([ 'e' => -9 ]);
 					break;
@@ -135,7 +138,7 @@ class WSMovie extends Webservice
 	 */
 	private function listMovies() {
 		$mv = new Movie;
-		$list = $mv->listMovies($this->user);
+		$list = $mv->listMovies($this->user, isset($this->req['owner']) && (trim($this->req['owner']) == 'true'));
 		$this->returnRequest([ 'e' => 0, 'list' => $list ]);
 	}
 	
@@ -415,6 +418,20 @@ class WSMovie extends Webservice
             } else {
                 $this->returnRequest([ 'e' => 0, 'exp' => $exp ]);
             }
+		}
+	}
+    
+    /**
+	 * Removes a movie.
+	 */
+	private function remove() {
+		// required fields received?
+		if ($this->requiredFields(['id'])) {
+			$mv = new Movie;
+            $list = $mv->remove($this->user, $this->req['id']);
+            $this->returnRequest([ 'e' => 0, 'list' => $list ]);
+		} else {
+			$this->returnRequest([ 'e' => 2, 'list' => [ ] ]);
 		}
 	}
 }

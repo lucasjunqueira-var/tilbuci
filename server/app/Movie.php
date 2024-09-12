@@ -124,7 +124,7 @@ class Movie extends BaseClass
                 'identify' => $ck[0]['mv_identify'] == '1' ? true : false, 
                 'vsgroups' => ($ck[0]['mv_vsgroups'] == '' ? [ ] : explode(',', $ck[0]['mv_vsgroups'])),
 				'start' => $ck[0]['mv_start'], 
-				'acstart' => $ck[0]['mv_acstart'] == '' ? '' : gzdecode(base64_decode($ck[0]['mv_acstart'])), 
+				'acstart' => (is_null($ck[0]['mv_acstart']) || $ck[0]['mv_acstart'] == '') ? '' : gzdecode(base64_decode($ck[0]['mv_acstart'])), 
 				'screen' => [
 					'big'=> (int)$ck[0]['mv_screenbig'], 
 					'small'=> (int)$ck[0]['mv_screensmall'], 
@@ -134,13 +134,15 @@ class Movie extends BaseClass
 				'time' => (float)$ck[0]['mv_interval'], 
 				'origin' => $ck[0]['mv_origin'], 
 				'animation' => $ck[0]['mv_animation'], 
-				'fonts' => ($ck[0]['mv_fonts'] == '' ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_fonts'])), true)), 
-				'style' => $ck[0]['mv_style'] == '' ? '' : gzdecode(base64_decode($ck[0]['mv_style'])), 
-				'actions' => ($ck[0]['mv_actions'] == '' ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_actions'])), true)), 
-				'theme' => ($ck[0]['mv_theme'] == '' ? '{}' : gzdecode(base64_decode($ck[0]['mv_theme']))), 
-				'texts' => ($ck[0]['mv_texts'] == '' ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_texts'])), true)), 
-				'numbers' => ($ck[0]['mv_numbers'] == '' ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_numbers'])), true)), 
-				'flags' => ($ck[0]['mv_flags'] == '' ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_flags'])), true)), 
+                'highlight' => $ck[0]['mv_highlight'], 
+				'fonts' => ((is_null($ck[0]['mv_fonts']) || $ck[0]['mv_fonts'] == '') ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_fonts'])), true)), 
+				'style' => (is_null($ck[0]['mv_style']) || $ck[0]['mv_style'] == '') ? '' : gzdecode(base64_decode($ck[0]['mv_style'])), 
+				'actions' => ((is_null($ck[0]['mv_actions']) || $ck[0]['mv_actions'] == '') ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_actions'])), true)), 
+				'theme' => ((is_null($ck[0]['mv_theme']) || $ck[0]['mv_theme'] == '') ? '{}' : gzdecode(base64_decode($ck[0]['mv_theme']))), 
+				'inputs' => ((is_null($ck[0]['mv_inputs']) || $ck[0]['mv_inputs'] == '') ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_inputs'])), true)), 
+                'texts' => ((is_null($ck[0]['mv_texts']) || $ck[0]['mv_texts'] == '') ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_texts'])), true)), 
+				'numbers' => ((is_null($ck[0]['mv_numbers']) || $ck[0]['mv_numbers'] == '') ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_numbers'])), true)), 
+				'flags' => ((is_null($ck[0]['mv_flags']) || $ck[0]['mv_flags'] == '') ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_flags'])), true)), 
 				'created' => $ck[0]['mv_created'], 
 				'updated' => $ck[0]['mv_updated'], 
 				'plugins' => [ ], 
@@ -214,16 +216,69 @@ class Movie extends BaseClass
 	 * Lists movies that can be open by the current user.
 	 * @return array movies list
 	 */
-	public function listMovies($user) {
+	public function listMovies($user, $own = false) {
 		$ret = [ ];
-		$ck = $this->queryAll('SELECT mv_id, mv_title, mv_user FROM movies WHERE mv_user=:us OR mv_collaborators LIKE :col ORDER BY mv_updated DESC', [
-			':us' => $user, 
-			':col' => '%' . $user . '%', 
-		]);
-		foreach ($ck as $v) $ret[] = [
-			'id' => $v['mv_id'], 
-			'title' => $v['mv_title'] . ($v['mv_user'] == $user ? '*' : ''), 
-		];
+        if ($own) {
+            $ck = $this->queryAll('SELECT mv_id, mv_title, mv_user FROM movies WHERE mv_user=:us ORDER BY mv_updated DESC', [
+                ':us' => $user, 
+            ]);
+            foreach ($ck as $v) $ret[] = [
+                'id' => $v['mv_id'], 
+                'title' => $v['mv_title'], 
+            ];
+        } else {
+            $ck = $this->queryAll('SELECT mv_id, mv_title, mv_user FROM movies WHERE mv_user=:us OR mv_collaborators LIKE :col ORDER BY mv_updated DESC', [
+                ':us' => $user, 
+                ':col' => '%' . $user . '%', 
+            ]);
+            foreach ($ck as $v) $ret[] = [
+                'id' => $v['mv_id'], 
+                'title' => $v['mv_title'] . ($v['mv_user'] == $user ? '*' : ''), 
+            ];
+        }
+		return ($ret);
+	}
+    
+    /**
+	 * Removes a movie.
+	 * @return array movies list
+	 */
+	public function remove($user, $id) {
+        // can the current user remove the movie?
+        $ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_user=:us AND mv_id=:id', [
+            ':us' => $user, 
+            ':id' => $id, 
+        ]);
+        if (count($ck) > 0) {
+            $ckc = $this->queryAll('SELECT cl_uid FROM collections WHERE cl_movie=:mv', [':mv'=>$id]);
+            foreach ($ckc as $v) $this->execute('DELETE FROM assets WHERE at_collection=:col', [':col'=>$v['cl_uid']]);
+            $this->execute('DELETE FROM collections WHERE cl_movie=:mv', [':mv'=>$id]);
+            $cks = $this->queryAll('SELECT sc_uid, sc_id FROM scenes WHERE sc_movie=:mv', [':mv'=>$id]);
+            foreach ($cks as $v) {
+                $ckk = $this->queryAll('SELECT kf_id FROM keyframes WHERE kf_scene=:sc', [':sc'=>$v['sc_uid']]);
+                foreach ($ckk as $vk) {
+                    $cki = $this->queryAll('SELECT in_id FROM instances WHERE in_keyframe=:kf', [':kf'=>$vk['kf_id']]);
+                    foreach ($cki as $vi) {
+                        $this->execute('DELETE FROM instancedesc WHERE id_instance=:in', [':in'=>$vi['in_id']]);
+                    }
+                    $this->execute('DELETE FROM instances WHERE in_keyframe=:kf', [':kf'=>$vk['kf_id']]);
+                }
+                $this->execute('DELETE FROM keyframes WHERE kf_scene=:sc', [':sc'=>$v['sc_uid']]);
+            }
+            $this->execute('DELETE FROM scenes WHERE sc_movie=:mv', [':mv'=>$id]);
+            $this->execute('DELETE FROM movies WHERE mv_id=:id', [':id'=>$id]);
+            $this->removeFileDir('../movie/'.$id.'.movie');
+            @rmdir('../movie/'.$id.'.movie');
+        }
+        // loading movies
+		$ret = [ ];
+        $ck = $this->queryAll('SELECT mv_id, mv_title, mv_user FROM movies WHERE mv_user=:us ORDER BY mv_updated DESC', [
+            ':us' => $user, 
+        ]);
+        foreach ($ck as $v) $ret[] = [
+            'id' => $v['mv_id'], 
+            'title' => $v['mv_title'], 
+        ];
 		return ($ret);
 	}
 	
@@ -336,6 +391,11 @@ class Movie extends BaseClass
 						$vals[':an'] = $v;
 						$updt['animation'] = $v;
 						break;
+                    case 'highlight':
+						$cols[] = 'mv_highlight=:high';
+						$vals[':high'] = $v;
+						$updt['highlight'] = $v;
+						break;
 					case 'bigsize':
 						$cols[] = 'mv_screenbig=:bg';
 						$vals[':bg'] = $v;
@@ -394,6 +454,11 @@ class Movie extends BaseClass
 						$cols[] = 'mv_theme=:th';
 						$vals[':th'] = base64_encode(gzencode($v));
 						$updt['theme'] = $v;
+						break;
+                    case 'inputs':
+						$cols[] = 'mv_inputs=:inp';
+						$vals[':inp'] = base64_encode(gzencode($v));
+						$updt['inputs'] = $v;
 						break;
 					case 'plugins':
 						$cols[] = 'mv_plugins=:pl';

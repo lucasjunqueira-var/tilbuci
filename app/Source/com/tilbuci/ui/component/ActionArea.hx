@@ -21,9 +21,7 @@ class ActionArea extends ScrollContainer {
     **/
     private var _buttons:HInterfaceContainer;
 
-    //private var _btCopy:IDButton;
-
-    //private var _btScene:IDButton;
+    private var _idbuttons:Map<String, IDButton> = [ ];
 
     public function new(wd:Float = 760, ht:Float = 250) {
         super();
@@ -41,15 +39,31 @@ class ActionArea extends ScrollContainer {
         this.addChild(this._code);
         this._buttons = new HInterfaceContainer();
         this._buttons.width = wd;
-        this._buttons.addChild(new IDButton('copy', onCopy, null, Assets.getBitmapData('btCopy')));
-        this._buttons.addChild(new IDButton('scene', onScene, null, Assets.getBitmapData('btMovieScene')));
-        this._buttons.addChild(new IDButton('instance', onInstance, null, Assets.getBitmapData('btMedia')));
-        this._buttons.addChild(new IDButton('variables', onVariables, null, Assets.getBitmapData('btVariables')));
-        this._buttons.addChild(new IDButton('data', onData, null, Assets.getBitmapData('btData')));
-        this._buttons.addChild(new IDButton('plus', onPlus, null, Assets.getBitmapData('btPlus')));
-        this._buttons.addChild(new IDButton('plugin', onPlugin, null, Assets.getBitmapData('btPlugin')));
+
+        this._idbuttons['copy'] = new IDButton('copy', onCopy, null, Assets.getBitmapData('btCopy'));
+        this._idbuttons['scene'] = new IDButton('scene', onScene, null, Assets.getBitmapData('btMovieScene'));
+        this._idbuttons['instance'] = new IDButton('instance', onInstance, null, Assets.getBitmapData('btMedia'));
+        this._idbuttons['variables'] = new IDButton('variables', onVariables, null, Assets.getBitmapData('btVariables'));
+        this._idbuttons['data'] = new IDButton('data', onData, null, Assets.getBitmapData('btData'));
+        this._idbuttons['plus'] = new IDButton('plus', onPlus, null, Assets.getBitmapData('btPlus'));
+        this._idbuttons['plugin'] = new IDButton('plugin', onPlugin, null, Assets.getBitmapData('btPlugin'));
+
+        this._buttons.addChild(this._idbuttons['copy']);
+        this._buttons.addChild(this._idbuttons['scene']);
+        this._buttons.addChild(this._idbuttons['instance']);
+        this._buttons.addChild(this._idbuttons['variables']);
+        this._buttons.addChild(this._idbuttons['data']);
+        this._buttons.addChild(this._idbuttons['plus']);
+        this._buttons.addChild(this._idbuttons['plugin']);
         this.addChild(this._buttons);
 
+        this._idbuttons['copy'].toolTip = Global.ln.get('tooltip-action-copy');
+        this._idbuttons['scene'].toolTip = Global.ln.get('tooltip-action-scene');
+        this._idbuttons['instance'].toolTip = Global.ln.get('tooltip-action-instance');
+        this._idbuttons['variables'].toolTip = Global.ln.get('tooltip-action-variables');
+        this._idbuttons['data'].toolTip = Global.ln.get('tooltip-action-data');
+        this._idbuttons['plus'].toolTip = Global.ln.get('tooltip-action-plus');
+        this._idbuttons['plugin'].toolTip = Global.ln.get('tooltip-action-plugin');
     }
 
     /**
