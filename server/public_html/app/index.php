@@ -20,6 +20,7 @@ $movie = '';
 $scene = '';
 $nocache = '';
 $cssmovie = '';
+$render = '';
 if (isset($_SESSION['md']) && (trim($_SESSION['md']) == 'editor')) {
 	$mode = 'editor';
 	unset($_SESSION['md']);
@@ -52,8 +53,14 @@ if (isset($_SESSION['cch'])) {
 } else if (isset($_GET['cch'])) {
 	$nocache = '?rand=' . time().rand(1000, 9999);
 }
-
-$nocache = '?rand=' . time().rand(1000, 9999);
+if (isset($_SESSION['rd'])) {
+    if ($_SESSION['rd'] == 'dom') $render = '-dom';
+	unset($_SESSION['rd']);
+} else if (isset($_POST['rd'])) {
+	if ($_POST['rd'] == 'dom') $render = '-dom';
+} else if (isset($_GET['cch'])) {
+	if ($_GET['rd'] == 'dom') $render = '-dom';
+}
 
 // sharing and render information
 $favicon = './favicon.png';
@@ -63,7 +70,6 @@ $tags = 'tilbuci,interactive,animation,digital,content';
 $image = 'shareimage.jpg';
 $link = '';
 $baselink = '';
-$render = '';
 if (is_file('player.json')) {
 	$json = json_decode(file_get_contents('player.json'), true);
 	if (json_last_error() == JSON_ERROR_NONE) {
@@ -117,11 +123,13 @@ if ($mode != 'editor') {
 } else {
 	$link .= '?md=editor';
 }
-if ($mode != 'player') $render = '';
-if (isset($_GET['rd'])) {
-	if (trim($_GET['rd']) == 'dom') {
-		$render = '-dom';
-	}
+if ($render == '') {
+    if ($mode != 'player') $render = '';
+    if (isset($_GET['rd'])) {
+        if (trim($_GET['rd']) == 'dom') {
+            $render = '-dom';
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -142,8 +150,12 @@ if (isset($_GET['rd'])) {
 		foreach($plugins as $pl) {
 			echo("\r\n" . $pl->indexHead() . "\r\n\r\n");
 		}
-	?>	
-	<script type="text/javascript" src="./TilBuci<?= $render ?>.js<?= $nocache ?>"></script>
+	?>
+    <?php if ($nocache == '') { ?>
+        <script type="text/javascript" src="./TilBuci<?= $render ?>-min.js<?= $nocache ?>"></script>
+    <?php } else { ?>
+        <script type="text/javascript" src="./TilBuci<?= $render ?>.js<?= $nocache ?>"></script>
+    <?php } ?>
 	<script>
 		window.addEventListener ("touchmove", function (event) { event.preventDefault (); }, { capture: false, passive: false });
 		if (typeof window.devicePixelRatio != 'undefined' && window.devicePixelRatio > 2) {

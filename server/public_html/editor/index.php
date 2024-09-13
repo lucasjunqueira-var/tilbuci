@@ -11,6 +11,11 @@ if (isset($_POST['sc'])) {
 } else if (isset($_GET['sc'])) {
 	$_SESSION['sc'] = trim($_GET['sc']);
 }
+if (isset($_POST['rd'])) {
+	if ($_POST['rd'] == 'dom') $_SESSION['rd'] = 'dom';
+} else if (isset($_GET['rd'])) {
+	if ($_GET['rd'] == 'dom') $_SESSION['rd'] = 'dom';
+}
 if (isset($_POST['cch']) || isset($_GET['cch'])) {
 	$_SESSION['cch'] = time();
 }

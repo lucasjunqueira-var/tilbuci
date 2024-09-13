@@ -21,8 +21,8 @@ set CurrMinute=%CurrMinute:~-2%
 set buildtime=%CurrYear%%CurrMonth%%CurrDay%%CurrHour%%CurrMinute%
 powershell -Command "(gc Assets/build-base.json) -replace 'BNUM', %buildtime% | Out-File -encoding UTF8 Assets/build.json"
 powershell -Command "cp project-dom.xml project.xml"
-echo TilBuci editor build %buildtime%...
-openfl build html5 -D haxeJSON -final
+echo TilBuci DOM build %buildtime%...
+openfl build html5 -D haxeJSON
 if %errorlevel% equ 0 (
     copy %export%Tilbuci.js %server%TilBuci-dom.js
     xcopy %export%assets\*.* %server%assets\ /E/Y/Q
