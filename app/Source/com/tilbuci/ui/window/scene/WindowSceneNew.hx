@@ -78,6 +78,7 @@ class WindowSceneNew extends PopupWindow {
             this.ui.inputs['scenename'].text = '';
             PopUpManager.removePopUp(this);
             this._ac('sceneload', [ 'id' => ld.map['id'] ]);
+            Global.acInfo.loadInfo(true);
         }
     }
 

@@ -916,15 +916,17 @@ class InstanceImage extends Sprite {
         Instance click action.
     **/
     private function onClick(evt:MouseEvent):Void {
-        if (GlobalPlayer.mode != Player.MODE_EDITOR) {
-            if (this._data.action != '') {
-                GlobalPlayer.parser.run(this._data.action);
-            }
-        } else {
-            this._onSelect(this._name);
-            // callback
-            if (GlobalPlayer.callback != null) {
-                GlobalPlayer.callback('selectimage', ['nm' => this._name]);
+        if (GlobalPlayer.canTrigger) {
+            if (GlobalPlayer.mode != Player.MODE_EDITOR) {
+                if (this._data.action != '') {
+                    GlobalPlayer.parser.run(this._data.action);
+                }
+            } else {
+                this._onSelect(this._name);
+                // callback
+                if (GlobalPlayer.callback != null) {
+                    GlobalPlayer.callback('selectimage', ['nm' => this._name]);
+                }
             }
         }
     }

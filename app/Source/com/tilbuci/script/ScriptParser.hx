@@ -462,7 +462,7 @@ class ScriptParser {
     /**
         Runs an input action.
     **/
-    private function runInput(name:String):Bool {
+    public function runInput(name:String):Bool {
         var found:Bool = false;
         if (GlobalPlayer.mdata.inputs.exists(name)) {
             switch (GlobalPlayer.mdata.inputs[name]) {
@@ -2470,7 +2470,7 @@ class ScriptParser {
     /**
         Parses a string to check if it is an int variable reference.
         @param  str the string to check
-        @return the variable value if found, if not, tries to parse the string as an intr value
+        @return the variable value if found, if not, tries to parse the string as an int value
     **/
     public function parseInt(str:String):Int {
         if (str.charAt(0) == '#') {

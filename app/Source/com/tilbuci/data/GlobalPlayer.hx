@@ -170,6 +170,8 @@ class GlobalPlayer {
     **/
     public static var contentHeight:Float = 0;
 
+    public static var canTrigger:Bool = true;
+
     /**
         Copies a text to the clipboard.
         @param  text    the text to copy

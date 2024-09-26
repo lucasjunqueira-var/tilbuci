@@ -250,6 +250,10 @@ class MovieData extends DefBase {
             'keypdown' => 'nin', 
             'keyspace' => '', 
             'keyenter' => '', 
+            'swiperight' => 'right', 
+            'swipeleft' => 'left', 
+            'swipetop' => 'up', 
+            'swipebottom' => 'down', 
         ];
     }
 

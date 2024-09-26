@@ -1,6 +1,7 @@
 package com.tilbuci;
 
 /** HAXE **/
+import com.tilbuci.script.ActionInfo;
 import feathers.core.ToolTipManager;
 import com.tilbuci.script.AssistVariables;
 import com.tilbuci.script.AssistScene;
@@ -60,6 +61,7 @@ import com.tilbuci.ui.menu.DrawerMenu;
 import com.tilbuci.ui.menu.MenuMovie;
 import com.tilbuci.ui.menu.MenuScene;
 import com.tilbuci.ui.menu.MenuMedia;
+import com.tilbuci.ui.menu.MenuNarrative;
 import com.tilbuci.ui.menu.MenuExchange;
 import com.tilbuci.ui.window.PopupWindow;
 import com.tilbuci.ui.window.WindowSetup;
@@ -295,6 +297,9 @@ class Editor extends Drawer {
                 var fnt:Array<Dynamic> = cast ld.map['fonts'];
                 for (n in 0...fnt.length) new EmbedFont((Global.econfig.font + fnt[n].v), fnt[n].n);
 
+                // prepare action information
+                Global.acInfo = new ActionInfo();
+
                 // initialize the interface
                 this.startInterface();
 
@@ -375,6 +380,7 @@ class Editor extends Drawer {
         this._menus['left-movie'] = new MenuMovie(actionMenuMovie);
         this._menus['left-scene'] = new MenuScene(actionMenuScene);
         this._menus['left-media'] = new MenuMedia(actionMenuMedia);
+        this._menus['left-narrative'] = new MenuNarrative(actionMenuNarrative);
         this._menus['left-exchange'] = new MenuExchange(actionMenuExchange);
         this._menus['left-keyframe'] = new MenuKeyframe(actionMenuKeyframe);
 
@@ -434,6 +440,10 @@ class Editor extends Drawer {
                 this.drawer = this._menus['left-media'];
                 this.opened = true;
                 this._menus['left-media'].onShow();
+            case 'narrative':
+                this.drawer = this._menus['left-narrative'];
+                this.opened = true;
+                this._menus['left-narrative'].onShow();
             case 'exchange':
                 this.drawer = this._menus['left-exchange'];
                 this.opened = true;
@@ -574,6 +584,20 @@ class Editor extends Drawer {
             case 'text':
                 this.opened = false;
                 this.showWindow('mediatext');
+            case 'menu-close':
+                this.opened = false;
+        }
+    }
+
+    /**
+        Narrative menu actions.
+        @param  ac  the action id
+    **/
+    private function actionMenuNarrative(ac:String):Void {
+        switch (ac) {
+            case 'collection':
+                this.opened = false;
+                this.showWindow('mediacollection');
             case 'menu-close':
                 this.opened = false;
         }
@@ -1303,6 +1327,7 @@ class Editor extends Drawer {
                 GlobalPlayer.movie.loadScene(Global.sceneToLoad);
                 Global.sceneToLoad = '';
             }
+            Global.acInfo.loadInfo(true);
         }
     }
 

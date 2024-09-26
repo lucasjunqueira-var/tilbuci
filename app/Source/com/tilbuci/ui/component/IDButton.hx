@@ -1,6 +1,7 @@
 package com.tilbuci.ui.component;
 
 /** FEATHERS UI **/
+import openfl.events.MouseEvent;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import feathers.events.TriggerEvent;
@@ -29,7 +30,8 @@ class IDButton extends Button {
             this.icon = bmp;
         }
         if (ac != null) {
-            this.addEventListener(TriggerEvent.TRIGGER, ac);
+            //this.addEventListener(TriggerEvent.TRIGGER, ac);
+            this.addEventListener(MouseEvent.CLICK, ac);
             this._ac = ac;
         }
     }
@@ -37,7 +39,8 @@ class IDButton extends Button {
     public function kill():Void {
         if (this.parent != null) this.parent.removeChild(this);
         if (this._ac != null) {
-            this.removeEventListener(TriggerEvent.TRIGGER, this._ac);
+            //this.removeEventListener(TriggerEvent.TRIGGER, this._ac);
+            this.removeEventListener(MouseEvent.CLICK, this._ac);
         }
         this._ac = null;
         this.btid = null;

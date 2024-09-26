@@ -1,6 +1,9 @@
 package com.tilbuci;
 
 /** HAXE **/
+import openfl.geom.Point;
+import openfl.events.MouseEvent;
+import openfl.events.TouchEvent;
 import feathers.controls.ToggleSwitch;
 import feathers.controls.NumericStepper;
 import feathers.controls.TextInput;
@@ -199,6 +202,21 @@ class Player extends Sprite {
         toggle inputs
     **/
     private var _toggles:Map<String, ToggleSwitch> = [ ];
+
+    /**
+        touch start position
+    **/
+    private var _touchStart:Point = new Point();
+
+    /**
+        touch start time
+    **/
+    private var _touchStartTime:Float = 0;
+
+    /**
+        tomer to end touch event
+    **/
+    private var _touchTimer:Timer;
 
     /**
         Constructor.
@@ -611,8 +629,65 @@ class Player extends Sprite {
     private function onStage(evt:Event):Void {
         if (this.hasEventListener(Event.ADDED_TO_STAGE)) this.removeEventListener(Event.ADDED_TO_STAGE, onStage);
         if (GlobalPlayer.mode == Player.MODE_PLAYER) {
+            this.stage.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
+            this.stage.addEventListener(TouchEvent.TOUCH_END, onTouchEnd);
             this.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyboard);
         }
+    }
+
+    private function onTouchBegin(evt:TouchEvent):Void {
+        this._touchStart.x = evt.stageX;
+        this._touchStart.y = evt.stageY;
+        this._touchStartTime = Date.now().getTime();
+    }
+
+    private function onTouchEnd(evt:TouchEvent):Void {
+        if ((Date.now().getTime() - this._touchStartTime) < 300) {
+            var difx:Float = this._touchStart.x - evt.stageX;
+            var dify:Float = this._touchStart.y - evt.stageY;
+            if (Math.abs(difx) > Math.abs(dify)) {
+                if (Math.abs(difx) > (this.stage.stageWidth / 15)) {
+                    GlobalPlayer.canTrigger = false;
+                    if (difx > 0) {
+                        GlobalPlayer.parser.runInput('swiperight');
+                    } else {
+                        GlobalPlayer.parser.runInput('swipeleft');
+                    }
+                    if (this._touchTimer != null) {
+                        try { this._touchTimer.stop(); } catch (e) { }
+                        this._touchTimer = null;
+                    }
+                    this._touchTimer = new Timer(300);
+                    this._touchTimer.run = this.endTouch;
+                }
+            } else {
+                if (Math.abs(dify) > (this.stage.stageHeight / 15)) {
+                    GlobalPlayer.canTrigger = false;
+                    if (dify > 0) {
+                        GlobalPlayer.parser.runInput('swipebottom');
+                    } else {
+                        GlobalPlayer.parser.runInput('swipetop');
+                    }
+                    if (this._touchTimer != null) {
+                        try { this._touchTimer.stop(); } catch (e) { }
+                        this._touchTimer = null;
+                    }
+                    this._touchTimer = new Timer(300);
+                    this._touchTimer.run = this.endTouch;
+                }
+            }
+        }
+    }
+
+    /**
+        Finishing a touch event.
+    **/
+    private function endTouch():Void {
+        if (this._touchTimer != null) {
+            try { this._touchTimer.stop(); } catch (e) { }
+            this._touchTimer = null;
+        }
+        GlobalPlayer.canTrigger = true;
     }
 
     /**

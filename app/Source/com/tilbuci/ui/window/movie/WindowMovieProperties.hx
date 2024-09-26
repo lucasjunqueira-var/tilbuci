@@ -403,7 +403,7 @@ class WindowMovieProperties extends PopupWindow {
             this.ui.createSpacer(('input-'+k), 5, false, inArea);
         }
         inArea.width = 1160;
-        inArea.height = 350;
+        inArea.height = 370;
         this.addForm(Global.ln.get('window-movieprop-input'), this.ui.forge('input', [
             { tp: 'Label', id: 'inputabout', tx: Global.ln.get('window-movieprop-inputabout'), vr: '' }, 
             { tp: 'Custom', cont: inArea }, 

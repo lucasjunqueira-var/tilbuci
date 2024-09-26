@@ -17,13 +17,31 @@ class ActionArea extends ScrollContainer {
     private var _code:CodeArea;
 
     /**
+        visual blocks area
+    **/
+    private var _block:BlockArea;
+
+    /**
         buttons interface
     **/
     private var _buttons:HInterfaceContainer;
 
+    /**
+        block buttons interface
+    **/
+    private var _blockbuttons:HInterfaceContainer;
+
+    /**
+        assist buttons
+    **/
     private var _idbuttons:Map<String, IDButton> = [ ];
 
-    public function new(wd:Float = 760, ht:Float = 250) {
+    /**
+        using code mode?
+    **/
+    private var _codemode:Bool = false;
+
+    public function new(wd:Float = 760, ht:Float = 250, blonly:Bool = false) {
         super();
 
         var lay:VerticalLayout = new VerticalLayout();
@@ -36,10 +54,16 @@ class ActionArea extends ScrollContainer {
         this._code = new CodeArea('js');
         this._code.width = wd;
         this._code.height = ht - 35;
-        this.addChild(this._code);
+        
+        this._block = new BlockArea(this._code);
+        this._block.width = wd;
+        this._block.height = ht - 35;
+        this.addChild(this._block);
+
         this._buttons = new HInterfaceContainer();
         this._buttons.width = wd;
 
+        this._idbuttons['switch'] = new IDButton('switch', onSwitch, 'sw', null);
         this._idbuttons['copy'] = new IDButton('copy', onCopy, null, Assets.getBitmapData('btCopy'));
         this._idbuttons['scene'] = new IDButton('scene', onScene, null, Assets.getBitmapData('btMovieScene'));
         this._idbuttons['instance'] = new IDButton('instance', onInstance, null, Assets.getBitmapData('btMedia'));
@@ -48,6 +72,7 @@ class ActionArea extends ScrollContainer {
         this._idbuttons['plus'] = new IDButton('plus', onPlus, null, Assets.getBitmapData('btPlus'));
         this._idbuttons['plugin'] = new IDButton('plugin', onPlugin, null, Assets.getBitmapData('btPlugin'));
 
+        this._buttons.addChild(this._idbuttons['switch']);
         this._buttons.addChild(this._idbuttons['copy']);
         this._buttons.addChild(this._idbuttons['scene']);
         this._buttons.addChild(this._idbuttons['instance']);
@@ -55,8 +80,9 @@ class ActionArea extends ScrollContainer {
         this._buttons.addChild(this._idbuttons['data']);
         this._buttons.addChild(this._idbuttons['plus']);
         this._buttons.addChild(this._idbuttons['plugin']);
-        this.addChild(this._buttons);
+        //this.addChild(this._buttons);
 
+        this._idbuttons['switch'].toolTip = Global.ln.get('tooltip-action-switch');
         this._idbuttons['copy'].toolTip = Global.ln.get('tooltip-action-copy');
         this._idbuttons['scene'].toolTip = Global.ln.get('tooltip-action-scene');
         this._idbuttons['instance'].toolTip = Global.ln.get('tooltip-action-instance');
@@ -64,6 +90,26 @@ class ActionArea extends ScrollContainer {
         this._idbuttons['data'].toolTip = Global.ln.get('tooltip-action-data');
         this._idbuttons['plus'].toolTip = Global.ln.get('tooltip-action-plus');
         this._idbuttons['plugin'].toolTip = Global.ln.get('tooltip-action-plugin');
+
+        this._blockbuttons = new HInterfaceContainer();
+        this._blockbuttons.width = wd;
+
+        this._idbuttons['blswitch'] = new IDButton('blswitch', onSwitch, 'sw', null);
+        this._idbuttons['bldel'] = new IDButton('bldel', onDel, 'del', null);
+        this._idbuttons['bledit'] = new IDButton('bledit', onEdit, 'edit', null);
+        this._idbuttons['blopen'] = new IDButton('blopen', onOpen, 'open', null);
+        this._idbuttons['blclose'] = new IDButton('blclose', onClose, 'close', null);
+        this._idbuttons['blup'] = new IDButton('blup', onUp, 'up', null);
+        this._idbuttons['bldown'] = new IDButton('bldown', onDown, 'down', null);
+
+        if (!blonly) this._blockbuttons.addChild(this._idbuttons['blswitch']);
+        this._blockbuttons.addChild(this._idbuttons['bldel']);
+        this._blockbuttons.addChild(this._idbuttons['bledit']);
+        this._blockbuttons.addChild(this._idbuttons['blopen']);
+        this._blockbuttons.addChild(this._idbuttons['blclose']);
+        this._blockbuttons.addChild(this._idbuttons['blup']);
+        this._blockbuttons.addChild(this._idbuttons['bldown']);
+        this.addChild(this._blockbuttons);
     }
 
     /**
@@ -72,6 +118,7 @@ class ActionArea extends ScrollContainer {
     **/
     public function setText(txt:String):Void {
         this._code.text = txt;
+        this._block.refresh();
     }
 
     /**
@@ -79,14 +126,57 @@ class ActionArea extends ScrollContainer {
         @return the current text
     **/
     public function getText():String {
-        return (this._code.text);
+        if (this._codemode) {
+            return (this._code.text);
+        } else {
+            return (this._block.toJson());
+        }
+    }
+
+    /**
+        Switches the input mode.
+    **/
+    private function onSwitch(evt:TriggerEvent = null):Void {
+        this._codemode = !this._codemode;
+        this.removeChildren();
+        if (!this._codemode) {
+            if (!this._block.refresh()) {
+                this._codemode = true;
+                this._block.clear();
+                this.addChild(this._code);
+                this.addChild(this._buttons);
+                Global.showPopup(Global.ln.get('window-actions-title'), Global.ln.get('window-actions-error'), 300, 180, Global.ln.get('default-ok'));
+            } else {
+                this.addChild(this._block);
+                this.addChild(this._blockbuttons);
+            }
+        } else {
+            var txt:String = this._block.toJson();
+            txt = StringTools.replace(txt, '"then":[{"ac"', ' "then":[ { "ac"');
+            txt = StringTools.replace(txt, '"else":[{"ac"', ' "else":[ { "ac"');
+            txt = StringTools.replace(txt, ',"', ', "');
+            txt = StringTools.replace(txt, '[{', "[\n{");
+            txt = StringTools.replace(txt, '},', "},\n");
+            txt = StringTools.replace(txt, '}]', "} ]");
+            txt = StringTools.replace(txt, ']}', "] }");
+            txt = StringTools.replace(txt, '{"ac"', '\t{ "ac"');
+            txt = StringTools.replace(txt, '] } ]', "] }\n]");
+            this._code.text = txt;
+            this._block.clear();
+            this.addChild(this._code);
+            this.addChild(this._buttons);
+        }
     }
 
     /**
         Copies the action script.
     **/
     private function onCopy(evt:TriggerEvent = null):Void {
-        Global.copyText(this._code.text);
+        if (!this._codemode) {
+            Global.copyText(this._block.toJson());
+        } else {
+            Global.copyText(this._code.text);
+        }
     }
 
     /**
@@ -129,6 +219,48 @@ class ActionArea extends ScrollContainer {
     **/
     private function onPlugin(evt:TriggerEvent = null):Void {
         Global.showWindow('assistantplugin');
+    }
+
+    /**
+        Opens a block display.
+    **/
+    private function onOpen(evt:TriggerEvent = null):Void {
+        this._block.openAll();
+    }
+
+    /**
+        Closes a block display.
+    **/
+    private function onClose(evt:TriggerEvent = null):Void {
+        this._block.closeAll();
+    }
+
+    /**
+        Moves a block up.
+    **/
+    private function onUp(evt:TriggerEvent = null):Void {
+        this._block.upAction();
+    }
+
+    /**
+        Moves a block down.
+    **/
+    private function onDown(evt:TriggerEvent = null):Void {
+        this._block.downAction();
+    }
+
+    /**
+       Adjusts a block. 
+    **/
+    private function onEdit(evt:TriggerEvent = null):Void {
+        this._block.editAction();
+    }
+
+    /**
+        Removes a block.
+    **/
+    private function onDel(evt:TriggerEvent = null):Void {
+        this._block.removeAction();
     }
 
 }

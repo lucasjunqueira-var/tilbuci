@@ -87,8 +87,9 @@ class Webservice extends EventDispatcher {
         @param  req the request data
         @param  callback    a function to call after getting a response that must accept two parameters - bool: was the request successful, Map<String,String>: received data (null on error)
         @param  timeout time in miliseconds to wait for the response (0 for os default)
+        @param  showInteract    show the server interaction animation?
     **/
-    public function send(ac:String, req:Map<String, Dynamic>, callback:Dynamic, timeout:Int = 0):Void {
+    public function send(ac:String, req:Map<String, Dynamic>, callback:Dynamic, timeout:Int = 0, showInteract:Bool = true):Void {
         var txt:String = StringStatic.jsonStringify(req);
         new DataLoader(true, this._url, 'POST', [
             'r' => txt, 
@@ -96,7 +97,7 @@ class Webservice extends EventDispatcher {
             'u' => this._user, 
             'a' => ac
         ], DataLoader.MODEMAP, callback, null, null, null, onEnd, null, timeout);
-        this._interact.start();
+        if (showInteract) this._interact.start();
     }
 
     /**

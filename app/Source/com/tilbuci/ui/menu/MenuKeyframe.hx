@@ -31,10 +31,16 @@ class MenuKeyframe extends DrawerMenu {
             this.ui.buttons['btAdd'].enabled = false;
             this.ui.buttons['btRemove'].enabled = false;
             this.ui.buttons['btManage'].enabled = false;
+            this.ui.buttons['btAdd'].toolTip = Global.ln.get('tooltip-movie-noscene');
+            this.ui.buttons['btRemove'].toolTip = Global.ln.get('tooltip-movie-noscene');
+            this.ui.buttons['btManage'].toolTip = Global.ln.get('tooltip-movie-noscene');
         } else {
             this.ui.buttons['btAdd'].enabled = true;
             this.ui.buttons['btRemove'].enabled = true;
             this.ui.buttons['btManage'].enabled = true;
+            this.ui.buttons['btAdd'].toolTip = null;
+            this.ui.buttons['btRemove'].toolTip = null;
+            this.ui.buttons['btManage'].toolTip = null;
         }
     }
 

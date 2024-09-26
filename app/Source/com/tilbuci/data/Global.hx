@@ -1,6 +1,10 @@
 package com.tilbuci.data;
 
 /** OPENFL **/
+import com.tilbuci.ui.component.BlockArea.BlockAction;
+import com.tilbuci.ui.component.WindowBlockEdit;
+import com.tilbuci.ui.component.WindowActionBlock;
+import com.tilbuci.script.ActionInfo;
 import openfl.display.Stage;
 
 /** FEATHERS UI **/
@@ -128,6 +132,11 @@ class Global {
     public static var history:History;
 
     /**
+        available actions information
+    **/
+    public static var acInfo:ActionInfo;
+
+    /**
         actions to run on editor interface
     **/
     public static var editorActions:Dynamic = null;
@@ -136,6 +145,16 @@ class Global {
         multi use action edit window
     **/    
     public static var acwindow:WindowAction;
+
+    /**
+        multi use new block action window
+    **/    
+    public static var acblock:WindowActionBlock;
+
+    /**
+        multi use edit block action window
+    **/    
+    public static var edblock:WindowBlockEdit;
 
     /**
         Shows the action editing window.
@@ -150,6 +169,34 @@ class Global {
         }
         Global.acwindow.setContent(current, onOk, onCancel);
         PopUpManager.addPopUp(Global.acwindow, Global.stage);
+    }
+
+    /**
+        Shows the new action block window.
+        @param  onOk    action to call on ok button click
+    **/
+    public static function showNewBlockWindow(onOk:Dynamic):Void {
+        if (Global.acblock == null) {
+            Global.acblock = new WindowActionBlock();
+            Global.acblock.startInterface();
+        }
+        Global.acInfo.loadInfo();
+        Global.acblock.setContent(onOk);
+        PopUpManager.addPopUp(Global.acblock, Global.stage);
+    }
+
+    /**
+        Shows the edit action block window.
+        @param  onOk    action to call on ok button click
+        @param  index   the action index (-1 for new)
+    **/
+    public static function showEditBlockWindow(ac:String, onOk:Dynamic, index:Int = -1, current:BlockAction = null):Void {
+        if (Global.edblock == null) {
+            Global.edblock = new WindowBlockEdit();
+            Global.edblock.startInterface();
+        }
+        Global.edblock.setContent(ac, onOk, index, current);
+        PopUpManager.addPopUp(Global.edblock, Global.stage);
     }
 
     /**
