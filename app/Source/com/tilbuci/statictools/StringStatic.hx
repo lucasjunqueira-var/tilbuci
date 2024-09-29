@@ -44,11 +44,12 @@ class StringStatic
 
     /**
         Converts an objet do JSON notation.
-        @param data the object to convert
+        @param  data    the object to convert
+        @param  space   pretty-print the json ident char (null for none)
         @return a json-formatted string
     **/
-    public static function jsonStringify(data:Dynamic):String {
-        return (Json.stringify(data));
+    public static function jsonStringify(data:Dynamic, space:String = null):String {
+        return (Json.stringify(data, null, space));
     }
 
     /**

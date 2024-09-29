@@ -194,6 +194,23 @@ class GlobalPlayer {
     }
 
     /**
+        Is runing from a mobice device?
+    **/
+    public static function isMobile():Bool {
+        #if (js && html5)
+            var ok:Bool = true;
+            try {
+                ok = ExternBrowser.TBB_isMobile();
+            } catch (e) { 
+                ok = true;
+            }
+            return (ok);
+        #else 
+            return (true);
+        #end
+    }
+
+    /**
         Quits a desktop application.
         @return was the quit command sent?
     **/

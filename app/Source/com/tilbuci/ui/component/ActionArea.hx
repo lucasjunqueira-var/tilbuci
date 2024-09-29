@@ -63,7 +63,7 @@ class ActionArea extends ScrollContainer {
         this._buttons = new HInterfaceContainer();
         this._buttons.width = wd;
 
-        this._idbuttons['switch'] = new IDButton('switch', onSwitch, 'sw', null);
+        this._idbuttons['switch'] = new IDButton('switch', onSwitch, null, Assets.getBitmapData('btBlocks'));
         this._idbuttons['copy'] = new IDButton('copy', onCopy, null, Assets.getBitmapData('btCopy'));
         this._idbuttons['scene'] = new IDButton('scene', onScene, null, Assets.getBitmapData('btMovieScene'));
         this._idbuttons['instance'] = new IDButton('instance', onInstance, null, Assets.getBitmapData('btMedia'));
@@ -94,13 +94,21 @@ class ActionArea extends ScrollContainer {
         this._blockbuttons = new HInterfaceContainer();
         this._blockbuttons.width = wd;
 
-        this._idbuttons['blswitch'] = new IDButton('blswitch', onSwitch, 'sw', null);
-        this._idbuttons['bldel'] = new IDButton('bldel', onDel, 'del', null);
-        this._idbuttons['bledit'] = new IDButton('bledit', onEdit, 'edit', null);
-        this._idbuttons['blopen'] = new IDButton('blopen', onOpen, 'open', null);
-        this._idbuttons['blclose'] = new IDButton('blclose', onClose, 'close', null);
-        this._idbuttons['blup'] = new IDButton('blup', onUp, 'up', null);
-        this._idbuttons['bldown'] = new IDButton('bldown', onDown, 'down', null);
+        this._idbuttons['blswitch'] = new IDButton('blswitch', onSwitch, null, Assets.getBitmapData('btCode'));
+        this._idbuttons['bldel'] = new IDButton('bldel', onDel, null, Assets.getBitmapData('btDel'));
+        this._idbuttons['bledit'] = new IDButton('bledit', onEdit, null, Assets.getBitmapData('btEdit'));
+        this._idbuttons['blopen'] = new IDButton('blopen', onOpen, null, Assets.getBitmapData('btExpand'));
+        this._idbuttons['blclose'] = new IDButton('blclose', onClose, null, Assets.getBitmapData('btCompress'));
+        this._idbuttons['blup'] = new IDButton('blup', onUp, null, Assets.getBitmapData('btUp'));
+        this._idbuttons['bldown'] = new IDButton('bldown', onDown, null, Assets.getBitmapData('btDown'));
+
+        this._idbuttons['blswitch'].toolTip = Global.ln.get('tooltip-action-switch');
+        this._idbuttons['bldel'].toolTip = Global.ln.get('tooltip-action-bldel');
+        this._idbuttons['bledit'].toolTip = Global.ln.get('tooltip-action-bledit');
+        this._idbuttons['blopen'].toolTip = Global.ln.get('tooltip-action-blopen');
+        this._idbuttons['blclose'].toolTip = Global.ln.get('tooltip-action-blclose');
+        this._idbuttons['blup'].toolTip = Global.ln.get('tooltip-action-blup');
+        this._idbuttons['bldown'].toolTip = Global.ln.get('tooltip-action-bldown');
 
         if (!blonly) this._blockbuttons.addChild(this._idbuttons['blswitch']);
         this._blockbuttons.addChild(this._idbuttons['bldel']);
@@ -151,17 +159,7 @@ class ActionArea extends ScrollContainer {
                 this.addChild(this._blockbuttons);
             }
         } else {
-            var txt:String = this._block.toJson();
-            txt = StringTools.replace(txt, '"then":[{"ac"', ' "then":[ { "ac"');
-            txt = StringTools.replace(txt, '"else":[{"ac"', ' "else":[ { "ac"');
-            txt = StringTools.replace(txt, ',"', ', "');
-            txt = StringTools.replace(txt, '[{', "[\n{");
-            txt = StringTools.replace(txt, '},', "},\n");
-            txt = StringTools.replace(txt, '}]', "} ]");
-            txt = StringTools.replace(txt, ']}', "] }");
-            txt = StringTools.replace(txt, '{"ac"', '\t{ "ac"');
-            txt = StringTools.replace(txt, '] } ]', "] }\n]");
-            this._code.text = txt;
+            this._code.text = this._block.toJson();
             this._block.clear();
             this.addChild(this._code);
             this.addChild(this._buttons);

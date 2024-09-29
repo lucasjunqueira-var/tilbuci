@@ -28,6 +28,11 @@ extern class ExternBrowser {
     **/
     static function TBB_fullscreen():Void;
 
+    /**
+        Checks if running from a mobile device.
+    **/
+    static function TBB_isMobile():Bool;
+
 }
 
 #end

@@ -238,7 +238,7 @@ class Player extends Sprite {
         GlobalPlayer.build = new BuildInfo((mode == Player.MODE_PLAYER) && (path != null));
         GlobalPlayer.nocache = nocache;
         GlobalPlayer.callback = callback;
-
+        
         // load configuration
         if (path == null) {
             GlobalPlayer.nocache = nocache = false;

@@ -1,6 +1,7 @@
 package com.tilbuci.data;
 
 /** OPENFL **/
+import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.ui.component.BlockArea.BlockAction;
 import com.tilbuci.ui.component.WindowBlockEdit;
 import com.tilbuci.ui.component.WindowActionBlock;

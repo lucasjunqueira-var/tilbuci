@@ -49,7 +49,7 @@ class BlockArea extends ScrollContainer {
 
     public function refresh():Bool {
         this.clear();
-        if (this._code.text == '') {
+        if ((this._code.text == '') || (this._code.text == '[]')) {
             this._json = StringStatic.jsonParse('[ ]');
             this.addChild(this._addbt);
             return (true);
@@ -78,13 +78,18 @@ class BlockArea extends ScrollContainer {
 
     public function clear():Void {
         this.removeChildren();
+        this._selected = null;
         while (this._blocks.length > 0) this._blocks.shift().kill();
     }
 
     public function toJson():String {
-        var json:Array<Dynamic> = [ ];
-        for (bl in this._blocks) json.push(bl.toObject());
-        return (StringStatic.jsonStringify(json));
+        if (this._blocks.length == 0) {
+            return ('');
+        } else {
+            var json:Array<Dynamic> = [ ];
+            for (bl in this._blocks) json.push(bl.toObject());
+            return (StringStatic.jsonStringify(json, '  '));
+        }
     }
 
     public function openAll():Void {

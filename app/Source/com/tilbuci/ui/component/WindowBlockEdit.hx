@@ -33,6 +33,10 @@ class WindowBlockEdit extends PopupWindow {
 
     private var _blac:BlockAction;
 
+    private var _mvOrigins:Array<Dynamic> = [ ];
+
+    private var _scDirections:Array<Dynamic> = [ ];
+
     /**
         Constructor.
         @param  ac  the menu action mehtod
@@ -40,6 +44,28 @@ class WindowBlockEdit extends PopupWindow {
     public function new(ac:Dynamic = null) {
         // creating window
         super(ac, '', 1100, 660, false);
+
+        // select data
+        this._mvOrigins = [
+            { text: Global.ln.get('window-movieprop-oralpha'), value: 'alpha'}, 
+            { text: Global.ln.get('window-movieprop-orcenter'), value: 'center'}, 
+            { text: Global.ln.get('window-movieprop-ortop'), value: 'top'}, 
+            { text: Global.ln.get('window-movieprop-ortopkeep'), value: 'topkeep'}, 
+            { text: Global.ln.get('window-movieprop-orbottom'), value: 'bottom'}, 
+            { text: Global.ln.get('window-movieprop-orbottomkeep'), value: 'bottomkeep'}, 
+            { text: Global.ln.get('window-movieprop-orleft'), value: 'left'}, 
+            { text: Global.ln.get('window-movieprop-orleftkeep'), value: 'leftkeep'}, 
+            { text: Global.ln.get('window-movieprop-orright'), value: 'right'}, 
+            { text: Global.ln.get('window-movieprop-orrightkeep'), value: 'rightkeep'}, 
+        ];
+        this._scDirections = [
+            { text: Global.ln.get('window-movieprop-input-opup'), value: 'up'}, 
+            { text: Global.ln.get('window-movieprop-input-opdown'), value: 'down'}, 
+            { text: Global.ln.get('window-movieprop-input-opleft'), value: 'left'}, 
+            { text: Global.ln.get('window-movieprop-input-opright'), value: 'right'}, 
+            { text: Global.ln.get('window-movieprop-input-opnin'), value: 'nin'}, 
+            { text: Global.ln.get('window-movieprop-input-opnout'), value: 'nout'}, 
+        ];
 
         // custom elements
         this.ui.createHContainer('assets');
@@ -164,6 +190,19 @@ class WindowBlockEdit extends PopupWindow {
     **/
     override public function acStart():Void {
         this._head.text = this._acinfo.n;
+
+        var collist:Array<Dynamic> = [ ];
+        for (k in GlobalPlayer.movie.collections.keys()) {
+            collist.push({ text: GlobalPlayer.movie.collections[k].name, value: k });
+        }
+        this.ui.setSelectOptions('collections', collist);
+        this.onCollection();
+
+        var instlist:Array<Dynamic> = [ ];
+        for (k in GlobalPlayer.area.getInstances()) instlist.push({ text: k, value: k });
+        this.ui.setListValues('list', instlist);
+        this.ui.setSelectOptions('ginstancen', instlist);
+
         this.ui.containers['paramleft'].removeChildren();
         for (i in 0...8) {
             if (this._acinfo.p.length > i) {
@@ -175,6 +214,15 @@ class WindowBlockEdit extends PopupWindow {
                         this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
                     case 'scenes':
                         this.ui.setSelectOptions(('param-'+i), Global.acInfo.selScenes);
+                        this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                    case 'instances':
+                        this.ui.setSelectOptions(('param-'+i), instlist);
+                        this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                    case 'origins':
+                        this.ui.setSelectOptions(('param-'+i), this._mvOrigins);
+                        this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                    case 'navigation':
+                        this.ui.setSelectOptions(('param-'+i), this._scDirections);
                         this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
                     default:
                         this.ui.inputs['param-'+i].text = '';
@@ -201,18 +249,6 @@ class WindowBlockEdit extends PopupWindow {
                 }
             }
         }
-
-        var collist:Array<Dynamic> = [ ];
-        for (k in GlobalPlayer.movie.collections.keys()) {
-            collist.push({ text: GlobalPlayer.movie.collections[k].name, value: k });
-        }
-        this.ui.setSelectOptions('collections', collist);
-        this.onCollection();
-
-        var list:Array<Dynamic> = [ ];
-        for (k in GlobalPlayer.area.getInstances()) list.push({ text: k, value: k });
-        this.ui.setListValues('list', list);
-        this.ui.setSelectOptions('ginstancen', list);
     }
 
     /**
@@ -242,21 +278,21 @@ class WindowBlockEdit extends PopupWindow {
                     } else {
                         vali = this.ui.selects['param-'+i].selectedItem.value;
                     }
-                    if (vali == '') {
+                    if ((vali == '') && (this._acinfo.p[i].t != 'e')) {
                         ok = false;
                         Global.showPopup(Global.ln.get('acblock-errortitle'), (Global.ln.get('acblock-noparam') + this._acinfo.p[i].n), 480, 180, Global.ln.get('default-ok'));
                     } else {
                         switch (this._acinfo.p[i].t) {
                             case 'i':
                                 if (vali.substr(0, 1) != '#') {
-                                    if (Std.parseInt(vali) == null) {
+                                    if ((Std.parseFloat(vali) == null) || (Std.parseFloat(vali) == Math.NaN)) {
                                         ok = false;
                                         Global.showPopup(Global.ln.get('acblock-errortitle'), (Global.ln.get('acblock-paramtype') + this._acinfo.p[i].n + Global.ln.get('acblock-paramint')), 480, 180, Global.ln.get('default-ok'));
                                     }
                                 }
                             case 'f':
                                 if (vali.substr(0, 1) != '#') {
-                                    if (Std.parseFloat(vali) == null) {
+                                    if ((Std.parseFloat(vali) == null) || (Std.parseFloat(vali) == Math.NaN)) {
                                         ok = false;
                                         Global.showPopup(Global.ln.get('acblock-errortitle'), (Global.ln.get('acblock-paramtype') + this._acinfo.p[i].n + Global.ln.get('acblock-paramfloat')), 480, 180, Global.ln.get('default-ok'));
                                     }
@@ -270,6 +306,18 @@ class WindowBlockEdit extends PopupWindow {
                                         ok = false;
                                         Global.showPopup(Global.ln.get('acblock-errortitle'), (Global.ln.get('acblock-paramtype') + this._acinfo.p[i].n + Global.ln.get('acblock-parambool')), 480, 180, Global.ln.get('default-ok'));
                                     }
+                                }
+                            case 's':
+                                if ((vali.substr(0, 1) == '?') || (vali.substr(0, 1) == '#')) {
+                                    ok = false;
+                                    Global.showPopup(Global.ln.get('acblock-errortitle'), (Global.ln.get('acblock-paramtype') + this._acinfo.p[i].n + Global.ln.get('acblock-paramstring')), 480, 180, Global.ln.get('default-ok'));
+                                }
+                            case 'v':
+                                if ((vali.substr(0, 1) == '?') || (vali.substr(0, 1) == '#') || (vali.substr(0, 1) == '$')) {
+                                    // valid variable name
+                                } else {
+                                    ok = false;
+                                    Global.showPopup(Global.ln.get('acblock-errortitle'), (Global.ln.get('acblock-paramtype') + this._acinfo.p[i].n + Global.ln.get('acblock-paramvariable')), 480, 180, Global.ln.get('default-ok'));
                                 }
                         }
                         if (ok) param.push(vali);

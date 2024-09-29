@@ -924,6 +924,13 @@ class ScriptParser {
                             var acCancel:Dynamic = null;
                             if (Reflect.hasField(inf, 'ok')) acOk = Reflect.field(inf, 'ok');
                             if (Reflect.hasField(inf, 'cancel')) acCancel = Reflect.field(inf, 'cancel');
+                            var arcmd:Array<Dynamic> = [ ];
+                            var ok:Bool = false;
+                            try {
+                                arcmd = cast (acCancel, Array<Dynamic>);
+                                ok = true;
+                            } catch (e) { ok = false; }
+                            if (!ok) acCancel = null;
                             GlobalPlayer.area.showMessageInput(this.parseString(param[0]), this.parseString(param[1]), acOk, acCancel);
                         return (true);
                         } else {
