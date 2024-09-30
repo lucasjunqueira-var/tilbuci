@@ -158,6 +158,9 @@ class ActionInfo {
                     { t: 's', n: Global.ln.get('acinfo-ifstringendswith-p1'), v: '' }, 
                     { t: 's', n: Global.ln.get('acinfo-ifstringendswith-p2'), v: '' }, 
                 ], e: [ 'then', 'else' ] }, 
+                { n: Global.ln.get('acinfo-ifstringemail'), a: 'if.stringemail', p: [
+                    { t: 's', n: Global.ln.get('acinfo-ifstringemail-p1'), v: '' }, 
+                ], e: [ 'then', 'else' ] }, 
             ]
         ));
 
@@ -540,6 +543,7 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-dataevent'), a: 'data.event', p: [
                     { t: 's', n: Global.ln.get('acinfo-dataevent-p1'), v: '' }
                 ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-dataeventclear'), a: 'data.eventclear', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-dataliststates'), a: 'data.liststates', p: [ ], e: [ 'success', 'error' ] }, 
                 { n: Global.ln.get('acinfo-dataload'), a: 'data.load', p: [
                     { t: 's', n: Global.ln.get('acinfo-dataload-p1'), v: '' }
@@ -600,6 +604,80 @@ class ActionInfo {
                     { t: 's', n: Global.ln.get('acinfo-inputemail-p1'), v: '' }, 
                     { t: 's', n: Global.ln.get('acinfo-inputemail-p2'), v: '' }, 
                 ], e: [ 'ok', 'cancel' ] }, 
+                { n: Global.ln.get('acinfo-inputadd'), a: 'input.add', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputadd-p1'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputadd-p2'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputadd-p3'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputadd-p4'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-inputadd-p5'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputplace'), a: 'input.place', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputplace-p1'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputplace-p2'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputplace-p3'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputplace-p4'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputsettext'), a: 'input.settext', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputsettext-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-inputsettext-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputsetpassword'), a: 'input.setpassword', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputsetpassword-p1'), v: '' }, 
+                    { t: 'b', n: Global.ln.get('acinfo-inputsetpassword-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputremove'), a: 'input.remove', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputremove-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputremoveall'), a: 'input.removeall', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputaddnumeric'), a: 'input.addnumeric', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputaddnumeric-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-inputaddnumeric-p2'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-inputaddnumeric-p3'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-inputaddnumeric-p4'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-inputaddnumeric-p5'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputplacenumeric'), a: 'input.placenumeric', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputplacenumeric-p1'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputplacenumeric-p2'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputplacenumeric-p3'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputplacenumeric-p4'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputsetnumeric'), a: 'input.setnumeric', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputsetnumeric-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-inputsetnumeric-p2'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-inputsetnumericbounds'), a: 'input.setnumericbounds', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputsetnumericbounds-p1'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputsetnumericbounds-p2'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputsetnumericbounds-p3'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputsetnumericbounds-p4'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputremovenumeric'), a: 'input.removenumeric', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputremovenumeric-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputremoveallnumerics'), a: 'input.removeallnumerics', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputaddaddtoggle'), a: 'input.addtoggle', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputaddaddtoggle-p1'), v: '' }, 
+                    { t: 'b', n: Global.ln.get('acinfo-inputaddaddtoggle-p2'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-inputaddaddtoggle-p3'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-inputaddaddtoggle-p4'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputplacetoggle'), a: 'input.placetoggle', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputplacetoggle-p1'), v: '' }, 
+                    { t: 'b', n: Global.ln.get('acinfo-inputplacetoggle-p2'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-inputplacetoggle-p3'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputsettoggle'), a: 'input.settoggle', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputsettoggle-p1'), v: '' }, 
+                    { t: 'b', n: Global.ln.get('acinfo-inputsettoggle-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputinverttoggle'), a: 'input.inverttoggle', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputinverttoggle-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputremovetoggle'), a: 'input.removetoggle', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputremovetoggle-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputrremovealltoggles'), a: 'input.removealltoggles', p: [ ], e: [ ] }, 
             ]
         ));
 
@@ -614,6 +692,14 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-systemopenembed'), a: 'system.openembed', p: [
                     { t: 's', n: Global.ln.get('acinfo-systemopenembed-p1'), v: '' }, 
                 ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-systemcloseembed'), a: 'system.closeembed', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-systemsembedplace'), a: 'system.embedplace', p: [
+                    { t: 'f', n: Global.ln.get('acinfo-systemsembedplace-p1'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-systemsembedplace-p2'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-systemsembedplace-p3'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-systemsembedplace-p4'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-systemembedreset'), a: 'system.embedreset', p: [ ], e: [ ] },
                 { n: Global.ln.get('acinfo-systemopenurl'), a: 'system.openurl', p: [
                     { t: 's', n: Global.ln.get('acinfo-systemopenurl-p1'), v: '' }, 
                 ], e: [ ] }, 
@@ -679,6 +765,78 @@ class ActionInfo {
                 ], e: [ 'then', 'else' ] }, 
             ]
         ));
+
+        // server call plugin
+        this.groups.push(new ActionInfoGroup(
+            Global.ln.get('window-acbserver-title'), 
+            [
+                { n: Global.ln.get('acinfo-callprocess'), a: 'call.process', p: [
+                    { t: 's', n: Global.ln.get('acinfo-callprocess-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-callprocess-p2'), v: '' }, 
+                ], e: [ 'success', 'error' ] }, 
+                { n: Global.ln.get('acinfo-callsdprocess'), a: 'call.sdprocess', p: [
+                    { t: 's', n: Global.ln.get('acinfo-callsdprocess-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-callsdprocess-p2'), v: '' }, 
+                ], e: [ 'success', 'error' ] },  
+                { n: Global.ln.get('acinfo-callurl'), a: 'call.url', p: [
+                    { t: 's', n: Global.ln.get('acinfo-callurl-p1'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-callurl-p2'), v: '' }, 
+                ], e: [ 'success', 'error' ] },
+            ]
+        ));
+
+        // debug plugin
+        this.groups.push(new ActionInfoGroup(
+            Global.ln.get('window-acbdebug-title'), 
+            [
+                { n: Global.ln.get('acinfo-debugtrace'), a: 'trace', p: [
+                    { t: 's', n: Global.ln.get('acinfo-debugtrace-p1'), v: '' }, 
+                ], e: [ ] },  
+                { n: Global.ln.get('acinfo-debugtracebools'), a: 'trace.bools', p: [ ], e: [ ] },  
+                { n: Global.ln.get('acinfo-debugtraceints'), a: 'trace.ints', p: [ ], e: [ ] },  
+                { n: Global.ln.get('acinfo-debugtracefloats'), a: 'trace.floats', p: [ ], e: [ ] },  
+                { n: Global.ln.get('acinfo-debugtracestrings'), a: 'trace.strings', p: [ ], e: [ ] },  
+                { n: Global.ln.get('acinfo-debuginfoshow'), a: 'debuginfo.show', p: [ ], e: [ ] },
+                { n: Global.ln.get('acinfo-debuginfohide'), a: 'debuginfo.hide', p: [ ], e: [ ] },
+            ]
+        ));
+
+        // google analytics plugin
+        this.groups.push(new ActionInfoGroup(
+            Global.ln.get('window-acbanalytics-title'), 
+            [
+                { n: Global.ln.get('acinfo-analyticsevent'), a: 'analytics.event', p: [
+                    { t: 's', n: Global.ln.get('acinfo-analyticsevent-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-analyticsevent-p2'), v: '' }, 
+                ], e: [ ] },  
+            ]
+        ));
+
+        // share plugin
+        this.groups.push(new ActionInfoGroup(
+            Global.ln.get('window-acbshare-title'), 
+            [
+                { n: Global.ln.get('acinfo-sharefacebook'), a: 'share.facebook', p: [ ], e: [ ] },  
+                { n: Global.ln.get('acinfo-sharelinkedin'), a: 'share.linkedin', p: [ ], e: [ ] },  
+                { n: Global.ln.get('acinfo-sharepinterest'), a: 'share.pinterest', p: [ ], e: [ ] },  
+                { n: Global.ln.get('acinfo-sharereddit'), a: 'share.reddit', p: [ ], e: [ ] },  
+                { n: Global.ln.get('acinfo-sharex'), a: 'share.x', p: [ ], e: [ ] },  
+            ]
+        ));
+
+        // overlay plugin
+        this.groups.push(new ActionInfoGroup(
+            Global.ln.get('window-acboverlay-title'), 
+            [
+                { n: Global.ln.get('acinfo-overlayshow'), a: 'overlay.show', p: [
+                    { t: 's', n: Global.ln.get('acinfo-overlayshow-p1'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-overlayshow-p2'), v: '' }, 
+                    { t: 'b', n: Global.ln.get('acinfo-overlayshow-p3'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-overlayshow-p4'), v: '' }, 
+                ], e: [ 'success', 'error' ] }, 
+            ]
+        ));
+
     }
 
     public function getAcName(ac:String):String {
