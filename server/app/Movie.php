@@ -2738,4 +2738,40 @@ class Movie extends BaseClass
 			return (false);
 		}
 	}
+    
+    /**
+     * Gets a list of available movies for action blocks.
+     * @param   string  $user   current user
+     * @return  array   the available movies list
+     */
+    public function listAcMovies($user) {
+        $list = [ ];
+        $ck = $this->queryAll('SELECT mv_id, mv_title FROM movies WHERE mv_user=:us OR mv_collaborators LIKE :col ORDER BY mv_title ASC', [
+            ':us' => $user, 
+            ':col' => '%' . $user . '%', 
+        ]);
+        foreach ($ck as $v) $list[] = [
+            'id' => $v['mv_id'], 
+            'title' => $v['mv_title'], 
+        ];
+        return ($list);
+    }
+    
+    /**
+     * Gets a list of available movies for action blocks.
+     * @param   string  $user   current user
+     * @return  array   the available movies list
+     */
+    public function listAcScenes($movie) {
+        $list = [ ];
+        $ck = $this->queryAll('SELECT sc_id, sc_title FROM scenes WHERE sc_movie=:mv AND sc_published=:pub ORDER BY sc_title ASC', [
+            ':mv' => $movie, 
+            ':pub' => '1', 
+        ]);
+        foreach ($ck as $v) $list[] = [
+            'id' => $v['sc_id'], 
+            'title' => $v['sc_title'], 
+        ];
+        return ($list);
+    }
 }

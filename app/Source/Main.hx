@@ -88,8 +88,6 @@ class Main extends Application
 			}
 		}
 
-		Main.movie = 'testes';
-
 		#if !haxeJSON 
 			// show halt message
 			var popup:Panel = new Panel();

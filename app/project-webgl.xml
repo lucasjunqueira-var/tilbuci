@@ -102,6 +102,7 @@
 	<assets id="btToMiddle" path="assets/icons/btToMiddle.png"/>
 	<assets id="btExchange" path="assets/icons/btExchange.png"/>
 	<assets id="btVisitors" path="assets/icons/btVisitors.png"/>
+	<assets id="btNarrative" path="assets/icons/btNarrative.png"/>
 	<assets id="iconMove" path="assets/icons/iconMove.png"/>
 	<assets id="iconResizeH" path="assets/icons/iconResizeH.png"/>
 	<assets id="iconResizeV" path="assets/icons/iconResizeV.png"/>
@@ -113,5 +114,10 @@
 	<assets id="iconLock" path="assets/icons/iconLock.png"/>
 	<assets id="landscape" path="assets/icons/iconLandscape.png"/>
 	<assets id="portrait" path="assets/icons/iconPortrait.png"/>
-	
+	<assets id="btBlocks" path="assets/icons/btBlocks.png"/>
+	<assets id="btCode" path="assets/icons/btCode.png"/>
+	<assets id="btDel" path="assets/icons/btDel.png"/>
+	<assets id="btEdit" path="assets/icons/btEdit.png"/>
+	<assets id="btExpand" path="assets/icons/btExpand.png"/>
+	<assets id="btCompress" path="assets/icons/btCompress.png"/>	
 </project>

@@ -518,6 +518,10 @@ class WindowMovieProperties extends PopupWindow {
         // css
         this._cssArea.text = GlobalPlayer.mdata.style;
 
+        // actions
+        this._acstart.setText(GlobalPlayer.mdata.acstart);
+        this.snippetsList();
+
         // theme
         var json:Dynamic = StringStatic.jsonParse(GlobalPlayer.mdata.theme);
         if (json != false) {

@@ -13,6 +13,9 @@ foreach ($list as $v) {
 	}	
 }
 
+// TilBuci version
+$version = $data->version();
+
 // checking what to display
 session_start();
 $mode = 'player';
@@ -58,7 +61,7 @@ if (isset($_SESSION['rd'])) {
 	unset($_SESSION['rd']);
 } else if (isset($_POST['rd'])) {
 	if ($_POST['rd'] == 'dom') $render = '-dom';
-} else if (isset($_GET['cch'])) {
+} else if (isset($_GET['rd'])) {
 	if ($_GET['rd'] == 'dom') $render = '-dom';
 }
 
@@ -152,7 +155,7 @@ if ($render == '') {
 		}
 	?>
     <?php if ($nocache == '') { ?>
-        <script type="text/javascript" src="./TilBuci<?= $render ?>-min.js<?= $nocache ?>"></script>
+        <script type="text/javascript" src="./TilBuci<?= $render ?>-min.js?rd=<?= $version ?>"></script>
     <?php } else { ?>
         <script type="text/javascript" src="./TilBuci<?= $render ?>.js<?= $nocache ?>"></script>
     <?php } ?>

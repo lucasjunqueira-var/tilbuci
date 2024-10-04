@@ -94,6 +94,9 @@ class WSMovie extends Webservice
                 case 'Movie/Remove':
 					$this->remove();
 					break;
+                  case 'Movie/AcInfo':
+					$this->acInfo();
+					break;
 				default:
 					$this->returnRequest([ 'e' => -9 ]);
 					break;
@@ -432,6 +435,23 @@ class WSMovie extends Webservice
             $this->returnRequest([ 'e' => 0, 'list' => $list ]);
 		} else {
 			$this->returnRequest([ 'e' => 2, 'list' => [ ] ]);
+		}
+	}
+    
+    /**
+	 * Gets information for action blocks.
+	 */
+	private function acInfo() {
+		// required fields received?
+		if ($this->requiredFields(['id'])) {
+			$mv = new Movie;
+            $this->returnRequest([
+                'e' => 0,
+                'movies' => $mv->listAcMovies($this->user), 
+                'scenes' => $mv->listAcScenes($this->req['id'])
+            ]);
+		} else {
+			$this->returnRequest([ 'e' => 1 ]);
 		}
 	}
 }

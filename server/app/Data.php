@@ -518,6 +518,17 @@ class Data extends BaseClass
 			return (1);
 		}
 	}
+    
+    /**
+     * Gets the current system version.
+     * @return  int the version number
+     */
+    public function version() {
+        $version = 1;
+        $ck = $this->queryAll('SELECT cf_value FROM config WHERE cf_key=:ver', [':ver' => 'dbVersion']);
+        if (count($ck) > 0) $version = $ck[0]['cf_value'];
+        return ($version);
+    }
 	
 	/**
 	 * Gets a CSS declare for used fonts.
