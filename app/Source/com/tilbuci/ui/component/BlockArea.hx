@@ -48,13 +48,7 @@ class BlockArea extends ScrollContainer {
     }
 
     public function refresh():Bool {
-
-trace ('refresh', this._code.text);
-
         this.clear();
-
-trace ('clear');
-
         if ((this._code.text == '') || (this._code.text == '[]')) {
             this._json = StringStatic.jsonParse('[ ]');
             this.addChild(this._addbt);
