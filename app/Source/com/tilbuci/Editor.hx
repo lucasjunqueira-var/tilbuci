@@ -61,7 +61,7 @@ import com.tilbuci.ui.menu.DrawerMenu;
 import com.tilbuci.ui.menu.MenuMovie;
 import com.tilbuci.ui.menu.MenuScene;
 import com.tilbuci.ui.menu.MenuMedia;
-import com.tilbuci.ui.menu.MenuNarrative;
+import com.tilbuci.ui.menu.MenuContraptions;
 import com.tilbuci.ui.menu.MenuExchange;
 import com.tilbuci.ui.window.PopupWindow;
 import com.tilbuci.ui.window.WindowSetup;
@@ -380,7 +380,7 @@ class Editor extends Drawer {
         this._menus['left-movie'] = new MenuMovie(actionMenuMovie);
         this._menus['left-scene'] = new MenuScene(actionMenuScene);
         this._menus['left-media'] = new MenuMedia(actionMenuMedia);
-        this._menus['left-narrative'] = new MenuNarrative(actionMenuNarrative);
+        this._menus['left-contraptions'] = new MenuContraptions(actionMenuContraptions);
         this._menus['left-exchange'] = new MenuExchange(actionMenuExchange);
         this._menus['left-keyframe'] = new MenuKeyframe(actionMenuKeyframe);
 
@@ -440,10 +440,10 @@ class Editor extends Drawer {
                 this.drawer = this._menus['left-media'];
                 this.opened = true;
                 this._menus['left-media'].onShow();
-            case 'narrative':
-                this.drawer = this._menus['left-narrative'];
+            case 'contraptions':
+                this.drawer = this._menus['left-contraptions'];
                 this.opened = true;
-                this._menus['left-narrative'].onShow();
+                this._menus['left-contraptions'].onShow();
             case 'exchange':
                 this.drawer = this._menus['left-exchange'];
                 this.opened = true;
@@ -590,14 +590,14 @@ class Editor extends Drawer {
     }
 
     /**
-        Narrative menu actions.
+        Contraptions menu actions.
         @param  ac  the action id
     **/
-    private function actionMenuNarrative(ac:String):Void {
+    private function actionMenuContraptions(ac:String):Void {
         switch (ac) {
-            case 'collection':
+            case 'menus':
                 this.opened = false;
-                this.showWindow('mediacollection');
+                this.showWindow('menus');
             case 'menu-close':
                 this.opened = false;
         }

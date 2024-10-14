@@ -48,6 +48,11 @@ class RightInterface extends ScrollContainer {
         this._panels.push(new FilterPanel(200));
         this._panels.push(new HistoryPanel(200, centerMethod));
 
+        var iPanel:InstancesPanel = cast (this._panels[0]);
+        var mPanel:MediaPanel = cast (this._panels[1]);
+        mPanel.instanceNamePanelUpdate = iPanel.instanceRename;
+        this._panels[1] = mPanel;
+
         // instance set callbacks
         this._panels[0].callbacks.push(this._panels[1].updateContent);
         this._panels[0].callbacks.push(this._panels[2].updateContent);

@@ -131,6 +131,10 @@ class VideoImage extends BaseImage {
             this._loaded = false;
             this._current = media;
             this._stream.play(path);
+        } else {
+            this._loaded = false;
+            this._stream.seek(0);
+            this._stream.play(path);
         }
     }
 
@@ -171,6 +175,7 @@ class VideoImage extends BaseImage {
 		this._stream.removeEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
 		this._stream = null;
         this._onEnd = null;
+        this._current = null;
     }
 
     /**

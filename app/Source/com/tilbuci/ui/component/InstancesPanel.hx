@@ -46,6 +46,22 @@ class InstancesPanel extends DropDownPanel {
         }
     }
 
+    public function instanceRename(oldn:String, newn:String):Void {
+        var list = cast(this._content, ListView);
+        if (list.dataProvider != null) {
+            for (n in 0...list.dataProvider.length) {
+                if (list.dataProvider.get(n) != null) {
+                    if (list.dataProvider.get(n).value == oldn) {
+                        list.dataProvider.get(n).text = newn;
+                        list.dataProvider.get(n).value = newn;
+                        list.selectedIndex = n;
+                        list.dataProvider.updateAt(list.selectedIndex);
+                    }
+                }
+            }
+        }
+    }
+
     private function onChange(evt:Event):Void {
         var list = cast(this._content, ListView);
         if (list.selectedItem != null) {

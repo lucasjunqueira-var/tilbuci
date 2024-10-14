@@ -217,12 +217,20 @@ class InstanceImage extends Sprite {
         this._multSize = new Point(1, 1);
         this.alpha = 0;
         this.rotation = 0;
-        if (GlobalPlayer.orientation == 'horizontal') {
+        if (GlobalPlayer.movie.data.screen.type == 'landscape') {
             this.x = GlobalPlayer.mdata.screen.big / 2;
             this.y = GlobalPlayer.mdata.screen.small / 2;
-        } else {
+        } else if (GlobalPlayer.movie.data.screen.type == 'portrait') { 
             this.x = GlobalPlayer.mdata.screen.small / 2;
             this.y = GlobalPlayer.mdata.screen.big / 2;
+        } else {
+            if (GlobalPlayer.orientation == 'horizontal') {
+                this.x = GlobalPlayer.mdata.screen.big / 2;
+                this.y = GlobalPlayer.mdata.screen.small / 2;
+            } else {
+                this.x = GlobalPlayer.mdata.screen.small / 2;
+                this.y = GlobalPlayer.mdata.screen.big / 2;
+            }
         }
         this._lastH = this._lastW = this.width = this.height = 10;
 
@@ -377,8 +385,14 @@ class InstanceImage extends Sprite {
         if (this.keep && (this._data != null)) {
             // setting received values
             this._set.load(this._data.horizontal, this._data.vertical);
-            if (GlobalPlayer.orientation == 'horizontal') this._desc = this._set.horizontal;
-                else this._desc = this._set.vertical;
+            if (GlobalPlayer.movie.data.screen.type == 'landscape') {
+                this._desc = this._set.horizontal;
+            } else if (GlobalPlayer.movie.data.screen.type == 'portrait') { 
+                this._desc = this._set.vertical;
+            } else {
+                if (GlobalPlayer.orientation == 'horizontal') this._desc = this._set.horizontal;
+                    else this._desc = this._set.vertical;
+            }
             this._lastW = this._multSize.x * this._desc.width;
             this._lastH = this._multSize.y * this._desc.height;
             // set text properties
@@ -462,12 +476,20 @@ class InstanceImage extends Sprite {
             var endAlpha:Float = this.alpha;
             var screenW:Int;
             var screenH:Int;
-            if (GlobalPlayer.orientation == 'horizontal') {
+            if (GlobalPlayer.movie.data.screen.type == 'landscape') {
                 screenW = GlobalPlayer.mdata.screen.big;
                 screenH = GlobalPlayer.mdata.screen.small;
-            } else {
+            } else if (GlobalPlayer.movie.data.screen.type == 'portrait') { 
                 screenH = GlobalPlayer.mdata.screen.big;
                 screenW = GlobalPlayer.mdata.screen.small;
+            } else {
+                if (GlobalPlayer.orientation == 'horizontal') {
+                    screenW = GlobalPlayer.mdata.screen.big;
+                    screenH = GlobalPlayer.mdata.screen.small;
+                } else {
+                    screenH = GlobalPlayer.mdata.screen.big;
+                    screenW = GlobalPlayer.mdata.screen.small;
+                }
             }
             switch (GlobalPlayer.mdata.origin) {
                 case 'alpha':
@@ -818,15 +840,25 @@ class InstanceImage extends Sprite {
             if (this._firstLoad) {
                 var screenW:Int;
                 var screenH:Float;
-                if (GlobalPlayer.orientation == 'horizontal') {
+                if (GlobalPlayer.movie.data.screen.type == 'landscape') {
                     this._desc = this._data.horizontal;
                     screenW = GlobalPlayer.mdata.screen.big;
                     screenH = GlobalPlayer.mdata.screen.small;
-                } else {
+                } else if (GlobalPlayer.movie.data.screen.type == 'portrait') {
                     this._desc = this._data.vertical;
                     screenW = GlobalPlayer.mdata.screen.small;
                     screenH = GlobalPlayer.mdata.screen.big;
-                }
+                } else {
+                    if (GlobalPlayer.orientation == 'horizontal') {
+                        this._desc = this._data.horizontal;
+                        screenW = GlobalPlayer.mdata.screen.big;
+                        screenH = GlobalPlayer.mdata.screen.small;
+                    } else {
+                        this._desc = this._data.vertical;
+                        screenW = GlobalPlayer.mdata.screen.small;
+                        screenH = GlobalPlayer.mdata.screen.big;
+                    }
+                }    
                 switch (GlobalPlayer.mdata.origin) {
                     case 'alpha':
                         this.x = this._desc.x;
@@ -934,7 +966,7 @@ class InstanceImage extends Sprite {
     /**
         Mouse over instance.
     **/
-    private function onMouseOver(evt:MouseEvent):Void {
+    public function onMouseOver(evt:MouseEvent):Void {
         if ((GlobalPlayer.mode != Player.MODE_EDITOR) && (this._data.action != '') && (GlobalPlayer.mdata.highlightInt != null) && !GlobalPlayer.isMobile()) {
             this._imCurrent.filters = this._imOther.filters = [
                 new GlowFilter(GlobalPlayer.mdata.highlightInt, 1, 4, 4, 255, 1, true)
@@ -945,7 +977,7 @@ class InstanceImage extends Sprite {
     /**
         Mouse out instance.
     **/
-    private function onMouseOut(evt:MouseEvent):Void {
+    public function onMouseOut(evt:MouseEvent = null):Void {
         this._imCurrent.filters = this._imOther.filters = [ ];
     }
 

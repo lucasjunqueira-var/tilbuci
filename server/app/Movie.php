@@ -1521,7 +1521,8 @@ class Movie extends BaseClass
                                         '[SITEFONTS]', 
                                         '[SITEPLUGINHEAD]', 
                                         '[SITEPLUGINEND]', 
-                                        '[SITEWS]'
+                                        '[SITEWS]', 
+                                        '[RAND]'
                                     ], [
                                         $movie, 
                                         $vs['sc_id'], 
@@ -1533,6 +1534,7 @@ class Movie extends BaseClass
                                         $plhead, 
                                         $plend, 
                                         $ws, 
+                                        time()
                                     ], $index);
                                     file_put_contents('../../export/site-'.$movie.'/'.$vs['sc_id'].'.html', $scenepage);
                                     $mapcontent[] = [
@@ -1574,7 +1576,8 @@ class Movie extends BaseClass
                                 '[SITEFONTS]', 
                                 '[SITEPLUGINHEAD]', 
                                 '[SITEPLUGINEND]', 
-                                '[SITEWS]'
+                                '[SITEWS]', 
+                                '[RAND]'
                             ], [
                                 $movie, 
                                 '', 
@@ -1585,7 +1588,8 @@ class Movie extends BaseClass
                                 $fonts, 
                                 $plhead, 
                                 $plend, 
-                                $ws
+                                $ws, 
+                                time()
                             ], $index);
                             file_put_contents('../../export/site-'.$movie.'/index.html', $index);
                             // runtime

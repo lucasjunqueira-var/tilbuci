@@ -24,6 +24,8 @@ class MediaPanel extends DropDownPanel {
     **/
     private var _current:InstanceImage = null;
 
+    public var instanceNamePanelUpdate:Dynamic;
+
     public function new(wd:Float) {
         super(Global.ln.get('rightbar-media'), wd);
         this._content = this.ui.forge('properties', [
@@ -126,8 +128,10 @@ class MediaPanel extends DropDownPanel {
             } else if (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf].exists(this.ui.inputs['name'].text)) {
                 Global.showPopup(Global.ln.get('rightbar-media'), Global.ln.get('rightbar-media-idtaken'), 300, 180, Global.ln.get('default-ok'));
             } else {
+                var oldn:String = this._current.getInstName();
                 GlobalPlayer.area.setCurrentStr('instance', this.ui.inputs['name'].text);
                 Global.history.addState(Global.ln.get('rightbar-history-instance'));
+                if (instanceNamePanelUpdate != null) instanceNamePanelUpdate(oldn, this.ui.inputs['name'].text);
             } 
         }
     }

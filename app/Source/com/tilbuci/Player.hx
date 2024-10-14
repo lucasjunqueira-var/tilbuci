@@ -373,7 +373,11 @@ class Player extends Sprite {
             GlobalPlayer.base = './';
             GlobalPlayer.font = './font/';
             GlobalPlayer.render = 'webgl';
-            GlobalPlayer.share = 'never';
+            #if runtimewebsite
+                GlobalPlayer.share = 'website';
+            #else
+                GlobalPlayer.share = 'never';
+            #end
             GlobalPlayer.fps = 'free';
             GlobalPlayer.secret = Bytes.ofHex('');
             if (Reflect.hasField(Main, 'ws') && (Reflect.field(Main, 'ws') != '')) {
@@ -523,6 +527,9 @@ class Player extends Sprite {
             this._firstScene = false;
         }
 
+        // hide mouse over
+        GlobalPlayer.area.noMouseOver();
+
         // scene start actions
         if (GlobalPlayer.movie.scene.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.scene.acstart);
 
@@ -544,6 +551,18 @@ class Player extends Sprite {
                         (GlobalPlayer.base + 'app/?mv=' + GlobalPlayer.movie.mvId), 
                         (GlobalPlayer.mdata.title)
                     );
+                } else if (GlobalPlayer.share == 'website') {
+                    if (GlobalPlayer.mdata.start == GlobalPlayer.movie.scId) {
+                        ExternBrowser.TBB_setAddress(
+                            (GlobalPlayer.base), 
+                            (GlobalPlayer.mdata.title)
+                        );
+                    } else {
+                        ExternBrowser.TBB_setAddress(
+                            (GlobalPlayer.base + GlobalPlayer.movie.scId + '.html'), 
+                            (GlobalPlayer.mdata.title)
+                        );
+                    }
                 }
             }
         #end

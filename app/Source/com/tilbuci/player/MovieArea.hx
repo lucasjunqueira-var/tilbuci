@@ -979,10 +979,10 @@ class MovieArea extends Sprite {
         if (GlobalPlayer.movie.data.screen.type == MovieArea.SORIENTATION) {
             this._bg.graphics.drawRect(0, 0, GlobalPlayer.movie.data.screen.big, GlobalPlayer.movie.data.screen.big);
             this._mask.graphics.drawRect(0, 0, GlobalPlayer.movie.data.screen.big, GlobalPlayer.movie.data.screen.big);
-        } else if (GlobalPlayer.movie.data.screen.type == MovieArea.HORIENTATION) {
+        } else if ((GlobalPlayer.movie.data.screen.type == MovieArea.HORIENTATION) || (GlobalPlayer.movie.data.screen.type == 'landscape')) {
             this._bg.graphics.drawRect(0, 0, GlobalPlayer.movie.data.screen.big, GlobalPlayer.movie.data.screen.small);
             this._mask.graphics.drawRect(0, 0, GlobalPlayer.movie.data.screen.big, GlobalPlayer.movie.data.screen.small);
-        } else if (GlobalPlayer.movie.data.screen.type == MovieArea.VORIENTATION) {
+        } else if ((GlobalPlayer.movie.data.screen.type == MovieArea.VORIENTATION) || (GlobalPlayer.movie.data.screen.type == 'portrait')) {
             this._bg.graphics.drawRect(0, 0, GlobalPlayer.movie.data.screen.small, GlobalPlayer.movie.data.screen.big);
             this._mask.graphics.drawRect(0, 0, GlobalPlayer.movie.data.screen.small, GlobalPlayer.movie.data.screen.big);
         } else {
@@ -1427,5 +1427,12 @@ class MovieArea extends Sprite {
     **/
     public function invertToggle(name:String):Void {
         this._player.invertToggle(name);
+    }
+
+    /**
+        Removes mouse over effect on images.
+    **/
+    public function noMouseOver():Void {
+        for (inst in this._instances) inst.onMouseOut();
     }
 }

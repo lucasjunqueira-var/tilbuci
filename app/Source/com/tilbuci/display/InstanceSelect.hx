@@ -367,7 +367,8 @@ class InstanceSelect extends Sprite {
             this._borders.graphics.drawRect(2, 2, (this.image.displayWidth - 4), (this.image.displayHeight - 4));
             this.rotation = this.image.rotation;
             if ((this.image.displayWidth <= this._limits.x) || (this.image.displayHeight <= this._limits.y)) {
-                this._move.visible = false;
+                // this._move.visible = false;
+                this._move.visible = true;
                 this._resizeH.visible = false;
                 this._resizeV.visible = false;
                 this._resize.visible = false;
