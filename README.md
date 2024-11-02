@@ -5,7 +5,7 @@ TilBuci is an interactive animation free software developed by Lucas Junqueira. 
 [![TilBuci](https://tilbuci.com.br/files/welcome.png)](https://www.youtube.com/watch?v=kkGz4JhQGYk)
 
 For further information, please watch this video:  
-[TilBuci teaser](https://youtu.be/P1MxAHrJMMM)
+[TilBuci teaser](https://www.youtube.com/watch?v=kkGz4JhQGYk)
 
 To see the software working, access:  
 [TilBuci](https://tilbuci.com.br/app/)
