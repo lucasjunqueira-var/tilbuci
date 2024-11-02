@@ -4,6 +4,8 @@ package com.tilbuci.ui.menu;
 import com.tilbuci.data.GlobalPlayer;
 import feathers.controls.Button;
 import feathers.events.TriggerEvent;
+import openfl.Lib;
+import openfl.net.URLRequest;
 
 /** TILBUCI **/
 import com.tilbuci.ui.menu.DrawerMenu;
@@ -22,6 +24,8 @@ class MenuMovie extends DrawerMenu {
         this.addButton('btProperties', Global.ln.get('menu-movie-properties'), onProp);
         this.addButton('btUsers', Global.ln.get('menu-movie-users'), onUsers);
         this.addButton('btRemove', Global.ln.get('menu-movie-remove'), onRemove);
+        this.addButton('btNavigation', Global.ln.get('menu-movie-navigation'), onNavigation);
+        this.addButton('btPlayer', Global.ln.get('menu-movie-player'), onPlayer);
     }
 
     /**
@@ -50,6 +54,10 @@ class MenuMovie extends DrawerMenu {
                 this.ui.buttons['btProperties'].toolTip = Global.ln.get('tooltip-movie-noowner');
                 this.ui.buttons['btUsers'].toolTip = Global.ln.get('tooltip-movie-noowner');
             }
+            this.ui.buttons['btPlayer'].enabled = true;
+            this.ui.buttons['btPlayer'].toolTip = null;
+            this.ui.buttons['btNavigation'].enabled = true;
+            this.ui.buttons['btNavigation'].toolTip = null;
         } else {
             if (Global.ws.level <= 50) {
                 this.ui.buttons['btRemove'].enabled = true;
@@ -58,10 +66,14 @@ class MenuMovie extends DrawerMenu {
                 this.ui.buttons['btRemove'].enabled = false;
                 this.ui.buttons['btRemove'].toolTip = Global.ln.get('tooltip-movie-nolevel');
             }
+            this.ui.buttons['btPlayer'].enabled = false;
+            this.ui.buttons['btNavigation'].enabled = false;
             this.ui.buttons['btProperties'].enabled = false;
             this.ui.buttons['btUsers'].enabled = false;
             this.ui.buttons['btProperties'].toolTip = Global.ln.get('tooltip-movie-nomovie');
             this.ui.buttons['btUsers'].toolTip = Global.ln.get('tooltip-movie-nomovie');
+            this.ui.buttons['btPlayer'].toolTip = Global.ln.get('tooltip-movie-nomovie');
+            this.ui.buttons['btNavigation'].toolTip = Global.ln.get('tooltip-movie-nomovie');
         }
     }
 
@@ -105,6 +117,22 @@ class MenuMovie extends DrawerMenu {
     **/
     private  function onRemove(evt:TriggerEvent):Void {
         this._ac('remove');
+    }
+
+    /**
+        Shows the navigation sequences window.
+    **/
+    private  function onNavigation(evt:TriggerEvent):Void {
+        this._ac('navigation');
+    }
+
+    /**
+        Opens the movie on player.
+    **/
+    private  function onPlayer(evt:TriggerEvent):Void {
+        var request:URLRequest = new URLRequest(GlobalPlayer.base + 'app/?mv=' + GlobalPlayer.movie.mvId);
+        request.method = 'GET';
+        Lib.getURL(request);
     }
 
 }

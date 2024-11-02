@@ -1,6 +1,9 @@
 package com.tilbuci.ui.base;
 
 /** OPENFL **/
+import com.tilbuci.ui.component.IDLabel;
+import com.tilbuci.ui.component.IDTextInput;
+import com.tilbuci.ui.component.IDPopUpListView;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
 import feathers.controls.AssetLoader;
@@ -32,6 +35,7 @@ import feathers.controls.NumericStepper;
 import feathers.data.ListViewItemState;
 
 /** TILBUCI **/
+import com.tilbuci.ui.component.IDTextInput;
 import com.tilbuci.ui.base.BackgroundSkin;
 import com.tilbuci.ui.base.ConfirmWindow;
 import com.tilbuci.ui.base.InterfaceContainer;
@@ -79,17 +83,17 @@ class InterfaceFactory {
     /**
         registered labels
     **/
-    public var labels:Map<String, Label> = [ ];
+    public var labels:Map<String, IDLabel> = [ ];
 
     /**
         registered text inputs
     **/
-    public var inputs:Map<String, TextInput> = [ ];
+    public var inputs:Map<String, IDTextInput> = [ ];
 
     /**
         last created text input
     **/
-    public var lastInput:TextInput;
+    public var lastInput:IDTextInput;
 
     /**
         registered text areas
@@ -124,7 +128,7 @@ class InterfaceFactory {
     /**
         registered select inputs
     **/
-    public var selects:Map<String, PopUpListView> = [ ];
+    public var selects:Map<String, IDPopUpListView> = [ ];
 
     /**
         registered lists
@@ -274,10 +278,11 @@ class InterfaceFactory {
         @param  holder  the element parent (null for none)
         @return the label element
     **/
-    public function createLabel(id:String, txt:String, variant:String = '', holder:FeathersControl = null):Label {
-        var lb:Label = new Label();
+    public function createLabel(id:String, txt:String, variant:String = '', holder:FeathersControl = null, autoR:Bool = true):IDLabel {
+        var lb:IDLabel = new IDLabel();
         if (variant != '') lb.variant = variant;
         lb.text = txt;
+        lb.autoResize = autoR;
         if (holder != null) holder.addChild(lb);
         this.labels[id] = lb;
         return (lb);
@@ -290,10 +295,11 @@ class InterfaceFactory {
         @param  holder  the element parent (null for none)
         @return the label element
     **/
-    public function createDescription(id:String, txt:String, variant:String = '', holder:FeathersControl = null):Label {
-        var lb:Label = new Label();
+    public function createDescription(id:String, txt:String, variant:String = '', holder:FeathersControl = null, autoR:Bool = true):IDLabel {
+        var lb:IDLabel = new IDLabel();
         lb.wordWrap = true;
         lb.htmlText = txt;
+        lb.autoResize = autoR;
         if (holder != null) holder.addChild(lb);
         this.labels[id] = lb;
         return (lb);
@@ -307,9 +313,10 @@ class InterfaceFactory {
         @param  holder  the element parent (null for none)
         @return the text input element
     **/
-    public function createTInput(id:String, txt:String = '', variant:String = '', holder:FeathersControl = null):TextInput {
-        var tx:TextInput = new TextInput();
+    public function createTInput(id:String, txt:String = '', variant:String = '', holder:FeathersControl = null, autoR:Bool = true):IDTextInput {
+        var tx:IDTextInput = new IDTextInput();
         tx.text = txt;
+        tx.autoResize = autoR;
         if (variant != '') tx.variant = variant;
         if (holder != null) holder.addChild(tx);
         this.inputs[id] = tx;
@@ -333,9 +340,24 @@ class InterfaceFactory {
         st.maximum = max;
         st.step = step;
         st.value = val;
+        st.valueParseFunction = this.numericParser;
         this.numerics[id] = st;
         if (holder != null) holder.addChild(st);
         return (st);
+    }
+
+    /**
+        Parser function for numerci stepper text content.
+        @param  txt the numeric stepper text
+        @return the parsed value
+    **/
+    private function numericParser(txt:String):Float {
+        var val = Global.evaluate(txt);
+        if (val == null) {
+            return (Math.NaN);
+        } else {
+            return (Std.parseFloat(val));
+        }
     }
 
     /**
@@ -381,9 +403,9 @@ class InterfaceFactory {
         @param  holder  the element parent (null for none)
         @return the created button reference
     **/
-    public function createButton(id:String, txt:String, ac:Dynamic, holder:FeathersControl = null):IDButton {
-        var bt:IDButton = new IDButton(id, ac);
-        bt.text = txt;
+    public function createButton(id:String, txt:String, ac:Dynamic, holder:FeathersControl = null, autoR:Bool = true):IDButton {
+        var bt:IDButton = new IDButton(id, ac, txt, null, autoR);
+        //bt.text = txt;
         bt.horizontalAlign = HorizontalAlign.CENTER;
         if (holder != null) holder.addChild(bt);
         this.buttons[id] = bt;
@@ -400,11 +422,12 @@ class InterfaceFactory {
         @param  holder  the element parent (null for none)
         @return the created button reference
     **/
-    public function createIconButton(id:String, ac:Dynamic, icon:Bitmap, txt:String = null, holder:FeathersControl = null):IDButton {
+    public function createIconButton(id:String, ac:Dynamic, icon:Bitmap, txt:String = null, holder:FeathersControl = null, autoR:Bool = true):IDButton {
         var bt:IDButton = new IDButton(id, ac);
         icon.smoothing = true;
         icon.width = icon.height = 20;
         bt.icon = icon;
+        bt.autoResize = autoR;
         if (txt != null) bt.text = txt;
         bt.horizontalAlign = HorizontalAlign.CENTER;
         if (holder != null) holder.addChild(bt);
@@ -476,12 +499,13 @@ class InterfaceFactory {
         @param  holder  the element parent (null for none)
         @return the select element (PopUpListView)
     **/
-    public function createSelect(id:String, values:Array<Dynamic>, selected:Dynamic = null, holder:FeathersControl = null):PopUpListView {
-        var sl:PopUpListView= new PopUpListView();
+    public function createSelect(id:String, values:Array<Dynamic>, selected:Dynamic = null, holder:FeathersControl = null, autoR:Bool = true):IDPopUpListView {
+        var sl:IDPopUpListView = new IDPopUpListView();
         sl.dataProvider = new ArrayCollection(values);
         sl.itemToText = (item:Dynamic) -> {
             return (item.text);
         };
+        sl.autoResize = autoR;
         this.selects[id] = sl;
         if (selected != null) this.setSelectValue(id, selected);
         if (holder != null) holder.addChild(sl);
@@ -562,6 +586,21 @@ class InterfaceFactory {
             return (item.text);
         };
         sl.height = ht;
+        sl.doubleClickEnabled = true;
+        var recycler = DisplayObjectRecycler.withFunction(() -> {
+            var itemRenderer = new ItemRenderer();
+            itemRenderer.doubleClickEnabled = true;
+            return (itemRenderer);
+        });
+        sl.itemRendererRecycler = recycler;
+        recycler.update = (itemRenderer:ItemRenderer, state:ListViewItemState) -> {
+            itemRenderer.text = state.text;
+            for (ch in 0...itemRenderer.numChildren) {
+                if (Reflect.hasField(itemRenderer.getChildAt(ch), 'doubleClickEnabled')) {
+                    Reflect.setField(itemRenderer.getChildAt(ch), 'doubleClickEnabled', true);
+                }
+            }
+        };
         this.lists[id] = sl;
         if (selected != null) this.setListSelectValue(id, selected);
         if (holder != null) holder.addChild(sl);
@@ -578,6 +617,7 @@ class InterfaceFactory {
             var recycler = DisplayObjectRecycler.withFunction(() -> {
                 var itemRenderer = new ItemRenderer();
                 itemRenderer.icon = new AssetLoader();
+                itemRenderer.doubleClickEnabled = true;
                 return (itemRenderer);
             });
             this.lists[id].itemRendererRecycler = recycler;
@@ -586,6 +626,11 @@ class InterfaceFactory {
                 itemRenderer.secondaryText = state.data.user;
                 var loader = cast(itemRenderer.icon, AssetLoader);
                 loader.source = state.data.asset;
+                for (ch in 0...itemRenderer.numChildren) {
+                    if (Reflect.hasField(itemRenderer.getChildAt(ch), 'doubleClickEnabled')) {
+                        Reflect.setField(itemRenderer.getChildAt(ch), 'doubleClickEnabled', true);
+                    }
+                }
             };
             return (true);
         } else {
@@ -724,7 +769,11 @@ class InterfaceFactory {
                     if (Reflect.hasField(conf[n], 'ht')) this.tareas[conf[n].id].height = conf[n].ht;
                     if (wd >= 0) this.tareas[conf[n].id].width = wd;
                 case 'Button':
-                    this.createButton(conf[n].id, conf[n].tx, conf[n].ac, this.lastCont);
+                    var autoR:Bool = true;
+                    if (Reflect.hasField(conf[n], 'ar')) {
+                        autoR = cast(conf[n].ar);
+                    }
+                    this.createButton(conf[n].id, conf[n].tx, conf[n].ac, this.lastCont, autoR);
                     if (wd >= 0) this.buttons[conf[n].id].width = wd;
                     if (Reflect.hasField(conf[n], 'cl')) {
                         this.buttons[conf[n].id].addEventListener(TriggerEvent.TRIGGER, conf[n].cl);
@@ -828,13 +877,13 @@ class InterfaceFactory {
         Resizes the registered elements.
     **/
     public function redraw():Void {
-        for (item in this.inputs) if ((item.parent != null) && (item.parent.parent != null)) item.width = item.parent.parent.width - (4 * this._padding);
+        for (item in this.inputs) if ((item.parent != null) && (item.parent.parent != null) && (item.autoResize)) item.width = item.parent.parent.width - (4 * this._padding);
         for (item in this.numerics) if ((item.parent != null) && (item.parent.parent != null)) item.width = item.parent.parent.width - (4 * this._padding);
         for (item in this.tareas) if ((item.parent != null) && (item.parent.parent != null)) item.width = item.parent.parent.width - (4 * this._padding);
-        for (item in this.labels) if ((item.parent != null) && (item.parent.parent != null)) item.width = item.parent.parent.width - (4 * this._padding);
-        for (item in this.selects) if ((item.parent != null) && (item.parent.parent != null)) item.width = item.parent.parent.width - (4 * this._padding);
+        for (item in this.labels) if ((item.parent != null) && (item.parent.parent != null) && (item.autoResize)) item.width = item.parent.parent.width - (4 * this._padding);
+        for (item in this.selects) if ((item.parent != null) && (item.parent.parent != null) && (item.autoResize)) item.width = item.parent.parent.width - (4 * this._padding);
         for (item in this.lists) if ((item.parent != null) && (item.parent.parent != null)) item.width = item.parent.parent.width - (4 * this._padding);
-        for (item in this.buttons) if ((item.parent != null) && (item.parent.parent != null)) item.width = item.parent.parent.width - (4 * this._padding);
+        for (item in this.buttons) if ((item.parent != null) && (item.parent.parent != null) && (item.autoResize)) item.width = item.parent.parent.width - (4 * this._padding);
         for (item in this.spacers) if ((item.parent != null) && (item.parent.parent != null)) item.scaleX = (item.parent.parent.width - (4 * this._padding)) / 10;
     }
 }

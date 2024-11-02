@@ -1,6 +1,7 @@
 package com.tilbuci.ui.window.movie;
 
 /** OPENFL **/
+import com.tilbuci.data.GlobalPlayer;
 import openfl.events.Event;
 import openfl.display.Stage;
 
@@ -92,6 +93,7 @@ class WindowMovieOpen extends PopupWindow {
     private function onOpen(evt:TriggerEvent = null):Void {
         if (this.ui.lists['openlist'].selectedItem != null) {
             this._ac('movieload', ['id' => this.ui.lists['openlist'].selectedItem.value]);
+            GlobalPlayer.area.imgSelect();
             PopUpManager.removePopUp(this);
         }
     }

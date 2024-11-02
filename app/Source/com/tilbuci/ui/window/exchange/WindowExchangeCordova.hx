@@ -26,7 +26,7 @@ class WindowExchangeCordova extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-exchcord-title'), 1100, 670, false);
+        super(ac, Global.ln.get('window-exchcord-title'), 1100, 600, false);
     }
 
     /**

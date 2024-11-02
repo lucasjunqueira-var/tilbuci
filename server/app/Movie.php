@@ -2778,4 +2778,120 @@ class Movie extends BaseClass
         ];
         return ($list);
     }
+    
+    /**
+     * Creates a navigation sequence on a movie.
+     * @param   string  $id the movie ID
+     * @param   string  $seq    a sequence of scene ids separated by ;
+     * @param   string  $con    connecte first and last scenes? "true" or "false"
+     * @param   string  $axis   the sequence direction: x, y or z
+     */
+    public function createNavigation($id, $seq, $con, $axis) {
+        $seq = explode(';', $seq);
+        if (count($seq) > 1) {
+            $con = $con == 'true';
+            switch (mb_strtolower($axis)) {
+                case 'y': $axis = 'y'; break;
+                case 'z': $axis = 'z'; break;
+                default: $axis = 'x'; break;
+            }
+            $sc = new Scene;
+            for ($i=0; $i<count($seq); $i++) {
+                if ($sc->loadScene($id, $seq[$i])) {
+                    // first scene
+                    if ($i == 0) {
+                        if ($con) {
+                            switch ($axis) {
+                                case 'x':
+                                    $sc->info['navigation']['left'] = $seq[count($seq)-1]; 
+                                    break;
+                                case 'y':
+                                    $sc->info['navigation']['up'] = $seq[count($seq)-1]; 
+                                    break;
+                                case 'z':
+                                    $sc->info['navigation']['nout'] = $seq[count($seq)-1]; 
+                                    break;
+                            }
+                        } else {
+                            switch ($axis) {
+                                case 'x':
+                                    $sc->info['navigation']['left'] = ''; 
+                                    break;
+                                case 'y':
+                                    $sc->info['navigation']['up'] = ''; 
+                                    break;
+                                case 'z':
+                                    $sc->info['navigation']['nout'] = ''; 
+                                    break;
+                            }
+                        }
+                        switch ($axis) {
+                            case 'x': 
+                                $sc->info['navigation']['right'] = $seq[$i+1]; 
+                                break;
+                            case 'y': 
+                                $sc->info['navigation']['down'] = $seq[$i+1]; 
+                                break;
+                            case 'z': 
+                                $sc->info['navigation']['nin'] = $seq[$i+1]; 
+                                break;
+                        }
+                    } else if ($i == (count($seq)-1)) {
+                        switch ($axis) {
+                            case 'x': 
+                                $sc->info['navigation']['left'] = $seq[$i-1];
+                                break;
+                            case 'y': 
+                                $sc->info['navigation']['up'] = $seq[$i-1];
+                                break;
+                            case 'z': 
+                                $sc->info['navigation']['nout'] = $seq[$i-1];
+                                break;
+                        }
+                        if ($con) {
+                            switch ($axis) {
+                                case 'x': 
+                                    $sc->info['navigation']['right'] = $seq[0]; 
+                                    break;
+                                case 'y': 
+                                    $sc->info['navigation']['down'] = $seq[0]; 
+                                    break;
+                                case 'z': 
+                                    $sc->info['navigation']['nin'] = $seq[0]; 
+                                    break;
+                            }
+                        } else {
+                            switch ($axis) {
+                                case 'x': 
+                                    $sc->info['navigation']['right'] = ''; 
+                                    break;
+                                case 'y': 
+                                    $sc->info['navigation']['down'] = ''; 
+                                    break;
+                                case 'z': 
+                                    $sc->info['navigation']['nin'] = ''; 
+                                    break;
+                            }
+                        }
+                    } else {
+                        switch ($axis) {
+                            case 'x': 
+                                $sc->info['navigation']['left'] = $seq[$i-1];
+                                $sc->info['navigation']['right'] = $seq[$i+1]; 
+                                break;
+                            case 'y': 
+                                $sc->info['navigation']['up'] = $seq[$i-1];
+                                $sc->info['navigation']['down'] = $seq[$i+1]; 
+                                break;
+                            case 'z': 
+                                $sc->info['navigation']['nout'] = $seq[$i-1];
+                                $sc->info['navigation']['nin'] = $seq[$i+1]; 
+                                break;
+                        }
+                    }
+                    $sc->saveSequence();
+                }
+            }
+        }
+    }
 }

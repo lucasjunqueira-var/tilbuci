@@ -45,7 +45,7 @@ class GoogleAnalyticsPlugin extends Plugin {
         // add plugin button
         this.addMenu('Analytics', onAnalytics);
         // create plugin config window
-        this._confWindow = new PluginWindow('Google Analytics', 500, 180);
+        this._confWindow = new PluginWindow('Google Analytics', 500, 150);
         this._confWindow.addForm('config', this._confWindow.ui.forge('config', [
             { tp: 'Label', id: 'measurement', tx: 'Measurement ID', vr: '' }, 
             { tp: 'TInput', id: 'measurement', tx: '', vr: '' }, 

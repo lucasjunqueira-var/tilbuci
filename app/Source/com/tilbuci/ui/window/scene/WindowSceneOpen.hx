@@ -91,6 +91,7 @@ class WindowSceneOpen extends PopupWindow {
     **/
     private function onOpen(evt:TriggerEvent = null):Void {
         if (this.ui.lists['openlist'].selectedItem != null) {
+            GlobalPlayer.area.imgSelect();
             this._ac('sceneload', ['id' => this.ui.lists['openlist'].selectedItem.value, 'movie' => GlobalPlayer.movie.mvId]);
             PopUpManager.removePopUp(this);
         }

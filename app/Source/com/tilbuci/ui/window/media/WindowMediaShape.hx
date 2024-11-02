@@ -85,7 +85,7 @@ class WindowMediaShape extends WindowMediaBase {
             this.ui.forge('bottom', [
                 { tp: 'Spacer', id: 'btadd', ht: 10 }, 
                 { tp: 'Button', id: 'btadd', tx: Global.ln.get('window-mdshape-show'), ac: this.onOpen }, 
-            ]), 550));
+            ]), 540));
         this.ui.buttons['btadd'].visible = false;
     }
 

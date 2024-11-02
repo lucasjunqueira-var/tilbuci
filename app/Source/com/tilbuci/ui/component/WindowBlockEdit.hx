@@ -43,7 +43,7 @@ class WindowBlockEdit extends PopupWindow {
     **/
     public function new(ac:Dynamic = null) {
         // creating window
-        super(ac, '', 1100, 660, false);
+        super(ac, '', 1100, 560, false);
 
         // select data
         this._mvOrigins = [
@@ -69,8 +69,8 @@ class WindowBlockEdit extends PopupWindow {
 
         // custom elements
         this.ui.createHContainer('assets');
-        this.ui.createSelect('assets', [ ], null, this.ui.hcontainers['assets']);
-        this.ui.hcontainers['assets'].addChild(new IDButton('cpasset', onAsset, Global.ln.get('window-acinstance-cpasset'), Assets.getBitmapData('btCopy')));
+        this.ui.createSelect('assets', [ ], null, this.ui.hcontainers['assets'], false);
+        this.ui.hcontainers['assets'].addChild(new IDButton('cpasset', onAsset, Global.ln.get('window-acinstance-cpasset'), Assets.getBitmapData('btCopy'), false));
         this.ui.createHContainer('ggeneral');
         this.ui.createSelect('ggeneral', [
             { text: Global.ln.get('window-globals-playing'), value: "?_PLAYING", asset: 'btBool' }, 
@@ -94,8 +94,8 @@ class WindowBlockEdit extends PopupWindow {
             { text: Global.ln.get('window-globals-runtime'), value: "$_RUNTIME", asset: 'btString' }, 
             { text: Global.ln.get('window-globals-wsserver'), value: "$_WSSERVER", asset: 'btString' }, 
             { text: Global.ln.get('window-globals-version'), value: "$_VERSION", asset: 'btString' }, 
-        ], null, this.ui.hcontainers['ggeneral']);
-        this.ui.hcontainers['ggeneral'].addChild(new IDButton('ggeneral', onGeneral, Global.ln.get('window-globals-get'), Assets.getBitmapData('btCopy')));
+        ], null, this.ui.hcontainers['ggeneral'], false);
+        this.ui.hcontainers['ggeneral'].addChild(new IDButton('ggeneral', onGeneral, Global.ln.get('window-globals-get'), Assets.getBitmapData('btCopy'), false));
         this.ui.createHContainer('ginstancep');
         this.ui.createSelect('ginstancep', [
             { text: Global.ln.get('window-globals-instplaying'), value: "?_INSTANCEPLAYING:" }, 
@@ -117,12 +117,11 @@ class WindowBlockEdit extends PopupWindow {
             { text: Global.ln.get('window-globals-insttext'), value: "$_INSTANCETEXT:" }, 
             { text: Global.ln.get('window-acinstance-pfont'), value: "$_INSTANCEFONT:" }, 
             { text: Global.ln.get('window-acinstance-pfontcolor'), value: "$_INSTANCEFONTCOLOR:" }, 
-        ], null, this.ui.hcontainers['ginstancep']);
-        this.ui.hcontainers['ginstancep'].addChild(new IDButton('instance', onInstance, Global.ln.get('window-globals-get'), Assets.getBitmapData('btCopy')));
+        ], null, this.ui.hcontainers['ginstancep'], false);
+        this.ui.hcontainers['ginstancep'].addChild(new IDButton('instance', onInstance, Global.ln.get('window-globals-get'), Assets.getBitmapData('btCopy'), false));
         this.ui.createHContainer('gname');
-        this.ui.createTInput('gname', '', '', this.ui.hcontainers['gname']);
-        this.ui.hcontainers['gname'].addChild(new IDButton('movie', onMovie, Global.ln.get('window-globals-get'), Assets.getBitmapData('btCopy')));
-
+        this.ui.createTInput('gname', '', '', this.ui.hcontainers['gname'], false);
+        this.ui.hcontainers['gname'].addChild(new IDButton('movie', onMovie, Global.ln.get('window-globals-get'), Assets.getBitmapData('btCopy'), false));
 
         // parameters tab
         this.addForm(Global.ln.get('acblock-parameters'), this.ui.createColumnHolder('available',
@@ -159,22 +158,20 @@ class WindowBlockEdit extends PopupWindow {
                 ], sl: [ ], ht: 95 }, 
                 { tp: "Label", id: 'gname', tx: Global.ln.get('window-globals-name'), vr: Label.VARIANT_DETAIL }, 
                 { tp: "Custom", cont: this.ui.hcontainers['gname'] }, 
-
                 { tp: 'Spacer', id: 'showAction', ht: 5, ln: false}, 
-
                 { tp: "Label", id: 'showAction', tx: Global.ln.get('acblock-valcopy'), vr: '' }, 
                 { tp: "TInput", id: 'showAction', tx: '' }, 
             ]),
             this.ui.forge('parambottom', [
                 { tp: 'Button', id: 'blbutton', tx: Global.ln.get('acblock-button'), ac: onClick }
             ]),
-            530
+            460
         ));
         this.ui.containers['parambottom'].width = 1100;
-        this.ui.hcontainers['assets'].width = 510;
-        this.ui.hcontainers['ggeneral'].width = 510;
-        this.ui.hcontainers['ginstancep'].width = 510;
-        this.ui.hcontainers['gname'].width = 510;
+        this.ui.hcontainers['assets'].setWidth(510);
+        this.ui.hcontainers['ggeneral'].setWidth(510);
+        this.ui.hcontainers['ginstancep'].setWidth(510);
+        this.ui.hcontainers['gname'].setWidth(510);
 
         // create input parameters
         for (i in 0...8) {

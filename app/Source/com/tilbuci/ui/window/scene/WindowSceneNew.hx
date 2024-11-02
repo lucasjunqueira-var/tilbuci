@@ -23,7 +23,7 @@ class WindowSceneNew extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-scenenew-title'), 800, 200, false);
+        super(ac, Global.ln.get('window-scenenew-title'), 800, 170, false);
     }
 
     /**
@@ -34,8 +34,6 @@ class WindowSceneNew extends PopupWindow {
         this.addForm(Global.ln.get('window-scenenew-title'), this.ui.forge('leftcol', [
             { tp: 'Label', id: 'scenename', tx: Global.ln.get('window-scenenew-name'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'TInput', id: 'scenename', tx: '', vr: '' },  
-            //{ tp: 'Label', id: 'sceneid', tx: Global.ln.get('window-scenenew-id'), vr: Label.VARIANT_DETAIL }, 
-            //{ tp: 'TInput', id: 'sceneid', tx: '', vr: '' },  
             { tp: 'Spacer', id: 'scenenew', ht: 20 },  
             { tp: 'Button', id: 'scenecreate', tx: Global.ln.get('window-scenenew-create'), ac: this.onCreateScene }
             
@@ -74,7 +72,7 @@ class WindowSceneNew extends PopupWindow {
         } else if (ld.map['e'] != 0) {
             this.ui.createWarning(Global.ln.get('window-scenenew-title'), Global.ln.get('window-scenenew-createer'), 300, 180, this.stage);
         } else {
-            //this.ui.inputs['scenename'].text = this.ui.inputs['sceneid'].text = '';
+            GlobalPlayer.area.imgSelect();
             this.ui.inputs['scenename'].text = '';
             PopUpManager.removePopUp(this);
             this._ac('sceneload', [ 'id' => ld.map['id'] ]);

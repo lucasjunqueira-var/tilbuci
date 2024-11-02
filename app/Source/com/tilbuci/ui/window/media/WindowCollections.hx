@@ -65,7 +65,7 @@ class WindowCollections extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-collection-title'), 1000, 690, false);
+        super(ac, Global.ln.get('window-collection-title'), 1000, 650, false);
     }
 
     /**
@@ -73,9 +73,9 @@ class WindowCollections extends PopupWindow {
     **/
     override public function startInterface(evt:Event = null):Void {
         this.ui.createHContainer('assetback');
-        this.ui.createButton('astbackok', Global.ln.get('window-collection-astbackok'), onAssetOk, this.ui.hcontainers['assetback']);
-        this.ui.createButton('astbackcancel', Global.ln.get('window-collection-astbackcancel'), onAssetCancel, this.ui.hcontainers['assetback']);
-        this.ui.hcontainers['assetback'].width = 960;
+        this.ui.createButton('astbackok', Global.ln.get('window-collection-astbackok'), onAssetOk, this.ui.hcontainers['assetback'], false);
+        this.ui.createButton('astbackcancel', Global.ln.get('window-collection-astbackcancel'), onAssetCancel, this.ui.hcontainers['assetback'], false);
+        this.ui.hcontainers['assetback'].setWidth(960);
 
         this.ui.createContainer('media', 0);
 
@@ -135,7 +135,7 @@ class WindowCollections extends PopupWindow {
                 { tp: 'Numeric', id: 'asttime', mn: 1, mx: 1000, st: 1, vl: 1 }, 
                 { tp: 'Spacer', id: 'asttime', ht: 10, ln: false },
                 { tp: 'Custom', cont: this.ui.hcontainers['spritemap'] }, 
-                { tp: 'Spacer', id: 'astback', ht: 15, ln: false },
+                { tp: 'Spacer', id: 'astback', ht: 90, ln: false },
                 { tp: 'Custom', cont: this.ui.hcontainers['assetback'] }
             ]);
         this.addForm(Global.ln.get('window-collection-asset'), this._astint);
@@ -158,9 +158,9 @@ class WindowCollections extends PopupWindow {
         ], -1, 311, 0));
 
         this.ui.createHContainer('assetorder');
-        this.ui.createIconButton('orderup', onAssetUp, new Bitmap(Assets.getBitmapData('btUp')), null, this.ui.hcontainers['assetorder']);
-        this.ui.createIconButton('orderdown', onAssetDown, new Bitmap(Assets.getBitmapData('btDown')), null, this.ui.hcontainers['assetorder']);
-        this.ui.hcontainers['assetorder'].width = 460;
+        this.ui.createIconButton('orderup', onAssetUp, new Bitmap(Assets.getBitmapData('btUp')), null, this.ui.hcontainers['assetorder'], false);
+        this.ui.createIconButton('orderdown', onAssetDown, new Bitmap(Assets.getBitmapData('btDown')), null, this.ui.hcontainers['assetorder'], false);
+        this.ui.hcontainers['assetorder'].setWidth(460);
 
         this._colint = this.ui.createColumnHolder('columns',
             this.ui.forge('leftcol', [
@@ -209,6 +209,7 @@ class WindowCollections extends PopupWindow {
         this.addForm(Global.ln.get('window-media-file'), this._colint);
         this.ui.setListToIcon('collections');
         this.ui.setListToIcon('assets');
+        this.ui.listDbClick('assets', this.onAssetProp);
 
         super.startInterface();
         this._forms.removeChild(this._astint);
@@ -614,7 +615,7 @@ class WindowCollections extends PopupWindow {
 
     private function onShapeShow(ok:Bool):Void {
         if (ok) {
-            this._shape.height = 150;
+            this._shape.height = 100;
             this._shape.width = this._shape.oWidth * (this._shape.height/this._shape.oHeight);
             this._shape.y = 0;
             this.ui.containers['shape'].addChild(this._shape);
@@ -775,16 +776,17 @@ class WindowCollections extends PopupWindow {
     **/
     private function createFileInput(num:Int, ac:Dynamic):HInterfaceContainer {
         this.ui.createHContainer('at'+num);
-        this.ui.createLabel('file@'+num, Global.ln.get('window-collection-astfiles'+num), '');
+        this.ui.createLabel('file@'+num, Global.ln.get('window-collection-astfiles'+num), '', null, false);
         this.ui.labels['file@'+num].width = 25;
         this.ui.hcontainers['at'+num].addChild(this.ui.labels['file@'+num]);
-        this.ui.createTInput('file@'+num, '', '');
+        this.ui.createTInput('file@'+num, '', '', null, false);
         this.ui.inputs['file@'+num].width = 875;
         this.ui.inputs['file@'+num].enabled = false;
         this.ui.hcontainers['at'+num].addChild(this.ui.inputs['file@'+num]);
-        this.ui.createIconButton('file@'+num, ac, new Bitmap(Assets.getBitmapData('btOpenfile')), null);
+        this.ui.createIconButton('file@'+num, ac, new Bitmap(Assets.getBitmapData('btOpenfile')), null, false);
         this.ui.buttons['file@'+num].width = 50;
         this.ui.hcontainers['at'+num].addChild(this.ui.buttons['file@'+num]);
+        this.ui.hcontainers['at'+num].setWidth(960, [50, 820, 70]);
         return(this.ui.hcontainers['at'+num]);
     }
 

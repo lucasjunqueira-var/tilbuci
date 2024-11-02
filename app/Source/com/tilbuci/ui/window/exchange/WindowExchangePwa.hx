@@ -24,7 +24,7 @@ class WindowExchangePwa extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-exchpwa-title'), 1000, 520, false);
+        super(ac, Global.ln.get('window-exchpwa-title'), 1000, 470, false);
     }
 
     /**

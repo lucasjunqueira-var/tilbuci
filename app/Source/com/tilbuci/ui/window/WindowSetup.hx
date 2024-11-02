@@ -51,9 +51,9 @@ class WindowSetup extends PopupWindow {
                 if (Global.ws.level == 0) levelval.push({ text: Global.ln.get('window-setup-users-listadmin'), value: 0 });
 
                 this.ui.createHContainer('users-setpass');
-                this.ui.createTInput('users-setpass', '', '', this.ui.hcontainers['users-setpass']);
-                this.ui.createButton('users-setpass', Global.ln.get('window-setup-users-setpass'), onSetUserPass,this.ui.hcontainers['users-setpass']);
-                this.ui.hcontainers['users-setpass'].width = 860;
+                this.ui.createTInput('users-setpass', '', '', this.ui.hcontainers['users-setpass'], false);
+                this.ui.createButton('users-setpass', Global.ln.get('window-setup-users-setpass'), onSetUserPass, this.ui.hcontainers['users-setpass'], false);
+                this.ui.hcontainers['users-setpass'].setWidth(860);
 
                 this.addForm(Global.ln.get('window-setup-users-title'), this.ui.forge('form-users', [
                     { tp: 'Label', id: 'users-list', tx: Global.ln.get('window-setup-users-list'), vr: '' }, 
@@ -148,7 +148,7 @@ class WindowSetup extends PopupWindow {
             var fnts:Array<Dynamic> = [ ];
             for (n in 0...Global.fonts.length) fnts.push({ text: Global.fonts[n], value: Global.fonts[n] });
             this.addForm(Global.ln.get('window-setup-font-title'), this.ui.forge('form-fonts', [
-                { tp: 'List', id: 'font-list', vl: fnts, ht: 190, sl: '' }, 
+                { tp: 'List', id: 'font-list', vl: fnts, ht: 240, sl: '' }, 
                 { tp: 'Button', id: 'font-delete', tx: Global.ln.get('window-setup-font-delete'), ac: this.onFontDelete }, 
                 { tp: 'Spacer', id: 'font-spacer', ht: 20, ln: true }, 
                 { tp: 'Button', id: 'font-add', tx: Global.ln.get('window-setup-font-add'), ac: this.onFontAdd },

@@ -69,6 +69,7 @@ import com.tilbuci.ui.window.WindowVisitors;
 import com.tilbuci.ui.window.movie.WindowMovieNew;
 import com.tilbuci.ui.window.movie.WindowMovieOpen;
 import com.tilbuci.ui.window.movie.WindowMovieProperties;
+import com.tilbuci.ui.window.movie.WindowMovieSequences;
 import com.tilbuci.ui.window.scene.WindowSceneNew;
 import com.tilbuci.ui.window.keyframe.WindowKeyframeManage;
 import com.tilbuci.ui.window.WindowLogin;
@@ -474,6 +475,9 @@ class Editor extends Drawer {
             case 'prop':
                 this.opened = false;
                 this.showWindow('propmovie');
+            case 'navigation':
+                this.opened = false;
+                this.showWindow('seqmovie');
             case 'users':
                 this.opened = false;
                 this.showWindow('usermovie');
@@ -1222,6 +1226,7 @@ class Editor extends Drawer {
                 case 'newmovie': this._windows['newmovie'] = new WindowMovieNew(actionMovie);
                 case 'openmovie': this._windows['openmovie'] = new WindowMovieOpen(actionMovie);
                 case 'propmovie': this._windows['propmovie'] = new WindowMovieProperties(actionMovie);
+                case 'seqmovie': this._windows['seqmovie'] = new WindowMovieSequences(actionMovie);
                 case 'usermovie': this._windows['usermovie'] = new WindowMovieUsers(actionMovie);
                 case 'removemovie': this._windows['removemovie'] = new WindowMovieRemove(actionMovie);
                 case 'pluginmovie': this._windows['pluginmovie'] = new WindowMoviePlugins(actionMovie);

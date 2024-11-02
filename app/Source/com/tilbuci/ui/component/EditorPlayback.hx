@@ -81,12 +81,6 @@ class EditorPlayback extends Panel {
         
         var tpskin:RectangleSkin = new RectangleSkin();
         tpskin.fill = SolidColor(0xcccccc);
-        /*var topLay:VerticalLayout = new VerticalLayout();
-        topLay.gap = 10;
-        topLay.setPadding(10);
-        topLay.verticalAlign = TOP;
-        topLay.horizontalAlign = CENTER;*/
-
 
         var topLay:AnchorLayout = new AnchorLayout();
 
@@ -166,10 +160,12 @@ class EditorPlayback extends Panel {
 
         this.ui.buttons['screen'].enabled = (GlobalPlayer.mdata.screen.type == 'both');
 
-        this.ui.buttons['play'].icon = new Bitmap(Assets.getBitmapData('btPlay'));
-        this.ui.buttons['play'].icon.width = this.ui.buttons['play'].icon.height = 20;
-
         PopUpManager.addPopUp(this, st);
+
+        GlobalPlayer.mode = Player.MODE_EDPLAYERWAIT;
+        GlobalPlayer.area.play();
+        this.ui.buttons['play'].icon = new Bitmap(Assets.getBitmapData('btPause'));
+        this.ui.buttons['play'].icon.width = this.ui.buttons['play'].icon.height = 20;
     }
 
     /**

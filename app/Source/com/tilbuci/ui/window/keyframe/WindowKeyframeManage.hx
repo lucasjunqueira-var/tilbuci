@@ -23,7 +23,7 @@ class WindowKeyframeManage extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-kfmanage-title'), 1000, 540, false);
+        super(ac, Global.ln.get('window-kfmanage-title'), 1000, 510, false);
     }
 
     /**
@@ -41,7 +41,7 @@ class WindowKeyframeManage extends PopupWindow {
             ]), 
             this.ui.forge('rightcol', [
                 { tp: 'Label', id: 'instances', tx: Global.ln.get('window-kfmanage-instances'), vr: 'detail' }, 
-                { tp: 'List', id: 'instances', vl: [ ], sl: null, ht: 402 },
+                { tp: 'List', id: 'instances', vl: [ ], sl: null, ht: 390 },
                 { tp: 'Button', id: 'removeinst', tx: Global.ln.get('window-kfmanage-instremove'), ac: removeInst }, 
             ])));
             super.startInterface();

@@ -26,7 +26,7 @@ class WindowLogin extends PopupWindow {
     public function new(ac:Dynamic) {
 
         // creating window
-        super(ac, Global.ln.get('window-login-title'), 500, 350, false, false);
+        super(ac, Global.ln.get('window-login-title'), 500, 300, false, false);
 
         // creating interface
         this.ui.createContainer('form');

@@ -39,7 +39,7 @@ class WindowExchangeImport extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-exchimport-title'), 800, 230, false);
+        super(ac, Global.ln.get('window-exchimport-title'), 800, 200, false);
     }
 
     /**

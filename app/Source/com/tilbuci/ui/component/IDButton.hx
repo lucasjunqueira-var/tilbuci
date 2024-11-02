@@ -14,14 +14,17 @@ class IDButton extends Button {
     **/
     public var btid:String;
 
+    public var autoResize:Bool = true;
+
     /**
         trigger action
     **/
     private var _ac:Dynamic = null;
 
-    public function new(id:String = '', ac:Dynamic = null, label:String = null, icon:BitmapData = null) {
+    public function new(id:String = '', ac:Dynamic = null, label:String = null, icon:BitmapData = null, autoR:Bool = true) {
         super();
         this.btid = id;
+        this.autoResize = autoR;
         if (label != null) this.text = label;
         if (icon != null) {
             var bmp:Bitmap = new Bitmap(icon);
@@ -30,7 +33,6 @@ class IDButton extends Button {
             this.icon = bmp;
         }
         if (ac != null) {
-            //this.addEventListener(TriggerEvent.TRIGGER, ac);
             this.addEventListener(MouseEvent.CLICK, ac);
             this._ac = ac;
         }

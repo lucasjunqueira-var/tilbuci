@@ -21,7 +21,7 @@ class WindowMediaEmbed extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-mdembed-title'), 1000, 340, false);
+        super(ac, Global.ln.get('window-mdembed-title'), 1000, 420, false);
     }
 
     /**
@@ -31,14 +31,14 @@ class WindowMediaEmbed extends PopupWindow {
         this.addForm('embed', this.ui.createColumnHolder('embedcol',
             this.ui.forge('left', [
                 { tp: 'Label', id: 'available', tx: Global.ln.get('window-mdembed-available'), vr: '' }, 
-                { tp: 'List', id: 'available', vl: [ ], sl: null, ht: 160 }, 
+                { tp: 'List', id: 'available', vl: [ ], sl: null, ht: 260 }, 
                 { tp: 'Button', id: 'show', tx: Global.ln.get('window-mdembed-show'), ac: this.onShow },
                 { tp: 'Button', id: 'remove', tx: Global.ln.get('window-mdembed-remove'), ac: this.onRemove },
             ]),
             this.ui.forge('right', [
                 { tp: 'Label', id: 'add', tx: Global.ln.get('window-mdembed-add'), vr: '' }, 
                 { tp: 'Label', id: 'addabout', tx: Global.ln.get('window-mdembed-addabout'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'Spacer', id: 'addabout', ht: 49, ln: false }, 
+                { tp: 'Spacer', id: 'addabout', ht: 172, ln: false }, 
                 { tp: 'Label', id: 'addname', tx: Global.ln.get('window-mdembed-addname'), vr: Label.VARIANT_DETAIL }, 
                 { tp: 'TInput', id: 'addname', vl: '', vr: '' }, 
                 { tp: 'Button', id: 'addselect', tx: Global.ln.get('window-mdembed-addselect'), ac: this.onSelectZip },

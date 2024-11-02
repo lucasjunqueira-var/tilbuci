@@ -19,6 +19,11 @@ class Scene extends BaseClass
 	 * is there a loaded scene?
 	 */
 	public $loaded = false;
+    
+    /**
+     * loaded scene unique id
+     */
+    public $uid = false;
 
 	/**
 	 * Constructor.
@@ -146,6 +151,7 @@ class Scene extends BaseClass
 					$ackeyframes[] = gzdecode(base64_decode($akf));
 				}
 			}
+            $this->uid = $ck[0]['sc_uid'];
 			$this->info = [
 				'title' => $ck[0]['sc_title'], 
 				'id' => $id, 
@@ -684,4 +690,28 @@ class Scene extends BaseClass
 			return (false);
 		}
 	}
+    
+    /**
+     * Saves the currently loded scene navigation sequence changes (using current UID).
+     */
+    public function saveSequence() {
+        if ($this->loaded) {
+            $this->execute('UPDATE scenes SET sc_published=:pub WHERE sc_movie=:mv AND sc_id=:id', [
+                ':pub' => '0', 
+                ':mv' => $this->info['movie'], 
+                ':id' => $this->info['id'], 
+            ]);
+            $this->execute('UPDATE scenes SET sc_published=:pub, sc_up=:up, sc_down=:down, sc_left=:left, sc_right=:right, sc_nin=:nin, sc_nout=:nout WHERE sc_uid=:uid', [
+                ':pub' => '1', 
+                ':up' => $this->info['navigation']['up'], 
+                ':down' => $this->info['navigation']['down'], 
+                ':left' => $this->info['navigation']['left'], 
+                ':right' => $this->info['navigation']['right'], 
+                ':nin' => $this->info['navigation']['nin'], 
+                ':nout' => $this->info['navigation']['nout'], 
+                ':uid' => $this->uid, 
+            ]);
+            $this->publish();
+        }
+    }
 }

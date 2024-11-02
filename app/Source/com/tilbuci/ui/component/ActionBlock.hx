@@ -46,6 +46,7 @@ class ActionBlock extends Panel {
 
     public function new(bl:BlockAction, wd:Float, ord:Int, clAc:Dynamic = null, dbClAc:Dynamic = null) {
         super();
+        this.doubleClickEnabled = true;
         this.blaction = bl;
         var vlay:VerticalLayout = new VerticalLayout();
         vlay.gap = 5;
@@ -57,6 +58,7 @@ class ActionBlock extends Panel {
         this.width = wd - 24;
         this.order = ord;
         this.isOpen = false;
+        this.mouseChildren = false;
         
         this._name = new Label((this.order + 1) + ': ' + Global.acInfo.getAcName(bl.ac) + Global.acInfo.getParamLine(bl.ac, bl.param));
         this._name.x = 5;
@@ -141,6 +143,12 @@ class ActionBlock extends Panel {
             this._clickAction = clAc;
             this._dbClickAction = dbClAc;
         }
+
+        for (ch in 0...this.numChildren) {
+            if (Reflect.hasField(this.getChildAt(ch), 'doubleClickEnabled')) {
+                Reflect.setField(this.getChildAt(ch), 'doubleClickEnabled', true);
+            }
+        }
     }
 
     public function setOrder(num:Int):Void {
@@ -188,6 +196,7 @@ class ActionBlock extends Panel {
         }
         this._name.text = (this.order + 1) + ': ' + Global.acInfo.getAcName(this.blaction.ac);
         this.isOpen = true;
+        this.mouseChildren = true;
     }
 
     public function closeAll():Void {
@@ -212,6 +221,7 @@ class ActionBlock extends Panel {
         }
         this._name.text = (this.order + 1) + ': ' + Global.acInfo.getAcName(this.blaction.ac) + Global.acInfo.getParamLine(this.blaction.ac, this.blaction.param);
         this.isOpen = false;
+        this.mouseChildren = false;
     }
 
     public function refresh() {

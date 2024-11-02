@@ -63,7 +63,7 @@ class WindowMediaBase extends PopupWindow {
     **/
     public function new(ac:Dynamic, title:String, type:String, mode:String) {
         // creating window
-        super(ac, title, 1000, 690, false);
+        super(ac, title, 1000, 650, false);
         this._type = type;
         this._mode = mode;
         this._preview = new MediaPreview(type, 460, 460);
@@ -80,9 +80,9 @@ class WindowMediaBase extends PopupWindow {
         } else {
             // new folder interface
             var nf:HInterfaceContainer = this.ui.createHContainer('newfolder');
-            nf.addChild(this.ui.createTInput('newfolder'));
-            nf.addChild(this.ui.createButton('newfolder', Global.ln.get('window-media-newfolder'), onNewFolder));
-            nf.width = 960;
+            nf.addChild(this.ui.createTInput('newfolder', '', '', null, false));
+            nf.addChild(this.ui.createButton('newfolder', Global.ln.get('window-media-newfolder'), onNewFolder, null, false));
+            nf.setWidth(960);
 
             // create interface
             this.addForm(Global.ln.get('window-media-file'), this.ui.createColumnHolder('columns',

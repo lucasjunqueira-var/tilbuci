@@ -23,7 +23,7 @@ class WindowMovieUsers extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-movieusers-title'), 700, 400, true);
+        super(ac, Global.ln.get('window-movieusers-title'), 700, 370, true);
     }
 
     /**
@@ -47,7 +47,7 @@ class WindowMovieUsers extends PopupWindow {
             { tp: 'TInput', id: 'ownernew', tx: '', vr: '' },  
             { tp: 'Label', id: 'ownernew', tx: Global.ln.get('window-movieusers-ownernew2'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'TInput', id: 'ownernew2', tx: '', vr: '' },  
-            { tp: 'Spacer', id: 'themespacer2', ht: 70, ln: false }, 
+            { tp: 'Spacer', id: 'themespacer2', ht: 80, ln: false }, 
             { tp: 'Button', id: 'ownerchange', tx: Global.ln.get('window-movieusers-ownerchange'), ac: this.onChangeOwner }
         ]));
 

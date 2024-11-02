@@ -46,7 +46,7 @@ class OverlayPlugin extends Plugin {
         // add plugin button
         this.addMenu('Overlay', onOverlay);
         // create plugin config window
-        this._confWindow = new PluginWindow('Overlay', 500, 180);
+        this._confWindow = new PluginWindow('Overlay', 500, 150);
         this._confWindow.addForm('config', this._confWindow.ui.forge('config', [
             { tp: 'Label', id: 'overlay', tx: 'Secret KEY for server communication', vr: '' }, 
             { tp: 'TInput', id: 'overlay', tx: '', vr: '' }, 

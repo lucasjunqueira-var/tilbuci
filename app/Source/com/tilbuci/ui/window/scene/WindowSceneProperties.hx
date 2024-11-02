@@ -52,7 +52,7 @@ class WindowSceneProperties extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-sceneprop-windowtitle'), 1000, 640, true);
+        super(ac, Global.ln.get('window-sceneprop-windowtitle'), 1000, 590, true);
     }
 
     /**
@@ -95,14 +95,14 @@ class WindowSceneProperties extends PopupWindow {
             { tp: 'Select', id: 'nvin', vl: [ ], sl: '' },
             { tp: 'Label', id: 'nvout', tx: Global.ln.get('window-sceneprop-nvout'), vr: '' }, 
             { tp: 'Select', id: 'nvout', vl: [ ], sl: '' },
-            { tp: 'Spacer', id: 'navigation', ht: 130, ln: false }, 
+            { tp: 'Spacer', id: 'navigation', ht: 148, ln: false }, 
             { tp: 'Button', id: 'navigation', tx: Global.ln.get('window-sceneprop-setbt'), ac: this.onSave }, 
         ]));
 
         // start actions
         var acstart:InterfaceContainer = this.ui.createContainer('acstart');
         acstart.addChild(this.ui.createLabel('acstartlabel', Global.ln.get('window-sceneprop-acstartabout'), Label.VARIANT_DETAIL));
-        this._acstart = new ActionArea(956, 446);
+        this._acstart = new ActionArea(956, 435);
         this._acstart.setText(GlobalPlayer.movie.scene.acstart);
         acstart.addChild(this._acstart);
         acstart.addChild(this.ui.createSpacer('acstartspacer', 15));

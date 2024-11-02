@@ -1,6 +1,8 @@
 package com.tilbuci.data;
 
 /** OPENFL **/
+import hscript.Interp;
+import hscript.Parser;
 import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.ui.component.BlockArea.BlockAction;
 import com.tilbuci.ui.component.WindowBlockEdit;
@@ -227,6 +229,33 @@ class Global {
         @param  txt the window id.
     **/
     public static var showWindow:Dynamic = null;
+
+    /**
+        Haxe expression parser.
+    **/
+    public static var parser:Parser;
+
+    /**
+        Haxe expression interpreter.
+    **/
+    public static var interp:Interp;
+
+    /**
+        Evaluates a haxe expression.
+        @param  expr    the expression
+        @return the result or null on failure
+    **/
+    public static function evaluate(expr:String):Dynamic {
+        if (Global.parser == null) Global.parser = new Parser();
+        if (Global.interp == null) Global.interp = new Interp();
+        var ret:Dynamic;
+        try {
+            ret = Global.interp.execute(Global.parser.parseString(expr));
+        } catch (e) {
+            ret = null;
+        }
+        return (ret);
+    }
 
     /**
         Sets the browser address bar content.

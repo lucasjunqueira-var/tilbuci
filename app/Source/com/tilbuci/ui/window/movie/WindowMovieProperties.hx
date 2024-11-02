@@ -1,6 +1,7 @@
 package com.tilbuci.ui.window.movie;
 
 /** HAXE **/
+import feathers.controls.LayoutGroup;
 import com.tilbuci.display.PictureImage;
 import openfl.utils.ByteArray;
 import openfl.net.URLRequest;
@@ -28,6 +29,7 @@ import com.tilbuci.ui.base.InterfaceContainer;
 import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.data.GlobalPlayer;
 import com.tilbuci.ui.component.ActionArea;
+import com.tilbuci.ui.base.HPanelContainer;
 
 class WindowMovieProperties extends PopupWindow {
 
@@ -114,12 +116,12 @@ class WindowMovieProperties extends PopupWindow {
                 { tp: 'Label', id: 'movieindex', tx: Global.ln.get('window-movieprop-index'), vr: Label.VARIANT_DETAIL }, 
                 { tp: 'Select', id: 'movieindex', vl: [ ], sl: '' },
                 { tp: 'Label', id: 'movieabout', tx: Global.ln.get('window-movienew-about'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'TArea', id: 'movieabout', tx: '', vr: '', en: true, ht: 70 }, 
+                { tp: 'TArea', id: 'movieabout', tx: '', vr: '', en: true, ht: 130 }, 
                 { tp: 'Custom', cont: this.ui.hcontainers['images'] }, 
             ]), 
             this.ui.forge('bottomabout', [
                 { tp: 'Button', id: 'saveabout', tx: Global.ln.get('window-movieprop-saveabout'), ac: this.onSaveAbout }
-            ]), 420));
+            ]), 440));
 
         // animation
         this.addForm(Global.ln.get('window-movieprop-animation'), this.ui.forge('anim', [
@@ -182,7 +184,7 @@ class WindowMovieProperties extends PopupWindow {
                 { tp: 'Label', id: 'moviehighlight', tx: Global.ln.get('window-movieprop-highlight'), vr: Label.VARIANT_DETAIL }, 
                 { tp: 'TInput', id: 'moviehighlight', tx: '', vr: '' },  
 
-                { tp: 'Spacer', id: 'animspacer', ht: 183 }, 
+                { tp: 'Spacer', id: 'animspacer', ht: 235 }, 
                 { tp: 'Button', id: 'saveanim', tx: Global.ln.get('window-movieprop-saveanim'), ac: this.onSaveAnim }
         ]));
 
@@ -201,7 +203,7 @@ class WindowMovieProperties extends PopupWindow {
                 ], sl: 'both' }, 
             { tp: 'Label', id: 'moviecolor', tx: Global.ln.get('window-movieprop-bgcolor'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'TInput', id: 'moviecolor', tx: '', vr: '' },  
-            { tp: 'Spacer', id: 'displayspacer', ht: 155 }, 
+            { tp: 'Spacer', id: 'displayspacer', ht: 210 }, 
             { tp: 'Button', id: 'savedisplay', tx: Global.ln.get('window-movieprop-savedisplay'), ac: this.onSaveDisplay }, 
             { tp: 'Label', id: 'savedisplay', tx: Global.ln.get('window-movieprop-savedisplayabout'), vr: Label.VARIANT_DETAIL }
         ]));
@@ -213,20 +215,20 @@ class WindowMovieProperties extends PopupWindow {
         this._cssArea = new CodeArea('css');
         cssform.addChild(this._cssArea);
         this._cssArea.width = 1156;
-        this._cssArea.height = 376;
+        this._cssArea.height = 400;
         cssform.addChild(this.ui.createSpacer('cssspacer', 15));
         cssform.addChild(this.ui.createButton('savecss', Global.ln.get('window-movieprop-savecss'), this.onSaveCss ));
         this.addForm(Global.ln.get('window-movieprop-css'), cssform);
 
         // fonts
         var cont:HInterfaceContainer = new HInterfaceContainer();
-        cont.addChild(this.ui.createButton('fontmoviecopy', Global.ln.get('window-movieprop-fontcopymv'), this.onFontMovie));
-        cont.addChild(this.ui.createButton('fontmovieremove', Global.ln.get('window-movieprop-fontdeletemv'), this.onFontMovie));
-        cont.width = 560;
+        cont.addChild(this.ui.createButton('fontmoviecopy', Global.ln.get('window-movieprop-fontcopymv'), this.onFontMovie, null, false));
+        cont.addChild(this.ui.createButton('fontmovieremove', Global.ln.get('window-movieprop-fontdeletemv'), this.onFontMovie, null, false));
+        cont.setWidth(560);
         var upfont:HInterfaceContainer = new HInterfaceContainer();
-        upfont.addChild(this.ui.createButton('fontadd', Global.ln.get('window-movieprop-fontselect'), this.onFontAdd));
-        upfont.addChild(this.ui.createButton('fontupload', Global.ln.get('window-movieprop-fontupload'), this.onFontUpload));
-        upfont.width = 560;
+        upfont.addChild(this.ui.createButton('fontadd', Global.ln.get('window-movieprop-fontselect'), this.onFontAdd, null, false));
+        upfont.addChild(this.ui.createButton('fontupload', Global.ln.get('window-movieprop-fontupload'), this.onFontUpload, null, false));
+        upfont.setWidth(560);
         var fnts:Array<Dynamic> = [ ];
         for (n in 0...Global.fonts.length) fnts.push({ text: Global.fonts[n], value: Global.fonts[n] });
         var arf:Array<Dynamic> = [ ];
@@ -234,12 +236,12 @@ class WindowMovieProperties extends PopupWindow {
         this.addForm(Global.ln.get('window-movieprop-fonts'), this.ui.createColumnHolder('fonts', 
             this.ui.forge('systemfonts', [
                 { tp: 'Label', id: 'fontssystem', tx: Global.ln.get('window-movieprop-systemfonts'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'List', id: 'fontssystemlist', vl: fnts, ht: 393, sl: '' }, 
+                { tp: 'List', id: 'fontssystemlist', vl: fnts, ht: 415, sl: '' }, 
                 { tp: 'Button', id: 'fontssystembt', tx: Global.ln.get('window-movieprop-fontcopy'), ac: this.onFontSystem }
             ]),
             this.ui.forge('moviefonts', [
                 { tp: 'Label', id: 'fontsmovie', tx: Global.ln.get('window-movieprop-moviefonts'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'List', id: 'fontsmovielist', vl: arf, ht: 209, sl: '' }, 
+                { tp: 'List', id: 'fontsmovielist', vl: arf, ht: 252, sl: '' }, 
                 { tp: 'Custom', cont: cont }, 
                 { tp: 'Spacer', id: 'fontspacer', ht: 20, ln: false }, 
                 { tp: 'Label', id: 'fontfile', tx: Global.ln.get('window-setup-font-file'), vr: Label.VARIANT_DETAIL }, 
@@ -253,14 +255,14 @@ class WindowMovieProperties extends PopupWindow {
 
         // action snippets
         var snlist:HInterfaceContainer = new HInterfaceContainer();
-        snlist.addChild(this.ui.createButton('snippetsload', Global.ln.get('window-movieprop-snippetsload'), this.onSnLoad));
-        snlist.addChild(this.ui.createButton('snippetsdel', Global.ln.get('window-movieprop-snippetsdel'), this.onSnDel));
-        snlist.width = 560;
-        this._acsnippet = new ActionArea(560, 280);
+        snlist.addChild(this.ui.createButton('snippetsload', Global.ln.get('window-movieprop-snippetsload'), this.onSnLoad, null, false));
+        snlist.addChild(this.ui.createButton('snippetsdel', Global.ln.get('window-movieprop-snippetsdel'), this.onSnDel, null, false));
+        snlist.setWidth(560);
+        this._acsnippet = new ActionArea(560, 314);
         this.addForm(Global.ln.get('window-movieprop-snippets'), this.ui.createColumnHolder('snippets', 
             this.ui.forge('leftsnippets', [
                 { tp: 'Label', id: 'snippetslist', tx: Global.ln.get('window-movieprop-snippetslist'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'List', id: 'snippetslist', vl: [ ], ht:342, sl: '' },  
+                { tp: 'List', id: 'snippetslist', vl: [ ], ht:360, sl: '' },  
                 { tp: 'Custom', cont: snlist }
             ]), 
             this.ui.forge('rightsnippets', [
@@ -272,7 +274,7 @@ class WindowMovieProperties extends PopupWindow {
             ]), 
             this.ui.forge('bottomsnippets', [
                 { tp: 'Button', id: 'snippetssave', tx: Global.ln.get('window-movieprop-snippetssave'), ac: this.onSaveSnippets }
-            ]), 420
+            ]), 440
         ));
         this.ui.containers['bottomsnippets'].width = 1200;
         this.snippetsList();
@@ -280,7 +282,7 @@ class WindowMovieProperties extends PopupWindow {
         // start actions
         var acstart:InterfaceContainer = this.ui.createContainer('acstart');
         acstart.addChild(this.ui.createLabel('acstartlabel', Global.ln.get('window-movieprop-acstartabout'), Label.VARIANT_DETAIL));
-        this._acstart = new ActionArea(1156, 376);
+        this._acstart = new ActionArea(1156, 405);
         this._acstart.setText(GlobalPlayer.mdata.acstart);
         acstart.addChild(this._acstart);
         acstart.addChild(this.ui.createSpacer('acstartspacer', 15));
@@ -289,40 +291,40 @@ class WindowMovieProperties extends PopupWindow {
 
         // texts
         var txlist:HInterfaceContainer = new HInterfaceContainer();
-        txlist.addChild(this.ui.createButton('textsload', Global.ln.get('window-movieprop-textsload'), this.onTxtLoad));
-        txlist.addChild(this.ui.createButton('textsdel', Global.ln.get('window-movieprop-textsdel'), this.onTxtDel));
-        txlist.width = 560;
+        txlist.addChild(this.ui.createButton('textsload', Global.ln.get('window-movieprop-textsload'), this.onTxtLoad, null, false));
+        txlist.addChild(this.ui.createButton('textsdel', Global.ln.get('window-movieprop-textsdel'), this.onTxtDel, null, false));
+        txlist.setWidth(560);
         this.addForm(Global.ln.get('window-movieprop-texts'), this.ui.createColumnHolder('texts', 
             this.ui.forge('lefttexts', [
                 { tp: 'Label', id: 'textslist', tx: Global.ln.get('window-movieprop-textslist'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'List', id: 'textslist', vl: [ ], ht:342, sl: '' },  
+                { tp: 'List', id: 'textslist', vl: [ ], ht:360, sl: '' },  
                 { tp: 'Custom', cont: txlist }
             ]), 
             this.ui.forge('righttexts', [
                 { tp: 'Label', id: 'textsname', tx: Global.ln.get('window-movieprop-textsname'), vr: Label.VARIANT_DETAIL }, 
                 { tp: 'TInput', id: 'textsname', tx: '', vr: '' },  
                 { tp: 'Label', id: 'textsvalue', tx: Global.ln.get('window-movieprop-textsvalue'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'TArea', id: 'textsvalue', tx: '', vr: '', en: true, ht: 212 }, 
+                { tp: 'TArea', id: 'textsvalue', tx: '', vr: '', en: true, ht: 250 }, 
                 { tp: 'Button', id: 'textsadd', tx: Global.ln.get('window-movieprop-textsadd'), ac: this.onTxtAdd },
                 { tp: 'Button', id: 'stringssend', tx: Global.ln.get('window-movieprop-stringssend'), ac: this.onStrSend },
                 { tp: 'Button', id: 'stringsget', tx: Global.ln.get('window-movieprop-stringsget'), ac: this.onStrGet }
             ]), 
             this.ui.forge('bottomtexts', [
                 { tp: 'Button', id: 'textsssave', tx: Global.ln.get('window-movieprop-textssave'), ac: this.onSaveTexts }
-            ]), 420
+            ]), 440
         ));
         this.ui.containers['bottomtexts'].width = 1200;
         this.textsList();
 
         // numbers
         var numlist:HInterfaceContainer = new HInterfaceContainer();
-        numlist.addChild(this.ui.createButton('numbersload', Global.ln.get('window-movieprop-numbersload'), this.onNumLoad));
-        numlist.addChild(this.ui.createButton('numbersdel', Global.ln.get('window-movieprop-numbersdel'), this.onNumDel));
-        numlist.width = 560;
+        numlist.addChild(this.ui.createButton('numbersload', Global.ln.get('window-movieprop-numbersload'), this.onNumLoad, null, false));
+        numlist.addChild(this.ui.createButton('numbersdel', Global.ln.get('window-movieprop-numbersdel'), this.onNumDel, null, false));
+        numlist.setWidth(560);
         this.addForm(Global.ln.get('window-movieprop-numbers'), this.ui.createColumnHolder('numbers', 
             this.ui.forge('leftnumbers', [
                 { tp: 'Label', id: 'numberslist', tx: Global.ln.get('window-movieprop-numberslist'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'List', id: 'numberslist', vl: [ ], ht:342, sl: '' },  
+                { tp: 'List', id: 'numberslist', vl: [ ], ht:360, sl: '' },  
                 { tp: 'Custom', cont: numlist }
             ]), 
             this.ui.forge('rightnumbers', [
@@ -335,20 +337,20 @@ class WindowMovieProperties extends PopupWindow {
             ]), 
             this.ui.forge('bottomnumbers', [
                 { tp: 'Button', id: 'numbersssave', tx: Global.ln.get('window-movieprop-numberssave'), ac: this.onSaveNumbers }
-            ]), 420
+            ]), 440
         ));
         this.ui.containers['bottomnumbers'].width = 1200;
         this.numbersList();
 
         // flags
         var flaglist:HInterfaceContainer = new HInterfaceContainer();
-        flaglist.addChild(this.ui.createButton('flagsload', Global.ln.get('window-movieprop-flagsload'), this.onFlagLoad));
-        flaglist.addChild(this.ui.createButton('flagsdel', Global.ln.get('window-movieprop-flagsdel'), this.onFlagDel));
-        flaglist.width = 560;
+        flaglist.addChild(this.ui.createButton('flagsload', Global.ln.get('window-movieprop-flagsload'), this.onFlagLoad, null, false));
+        flaglist.addChild(this.ui.createButton('flagsdel', Global.ln.get('window-movieprop-flagsdel'), this.onFlagDel, null, false));
+        flaglist.setWidth(560);
         this.addForm(Global.ln.get('window-movieprop-flags'), this.ui.createColumnHolder('flags', 
             this.ui.forge('leftflags', [
                 { tp: 'Label', id: 'flagslist', tx: Global.ln.get('window-movieprop-flagslist'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'List', id: 'flagslist', vl: [ ], ht:342, sl: '' },  
+                { tp: 'List', id: 'flagslist', vl: [ ], ht:360, sl: '' },  
                 { tp: 'Custom', cont: flaglist }
             ]), 
             this.ui.forge('rightflags', [
@@ -361,7 +363,7 @@ class WindowMovieProperties extends PopupWindow {
             ]), 
             this.ui.forge('bottomflags', [
                 { tp: 'Button', id: 'flagsssave', tx: Global.ln.get('window-movieprop-flagssave'), ac: this.onSaveFlags }
-            ]), 420
+            ]), 440
         ));
         this.ui.containers['bottomflags'].width = 1200;
         this.flagsList();
@@ -373,7 +375,7 @@ class WindowMovieProperties extends PopupWindow {
             this.ui.createTInput(fn, '', '', thArea);
         }
         thArea.width = 1160;
-        thArea.height = 370;
+        thArea.height = 400;
         this.addForm(Global.ln.get('window-movieprop-theme'), this.ui.forge('theme', [
             { tp: 'Label', id: 'themeabout', tx: Global.ln.get('window-movieprop-themeabout'), vr: '' }, 
             { tp: 'Custom', cont: thArea }, 
@@ -396,14 +398,14 @@ class WindowMovieProperties extends PopupWindow {
         for (k in GlobalPlayer.mdata.inputs.keys()) {
             this.ui.createLabel(('input-'+k), Global.ln.get('window-movieprop-input-'+k), Label.VARIANT_DETAIL, inArea);
             var inLine:HInterfaceContainer = new HInterfaceContainer();
-            this.ui.createSelect(('input-'+k), inOptions, null, inLine);
-            this.ui.createTInput(('input-'+k), '', '', inLine);
-            inLine.width = 1140;
+            this.ui.createSelect(('input-'+k), inOptions, null, inLine, false);
+            this.ui.createTInput(('input-'+k), '', '', inLine, false);
+            inLine.setWidth(1140);
             inArea.addChild(inLine);
             this.ui.createSpacer(('input-'+k), 5, false, inArea);
         }
         inArea.width = 1160;
-        inArea.height = 370;
+        inArea.height = 400;
         this.addForm(Global.ln.get('window-movieprop-input'), this.ui.forge('input', [
             { tp: 'Label', id: 'inputabout', tx: Global.ln.get('window-movieprop-inputabout'), vr: '' }, 
             { tp: 'Custom', cont: inArea }, 
@@ -421,7 +423,7 @@ class WindowMovieProperties extends PopupWindow {
             this.ui.createToggle(('pl-' + pl.plname), active, plArea);
         }
         plArea.width = 1060;
-        plArea.height = 380;
+        plArea.height = 400;
         this.addForm(Global.ln.get('window-movieprop-plugins'), this.ui.forge('plugins', [
             { tp: 'Label', id: 'plugins', tx: Global.ln.get('window-movieprop-plavailable'), vr: '' }, 
             { tp: 'Custom', cont: plArea }, 
@@ -439,7 +441,7 @@ class WindowMovieProperties extends PopupWindow {
                 { text: Global.ln.get('window-movieprop-accessyes'), value: true }, 
             ], sl: null }, 
             { tp: 'Label', id: 'group', tx: Global.ln.get('window-movieprop-accessgroup'), vr: Label.VARIANT_DETAIL }, 
-            { tp: 'List', id: 'group', vl: [ ], sl: [ ], ht: 200 }, 
+            { tp: 'List', id: 'group', vl: [ ], sl: [ ], ht: 245 }, 
             { tp: 'Label', id: 'fallback', tx: Global.ln.get('window-movieprop-accessfallback'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'Select', id: 'fallback', vl: [ ], sl: [ ] }, 
             { tp: 'Spacer', id: 'access', ht: 12, ln: false }, 
@@ -960,6 +962,8 @@ trace ('data', data);
         var lst:Array<Dynamic> = [ ];
         for (i in 0...GlobalPlayer.mdata.actions.length) lst.push({ text: GlobalPlayer.mdata.actions[i].name, value: GlobalPlayer.mdata.actions[i].ac });
         this.ui.setListValues('snippetslist', lst);
+        this._acsnippet.setText('');
+        this.ui.inputs['snippetsname'].text = '';
     }
 
     /**

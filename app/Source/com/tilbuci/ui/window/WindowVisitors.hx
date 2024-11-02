@@ -40,16 +40,16 @@ class WindowVisitors extends PopupWindow {
     public function new(ac:Dynamic, build:BuildInfo) {
 
         // creating window
-        super(ac, Global.ln.get('window-visitors-title'), 1000, 650, true, true);
+        super(ac, Global.ln.get('window-visitors-title'), 1000, 560, true, true);
 
         // visitors list
         this.ui.createHContainer('listfilter');
-        this.ui.createTInput('listfilter', '', '', this.ui.hcontainers['listfilter']);
-        this.ui.createButton('listfilter', Global.ln.get('window-visitors-list-btfilter'), onListVisitor, this.ui.hcontainers['listfilter']);
+        this.ui.createTInput('listfilter', '', '', this.ui.hcontainers['listfilter'], false);
+        this.ui.createButton('listfilter', Global.ln.get('window-visitors-list-btfilter'), onListVisitor, this.ui.hcontainers['listfilter'], false);
         this.addForm(Global.ln.get('window-visitors-list-title'), this.ui.createColumnHolder('visitors',
             this.ui.forge('visitors-left', [
                 { tp: 'Label', id: 'list', tx: Global.ln.get('window-visitors-list'), vr: '' }, 
-                { tp: 'List', id: 'list', vl: [ ], sl: '', ht: 420 }, 
+                { tp: 'List', id: 'list', vl: [ ], sl: '', ht: 353 }, 
                 { tp: 'Button', id: 'list', tx: Global.ln.get('window-visitors-list-button'), ac: this.onSelectVisitor },
                 { tp: 'Spacer', id: 'list', ht: 20, ln: true }, 
                 { tp: 'Custom', cont: this.ui.hcontainers['listfilter'] }
@@ -74,7 +74,7 @@ class WindowVisitors extends PopupWindow {
                 { tp: 'Button', id: 'blvisitor', tx: Global.ln.get('window-visitors-list-blvisitor'), ac: this.onBlockVisitor },
             ])
         ));
-        this.ui.hcontainers['listfilter'].width = 460;
+        this.ui.hcontainers['listfilter'].setWidth(460);
         this.ui.setListToIcon('list');
         //this.ui.inputs['visitoremail'].enabled = false;
         this.ui.inputs['visitorcreated'].enabled = false;
@@ -87,15 +87,15 @@ class WindowVisitors extends PopupWindow {
 
         // grups
         this.ui.createHContainer('creategr');
-        this.ui.createTInput('creategr', '', '', this.ui.hcontainers['creategr']);
-        this.ui.createButton('creategr', Global.ln.get('window-visitors-creategrbt'), onCreateGroup, this.ui.hcontainers['creategr']);
+        this.ui.createTInput('creategr', '', '', this.ui.hcontainers['creategr'], false);
+        this.ui.createButton('creategr', Global.ln.get('window-visitors-creategrbt'), onCreateGroup, this.ui.hcontainers['creategr'], false);
         this.ui.createHContainer('grvsadd');
-        this.ui.createTInput('grvsadd', '', '', this.ui.hcontainers['grvsadd']);
-        this.ui.createButton('grvsadd', Global.ln.get('window-visitors-grvsadd'), onAddVisitor, this.ui.hcontainers['grvsadd']);
+        this.ui.createTInput('grvsadd', '', '', this.ui.hcontainers['grvsadd'], false);
+        this.ui.createButton('grvsadd', Global.ln.get('window-visitors-grvsadd'), onAddVisitor, this.ui.hcontainers['grvsadd'], false);
         this.addForm(Global.ln.get('window-visitors-groups-title'), this.ui.createColumnHolder('groups',
             this.ui.forge('groups-left', [
                 { tp: 'Label', id: 'grlist', tx: Global.ln.get('window-visitors-grlist'), vr: '' }, 
-                { tp: 'List', id: 'grlist', vl: [ ], sl: '', ht: 386 }, 
+                { tp: 'List', id: 'grlist', vl: [ ], sl: '', ht: 323 }, 
                 { tp: 'Button', id: 'showgroup', tx: Global.ln.get('window-visitors-showgroup'), ac: this.onShowGroup },
                 { tp: 'Button', id: 'rmgroup', tx: Global.ln.get('window-visitors-removegrbt'), ac: this.onRemoveGroup },
                 { tp: 'Spacer', id: 'grlist', ht: 20, ln: true }, 
@@ -107,13 +107,13 @@ class WindowVisitors extends PopupWindow {
                 { tp: 'Button', id: 'grnamechange', tx: Global.ln.get('window-visitors-grnamechange'), ac: this.onGroupNameChange },
                 { tp: 'Spacer', id: 'grvisitors', ht: 10, ln: false }, 
                 { tp: 'Label', id: 'grvisitors', tx: Global.ln.get('window-visitors-grvisitors'), vr: '' }, 
-                { tp: 'List', id: 'grvisitors', vl: [ ], sl: '', ht: 330 }, 
+                { tp: 'List', id: 'grvisitors', vl: [ ], sl: '', ht: 280 }, 
                 { tp: 'Button', id: 'grvisitors', tx: Global.ln.get('window-visitors-grvsremove'), ac: this.onRemoveVisitorGroup },
                 { tp: 'Custom', cont: this.ui.hcontainers['grvsadd'] }
             ])
         ));
-        this.ui.hcontainers['creategr'].width = 460;
-        this.ui.hcontainers['grvsadd'].width = 460;
+        this.ui.hcontainers['creategr'].setWidth(460);
+        this.ui.hcontainers['grvsadd'].setWidth(460);
         this.ui.setListToIcon('grlist');
 
         // events
@@ -124,7 +124,7 @@ class WindowVisitors extends PopupWindow {
             { tp: 'Label', id: 'evname', tx: Global.ln.get('window-visitors-event-name'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'TInput', id: 'evname', tx: '', vr: ''},  
             { tp: 'Button', id: 'evexport', tx: Global.ln.get('window-visitors-event-export'), ac: this.onExportEvents },
-            { tp: 'Spacer', id: 'evexport', ht: 120, ln: true },
+            { tp: 'Spacer', id: 'evexport', ht: 90, ln: true },
             { tp: 'Label', id: 'evclear', tx: Global.ln.get('window-visitors-event-clear'), vr: '' }, 
             { tp: 'Label', id: 'clearmovie', tx: Global.ln.get('window-visitors-event-movie'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'Select', id: 'clearmovie', vl: [ ], sl: null }, 
@@ -146,7 +146,7 @@ class WindowVisitors extends PopupWindow {
         this.addForm(Global.ln.get('window-visitors-cors-title'), this.ui.forge('cors', [
             { tp: 'Label', id: 'corsabout', tx: Global.ln.get('window-visitors-cors-about'), vr: '' }, 
             { tp: 'Label', id: 'corsallowed', tx: Global.ln.get('window-visitors-cors-allowed'), vr: Label.VARIANT_DETAIL }, 
-            { tp: 'List', id: 'corsallowed', vl: [ ], sl: '', ht: 290 }, 
+            { tp: 'List', id: 'corsallowed', vl: [ ], sl: '', ht: 240 }, 
             { tp: 'Button', id: 'corsrm', tx: Global.ln.get('window-visitors-cors-btremove'), ac: this.onRemoveCors },
             { tp: 'Spacer', id: 'corsrm', ht: 15, ln: false }, 
             { tp: 'Label', id: 'corsadd', tx: Global.ln.get('window-visitors-cors-add'), vr: Label.VARIANT_DETAIL }, 

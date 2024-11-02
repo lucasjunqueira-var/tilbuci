@@ -28,13 +28,13 @@ class WindowActionBlock extends PopupWindow {
     **/
     public function new(ac:Dynamic = null) {
         // creating window
-        super(ac, Global.ln.get('window-actions-block'), 980, 550, false);
+        super(ac, Global.ln.get('window-actions-block'), 980, 530, false);
 
         // create columns
         this.addForm('blocks', this.ui.createColumnHolder('available',
             this.ui.forge('left', [
                 { tp: 'Label', id: 'groups', tx: Global.ln.get('window-actions-blockgroups'), vr: '' }, 
-                { tp: 'List', id: 'groups', vl: [ ], sl: '', ht: 443, ch: onGroupChange }, 
+                { tp: 'List', id: 'groups', vl: [ ], sl: '', ht: 440, ch: onGroupChange }, 
             ]), 
             this.ui.forge('right', [
                 { tp: 'Label', id: 'available', tx: Global.ln.get('window-actions-blockavailable'), vr: '' }, 

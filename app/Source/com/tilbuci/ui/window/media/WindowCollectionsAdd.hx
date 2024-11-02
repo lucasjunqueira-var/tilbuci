@@ -61,6 +61,7 @@ class WindowCollectionsAdd extends PopupWindow {
         this.addForm(Global.ln.get('window-media-file'), this._colint);
         this.ui.setListToIcon('collections');
         this.ui.setListToIcon('assets');
+        this.ui.listDbClick('assets', this.onAssetAdd);
 
         super.startInterface();
     }

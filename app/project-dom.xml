@@ -15,6 +15,7 @@
 	<haxelib name="feathersui" />
 	<haxelib name="crypto" />
 	<haxelib name="moonshine-feathersui-text-editor" />
+	<haxelib name="hscript" />
 
 	<!-- renderer -->
 	<define name="dom" if="html5" />
@@ -101,7 +102,7 @@
 	<assets id="btToDown" path="assets/icons/btToDown.png"/>
 	<assets id="btToMiddle" path="assets/icons/btToMiddle.png"/>
 	<assets id="btVisitors" path="assets/icons/btVisitors.png"/>
-	<assets id="btNarrative" path="assets/icons/btNarrative.png"/>
+	<assets id="btContraptions" path="assets/icons/btContraptions.png"/>
 	<assets id="iconMove" path="assets/icons/iconMove.png"/>
 	<assets id="iconResizeH" path="assets/icons/iconResizeH.png"/>
 	<assets id="iconResizeV" path="assets/icons/iconResizeV.png"/>

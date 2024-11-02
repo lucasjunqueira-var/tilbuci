@@ -41,7 +41,7 @@ class WindowAction extends PopupWindow {
     **/
     public function new(ac:Dynamic = null) {
         // creating window
-        super(ac, Global.ln.get('window-actions-title'), 980, 550, false);
+        super(ac, Global.ln.get('window-actions-title'), 980, 530, false);
     }
 
     /**
@@ -54,9 +54,9 @@ class WindowAction extends PopupWindow {
 
         // buttons
         var btContainer:HInterfaceContainer = this.ui.createHContainer('buttons');
-        this.ui.createButton('btcancel', Global.ln.get('window-actions-cancel'), onCancel, btContainer);
-        this.ui.createButton('btok', Global.ln.get('window-actions-ok'), onOk, btContainer);
-        btContainer.width = 956;
+        this.ui.createButton('btcancel', Global.ln.get('window-actions-cancel'), onCancel, btContainer, false);
+        this.ui.createButton('btok', Global.ln.get('window-actions-ok'), onOk, btContainer, false);
+        btContainer.setWidth(956);
 
         // creating interface
         this.addForm(Global.ln.get('window-actions-title'), this.ui.forge('ac', [

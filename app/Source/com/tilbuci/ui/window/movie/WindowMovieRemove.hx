@@ -23,7 +23,7 @@ class WindowMovieRemove extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-movieremove-title'), 700, 400, false);
+        super(ac, Global.ln.get('window-movieremove-title'), 700, 380, false);
     }
 
     /**

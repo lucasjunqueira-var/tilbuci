@@ -13,6 +13,7 @@ import feathers.core.PopUpManager;
 import com.tilbuci.data.DataLoader;
 import com.tilbuci.ui.window.PopupWindow;
 import com.tilbuci.data.Global;
+import com.tilbuci.data.GlobalPlayer;
 
 class WindowMovieNew extends PopupWindow {
 
@@ -22,7 +23,7 @@ class WindowMovieNew extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-movienew-title'), 800, 480, false);
+        super(ac, Global.ln.get('window-movienew-title'), 800, 430, false);
     }
 
     /**
@@ -71,7 +72,7 @@ class WindowMovieNew extends PopupWindow {
                     { text: Global.ln.get('window-movienew-time450'), value: "4.50" }, 
                     { text: Global.ln.get('window-movienew-time500'), value: "5.00" }, 
                     ], sl: '1.00' }, 
-                    { tp: 'Spacer', id: 'font-spacer', ht: 130, ln: false }, 
+                    { tp: 'Spacer', id: 'font-spacer', ht: 120, ln: false }, 
                 { tp: 'Button', id: 'moviecreate', tx: Global.ln.get('window-movienew-create'), ac: this.onCreateMovie }
             ])));
             super.startInterface();
@@ -119,6 +120,7 @@ class WindowMovieNew extends PopupWindow {
         } else if (ld.map['e'] != 0) {
             this.ui.createWarning(Global.ln.get('window-movienew-title'), Global.ln.get('window-movienew-createer'), 300, 180, this.stage);
         } else {
+            GlobalPlayer.area.imgSelect();
             PopUpManager.removePopUp(this);
             this._ac('movieload', [ 'id' => ld.map['id'] ]);
         }
