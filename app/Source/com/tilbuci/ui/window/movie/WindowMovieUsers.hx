@@ -23,7 +23,7 @@ class WindowMovieUsers extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-movieusers-title'), 700, 370, true);
+        super(ac, Global.ln.get('window-movieusers-title'), 700, 370, true, true, true);
     }
 
     /**
@@ -51,6 +51,12 @@ class WindowMovieUsers extends PopupWindow {
             { tp: 'Button', id: 'ownerchange', tx: Global.ln.get('window-movieusers-ownerchange'), ac: this.onChangeOwner }
         ]));
 
+        this.addForm(Global.ln.get('window-movieusers-lock'), this.ui.forge('lock', [ 
+            { tp: 'Label', id: 'unlock', tx: Global.ln.get('window-movieusers-unlockabout'), vr: '', wrap: true }, 
+            { tp: 'Spacer', id: 'unlock', ht: 20, ln: false }, 
+            { tp: 'Button', id: 'unlock', tx: Global.ln.get('window-movieusers-unlock'), ac: this.onUnlock }
+        ]));
+
         super.startInterface();
     }
 
@@ -74,7 +80,7 @@ class WindowMovieUsers extends PopupWindow {
     private function onList(ok:Bool, ld:DataLoader):Void {
         if (!ok) {
             this.ui.setListValues('collist', [ ]);
-            this.ui.createWarning(Global.ln.get('window-movieusers-title'), Global.ln.get('window-movieusers-errorlist'), 300, 180, this.stage);
+            this.ui.createWarning(Global.ln.get('window-movieusers-title'), Global.ln.get('window-movieusers-errorlist'), 300, 150, this.stage);
         } else{
             if (ld.map['e'] == 0) {
                 var ar:Array<Dynamic> = [ ] ;
@@ -82,7 +88,7 @@ class WindowMovieUsers extends PopupWindow {
                 this.ui.setListValues('collist', ar);
             } else {
                 this.ui.setListValues('collist', [ ]);
-                this.ui.createWarning(Global.ln.get('window-movieusers-title'), Global.ln.get('window-movieusers-errorlist'), 300, 180, this.stage);
+                this.ui.createWarning(Global.ln.get('window-movieusers-title'), Global.ln.get('window-movieusers-errorlist'), 300, 150, this.stage);
             }
         }
         this.ui.inputs['colnew'].text = '';
@@ -129,6 +135,15 @@ class WindowMovieUsers extends PopupWindow {
     }
 
     /**
+        Unlock movie scenes.
+    **/
+    private function onUnlock(evt:TriggerEvent):Void {
+        Global.ws.send('Movie/UnlockScenes', [
+            'id' => GlobalPlayer.movie.mvId
+        ], this.onUnlockReturn);
+    }
+
+    /**
         Owner change results.
     **/
     private function onOwner(ok:Bool, ld:DataLoader):Void {
@@ -141,6 +156,21 @@ class WindowMovieUsers extends PopupWindow {
                 this.ui.createWarning(Global.ln.get('window-movieusers-title'), Global.ln.get('window-movieusers-ownernomail'), 300, 180, this.stage);
             } else {
                 this.ui.createWarning(Global.ln.get('window-movieusers-title'), Global.ln.get('window-movieusers-ownererror'), 300, 180, this.stage);
+            }
+        }
+    }
+
+    /**
+        Unlock scene results.
+    **/
+    private function onUnlockReturn(ok:Bool, ld:DataLoader):Void {
+        if (!ok) {
+            this.ui.createWarning(Global.ln.get('window-movieusers-title'), Global.ln.get('window-movieusers-erlock'), 300, 180, this.stage);
+        } else{
+            if (ld.map['e'] == 0) {
+                Global.showMsg(Global.ln.get('window-movieusers-oklock'));
+            } else {
+                this.ui.createWarning(Global.ln.get('window-movieusers-title'), Global.ln.get('window-movieusers-erlock'), 300, 180, this.stage);
             }
         }
     }

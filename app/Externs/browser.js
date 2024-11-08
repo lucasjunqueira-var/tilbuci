@@ -6,6 +6,9 @@
  * Sets the browser address bar content.
  */
 function TBB_setAddress(url, title) {
+
+console.log('setaddress ' + url);
+
     window.history.pushState({
         "html": url, 
         "pageTitle": title

@@ -24,7 +24,7 @@ class WindowExchangePwa extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-exchpwa-title'), 1000, 470, false);
+        super(ac, Global.ln.get('window-exchpwa-title'), 1000, 510, false, true, true);
     }
 
     /**
@@ -42,6 +42,11 @@ class WindowExchangePwa extends PopupWindow {
             { tp: 'TInput', id: 'lang', vl: '', vr: '' }, 
             { tp: 'Label', id: 'icon', tx: Global.ln.get('window-exchpwa-icon'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'TInput', id: 'icon', vl: '', vr: '' }, 
+            { tp: 'Label', id: 'location', tx: Global.ln.get('window-exchpwa-location'), vr: '' }, 
+            { tp: 'Select', id: 'location', vl: [
+                { text: Global.ln.get('window-exchpwa-locsite'), value: 'pwa' }, 
+                { text: Global.ln.get('window-exchpwa-loczip'), value: 'zip' }, 
+            ], sl: 'sites', ch: onChangeLocation }, 
             { tp: 'Label', id: 'url', tx: Global.ln.get('window-exchpwa-url'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'TInput', id: 'url', vl: '', vr: '' }, 
             { tp: 'Spacer', id: 'export', ht: 20 }, 
@@ -65,7 +70,16 @@ class WindowExchangePwa extends PopupWindow {
         this.ui.inputs['lang'].text = 'en-US';
         this.ui.inputs['icon'].text = GlobalPlayer.mdata.favicon;
         this.ui.inputs['icon'].enabled = false;
-        this.ui.inputs['url'].text = '';
+        this.ui.setSelectValue('location', 'pwa');
+        this.ui.inputs['url'].text = StringTools.replace((Global.econfig.base + 'pwa/' + GlobalPlayer.movie.mvId + '/'), '/editor/', '/');
+    }
+
+    private function onChangeLocation(evt:Event):Void {
+        if (this.ui.selects['location'].selectedItem.value == 'zip') {
+            this.ui.inputs['url'].text = '';
+        } else {
+            this.ui.inputs['url'].text = StringTools.replace((Global.econfig.base + 'pwa/' + GlobalPlayer.movie.mvId + '/'), '/editor/', '/');
+        }
     }
 
     /**
@@ -88,7 +102,8 @@ class WindowExchangePwa extends PopupWindow {
                     'name' => this.ui.inputs['name'].text, 
                     'shortname' => this.ui.inputs['shortname'].text, 
                     'lang' => this.ui.inputs['lang'].text, 
-                    'url' => url
+                    'url' => url, 
+                    'location' => this.ui.selects['location'].selectedItem.value
                 ], onExportReturn);
             }
         }
@@ -103,11 +118,17 @@ class WindowExchangePwa extends PopupWindow {
         } else if (ld.map['e'] != 0) {
             this.ui.createWarning(Global.ln.get('window-exchpwa-title'), Global.ln.get('window-exchpwa-error'), 300, 180, this.stage);
         } else {
-            this.ui.createWarning(Global.ln.get('window-exchpwa-title'), Global.ln.get('window-exchpwa-ok'), 320, 200, this.stage);
-            Global.ws.download([
-                'file' => 'pwa', 
-                'movie' => GlobalPlayer.movie.mvId,  
-            ]);
+            if (StringTools.contains(ld.map['exp'], '.zip')) {
+                this.ui.createWarning(Global.ln.get('window-exchpwa-title'), Global.ln.get('window-exchpwa-ok'), 320, 200, this.stage);
+                Global.ws.download([
+                    'file' => 'pwa', 
+                    'movie' => GlobalPlayer.movie.mvId,  
+                ]);
+            } else {
+                var txt:String = StringTools.replace(Global.ln.get('window-exchpwa-siteok'), '[URL]', ld.map['exp']);
+                this.ui.createWarning(Global.ln.get('window-exchpwa-title'), txt, 320, 150, this.stage);
+                Global.ws.openurl(ld.map['exp']);
+            }
         }
     }
 

@@ -69,7 +69,7 @@ class WindowMovieProperties extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-movieprop-title'), 1200, 560, true);
+        super(ac, Global.ln.get('window-movieprop-title'), 1200, 560, true, true, true);
     }
 
     /**
@@ -676,7 +676,7 @@ trace ('data', data);
     **/
     private function onSaveAcstart(evt:TriggerEvent):Void {
         var json:Dynamic = StringStatic.jsonParse(this._acstart.getText());
-        if (json == false) {
+        if ((this._acstart.getText() != '') && (json == false)) {
             this.ui.createWarning(Global.ln.get('window-movieprop-acstart'), Global.ln.get('window-movieprop-acstarterror'), 300, 180, this.stage);
         } else {
             var data:String = StringStatic.jsonStringify({

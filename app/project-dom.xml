@@ -120,4 +120,6 @@
 	<assets id="btEdit" path="assets/icons/btEdit.png"/>
 	<assets id="btExpand" path="assets/icons/btExpand.png"/>
 	<assets id="btCompress" path="assets/icons/btCompress.png"/>	
+	<assets id="btNotes" path="assets/icons/btNotes.png"/>
+	<assets id="btLock" path="assets/icons/btLock.png"/>
 </project>

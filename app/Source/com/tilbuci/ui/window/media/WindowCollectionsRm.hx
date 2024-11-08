@@ -39,7 +39,7 @@ class WindowCollectionsRm extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-collectionrm-title'), 1000, 600, false);
+        super(ac, Global.ln.get('window-collectionrm-title'), 1000, 600, false, true, true);
     }
 
     /**

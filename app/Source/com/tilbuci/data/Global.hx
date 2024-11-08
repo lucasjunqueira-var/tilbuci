@@ -1,8 +1,6 @@
 package com.tilbuci.data;
 
 /** OPENFL **/
-import hscript.Interp;
-import hscript.Parser;
 import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.ui.component.BlockArea.BlockAction;
 import com.tilbuci.ui.component.WindowBlockEdit;
@@ -23,6 +21,12 @@ import com.tilbuci.ui.base.ConfirmWindow;
 import com.tilbuci.ui.component.WindowAction;
 #if (js && html5)
     import com.tilbuci.js.ExternBrowser;
+#end
+
+/** HAXE PARSER **/
+#if !tilbuciplayer
+    import hscript.Interp;
+    import hscript.Parser;
 #end
 
 /**
@@ -233,12 +237,16 @@ class Global {
     /**
         Haxe expression parser.
     **/
-    public static var parser:Parser;
+    #if !tilbuciplayer
+        public static var parser:Parser;
+    #end
 
     /**
         Haxe expression interpreter.
     **/
-    public static var interp:Interp;
+    #if !tilbuciplayer
+        public static var interp:Interp;
+    #end
 
     /**
         Evaluates a haxe expression.
@@ -246,15 +254,19 @@ class Global {
         @return the result or null on failure
     **/
     public static function evaluate(expr:String):Dynamic {
-        if (Global.parser == null) Global.parser = new Parser();
-        if (Global.interp == null) Global.interp = new Interp();
-        var ret:Dynamic;
-        try {
-            ret = Global.interp.execute(Global.parser.parseString(expr));
-        } catch (e) {
-            ret = null;
-        }
-        return (ret);
+        #if !tilbuciplayer
+            if (Global.parser == null) Global.parser = new Parser();
+            if (Global.interp == null) Global.interp = new Interp();
+            var ret:Dynamic;
+            try {
+                ret = Global.interp.execute(Global.parser.parseString(expr));
+            } catch (e) {
+                ret = null;
+            }
+            return (ret);
+        #else
+            return (null);
+        #end
     }
 
     /**

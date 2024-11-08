@@ -23,7 +23,7 @@ class WindowKeyframeManage extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-kfmanage-title'), 1000, 510, false);
+        super(ac, Global.ln.get('window-kfmanage-title'), 1000, 510, false, true, true);
     }
 
     /**

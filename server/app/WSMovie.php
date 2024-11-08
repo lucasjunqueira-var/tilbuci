@@ -100,6 +100,15 @@ class WSMovie extends Webservice
                 case 'Movie/Navigation':
 					$this->navigation();
 					break;
+                case 'Movie/Notes':
+					$this->notes();
+					break;
+                case 'Movie/SaveNote':
+					$this->saveNote();
+					break;
+                case 'Movie/UnlockScenes':
+					$this->unlock();
+					break;
 				default:
 					$this->returnRequest([ 'e' => -9 ]);
 					break;
@@ -348,9 +357,9 @@ class WSMovie extends Webservice
 	 */
 	private function exportSite() {
 		// required fields received?
-		if ($this->requiredFields(['movie', 'mode', 'sitemap'])) {
+		if ($this->requiredFields(['movie', 'mode', 'sitemap', 'location'])) {
 			$mv = new Movie;
-            $exp = $mv->exportSite($this->user, $this->req['movie'], $this->req['mode'], $this->req['sitemap']);
+            $exp = $mv->exportSite($this->user, $this->req['movie'], $this->req['mode'], $this->req['sitemap'], $this->req['location']);
             if ($exp === false) {
                 $this->returnRequest([ 'e' => 1, 'exp' => '' ]);
             } else {
@@ -364,9 +373,9 @@ class WSMovie extends Webservice
 	 */
 	private function exportPwa() {
 		// required fields received?
-		if ($this->requiredFields(['movie', 'name', 'shortname', 'lang', 'url'])) {
+		if ($this->requiredFields(['movie', 'name', 'shortname', 'lang', 'url', 'location'])) {
 			$mv = new Movie;
-            $exp = $mv->exportPwa($this->user, $this->req['movie'], $this->req['name'], $this->req['shortname'], $this->req['lang'], $this->req['url']);
+            $exp = $mv->exportPwa($this->user, $this->req['movie'], $this->req['name'], $this->req['shortname'], $this->req['lang'], $this->req['url'], $this->req['location']);
             if ($exp === false) {
                 $this->returnRequest([ 'e' => 1, 'exp' => '' ]);
             } else {
@@ -467,6 +476,59 @@ class WSMovie extends Webservice
 			$mv = new Movie;
             $mv->createNavigation($this->req['movie'], $this->req['seq'], $this->req['con'], $this->req['axis']);
             $this->returnRequest([ 'e' => 0 ]);
+		} else {
+			$this->returnRequest([ 'e' => 1 ]);
+		}
+	}
+    
+    /**
+	 * Recovers the design notes.
+	 */
+	private function notes() {
+		// required fields received?
+		if ($this->requiredFields(['movie', 'scene'])) {
+			$mv = new Movie;
+            $notes = $mv->getNotes($this->user, $this->req['movie'], $this->req['scene']);
+            if ($notes === false) {
+                $this->returnRequest([ 'e' => 2 ]);
+            } else {
+                $this->returnRequest([ 'e' => 0, 'notes' => $notes ]);
+            }
+		} else {
+			$this->returnRequest([ 'e' => 1 ]);
+		}
+	}
+    
+    /**
+	 * Saves a design note.
+	 */
+	private function saveNote() {
+		// required fields received?
+		if ($this->requiredFields(['movie', 'scene', 'type', 'text'])) {
+			$mv = new Movie;
+            $notes = $mv->saveNote($this->user, $this->req['movie'], $this->req['scene'], $this->req['type'], $this->req['text']);
+            if ($notes === false) {
+                $this->returnRequest([ 'e' => 2 ]);
+            } else {
+                $this->returnRequest([ 'e' => 0, 'notes' => $notes ]);
+            }
+		} else {
+			$this->returnRequest([ 'e' => 1 ]);
+		}
+	}
+    
+    /**
+	 * Unlocks all scenes.
+	 */
+	private function unlock() {
+		// required fields received?
+		if ($this->requiredFields(['id'])) {
+			$mv = new Movie;
+            if ($mv->unlockScenes($this->user, $this->req['id'])) {
+                $this->returnRequest([ 'e' => 0 ]);
+            } else {
+                $this->returnRequest([ 'e' => 2 ]);
+            }
 		} else {
 			$this->returnRequest([ 'e' => 1 ]);
 		}

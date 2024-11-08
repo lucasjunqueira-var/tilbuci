@@ -23,7 +23,7 @@ class WindowSceneOpen extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-sceneopen-title'), 800, 430, false);
+        super(ac, Global.ln.get('window-sceneopen-title'), 800, 430, false, true, true);
     }
 
     /**
@@ -38,6 +38,7 @@ class WindowSceneOpen extends PopupWindow {
         ]));
         super.startInterface();
         this.ui.listDbClick('openlist', onOpen);
+        this.ui.setListToIcon('openlist');
     }
 
     /**
@@ -76,7 +77,13 @@ class WindowSceneOpen extends PopupWindow {
                     this.ui.labels['openabout'].text = Global.ln.get('window-sceneopen-noscenes');
                 } else {
                     var items:Array<Dynamic> = [ ];
-                    for (i in ar) items.push({ text: Reflect.field(i, 'title'), value: Reflect.field(i, 'id') });
+                    for (i in ar) {
+                        if (Reflect.field(i, 'lock') == '') {
+                            items.push({text: Reflect.field(i, 'title'), value: Reflect.field(i, 'id'), asset: '', user: null });
+                        } else {
+                            items.push({text: Reflect.field(i, 'title'), value: Reflect.field(i, 'id'), asset: 'btLock', user: Reflect.field(i, 'lock') });
+                        }
+                    }
                     this.ui.setListValues('openlist', items);
                     this.ui.labels['openabout'].text = Global.ln.get('window-sceneopen-about');
                 }
@@ -91,9 +98,13 @@ class WindowSceneOpen extends PopupWindow {
     **/
     private function onOpen(evt:TriggerEvent = null):Void {
         if (this.ui.lists['openlist'].selectedItem != null) {
-            GlobalPlayer.area.imgSelect();
-            this._ac('sceneload', ['id' => this.ui.lists['openlist'].selectedItem.value, 'movie' => GlobalPlayer.movie.mvId]);
-            PopUpManager.removePopUp(this);
+            if ((this.ui.lists['openlist'].selectedItem.user == null) || (this.ui.lists['openlist'].selectedItem.user == '')) {
+                GlobalPlayer.area.imgSelect();
+                this._ac('sceneload', ['id' => this.ui.lists['openlist'].selectedItem.value, 'movie' => GlobalPlayer.movie.mvId]);
+                PopUpManager.removePopUp(this);
+            } else {
+                Global.showMsg(Global.ln.get('window-sceneopen-locked'));
+            }
         }
     }
 

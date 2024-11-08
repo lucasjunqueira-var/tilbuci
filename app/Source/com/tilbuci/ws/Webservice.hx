@@ -116,6 +116,16 @@ class Webservice extends EventDispatcher {
     }
 
     /**
+        Opens an URL.
+        @param  addr the site address
+    **/
+    public function openurl(addr:String):Void {
+        var request:URLRequest = new URLRequest(addr);
+        request.method = 'GET';
+        Lib.getURL(request);
+    }
+
+    /**
         Releases resources used by the object.
     **/
     public function kill():Void {

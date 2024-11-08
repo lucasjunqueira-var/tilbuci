@@ -23,7 +23,7 @@ class WindowSceneSaveas extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-scenesaveas-title'), 800, 200, false);
+        super(ac, Global.ln.get('window-scenesaveas-title'), 800, 200, false, true, true);
     }
 
     /**

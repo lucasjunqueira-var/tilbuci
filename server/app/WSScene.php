@@ -87,7 +87,7 @@ class WSScene extends Webservice
 		if ($this->requiredFields(['id', 'movie'])) {
 			// preparing scene
 			$sc = new Scene;
-			if ($sc->loadScene($this->req['movie'], $this->req['id'])) {
+			if ($sc->loadScene($this->user, $this->req['movie'], $this->req['id'])) {
 				// return scene information
 				$this->returnRequest([ 'e' => 0, 'info' => $sc->info ]);
 			} else {
@@ -105,7 +105,7 @@ class WSScene extends Webservice
 		if ($this->requiredFields(['uid', 'movie'])) {
 			// preparing scene
 			$sc = new Scene;
-			if ($sc->loadSceneUid($this->req['uid'], $this->req['movie'])) {
+			if ($sc->loadSceneUid($this->user, $this->req['uid'], $this->req['movie'])) {
 				// return scene information
 				$this->returnRequest([ 'e' => 0, 'info' => $sc->info ]);
 			} else {
@@ -121,7 +121,7 @@ class WSScene extends Webservice
 	private function listScenes() {
 		if ($this->requiredFields(['movie'])) {
 			$sc = new Scene;
-			$list = $sc->listScenes($this->req['movie']);
+			$list = $sc->listScenes($this->user, $this->req['movie']);
 			$this->returnRequest([ 'e' => 0, 'list' => $list ]);
 		} else {
 			// error loading list

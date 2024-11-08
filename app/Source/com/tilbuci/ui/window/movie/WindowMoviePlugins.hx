@@ -26,7 +26,7 @@ class WindowMoviePlugins extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-movieplugin-title'), 1000, 720, true);
+        super(ac, Global.ln.get('window-movieplugin-title'), 1000, 720, true, true, true);
     }
 
     /**

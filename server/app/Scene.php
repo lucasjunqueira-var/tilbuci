@@ -96,11 +96,12 @@ class Scene extends BaseClass
 	
 	/**
 	 * Loads a scene from its UID.
+     * @param   string  $user   request user
 	 * @param	int	$id	the scene UID
 	 * @param	string	$movie	the scene movie
 	 * @return	bool	was the scene found and loaded?
 	 */
-	public function loadSceneUid($id, $movie) {
+	public function loadSceneUid($user, $id, $movie) {
 		$ck = $this->queryAll('SELECT sc_id FROM scenes WHERE sc_uid=:id AND sc_movie=:mv', [
 			':id' => $id, 
 			':mv' => $movie, 
@@ -108,18 +109,19 @@ class Scene extends BaseClass
 		if (count($ck) == 0) {
 			return (false);
 		} else {
-			return ($this->loadScene($movie, $ck[0]['sc_id'], $id));
+			return ($this->loadScene($user, $movie, $ck[0]['sc_id'], $id));
 		}
 	}
 
 	/**
 	 * Loads a scene informarion.
+     * @param   string  $user   request user
 	 * @param string $movie the movie id
 	 * @param string $id the scene id
 	 * @param int $version the scene version (null for latest, -1 for published, number for sc_uid)
 	 * @return bool was the scene found and loaded?
 	 */
-	public function loadScene($movie, $id, $version = null) {
+	public function loadScene($user, $movie, $id, $version = null) {
 		$this->info = [ ];
 		$this->loaded = false;
 		if (is_null($version)) {
@@ -303,6 +305,20 @@ class Scene extends BaseClass
 			
 			// scene loaded
 			$this->loaded = true;
+            
+            // locking scene
+            if (!is_null($user)) {
+                $this->execute('DELETE FROM scenelock WHERE sl_user=:user', [
+                    ':user' => $user, 
+                ]);
+                $this->execute('INSERT INTO scenelock (sl_id, sl_movie, sl_scene, sl_user, sl_when) VALUES (:id, :movie, :scene, :user, :when) ON DUPLICATE KEY UPDATE sl_user=VALUES(sl_user), sl_when=VALUES(sl_when)', [
+                    ':id' => $movie . '_' . $id, 
+                    ':movie' => $movie, 
+                    ':scene' => $id, 
+                    ':user' => $user, 
+                    ':when' => date('Y-m-d H:i:s'), 
+                ]);
+            }
 		}
 		return ($this->loaded);
 	}
@@ -337,15 +353,20 @@ class Scene extends BaseClass
 	 * Lists current movie scenes.
 	 * @return array scenes list
 	 */
-	public function listScenes($movie) {
+	public function listScenes($user, $movie) {
+        $this->execute('DELETE FROM scenelock WHERE sl_movie=:mv AND sl_when<=:limit', [
+            ':mv' => $movie, 
+            ':limit' => date('Y-m-d H:i:s', strtotime('-15minutes')), 
+        ]);
 		$ret = [ ];
-		$ck = $this->queryAll('SELECT * FROM (SELECT t1.sc_id, (SELECT t2.sc_title FROM scenes t2 WHERE t2.sc_movie=:t2mv AND t2.sc_id=t1.sc_id ORDER BY t2.sc_uid DESC LIMIT 1) as sc_title FROM scenes t1 WHERE t1.sc_movie=:t1mv ORDER BY t1.sc_title ASC) tbs GROUP BY tbs.sc_id ORDER BY tbs.sc_title ASC', [
+		$ck = $this->queryAll('SELECT * FROM (SELECT t1.sc_id, t1.sc_movie, (SELECT t2.sc_title FROM scenes t2 WHERE t2.sc_movie=:t2mv AND t2.sc_id=t1.sc_id ORDER BY t2.sc_uid DESC LIMIT 1) as sc_title FROM scenes t1 WHERE t1.sc_movie=:t1mv ORDER BY t1.sc_title ASC) tbs LEFT JOIN scenelock lck ON (tbs.sc_id=lck.sl_scene AND tbs.sc_movie=lck.sl_movie) GROUP BY tbs.sc_id, lck.sl_id ORDER BY tbs.sc_title ASC', [
 			':t2mv' => $movie, 
 			':t1mv' => $movie, 
 		]);
 		foreach ($ck as $v) $ret[] = [
 			'id' => $v['sc_id'], 
 			'title' => $v['sc_title'], 
+            'lock' => ((is_null($v['sl_user']) || ($v['sl_user'] == '')) ? '' : (($v['sl_user'] == $user) ? '' : $v['sl_user'])), 
 		];
 		return ($ret);
 	}
@@ -615,7 +636,7 @@ class Scene extends BaseClass
 							':pub' => '1', 
 							':id' => $uid, 
 						]);
-						$this->loadSceneUid($uid, $movie);
+						$this->loadSceneUid($user, $uid, $movie);
                         // restricted movie?
                         $ckm = $this->queryAll('SELECT mv_identify, mv_vsgroups FROM movies WHERE mv_id=:mv', [ ':mv' => $movie ]);
                         if (count($ckm) > 0) {
@@ -627,6 +648,18 @@ class Scene extends BaseClass
                         }
 					}
 					
+                    // locking scene
+                    $this->execute('DELETE FROM scenelock WHERE sl_user=:user', [
+                        ':user' => $user, 
+                    ]);
+                    $this->execute('INSERT INTO scenelock (sl_id, sl_movie, sl_scene, sl_user, sl_when) VALUES (:id, :movie, :scene, :user, :when) ON DUPLICATE KEY UPDATE sl_user=VALUES(sl_user), sl_when=VALUES(sl_when)', [
+                        ':id' => $movie . '_' . $id, 
+                        ':movie' => $movie, 
+                        ':scene' => $id, 
+                        ':user' => $user, 
+                        ':when' => date('Y-m-d H:i:s'), 
+                    ]);
+                    
 					// finish
 					return (0);
 				}

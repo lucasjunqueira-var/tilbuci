@@ -21,7 +21,7 @@ class WindowMediaEmbed extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-mdembed-title'), 1000, 420, false);
+        super(ac, Global.ln.get('window-mdembed-title'), 1000, 420, false, true, true);
     }
 
     /**

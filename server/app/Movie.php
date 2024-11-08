@@ -502,7 +502,7 @@ class Movie extends BaseClass
                 ':pub' => '1', 
             ]);
             foreach ($ck as $v) {
-                if ($sc->loadScene($movie, $v['sc_id'])) {
+                if ($sc->loadScene(null, $movie, $v['sc_id'])) {
                     $sc->publish();
                 }
             }
@@ -1424,9 +1424,10 @@ class Movie extends BaseClass
 	 * @param	string	$movie	the movie id
      * @param	string	$mode	the render mode
      * @param   string    $sitemap    website base for sitemap (don't create if blank)
+     * @param   string    $location    export as zip or to the sites folder?
 	 * @return	string|bool the path to the exported file or false on error
 	 */
-	public function exportSite($user, $movie, $mode, $sitemap) {
+	public function exportSite($user, $movie, $mode, $sitemap, $location) {
 		// check user: movie owner?
 		if (!is_null($this->db)) {
 			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [
@@ -1610,31 +1611,41 @@ class Movie extends BaseClass
                             $this->info['identify'] = false;
                             $this->info['vsgroups'] = '';
                             file_put_contents(('../../export/site-'.$movie.'/movie/'.$movie.'.movie/movie.json'), json_encode($this->info));
-                            // save zip
-                            $zip = new \ZipArchive;
-                            $zip->open('../../export/site-'.$movie.'.zip', \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-                            $files = new \RecursiveIteratorIterator(
-                                new \RecursiveDirectoryIterator('../../export/site-'.$movie),
-                                \RecursiveIteratorIterator::LEAVES_ONLY
-                            );
-                            $rootPath = realpath('../../export/site-'.$movie);
-                            foreach ($files as $file) {
-                                if (!$file->isDir()) {
-                                    $filePath = $file->getRealPath();
-                                    $relativePath = substr($filePath, strlen($rootPath) + 1);
-                                    $relativePath = str_replace('\\', '/', $relativePath);
-                                    $zip->addFile($filePath, $relativePath);
+                            // save zip?
+                            if ($location == 'zip') {
+                                $zip = new \ZipArchive;
+                                $zip->open('../../export/site-'.$movie.'.zip', \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+                                $files = new \RecursiveIteratorIterator(
+                                    new \RecursiveDirectoryIterator('../../export/site-'.$movie),
+                                    \RecursiveIteratorIterator::LEAVES_ONLY
+                                );
+                                $rootPath = realpath('../../export/site-'.$movie);
+                                foreach ($files as $file) {
+                                    if (!$file->isDir()) {
+                                        $filePath = $file->getRealPath();
+                                        $relativePath = substr($filePath, strlen($rootPath) + 1);
+                                        $relativePath = str_replace('\\', '/', $relativePath);
+                                        $zip->addFile($filePath, $relativePath);
+                                    }
                                 }
+                                $zip->close();
+                                $this->removeFileDir('../../export/site-'.$movie);
+                                // remove scenes?
+                                if ($pub) {
+                                    $this->removePublished($movie);
+                                }
+                                return ('site-'.$movie.'.zip');
+                            } else {
+                                // save at the sites folder
+                                if (!is_dir('../sites')) $this->createDir('../sites');
+                                if (is_dir('../sites/'.$movie)) $this->removeFileDir('../sites/'.$movie);
+                                $this->copyDir(('../../export/site-'.$movie), ('../sites/'.$movie));
+                                $this->removeFileDir('../../export/site-'.$movie);
+                                if ($pub) {
+                                    $this->removePublished($movie);
+                                }
+                                return ($this->conf['path'].'sites/'.$movie.'/');
                             }
-                            $zip->close();
-                            $this->removeFileDir('../../export/site-'.$movie);
-                            
-                            // remove scenes?
-                            if ($pub) {
-                                $this->removePublished($movie);
-                            }
-                            
-                            return ('site-'.$movie.'.zip');
                         } else {
                             return (false);
                         }
@@ -1663,7 +1674,7 @@ class Movie extends BaseClass
      * @param   string  $url   the the url to load the app from
 	 * @return	string|bool the path to the exported file or false on error
 	 */
-	public function exportPwa($user, $movie, $name, $shortname, $lang, $url) {
+	public function exportPwa($user, $movie, $name, $shortname, $lang, $url, $location) {
 		// check user: movie owner?
 		if (!is_null($this->db)) {
 			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [
@@ -1878,31 +1889,41 @@ class Movie extends BaseClass
                                     $lang, 
                                 ], $manifest);
                             file_put_contents('../../export/pwa-'.$movie.'/manifest.json', $manifest);
-                            // save zip
-                            $zip = new \ZipArchive;
-                            $zip->open('../../export/pwa-'.$movie.'.zip', \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-                            $files = new \RecursiveIteratorIterator(
-                                new \RecursiveDirectoryIterator('../../export/pwa-'.$movie),
-                                \RecursiveIteratorIterator::LEAVES_ONLY
-                            );
-                            $rootPath = realpath('../../export/pwa-'.$movie);
-                            foreach ($files as $file) {
-                                if (!$file->isDir()) {
-                                    $filePath = $file->getRealPath();
-                                    $relativePath = substr($filePath, strlen($rootPath) + 1);
-                                    $relativePath = str_replace('\\', '/', $relativePath);
-                                    $zip->addFile($filePath, $relativePath);
+                            if ($location == 'zip') {
+                                // save zip
+                                $zip = new \ZipArchive;
+                                $zip->open('../../export/pwa-'.$movie.'.zip', \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+                                $files = new \RecursiveIteratorIterator(
+                                    new \RecursiveDirectoryIterator('../../export/pwa-'.$movie),
+                                    \RecursiveIteratorIterator::LEAVES_ONLY
+                                );
+                                $rootPath = realpath('../../export/pwa-'.$movie);
+                                foreach ($files as $file) {
+                                    if (!$file->isDir()) {
+                                        $filePath = $file->getRealPath();
+                                        $relativePath = substr($filePath, strlen($rootPath) + 1);
+                                        $relativePath = str_replace('\\', '/', $relativePath);
+                                        $zip->addFile($filePath, $relativePath);
+                                    }
                                 }
+                                $zip->close();
+                                $this->removeFileDir('../../export/pwa-'.$movie);
+                                // remove scenes?
+                                if ($pub) {
+                                    $this->removePublished($movie);
+                                }
+                                return ('pwa-'.$movie.'.zip');
+                            } else {
+                                // save at the pwa folder
+                                if (!is_dir('../pwa')) $this->createDir('../pwa');
+                                if (is_dir('../pwa/'.$movie)) $this->removeFileDir('../pwa/'.$movie);
+                                $this->copyDir(('../../export/pwa-'.$movie), ('../pwa/'.$movie));
+                                $this->removeFileDir('../../export/pwa-'.$movie);
+                                if ($pub) {
+                                    $this->removePublished($movie);
+                                }
+                                return ($this->conf['path'].'pwa/'.$movie.'/');
                             }
-                            $zip->close();
-                            $this->removeFileDir('../../export/pwa-'.$movie);
-                            
-                            // remove scenes?
-                            if ($pub) {
-                                $this->removePublished($movie);
-                            }
-                            
-                            return ('pwa-'.$movie.'.zip');
                         } else {
                             return (false);
                         }
@@ -2797,7 +2818,7 @@ class Movie extends BaseClass
             }
             $sc = new Scene;
             for ($i=0; $i<count($seq); $i++) {
-                if ($sc->loadScene($id, $seq[$i])) {
+                if ($sc->loadScene(null, $id, $seq[$i])) {
                     // first scene
                     if ($i == 0) {
                         if ($con) {
@@ -2892,6 +2913,137 @@ class Movie extends BaseClass
                     $sc->saveSequence();
                 }
             }
+        }
+    }
+    
+    /**
+     * Gets the design notes.
+     * @param   string  $user   the request user
+     * @param   string  $mv the movie ID
+     * @param   string  $sc the scene ID
+     * @return  array|bool  the notes found or false on error
+     */
+    public function getNotes($user, $mv, $sc) {
+        // does the movie exist?
+        $ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id', [':id'=>$mv]);
+        if (count($ck) > 0) {
+            $ret = [
+                'guidelines' => [ ], 
+                'movie' => [ ], 
+                'scene' => [ ], 
+                'own' => [ ], 
+            ];
+            $ck = $this->queryAll('SELECT * FROM notes WHERE nt_movie=:mv AND nt_scene=:sc ORDER BY nt_time DESC', [':mv'=>$mv, ':sc'=>'']);
+            foreach ($ck as $v) {
+                if ($v['nt_type'] == 'guide') {
+                    $ret['guidelines'][] = [
+                        'id' => $v['nt_id'], 
+                        'text' => gzdecode(base64_decode($v['nt_text'])),
+                        'author' => $v['nt_author'], 
+                        'time' => $v['nt_time'], 
+                    ];
+                } else {
+                    $ret['movie'][] = [
+                        'id' => $v['nt_id'], 
+                        'text' => gzdecode(base64_decode($v['nt_text'])),
+                        'author' => $v['nt_author'], 
+                        'time' => $v['nt_time'], 
+                    ];
+                }
+            }
+            $ck = $this->queryAll('SELECT * FROM notes WHERE nt_movie=:mv AND nt_scene=:sc AND nt_type=:tp ORDER BY nt_time DESC', [':mv'=>$mv, ':sc'=>$sc, ':tp' => 'scene']);
+            foreach ($ck as $v) {
+                $ret['scene'][] = [
+                    'id' => $v['nt_id'], 
+                    'text' => gzdecode(base64_decode($v['nt_text'])),
+                    'author' => $v['nt_author'], 
+                    'time' => $v['nt_time'], 
+                ];
+            }
+            $ck = $this->queryAll('SELECT * FROM notes WHERE nt_type=:tp AND nt_author=:user ORDER BY nt_time DESC', [':tp'=>'own', ':user' => $user]);
+            foreach ($ck as $v) {
+                $ret['own'][] = [
+                    'id' => $v['nt_id'], 
+                    'text' => gzdecode(base64_decode($v['nt_text'])),
+                    'author' => $v['nt_author'], 
+                    'time' => $v['nt_time'], 
+                ];
+            }
+            return ($ret);
+        } else {
+            // movie not found
+            return (false);
+        }
+    }
+    
+    /**
+     * Saves a design note.
+     * @param   string  $user   the request user
+     * @param   string  $movie  the movie ID
+     * @param   string  $type   the note type
+     * @param   string  $text   the note text
+     * @return  array|bool  the updated notes list or false on error
+     */
+    public function saveNote($user, $movie, $scene, $type, $text) {
+        // getting movie information
+        $ck = $this->queryAll('SELECT mv_user, mv_collaborators FROM movies WHERE mv_id=:mv', [':mv'=>$movie]);
+        if (count($ck) == 0) {
+            // no movie found
+            return (false);
+        } else {
+            // check authorization
+            $authorized = $ck[0]['mv_collaborators'] == '' ? [ ] : explode(',', $ck[0]['mv_collaborators']);
+            $authorized[] = $ck[0]['mv_user'];
+            if (($type == 'guide') && ($ck[0]['mv_user'] != $user)) {
+                return (false);
+            } else if (($type != 'own') && !in_array($user, $authorized)) {
+                return (false);
+            } else {
+                $mv = ($type == 'own') ? '' : $movie;
+                $sc = ($type == 'scene') ? $scene : '';
+                $this->execute('INSERT INTO notes (nt_movie, nt_scene, nt_type, nt_text, nt_author) VALUES (:mv, :sc, :tp, :tx, :au)', [
+                    ':mv' => $mv, 
+                    ':sc' => $sc, 
+                    ':tp' => $type, 
+                    ':tx' => base64_encode(gzencode($text)), 
+                    ':au' => $user, 
+                ]);
+                if ($type == 'own') {
+                    $ck = $this->queryAll('SELECT nt_id FROM notes WHERE nt_author=:user AND nt_type=:own ORDER BY nt_time DESC LIMIT 5 OFFSET 5', [
+						':user' => $user, 
+                        ':own' => 'own', 
+					]);
+                } else {
+                    $ck = $this->queryAll('SELECT nt_id FROM notes WHERE nt_movie=:mv AND nt_scene=:sc AND nt_type=:tp ORDER BY nt_time DESC LIMIT 5 OFFSET 5', [
+						':mv' => $mv, 
+						':sc' => $sc, 
+                        ':tp' => $type, 
+					]);
+                }
+                if (count($ck) > 0) {
+                    foreach ($ck as $vn) $this->execute('DELETE FROM notes WHERE nt_id=:id LIMIT 1', [':id'=>$vn['nt_id']]);
+                }
+                return ($this->getNotes($user, $movie, $scene));
+            }
+        }
+    }
+    
+    /**
+     * Unlocks all movie scenes.
+     * @param   string  $user   request user
+     * @param   string  $movie  the movie id
+     * @return  bool    were the scenes unlocked?
+     */
+    public function unlockScenes($user, $movie) {
+        $ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id AND mv_user=:user', [
+            ':id' => $movie, 
+            ':user' => $user, 
+        ]);
+        if (count($ck) > 0) {
+            $this->execute('DELETE FROM scenelock WHERE sl_movie=:id', [':id'=>$movie]);
+            return (true);
+        } else {
+            return (false);
         }
     }
 }

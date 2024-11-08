@@ -43,7 +43,7 @@ class WindowBlockEdit extends PopupWindow {
     **/
     public function new(ac:Dynamic = null) {
         // creating window
-        super(ac, '', 1100, 560, false);
+        super(ac, '', 1100, 560, false, true);
 
         // select data
         this._mvOrigins = [

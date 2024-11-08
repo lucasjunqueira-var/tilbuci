@@ -1,6 +1,9 @@
 package com.tilbuci.ui.window;
 
 /** OPENFL **/
+import feathers.layout.HorizontalLayout;
+import feathers.controls.LayoutGroup;
+import feathers.core.FeathersControl;
 import feathers.core.MeasureSprite;
 import feathers.data.ArrayCollection;
 import feathers.controls.navigators.TabNavigator;
@@ -40,6 +43,11 @@ class PopupWindow extends Panel {
         close button
     **/
     private var _btClose:Button;
+
+    /**
+        notes button
+    **/
+    private var _btNotes:Button;
 
     /**
         tab navigator
@@ -90,7 +98,7 @@ class PopupWindow extends Panel {
         @param  tabs    show the tabs interface?
         @param  ws  reference to the webservices
     **/
-    public function new(ac:Dynamic, tit:String, wd:Int = 0, ht:Int = 0, tabs:Bool = true, close:Bool = true) {
+    public function new(ac:Dynamic, tit:String, wd:Int = 0, ht:Int = 0, tabs:Bool = true, close:Bool = true, notes:Bool = false) {
         super();
         this.ui = new InterfaceFactory(this._padding);
         this.backgroundSkin = new BackgroundSkin(0x383838);
@@ -112,15 +120,36 @@ class PopupWindow extends Panel {
         this._head.text = tit;
         this.header = this._head;
 
-        this._btClose = new Button();
-        var bmp:Bitmap = new Bitmap(Assets.getBitmapData('btClose'));
-        bmp.width = bmp.height = 20;
-        bmp.smoothing = true;
-        this._btClose.icon = bmp;
-        this._btClose.width = 40;
-        this._btClose.height = 30;
-        this._btClose.addEventListener(TriggerEvent.TRIGGER, closeWindow);
-        if (close) this._head.rightView = this._btClose;
+        var hdbuttons:LayoutGroup = new LayoutGroup();
+        var btlay:HorizontalLayout = new HorizontalLayout();
+        btlay.gap = 10;
+        hdbuttons.layout = btlay;
+
+        if (notes) {
+            this._btNotes = new Button();
+            var bmp:Bitmap = new Bitmap(Assets.getBitmapData('btNotes'));
+            bmp.width = bmp.height = 20;
+            bmp.smoothing = true;
+            this._btNotes.icon = bmp;
+            this._btNotes.width = 40;
+            this._btNotes.height = 30;
+            this._btNotes.addEventListener(TriggerEvent.TRIGGER, notesWindow);
+            hdbuttons.addChild(this._btNotes);
+        }
+
+        if (close) {
+            this._btClose = new Button();
+            var bmp:Bitmap = new Bitmap(Assets.getBitmapData('btClose'));
+            bmp.width = bmp.height = 20;
+            bmp.smoothing = true;
+            this._btClose.icon = bmp;
+            this._btClose.width = 40;
+            this._btClose.height = 30;
+            this._btClose.addEventListener(TriggerEvent.TRIGGER, closeWindow);
+            hdbuttons.addChild(this._btClose);
+        }
+
+        this._head.rightView = hdbuttons;
 
         this._tabs = new TabNavigator();
         this._tabs.dataProvider = new ArrayCollection();
@@ -239,6 +268,13 @@ class PopupWindow extends Panel {
     private function closeWindow(evt:TriggerEvent):Void {
         PopUpManager.removePopUp(this);
         if (this._ac != null) this._ac('window-close');
+    }
+
+    /**
+        Shows the notes window.
+    **/
+    private function notesWindow(evt:TriggerEvent):Void {
+        if (this._ac != null) this._ac('window-notes');
     }
 
     /**

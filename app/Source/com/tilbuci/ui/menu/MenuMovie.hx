@@ -1,6 +1,7 @@
 package com.tilbuci.ui.menu;
 
 /** FEATHERS UI **/
+import com.tilbuci.ui.window.WindowNotes.NoteItem;
 import com.tilbuci.data.GlobalPlayer;
 import feathers.controls.Button;
 import feathers.events.TriggerEvent;
@@ -25,6 +26,7 @@ class MenuMovie extends DrawerMenu {
         this.addButton('btUsers', Global.ln.get('menu-movie-users'), onUsers);
         this.addButton('btRemove', Global.ln.get('menu-movie-remove'), onRemove);
         this.addButton('btNavigation', Global.ln.get('menu-movie-navigation'), onNavigation);
+        this.addButton('btNotes', Global.ln.get('menu-movie-notes'), onNotes);
         this.addButton('btPlayer', Global.ln.get('menu-movie-player'), onPlayer);
     }
 
@@ -58,6 +60,8 @@ class MenuMovie extends DrawerMenu {
             this.ui.buttons['btPlayer'].toolTip = null;
             this.ui.buttons['btNavigation'].enabled = true;
             this.ui.buttons['btNavigation'].toolTip = null;
+            this.ui.buttons['btNotes'].enabled = true;
+            this.ui.buttons['btNotes'].toolTip = null;
         } else {
             if (Global.ws.level <= 50) {
                 this.ui.buttons['btRemove'].enabled = true;
@@ -68,12 +72,14 @@ class MenuMovie extends DrawerMenu {
             }
             this.ui.buttons['btPlayer'].enabled = false;
             this.ui.buttons['btNavigation'].enabled = false;
+            this.ui.buttons['btNotes'].enabled = false;
             this.ui.buttons['btProperties'].enabled = false;
             this.ui.buttons['btUsers'].enabled = false;
             this.ui.buttons['btProperties'].toolTip = Global.ln.get('tooltip-movie-nomovie');
             this.ui.buttons['btUsers'].toolTip = Global.ln.get('tooltip-movie-nomovie');
             this.ui.buttons['btPlayer'].toolTip = Global.ln.get('tooltip-movie-nomovie');
             this.ui.buttons['btNavigation'].toolTip = Global.ln.get('tooltip-movie-nomovie');
+            this.ui.buttons['btNotes'].toolTip = Global.ln.get('tooltip-movie-nomovie');
         }
     }
 
@@ -124,6 +130,13 @@ class MenuMovie extends DrawerMenu {
     **/
     private  function onNavigation(evt:TriggerEvent):Void {
         this._ac('navigation');
+    }
+
+    /**
+        Shows the design notes window.
+    **/
+    private  function onNotes(evt:TriggerEvent):Void {
+        this._ac('notes');
     }
 
     /**

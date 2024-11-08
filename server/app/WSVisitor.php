@@ -441,7 +441,7 @@ class WSVisitor extends Webservice
             if ($vs->allowMovie($this->req['movie'], $this->req['visitor'])) {
                 // get scene info
                 $sc = new Scene;
-                if ($sc->loadScene($this->req['movie'], $this->req['id'])) {
+                if ($sc->loadScene(null, $this->req['movie'], $this->req['id'])) {
                     // return scene information
                     $sc->info['e'] = 0;
                     $this->returnRequest($sc->info);

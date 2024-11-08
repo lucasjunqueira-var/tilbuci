@@ -27,6 +27,7 @@ import com.tilbuci.ui.window.exchange.WindowExchangePwa;
 import com.tilbuci.ui.window.exchange.WindowExchangePublish;
 import com.tilbuci.ui.window.exchange.WindowExchangeDesktop;
 import com.tilbuci.ui.window.exchange.WindowExchangeCordova;
+import com.tilbuci.ui.window.WindowNotes;
 import com.tilbuci.data.History;
 import com.tilbuci.ui.component.EditorPlayback;
 import com.tilbuci.ui.menu.MenuKeyframe;
@@ -478,6 +479,9 @@ class Editor extends Drawer {
             case 'navigation':
                 this.opened = false;
                 this.showWindow('seqmovie');
+            case 'notes':
+                this.opened = false;
+                this.showWindow('designnotes');
             case 'users':
                 this.opened = false;
                 this.showWindow('usermovie');
@@ -486,6 +490,8 @@ class Editor extends Drawer {
                 this.showWindow('removemovie');
             case 'menu-close':
                 this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
         }
     }
 
@@ -518,6 +524,8 @@ class Editor extends Drawer {
                 this.showWindow('propscene');
             case 'menu-close':
                 this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
         }
     }
 
@@ -543,6 +551,8 @@ class Editor extends Drawer {
                 this.opened = false;
             case 'menu-close':
                 this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
         }
     }
 
@@ -590,6 +600,8 @@ class Editor extends Drawer {
                 this.showWindow('mediatext');
             case 'menu-close':
                 this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
         }
     }
 
@@ -604,6 +616,8 @@ class Editor extends Drawer {
                 this.showWindow('menus');
             case 'menu-close':
                 this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
         }
     }
 
@@ -636,6 +650,8 @@ class Editor extends Drawer {
                 this.showWindow('exchangecord');
             case 'menu-close':
                 this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
         }
     }
 
@@ -647,6 +663,8 @@ class Editor extends Drawer {
         switch (ac) {
             case 'menu-close':
                 this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
         }
     }
 
@@ -658,6 +676,21 @@ class Editor extends Drawer {
         switch (ac) {
             case 'menu-close':
                 this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Notes window actions.
+        @param  ac  the action id
+    **/
+    private function actionWindowNotes(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
         }
     }
 
@@ -689,6 +722,8 @@ class Editor extends Drawer {
                 this._windows['mediapicture'].action('setmode', [
                     'mode' => 'single', 
                 ]);
+            case 'window-notes':
+                this.showWindow('designnotes');
         }
     }
 
@@ -713,6 +748,8 @@ class Editor extends Drawer {
                 this._windows['mediapicture'].action('setmode', [
                     'mode' => 'single', 
                 ]);
+            case 'window-notes':
+                this.showWindow('designnotes');
         }
     }
 
@@ -724,6 +761,8 @@ class Editor extends Drawer {
         switch (ac) {
             case 'menu-close':
                 this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
         }
     }
 
@@ -735,6 +774,8 @@ class Editor extends Drawer {
         switch (ac) {
             case 'menu-close':
                 this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
         }
     }
 
@@ -757,6 +798,8 @@ class Editor extends Drawer {
                 this._playerControls.updateInfo();
             case 'menu-close':
                 this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
         }
     }
 
@@ -805,6 +848,8 @@ class Editor extends Drawer {
     **/
     private function actionMedia(ac:String, data:Map<String, Dynamic> = null):Void {
         switch (ac) {
+            case 'window-notes':
+                this.showWindow('designnotes');
             case 'menu-close':
                 this.opened = false;
             case 'addstage':
@@ -1268,6 +1313,7 @@ class Editor extends Drawer {
                 case 'assistantplugin': this._windows['assistantplugin'] = new AssistPlugin(actionAssistant);
 
                 case 'visitors': this._windows['visitors'] = new WindowVisitors(actionWindowVisitors, this.build);
+                case 'designnotes': this._windows['designnotes'] = new WindowNotes(actionWindowNotes);
 
                 case 'setup': this._windows['setup'] = new WindowSetup(actionWindowSetup, this.build);
                 default: ok = false;

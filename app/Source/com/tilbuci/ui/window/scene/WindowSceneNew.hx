@@ -23,7 +23,7 @@ class WindowSceneNew extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-scenenew-title'), 800, 170, false);
+        super(ac, Global.ln.get('window-scenenew-title'), 800, 170, false, true, true);
     }
 
     /**

@@ -40,7 +40,7 @@ class WindowVisitors extends PopupWindow {
     public function new(ac:Dynamic, build:BuildInfo) {
 
         // creating window
-        super(ac, Global.ln.get('window-visitors-title'), 1000, 560, true, true);
+        super(ac, Global.ln.get('window-visitors-title'), 1000, 560, true, true, true);
 
         // visitors list
         this.ui.createHContainer('listfilter');

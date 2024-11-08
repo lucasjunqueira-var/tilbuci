@@ -28,7 +28,7 @@ class WindowActionBlock extends PopupWindow {
     **/
     public function new(ac:Dynamic = null) {
         // creating window
-        super(ac, Global.ln.get('window-actions-block'), 980, 530, false);
+        super(ac, Global.ln.get('window-actions-block'), 980, 530, false, true);
 
         // create columns
         this.addForm('blocks', this.ui.createColumnHolder('available',

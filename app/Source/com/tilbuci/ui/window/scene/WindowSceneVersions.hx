@@ -23,7 +23,7 @@ class WindowSceneVersions extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-sceneversion-title'), 600, 430, false);
+        super(ac, Global.ln.get('window-sceneversion-title'), 600, 430, false, true, true);
     }
 
     /**
