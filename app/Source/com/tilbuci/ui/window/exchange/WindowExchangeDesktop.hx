@@ -26,7 +26,7 @@ class WindowExchangeDesktop extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-exchdesk-title'), 1000, 500, false, true, true);
+        super(ac, Global.ln.get('window-exchdesk-title'), 1000, 640, false, true, true);
     }
 
     /**
@@ -36,13 +36,11 @@ class WindowExchangeDesktop extends PopupWindow {
         this.addForm(Global.ln.get('window-exchdesk-title'), this.ui.forge('desk', [
             { tp: 'Label', id: 'about', tx: Global.ln.get('window-exchdesk-about'), vr: '' },  
             { tp: 'Spacer', id: 'about', ht: 10, ln: false }, 
-            { tp: 'Label', id: 'os', tx: Global.ln.get('window-exchdesk-os'), vr: Label.VARIANT_DETAIL },  
-            { tp: 'Select', id: 'os', vl: [
-                { text: Global.ln.get('window-exchdesk-oswindows'), value: 'windows' }, 
-                { text: Global.ln.get('window-exchdesk-oslinux'), value: 'linux' }, 
-                { text: Global.ln.get('window-exchdesk-osmacintel'), value: 'macosintel' }, 
-                { text: Global.ln.get('window-exchdesk-osmacsilicon'), value: 'macossilicon' }, 
-            ], sl: 'windows' }, 
+            { tp: 'Label', id: 'mode', tx: Global.ln.get('window-exchdesk-mode'), vr: Label.VARIANT_DETAIL },  
+            { tp: 'Select', id: 'mode', vl: [
+                { text: Global.ln.get('window-exchdesk-full'), value: 'full' }, 
+                { text: Global.ln.get('window-exchdesk-update'), value: 'update' }, 
+            ], sl: 'full' }, 
             { tp: 'Label', id: 'window', tx: Global.ln.get('window-exchdesk-window'), vr: Label.VARIANT_DETAIL },  
             { tp: 'Select', id: 'window', vl: [
                 { text: Global.ln.get('window-exchdesk-windownormal'), value: 'normal' }, 
@@ -54,9 +52,15 @@ class WindowExchangeDesktop extends PopupWindow {
             { tp: 'Numeric', id: 'width', mn: 240, mx: 1920, vl: 1280, st: 50 }, 
             { tp: 'Label', id: 'height', tx: Global.ln.get('window-exchdesk-height'), vr: Label.VARIANT_DETAIL },  
             { tp: 'Numeric', id: 'height', mn: 240, mx: 1920, vl: 720, st: 50 }, 
+            { tp: 'Label', id: 'icon', tx: Global.ln.get('window-exchdesk-icon'), vr: Label.VARIANT_DETAIL}, 
+            { tp: 'TInput', id: 'icon', tx: '', vr: '' }, 
+            { tp: 'Label', id: 'author', tx: Global.ln.get('window-exchdesk-author'), vr: Label.VARIANT_DETAIL}, 
+            { tp: 'TInput', id: 'author', tx: '', vr: '' }, 
+            { tp: 'Label', id: 'description', tx: Global.ln.get('window-exchdesk-description'), vr: Label.VARIANT_DETAIL}, 
+            { tp: 'TInput', id: 'description', tx: '', vr: '' }, 
             { tp: 'Spacer', id: 'export', ht: 10, ln: false }, 
             { tp: 'Button', id: 'export', tx: Global.ln.get('window-exchdesk-button'), ac: this.onExport }, 
-            { tp: 'Spacer', id: 'nw', ht: 50, ln: true }, 
+            { tp: 'Spacer', id: 'nw', ht: 20, ln: true }, 
             { tp: 'Label', id: 'nw', tx: Global.ln.get('window-exchdesk-aboutnw'), vr: '' },  
             { tp: 'Button', id: 'nw', tx: Global.ln.get('window-exchdesk-buttonnw'), ac: this.onNw }
         ]));
@@ -76,13 +80,19 @@ class WindowExchangeDesktop extends PopupWindow {
             this.ui.numerics['width'].value = 1280;
             this.ui.numerics['height'].value = Math.round(GlobalPlayer.mdata.screen.small * 1280 / GlobalPlayer.mdata.screen.big);
         }
+        this.ui.inputs['icon'].enabled = false;
+        this.ui.inputs['icon'].text = GlobalPlayer.mdata.favicon;
+        this.ui.inputs['author'].enabled = false;
+        this.ui.inputs['author'].text = GlobalPlayer.mdata.author;
+        this.ui.inputs['description'].enabled = false;
+        this.ui.inputs['description'].text = GlobalPlayer.mdata.description;
     }
 
     /**
-        Open nw.js site.
+        Open electron site.
     **/
     private function onNw(evt:TriggerEvent):Void {
-        var req:URLRequest = new URLRequest('https://nwjs.io/');
+        var req:URLRequest = new URLRequest('https://www.electronjs.org/');
         req.method = 'GET';
         Lib.getURL(req);
     }
@@ -91,13 +101,22 @@ class WindowExchangeDesktop extends PopupWindow {
         Start movie export.
     **/
     private function onExport(evt:TriggerEvent):Void {
-        Global.ws.send('Movie/ExportDesk', [
-            'movie' => GlobalPlayer.movie.mvId, 
-            'os' => this.ui.selects['os'].selectedItem.value, 
-            'window' => this.ui.selects['window'].selectedItem.value, 
-            'width' => Math.round(this.ui.numerics['width'].value), 
-            'height' => Math.round(this.ui.numerics['height'].value)
-        ], onExportReturn, 12000000);
+        if ((GlobalPlayer.mdata.favicon == '') || (GlobalPlayer.mdata.author == '') || (GlobalPlayer.mdata.description == '')) {
+            this.ui.createWarning(Global.ln.get('window-exchdesk-title'), Global.ln.get('window-exchdesk-errormiss'), 300, 180, this.stage);
+        } else {
+            Global.ws.send('Movie/ExportDesk', [
+                'movie' => GlobalPlayer.movie.mvId, 
+                'mode' => this.ui.selects['mode'].selectedItem.value, 
+                'window' => this.ui.selects['window'].selectedItem.value, 
+                'width' => Math.round(this.ui.numerics['width'].value), 
+                'height' => Math.round(this.ui.numerics['height'].value), 
+                'favicon' => GlobalPlayer.mdata.favicon, 
+                'author' => GlobalPlayer.mdata.author, 
+                'description' => GlobalPlayer.mdata.description, 
+                'title' => GlobalPlayer.mdata.title
+            ], onExportReturn, 12000000);
+        }
+        
     }
 
     /**

@@ -2118,7 +2118,7 @@ class Movie extends BaseClass
      * @param	int   $width  window original width
      * @param	int   $height window original height
 	 * @return	string|bool the path to the exported file or false on error
-	 */
+	 *
 	public function exportDeskLinux($user, $movie, $os, $window, $width, $height) {
 		// check user: movie owner?
 		if (!is_null($this->db)) {
@@ -2311,7 +2311,7 @@ class Movie extends BaseClass
      * @param	int   $width  window original width
      * @param	int   $height window original height
 	 * @return	string|bool the path to the exported file or false on error
-	 */
+	 *
 	public function exportDesk($user, $movie, $os, $window, $width, $height) {
 		// check user: movie owner?
 		if (!is_null($this->db)) {
@@ -2505,6 +2505,227 @@ class Movie extends BaseClass
                     } else {
                         return (false);
                     }                    
+                } else {
+                    return (false);
+                }
+			} else {
+                // the current user isn't the movie owner
+				return (false);
+			}
+		} else {
+			return (false);
+		}
+	}
+    /**/
+    
+    /**
+	 * Exports a movie as a desktop application.
+	 * @param	string	$user	the requesting user
+	 * @param	string	$movie	the movie id
+     * @param	string	$mode  export mode
+     * @param	string	$window    the window mode
+     * @param	int   $width  window original width
+     * @param	int   $height window original height
+     * @param	string	$favicon the app icon
+     * @param	string	$author the app author
+     * @param	string	$description the app description
+     * @param	string	$title the app title
+	 * @return	string|bool the path to the exported file or false on error
+	 */
+	public function exportDesk($user, $movie, $mode, $window, $width, $height, $favicon, $author, $description, $title) {
+		// check user: movie owner?
+		if (!is_null($this->db)) {
+			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [
+				':id' => $movie, 
+				':user' => $user, 
+			]);
+			if (count($ck) > 0) {
+                // prepare folders
+                $this->removeFileDir('../../export/desktop-'.$movie.'.zip');
+                $this->removeFileDir('../../export/desktop-'.$movie);
+                $this->createDir('../../export/desktop-'.$movie);
+                $this->createDir('../../export/desktop-'.$movie.'/'.$movie);
+                $this->createDir('../../export/desktop-'.$movie.'/'.$movie.'/movie');
+                
+                // check movie
+                if ($this->loadMovie($movie)) {
+                    set_time_limit(0);
+                    
+                    // full app or update?
+                    if ($mode == 'update') {
+                        // readme
+                        @copy('../../export/desktop/readmeupdate.txt', '../../export/desktop-'.$movie.'/readme.txt');
+                    } else {
+                        // readme
+                        @copy('../../export/desktop/readmefull.txt', '../../export/desktop-'.$movie.'/readme.txt');
+
+                        // package
+                        $package = file_get_contents('../../export/desktop/package.json');
+                        $package = str_replace([
+                            '[TITLE]', 
+                            '[AUTHOR]', 
+                            '[DESCRIPTION]'
+                        ], [
+                            $title, 
+                            $author, 
+                            $description
+                        ], $package);
+                        file_put_contents('../../export/desktop-'.$movie.'/'.$movie.'/package.json', $package);
+                    }
+
+                    // howler audio fix
+                    @copy('../../export/desktop/howler.min.js', '../../export/desktop-'.$movie.'/'.$movie.'/howler.min.js');
+                    
+                    // other assets
+                    @copy('../../export/desktop/btclose.png', '../../export/desktop-'.$movie.'/'.$movie.'/btclose.png');
+                    @copy('../../export/desktop/preload.js', '../../export/desktop-'.$movie.'/'.$movie.'/preload.js');
+                    $this->copyDir(('../../export/desktop/assets'), ('../../export/desktop-'.$movie.'/'.$movie.'/assets'));
+                    $this->copyDir(('../../export/desktop/lib'), ('../../export/desktop-'.$movie.'/'.$movie.'/lib'));
+                    $this->copyDir(('../../export/desktop/manifest'), ('../../export/desktop-'.$movie.'/'.$movie.'/manifest'));
+
+                    // main.js
+                    $main = file_get_contents('../../export/desktop/main.js');
+                    $main = str_replace([
+                        '[WIDTH]', 
+                        '[HEIGHT]', 
+                        '[FULLSCREEN]', 
+                        '[KIOSK]', 
+                        '[RESIZE]'
+                    ], [
+                        $width, 
+                        $height, 
+                        ((($window == 'full') || ($window == 'kiosk')) ? 'fullscreen: true, ' : ''), 
+                        (($window == 'kiosk') ? 'kiosk: true, ' : ''),
+                        (($window == 'resize') ? 'win.resizable = false ' : ''),
+                    ], $main);
+                    file_put_contents('../../export/desktop-'.$movie.'/'.$movie.'/main.js', $main);
+                            
+                    // re-publish scenes?
+                    $pub = false;
+                    if (($ck[0]['mv_identify'] == '1') || (!is_null($ck[0]['mv_vsgroups']) && ($ck[0]['mv_vsgroups'] != ''))) {
+                        $pub = true;
+                        $this->publishScenes($movie);
+                    }
+                            
+                    // fonts
+                    $fonts = [ ];
+                    $ckf = $this->queryAll('SELECT * FROM fonts');
+                    foreach ($ckf as $v) {
+                        $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
+                        @copy(('../font/' . $v['fn_file']), ('../../export/desktop-'.$movie.'/'.$movie.'/assets/' . $v['fn_file']));
+                    }
+                    $ckf = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
+                    if (count($ckf) > 0) {
+                        if ($ckf[0]['mv_fonts'] != '') {
+                            $json = json_decode(gzdecode(base64_decode($ckf[0]['mv_fonts'])), true);
+                            if (json_last_error() == JSON_ERROR_NONE) {
+                                foreach ($json as $k => $v) {
+                                    if (isset($v['name']) && isset($v['file'])) {
+                                        $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
+                                        @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/desktop-'.$movie.'/'.$movie.'/assets/' . $v['file']));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // plugins
+                    $plhead = [ ];
+                    $plend = [ ];
+                    $ckp = $this->queryAll('SELECT pc_id, pc_file FROM pluginconfig WHERE pc_active=:ac AND pc_index=:in', [
+                        ':ac' => '1', 
+                        ':in' => '1', 
+                    ]);
+                    foreach ($ckp as $v) {
+                        if (is_file('../../app/' . $v['pc_file'] . '.php')) {
+                            require_once('../../app/' . $v['pc_file'] . '.php');
+                            $pl = new $v['pc_file'];
+                            $plhead[] = $pl->indexHead();
+                            $plend[] = $pl->indexEndBody();
+                        }
+                    }
+                    
+                    // index text
+                    $index = file_get_contents('../../export/desktop/index.html');
+                    // prepare values
+                    $fonts = implode("\r\n", $fonts);
+                    $plhead = implode("\r\n", $plhead); 
+                    $plend = implode("\r\n", $plend); 
+                    $image = $this->info['image'] == '' ? '' : '<meta property="og:image" content="./movie/'.$movie.'.movie/media/picture/'.$this->info['image'].'" />';
+                    $color = str_replace('0x', '#', $this->info['screen']['bgcolor']);
+                    $ws = '';
+                    if ((strpos($this->conf['path'], 'localhost') === false) && (strpos($this->conf['path'], '127.0.0.1') === false)) {
+                        $ws = $this->slashUrl($this->conf['path']) . 'ws/';
+                    }
+                    
+                    // index.html
+                    $index = str_replace([
+                        '[SITEMOVIE]', 
+                        '[SITESCENE]', 
+                        '[SITETITLE]', 
+                        '[SITECOLOR]', 
+                        '[SITEABOUT]', 
+                        '[SITESHAREIMG]',
+                        '[SITEFONTS]', 
+                        '[SITEPLUGINHEAD]', 
+                        '[SITEPLUGINEND]', 
+                        '[SITEWS]'
+                    ], [
+                        $movie, 
+                        '', 
+                        $this->info['title'], 
+                        $color, 
+                        $this->info['description'], 
+                        $image, 
+                        $fonts, 
+                        $plhead, 
+                        $plend, 
+                        $ws
+                    ], $index);
+                    file_put_contents('../../export/desktop-'.$movie.'/'.$movie.'/index.html', $index);
+                    
+                    // runtime
+                    @copy('../../export/runtimes/desktop.js', ('../../export/desktop-'.$movie.'/'.$movie.'/TilBuci.js'));
+                            
+                    // favicon
+                    if ($this->info['favicon'] != '') {
+                        @unlink('../../export/desktop-'.$movie.'/'.$movie.'/favicon.png');
+                        @copy(('../movie/'.$movie.'.movie/media/picture/'.$this->info['favicon']), ('../../export/desktop-'.$movie.'/'.$movie.'/favicon.png'));
+                    }
+                    
+                    // movie folder
+                    $this->copyDir(('../movie/'.$movie.'.movie'), ('../../export/desktop-'.$movie.'/'.$movie.'/movie/'.$movie.'.movie'));
+                    $this->info['key'] = '';
+                    $this->info['fallback'] = '';
+                    $this->info['identify'] = false;
+                    $this->info['vsgroups'] = '';
+                    file_put_contents(('../../export/desktop-'.$movie.'/'.$movie.'/movie/'.$movie.'.movie/movie.json'), json_encode($this->info));
+                            
+                    // save zip
+                    $zip = new \ZipArchive;
+                    $zip->open('../../export/desktop-'.$movie.'.zip', \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+                    $files = new \RecursiveIteratorIterator(
+                        new \RecursiveDirectoryIterator('../../export/desktop-'.$movie),
+                        \RecursiveIteratorIterator::LEAVES_ONLY
+                    );
+                    $rootPath = realpath('../../export/desktop-'.$movie);
+                    foreach ($files as $file) {
+                        if (!$file->isDir()) {
+                            $filePath = $file->getRealPath();
+                            $relativePath = substr($filePath, strlen($rootPath) + 1);
+                            $relativePath = str_replace('\\', '/', $relativePath);
+                            $zip->addFile($filePath, $relativePath);
+                        }
+                    }
+                    $zip->close();
+                    $this->removeFileDir('../../export/desktop-'.$movie);
+                            
+                    // remove scenes?
+                    if ($pub) {
+                        $this->removePublished($movie);
+                    }
+                            
+                    return ('desktop-'.$movie.'.zip');
                 } else {
                     return (false);
                 }

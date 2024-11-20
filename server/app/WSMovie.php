@@ -405,13 +405,14 @@ class WSMovie extends Webservice
 	 */
 	private function exportDesk() {
 		// required fields received?
-		if ($this->requiredFields(['movie', 'os', 'window', 'width', 'height'])) {
+		if ($this->requiredFields(['movie', 'mode', 'window', 'width', 'height', 'favicon', 'author', 'description', 'title'])) {
 			$mv = new Movie;
-            if ($this->req['os'] == 'linux') {
+            /*if ($this->req['os'] == 'linux') {
                 $exp = $mv->exportDeskLinux($this->user, $this->req['movie'], $this->req['os'], $this->req['window'], $this->req['width'], $this->req['height']);
             } else {
                 $exp = $mv->exportDesk($this->user, $this->req['movie'], $this->req['os'], $this->req['window'], $this->req['width'], $this->req['height']);
-            }
+            }*/
+            $exp = $mv->exportDesk($this->user, $this->req['movie'], $this->req['mode'], $this->req['window'], $this->req['width'], $this->req['height'], $this->req['favicon'], $this->req['author'], $this->req['description'], $this->req['title']);
             if ($exp === false) {
                 $this->returnRequest([ 'e' => 1, 'exp' => '' ]);
             } else {

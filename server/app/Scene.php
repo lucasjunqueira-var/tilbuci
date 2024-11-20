@@ -32,7 +32,7 @@ class Scene extends BaseClass
 	{
 		parent::__construct();
 		if (!is_null($id)) {
-			$this->loadScene($id);
+			$this->loadScene(null, $id);
 		}
 	}
 	
@@ -41,17 +41,7 @@ class Scene extends BaseClass
 	 * @return string|bool the created scene ID or false on error
 	 */
 	public function createScene($id, $movie, $title, $user) {
-		// checking id
-		/*if ($id != '') {
-			$id = substr($this->cleanString($id), 0, 32);
-			$ck = $this->queryAll('SELECT sc_uid FROM scenes WHERE sc_id=:id AND sc_movie=:mv', [
-				':id' => $id,
-				':mv' => $movie, 
-			]);
-			if (count($ck) > 0) $id = '';
-		}*/
 		$id = '';
-		
 		// create id?
 		if ($id == '') {
 			$ckid = true;
@@ -82,7 +72,7 @@ class Scene extends BaseClass
 			]);
 			
 			// publish original version
-			if ($this->loadScene($movie, $id, -1)) {
+			if ($this->loadScene($user, $movie, $id, -1)) {
 				$this->publish();
 				return ($id);	
 			} else {

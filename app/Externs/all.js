@@ -41,7 +41,7 @@ function TBB_fullscreen() {
  * Quits a desktop application.
  */
 function TBB_appQuit() {
-    nw.App.closeAllWindows();
+    window.electronAPI.quitApp();
 }
 
 /**
