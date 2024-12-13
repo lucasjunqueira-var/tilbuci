@@ -51,7 +51,7 @@ class WindowMovieProperties extends PopupWindow {
     /**
         theme color names
     **/
-    private var _thColors:Array<String> = [ 'themeColor', 'offsetThemeColor', 'headerFillColor', 'headerFontSize', 'headerFontName', 'headerTextColor', 'rootFillColor', 'fontSize', 'fontName', 'textColor', 'insetFillColor', 'disabledTextColor', 'footerFillColor', 'controlFillColor1', 'controlFillColor2', 'listBackground', 'listItemBackground', 'listItemFont', 'scrollBarThumbFillColor' ];
+    private var _thColors:Array<String> = [ 'themeColor', 'offsetThemeColor', 'headerFillColor', 'headerFontSize', 'headerFontName', 'headerTextColor', 'rootFillColor', 'fontSize', 'fontName', 'textColor', 'insetFillColor', 'disabledTextColor', 'footerFillColor', 'controlFillColor1', 'controlFillColor2', /*'listBackground', 'listItemBackground', 'listItemFont',*/ 'scrollBarThumbFillColor' ];
 
     /**
         favicon display

@@ -39,7 +39,7 @@ class Plugin extends EventDispatcher {
     private function get_plfile():String { return (this._plfile); }
 
     /**
-        does the plugin manipulate de index page?
+        does the plugin manipulate the index page?
     **/
     private var _plindex:Bool = false;
 

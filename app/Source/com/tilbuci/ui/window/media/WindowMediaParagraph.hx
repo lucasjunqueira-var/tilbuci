@@ -42,7 +42,7 @@ class WindowMediaParagraph extends WindowMediaBase {
             { tp: 'TArea', id: 'text', tx: '', vr: '', en: true }, 
             { tp: 'Button', id: 'btadd', tx: Global.ln.get('window-mdparagraph-set'), ac: this.onOpen }, 
         ]));
-        this.ui.tareas['text'].height = 550;
+        this.ui.tareas['text'].height = 530;
     }
 
     /**
@@ -51,7 +51,7 @@ class WindowMediaParagraph extends WindowMediaBase {
     override public function acStart():Void {
         this._path = '';
         this.ui.tareas['text'].text = '';
-        this.ui.tareas['text'].height = 550;
+        this.ui.tareas['text'].height = 530;
     }
 
     /**

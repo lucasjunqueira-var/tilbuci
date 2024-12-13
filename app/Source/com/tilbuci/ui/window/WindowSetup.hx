@@ -43,7 +43,7 @@ class WindowSetup extends PopupWindow {
                 { tp: 'Button', id: 'user-logout', tx: Global.ln.get('window-setup-user-logout'), ac: this.onLogout }
             ]));
             // can manage users?
-            if (Global.ws.level <= 50) {
+            if (Global.ws.level <= 20) {
                 var levelval:Array<Dynamic> = [
                     { text: Global.ln.get('window-setup-users-listauthor'), value: 75 }, 
                     { text: Global.ln.get('window-setup-users-listaeditor'), value: 25 }

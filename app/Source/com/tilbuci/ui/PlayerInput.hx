@@ -435,10 +435,10 @@ class PlayerInput extends Panel {
             this._pheader.textFormat = new TextFormat(GlobalPlayer.theme.headerFont, GlobalPlayer.theme.headerSize, GlobalPlayer.theme.headerFontColor);
             this._pheader.embedFonts = GlobalPlayer.theme.headerFont != '_sans';
             if (GlobalPlayer.theme.listBackground != null) {
-                this._inputList.backgroundSkin = new RectangleSkin(SolidColor(GlobalPlayer.theme.listBackground));
+                //this._inputList.backgroundSkin = new RectangleSkin(SolidColor(GlobalPlayer.theme.listBackground));
             }
             if ((GlobalPlayer.theme.listItemBackground != null) || (GlobalPlayer.theme.listItemFont != null) || (GlobalPlayer.theme.windowFontName != '_sans') || (GlobalPlayer.theme.windowFontSize != 14)) {
-                var recycler = DisplayObjectRecycler.withFunction(() -> {
+                /*var recycler = DisplayObjectRecycler.withFunction(() -> {
                     var itemRenderer = new ItemRenderer();
                     itemRenderer.backgroundSkin = new RectangleSkin(SolidColor(GlobalPlayer.theme.listItemBackground));
                     itemRenderer.textFormat = new TextFormat(GlobalPlayer.theme.windowFontName, GlobalPlayer.theme.windowFontSize, GlobalPlayer.theme.listItemFont);
@@ -447,7 +447,7 @@ class PlayerInput extends Panel {
                 this._inputList.itemRendererRecycler = recycler;
                 recycler.update = (itemRenderer:ItemRenderer, state:ListViewItemState) -> {
                     itemRenderer.text = state.text;
-                };
+                };*/
             }
         }
 

@@ -1,6 +1,7 @@
 package com.tilbuci;
 
 /** HAXE **/
+import com.tilbuci.ui.window.contraptions.WindowContrMenu;
 import com.tilbuci.script.ActionInfo;
 import feathers.core.ToolTipManager;
 import com.tilbuci.script.AssistVariables;
@@ -695,6 +696,17 @@ class Editor extends Drawer {
     }
 
     /**
+        Contraption menus actions.
+        @param  ac  the action id
+    **/
+    private function actionWindowContrMenu(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+        }
+    }
+
+    /**
         Movie window actions.
         @param  ac  the action id
     **/
@@ -1311,6 +1323,8 @@ class Editor extends Drawer {
                 case 'assistantdata': this._windows['assistantdata'] = new AssistDataInput(actionAssistant);
                 case 'assistantplus': this._windows['assistantplus'] = new AssistPlus(actionAssistant);
                 case 'assistantplugin': this._windows['assistantplugin'] = new AssistPlugin(actionAssistant);
+
+                case 'menus': this._windows['menus'] = new WindowContrMenu(actionWindowContrMenu);
 
                 case 'visitors': this._windows['visitors'] = new WindowVisitors(actionWindowVisitors, this.build);
                 case 'designnotes': this._windows['designnotes'] = new WindowNotes(actionWindowNotes);

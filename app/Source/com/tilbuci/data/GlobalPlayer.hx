@@ -1,6 +1,7 @@
 package com.tilbuci.data;
 
 /** HAXE **/
+import com.tilbuci.contraptions.Contraptions;
 import openfl.geom.Point;
 import com.tilbuci.ui.PlayerTheme;
 import haxe.io.Bytes;
@@ -139,6 +140,11 @@ class GlobalPlayer {
         html text styles
     **/
     public static var style:StyleSheet = new StyleSheet();
+
+    /**
+        contraptions information
+    **/
+    public static var contraptions:Contraptions = new Contraptions();
 
     /**
         current movie ui theme

@@ -44,6 +44,7 @@ class PlayerTheme extends SteelTheme {
     public function new(sets:String) {
         super();
         this.darkMode = true;
+
         var json:Dynamic = StringStatic.jsonParse(sets);
         if (json != false) {
             for (n in Reflect.fields(json)) {
@@ -84,9 +85,9 @@ class PlayerTheme extends SteelTheme {
                     case 'headerFontName': this.headerFontName = Std.string(Reflect.field(json, n));
                     case 'headerTextColor': this.setColor(n, json);
                     case 'footerFillColor': this.setColor(n, json);
-                    case 'listBackground': this.setColor(n, json);
-                    case 'listItemBackground': this.setColor(n, json);
-                    case 'listItemFont': this.setColor(n, json);
+                    //case 'listBackground': this.setColor(n, json);
+                    //case 'listItemBackground': this.setColor(n, json);
+                    //case 'listItemFont': this.setColor(n, json);
                 }
             }
         }

@@ -103,7 +103,7 @@ class WindowCollections extends PopupWindow {
         this.ui.createTArea('assettext', '', false, '', this.ui.containers['assettext']);
         this.ui.createButton('assettext', Global.ln.get('window-collection-asttext'), onFile1, this.ui.containers['assettext']);
         this.ui.containers['assettext'].width = this.ui.buttons['assettext'].width = this.ui.tareas['assettext'].width = 1000;
-        this.ui.tareas['assettext'].height = 180;
+        this.ui.tareas['assettext'].height = 140;
 
         this.ui.createHContainer('spritemap');
         this.ui.hcontainers['spritemap'].addChild(this.ui.forge('smapleft', [

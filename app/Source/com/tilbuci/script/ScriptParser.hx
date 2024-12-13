@@ -1,6 +1,7 @@
 package com.tilbuci.script;
 
 /** TILBUCI **/
+import com.tilbuci.contraptions.MenuContraption;
 import feathers.core.FocusManager;
 import openfl.ui.Keyboard;
 import com.tilbuci.js.ExternBrowser;
@@ -213,6 +214,46 @@ class ScriptParser {
                 this._stringsjson[k] = mapk;
             }
         }
+        this.loadContraptions();
+    }
+
+    /**
+        Loads current movie contraptions.json file.
+    **/
+    public function loadContraptions():Void {
+
+trace ('load contraptions');
+
+        if (GlobalPlayer.nocache) {
+            new DataLoader(true, (GlobalPlayer.base + 'movie/' + GlobalPlayer.movie.mvId + '.movie/contraptions.json'), 'GET', [ 'rand' => Date.now().getTime() ], DataLoader.MODEJSON, onContraptions);
+        } else {
+            new DataLoader(true, (GlobalPlayer.base + 'movie/' + GlobalPlayer.movie.mvId + '.movie/contraptions.json'), 'GET', [ ], DataLoader.MODEJSON, onContraptions);
+        }
+    }
+
+    /**
+        Contraptions.json file loaded.
+        @param  ok  correctly loaded?
+        @param  ld  loader reference
+    **/
+    private function onContraptions(ok:Bool, ld:DataLoader = null):Void {
+        GlobalPlayer.contraptions.clear();
+        if (ok) {
+            for (k in Reflect.fields(ld.json)) {
+                if (k == 'menus') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'menus'))) {
+                        var mn:MenuContraption = new MenuContraption();
+                        if (mn.load(Reflect.field(Reflect.field(ld.json, 'menus'), k2))) {
+                            GlobalPlayer.contraptions.menus[mn.id] = mn;
+                        } else {
+                            mn.kill();
+                        }
+                    }
+                }
+            }
+            
+        }
+        trace ('menus', GlobalPlayer.contraptions.menus);
     }
 
     /**

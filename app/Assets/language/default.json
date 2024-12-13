@@ -39,6 +39,10 @@
 	"rightbar-media": "Current instance", 
 	"rightbar-action": "Actions", 
 	
+	"rightbar-instances-none": "Select none", 
+	"rightbar-instances-rand": "Randomize names", 
+	"rightbar-instances-randcheck": "Are you sure you want to randomize all current instance names? If there is a selected instance, its name won't be changed.", 
+	
 	"rightbar-action-trigger": "Trigger actions", 
 	
 	"rightbar-history-original": "original",
@@ -629,6 +633,15 @@
 	"window-kfmanage-actions": "Set end actions",
 	"window-kfmanage-onlyone": "The scene must have at least one keyframe.",
 	
+	"window-contrmenu-title": "Menus",
+	"window-contrmenu-registered": "Registered menus",
+	"window-contrmenu-properties": "Menu properties",
+	"window-contrmenu-load": "Load menu",
+	"window-contrmenu-remove": "Remove menu",
+	"window-contrmenu-save": "Save menu settings",
+	"window-contrmenu-name": "Menu name",
+	"window-contrmenu-font": "Text font",
+	
 	"menu-media-title": "Media", 
 	"menu-media-collectionsadd": "Add from collection", 
 	"menu-media-collectionsrm": "Remove collections", 
@@ -960,7 +973,7 @@
 	"window-setup-config-rdset": "Set player render mode", 
 	"window-setup-config-rder": "Error while setting the render mode. Please try again.", 
 	"window-setup-config-rdok": "Render mode correctly set.", 
-	"window-setup-config-share": "Broswer URL and share mode", 
+	"window-setup-config-share": "Browser URL and share mode", 
 	"window-setup-config-shscene": "While navigating set browser URL to current movie and scene", 
 	"window-setup-config-shmovie": "While navigating set browser URL to current movie only", 
 	"window-setup-config-shnever": "Never change browser URL", 
