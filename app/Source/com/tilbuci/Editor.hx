@@ -703,6 +703,35 @@ class Editor extends Drawer {
         switch (ac) {
             case 'menu-close':
                 this.opened = false;
+            case 'menubrowseimgbg':
+                Global.temp['Media/Single'] = [
+                    'type' => '´picture', 
+                    'call' => 'menubrowseimgbg'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'menubrowseimgbt':
+                Global.temp['Media/Single'] = [
+                    'type' => '´picture', 
+                    'call' => 'menubrowseimgbt'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'menubrowseimgsl':
+                Global.temp['Media/Single'] = [
+                    'type' => '´picture', 
+                    'call' => 'menubrowseimgsl'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'window-notes':
+                this.showWindow('designnotes');
         }
     }
 
@@ -1005,6 +1034,24 @@ class Editor extends Drawer {
                             ]);
                         case 'browsesceneimage':
                             this._windows['propscene'].action('browsesceneimage', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'menubrowseimgbg':
+                            this._windows['menus'].action('menubrowseimgbg', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'menubrowseimgbt':
+                            this._windows['menus'].action('menubrowseimgbt', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'menubrowseimgsl':
+                            this._windows['menus'].action('menubrowseimgsl', [
                                 'file' => data['path'] + data['file'], 
                                 'type' => data['type'], 
                                 'name' => data['file'], 

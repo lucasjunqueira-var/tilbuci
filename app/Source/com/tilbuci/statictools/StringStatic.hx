@@ -164,6 +164,41 @@ class StringStatic
     }
 
     /**
+        Converts a color string to HEX format.
+        @param  color   the color string
+        @param  onerror default color to return on conversion error
+        @return a valid color string starting with #
+    **/
+    public static function colorHex(color:String, onerror:String = '#FFFFFF'):String {
+        if (color == null) color = onerror;
+        color = StringTools.replace(color, '#', '0x');
+        if (color.substr(0, 2) != '0x') color = '0x' + color;
+        var col:Int = Std.parseInt(color);
+        if (col == null) {
+            color = onerror;
+        } else {
+            color = '#' + StringTools.hex(col, 6);
+        }
+        return (color.toUpperCase());
+    }
+
+    /**
+        Converts a string to a color int value.
+        @param  colorstr    the color string to covert
+        @param  onerror color to set on error
+        @return an int color value
+    **/
+    public static function colorInt(colorstr:String, onerror:String = '0xFFFFFF'):Int {
+        colorstr = StringTools.replace(colorstr, '#', '0x');
+        if ((colorstr.substr(0, 2) != '0x') && (colorstr.substr(0, 2) != '0X')) {
+            colorstr = '0x' + colorstr;
+        }
+        var colorint:Int = Std.parseInt(colorstr);
+        if (colorint == null) colorint = Std.parseInt(onerror);
+        return (colorint);
+    }
+
+    /**
         Creates a random string with 32 chars.
         @return a random string
     **/

@@ -14,6 +14,8 @@ import com.tilbuci.data.Global;
 import motion.Actuate;
 import openfl.filters.BlurFilter;
 import openfl.filters.DropShadowFilter;
+import openfl.filters.GlowFilter;
+import openfl.filters.BitmapFilter;
 
 class InstanceSelect extends Sprite {
 
@@ -227,6 +229,8 @@ class InstanceSelect extends Sprite {
                 desc.color = val;
                 Actuate.stop(this.image, null, true);
                 Actuate.transform(this.image, 0.01).color(Std.parseInt(desc.color), desc.colorAlpha);
+            case 'blend':
+                desc.blend = val;
             case 'textfont':
                 desc.textFont = val;
             case 'textcolor':
@@ -272,49 +276,48 @@ class InstanceSelect extends Sprite {
                 if (!val) {
                     desc.dropshadow = [ ];
                 }
+            case 'glow':
+                if (!val) {
+                    desc.glow = [ ];
+                }
             case 'visible':
                 desc.visible = this.image.visible = val;
         }
         // apply filters?
-        if ((name == 'blur') || (name == 'dropshadow')) {
-            this.image.filters = [ ];
+        if ((name == 'blur') || (name == 'dropshadow') || (name == 'glow')) {
+            var ft:Array<BitmapFilter> = new Array<BitmapFilter>();
+
             if (desc.dropshadow.length == 8) {
-                if (desc.blur.length == 2) {
-                    this.image.filters = [ new DropShadowFilter(
-                        Std.parseInt(desc.dropshadow[0]), 
-                            Std.parseFloat(desc.dropshadow[1]), 
-                            Std.parseInt(desc.dropshadow[2]), 
-                            Std.parseFloat(desc.dropshadow[3]), 
-                            Std.parseFloat(desc.dropshadow[4]), 
-                            Std.parseFloat(desc.dropshadow[5]), 
-                            Std.parseFloat(desc.dropshadow[6]), 
-                            1, 
-                            desc.dropshadow[7] == '1'
-                    ), new BlurFilter(
-                        Std.parseFloat(desc.blur[0]), 
-                        Std.parseFloat(desc.blur[1])
-                    ) ];
-                } else {
-                    this.image.filters = [ new DropShadowFilter(
-                        Std.parseInt(desc.dropshadow[0]), 
-                            Std.parseFloat(desc.dropshadow[1]), 
-                            Std.parseInt(desc.dropshadow[2]), 
-                            Std.parseFloat(desc.dropshadow[3]), 
-                            Std.parseFloat(desc.dropshadow[4]), 
-                            Std.parseFloat(desc.dropshadow[5]), 
-                            Std.parseFloat(desc.dropshadow[6]), 
-                            1, 
-                            desc.dropshadow[7] == '1'
-                    ) ];
-                }
-            } else {
-                if (desc.blur.length == 2) {
-                    this.image.filters = [ new BlurFilter(
-                        Std.parseFloat(desc.blur[0]), 
-                        Std.parseFloat(desc.blur[1])
-                    ) ];
-                }
+                ft.push(new DropShadowFilter(
+                    Std.parseInt(desc.dropshadow[0]), 
+                    Std.parseFloat(desc.dropshadow[1]), 
+                    Std.parseInt(desc.dropshadow[2]), 
+                    Std.parseFloat(desc.dropshadow[3]), 
+                    Std.parseFloat(desc.dropshadow[4]), 
+                    Std.parseFloat(desc.dropshadow[5]), 
+                    Std.parseFloat(desc.dropshadow[6]), 
+                    1, 
+                    desc.dropshadow[7] == '1'
+                ));
             }
+            if (desc.blur.length == 2) {
+                ft.push(new BlurFilter(
+                    Std.parseFloat(desc.blur[0]), 
+                    Std.parseFloat(desc.blur[1])
+                ));
+            }
+            if (desc.glow.length == 5) {
+                ft.push(new GlowFilter(
+                    Std.parseInt(desc.glow[0]), // color
+                    Std.parseFloat(desc.glow[1]), // alpha
+                    Std.parseInt(desc.glow[2]), // blurx
+                    Std.parseInt(desc.glow[2]), // blury
+                    Std.parseInt(desc.glow[3]), // strength
+                    1, // quality
+                    desc.glow[4] == '1' // inner
+                ));
+            }
+            this.image.filters = ft;
         }
         this.place();
     }
@@ -338,6 +341,12 @@ class InstanceSelect extends Sprite {
                     desc.dropshadow = val;
                 } else {
                     desc.dropshadow = [ ];
+                }
+            case 'glow':
+                if (val.length == 5) {
+                    desc.glow = val;
+                } else {
+                    desc.glow = [ ];
                 }
         }
         this.place();

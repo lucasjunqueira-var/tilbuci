@@ -11,6 +11,10 @@ import openfl.events.MouseEvent;
 import openfl.geom.Point;
 import openfl.display.Shape;
 import openfl.display.Sprite;
+import openfl.display.LineScaleMode;
+import openfl.display.JointStyle;
+import openfl.filters.BitmapFilter;
+import openfl.display.BlendMode;
 
 /** ACTUATE **/
 import motion.Actuate;
@@ -417,49 +421,54 @@ class InstanceImage extends Sprite {
                 alpha: this._desc.alpha, 
                 rotation: this._desc.rotation
             }).smartRotation().autoVisible(false);
+
             // sound and color transformations
             Actuate.transform(this, GlobalPlayer.mdata.time).color(Std.parseInt(this._desc.color), this._desc.colorAlpha);
             this._imOther.stopSound();
             this._imCurrent.stopSound();
             this._imCurrent.iterateSound(this._desc.volume, this._desc.pan);
             // checking current filters
-            this.filters = [ ];
+            var ft:Array<BitmapFilter> = new Array<BitmapFilter>();
             if (this._desc.dropshadow.length == 8) {
-                if (this._desc.blur.length == 2) {
-                    this.filters = [ new DropShadowFilter(
-                        Std.parseInt(this._desc.dropshadow[0]), 
-                            Std.parseFloat(this._desc.dropshadow[1]), 
-                            Std.parseInt(this._desc.dropshadow[2]), 
-                            Std.parseFloat(this._desc.dropshadow[3]), 
-                            Std.parseFloat(this._desc.dropshadow[4]), 
-                            Std.parseFloat(this._desc.dropshadow[5]), 
-                            Std.parseFloat(this._desc.dropshadow[6]), 
-                            1, 
-                            this._desc.dropshadow[7] == '1'
-                    ), new BlurFilter(
-                        Std.parseFloat(this._desc.blur[0]), 
-                        Std.parseFloat(this._desc.blur[1])
-                    ) ];
-                } else {
-                    this.filters = [ new DropShadowFilter(
-                        Std.parseInt(this._desc.dropshadow[0]), 
-                            Std.parseFloat(this._desc.dropshadow[1]), 
-                            Std.parseInt(this._desc.dropshadow[2]), 
-                            Std.parseFloat(this._desc.dropshadow[3]), 
-                            Std.parseFloat(this._desc.dropshadow[4]), 
-                            Std.parseFloat(this._desc.dropshadow[5]), 
-                            Std.parseFloat(this._desc.dropshadow[6]), 
-                            1, 
-                            this._desc.dropshadow[7] == '1'
-                    ) ];
-                }
-            } else {
-                if (this._desc.blur.length == 2) {
-                    this.filters = [ new BlurFilter(
-                        Std.parseFloat(this._desc.blur[0]), 
-                        Std.parseFloat(this._desc.blur[1])
-                    ) ];
-                }
+                ft.push(new DropShadowFilter(
+                    Std.parseInt(this._desc.dropshadow[0]), 
+                    Std.parseFloat(this._desc.dropshadow[1]), 
+                    Std.parseInt(this._desc.dropshadow[2]), 
+                    Std.parseFloat(this._desc.dropshadow[3]), 
+                    Std.parseFloat(this._desc.dropshadow[4]), 
+                    Std.parseFloat(this._desc.dropshadow[5]), 
+                    Std.parseFloat(this._desc.dropshadow[6]), 
+                    1, 
+                    this._desc.dropshadow[7] == '1'
+                ));
+            }
+            if (this._desc.blur.length == 2) {
+                ft.push(new BlurFilter(
+                    Std.parseFloat(this._desc.blur[0]), 
+                    Std.parseFloat(this._desc.blur[1])
+                ));
+            }
+            if (this._desc.glow.length == 5) {
+                ft.push(new GlowFilter(
+                    Std.parseInt(this._desc.glow[0]), // color
+                    Std.parseFloat(this._desc.glow[1]), // alpha
+                    Std.parseInt(this._desc.glow[2]), // blurx
+                    Std.parseInt(this._desc.glow[2]), // blury
+                    Std.parseInt(this._desc.glow[3]), // strength
+                    1, // quality
+                    this._desc.glow[4] == '1' // inner
+                ));
+            }
+            this.filters = ft;
+            // blend mode
+            switch (this._desc.blend) {
+                case 'add': this.blendMode = BlendMode.ADD;
+                case 'difference': this.blendMode = BlendMode.DIFFERENCE;
+                case 'invert': this.blendMode = BlendMode.INVERT;
+                case 'multiply': this.blendMode = BlendMode.MULTIPLY;
+                case 'screen': this.blendMode = BlendMode.SCREEN;
+                case 'subtract': this.blendMode = BlendMode.SUBTRACT;
+                default: this.blendMode = BlendMode.NORMAL;
             }
             // editor?
             if (GlobalPlayer.mode == Player.MODE_EDITOR) {
@@ -1081,6 +1090,7 @@ class InstanceImage extends Sprite {
         }
         switch (name) {
             case 'color': return (desc.color);
+            case 'blend': return (desc.blend);
             case 'textfont': return (desc.textFont);
             case 'textcolor': return (desc.textColor);
             case 'textalign': return (desc.textAlign);
@@ -1109,6 +1119,7 @@ class InstanceImage extends Sprite {
             case 'textitalic': return (desc.textItalic);
             case 'blur': return (desc.blur.length == 2);
             case 'dropshadow': return (desc.dropshadow.length == 8);
+            case 'glow': return (desc.glow.length == 5);
             case 'visible': return (desc.visible);
             default: return (false);
         }
@@ -1138,6 +1149,12 @@ class InstanceImage extends Sprite {
                     return (desc.dropshadow);
                 } else {
                     return ([ '1', '45', '0x000000', '1', '4', '4', '1', '0' ]);
+                }
+            case 'glow':
+                if (desc.glow.length == 5) {
+                    return (desc.glow);
+                } else {
+                    return ([ '0xFFFFFF', '1', '6', '1', '0' ]);
                 }
             default: return ([ ]);
         }
@@ -1213,11 +1230,13 @@ class ImageSet {
         this.setProp('rotation', hr.rotation, vt.rotation);
         this.setProp('visible', hr.visible, vt.visible);
         this.setProp('color', hr.color, vt.color);
+        this.setProp('blend', hr.blend, vt.blend);
         this.setProp('colorAlpha', hr.colorAlpha, vt.colorAlpha);
         this.setProp('volume', hr.volume, vt.volume);
         this.setProp('pan', hr.pan, vt.pan);
         this.setProp('blur', hr.blur, vt.blur);
         this.setProp('dropshadow', hr.dropshadow, vt.dropshadow);
+        this.setProp('glow', hr.glow, vt.glow);
         this.setProp('textFont', hr.textFont, vt.textFont);
         this.setProp('textSize', hr.textSize, vt.textSize);
         this.setProp('textColor', hr.textColor, vt.textColor);
@@ -1275,12 +1294,18 @@ class ImageSet {
                 case 'pan':
                     this.horizontal.pan = valH;
                     this.vertical.pan = valV;
+                case 'blend':
+                    this.horizontal.blend = valH;
+                    this.vertical.blend = valV;
                 case 'blur':
                     this.horizontal.blur = valH;
                     this.vertical.blur = valV;
                 case 'dropshadow':
                     this.horizontal.dropshadow = valH;
                     this.vertical.dropshadow = valV;
+                case 'glow':
+                    this.horizontal.glow = valH;
+                    this.vertical.glow = valV;
                 case 'textFont':
                     this.horizontal.textFont = valH;
                     this.vertical.textFont = valV;
@@ -1370,12 +1395,18 @@ class ImageSet {
             case 'pan':
                 this.horizontal.pan = valH;
                 this.vertical.pan = valV;
+            case 'blend':
+                this.horizontal.blend = valH;
+                this.vertical.blend = valV;
             case 'blur':
                 this.horizontal.blur = valH;
                 this.vertical.blur = valV;
             case 'dropshadow':
                 this.horizontal.dropshadow = valH;
                 this.vertical.dropshadow = valV;
+            case 'glow':
+                this.horizontal.glow = valH;
+                this.vertical.glow = valV;
             case 'textFont':
                 this.horizontal.textFont = valH;
                 this.vertical.textFont = valV;

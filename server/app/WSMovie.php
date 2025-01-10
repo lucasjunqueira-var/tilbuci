@@ -109,6 +109,9 @@ class WSMovie extends Webservice
                 case 'Movie/UnlockScenes':
 					$this->unlock();
 					break;
+                case 'Movie/SaveContraptions':
+					$this->saveContraptions();
+					break;
 				default:
 					$this->returnRequest([ 'e' => -9 ]);
 					break;
@@ -407,11 +410,6 @@ class WSMovie extends Webservice
 		// required fields received?
 		if ($this->requiredFields(['movie', 'mode', 'window', 'width', 'height', 'favicon', 'author', 'description', 'title'])) {
 			$mv = new Movie;
-            /*if ($this->req['os'] == 'linux') {
-                $exp = $mv->exportDeskLinux($this->user, $this->req['movie'], $this->req['os'], $this->req['window'], $this->req['width'], $this->req['height']);
-            } else {
-                $exp = $mv->exportDesk($this->user, $this->req['movie'], $this->req['os'], $this->req['window'], $this->req['width'], $this->req['height']);
-            }*/
             $exp = $mv->exportDesk($this->user, $this->req['movie'], $this->req['mode'], $this->req['window'], $this->req['width'], $this->req['height'], $this->req['favicon'], $this->req['author'], $this->req['description'], $this->req['title']);
             if ($exp === false) {
                 $this->returnRequest([ 'e' => 1, 'exp' => '' ]);
@@ -532,6 +530,17 @@ class WSMovie extends Webservice
             }
 		} else {
 			$this->returnRequest([ 'e' => 1 ]);
+		}
+	}
+    
+    /**
+	 * Saves the movie contraption settings.
+	 */
+	private function saveContraptions() {
+		// required fields received?
+		if ($this->requiredFields(['movie', 'data'])) {
+			$mv = new Movie;
+            $this->returnRequest([ 'e' => $mv->saveContraptions($this->user, $this->req['movie'], $this->req['data']) ]);
 		}
 	}
 }

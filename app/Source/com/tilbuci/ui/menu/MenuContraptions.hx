@@ -26,11 +26,11 @@ class MenuContraptions extends DrawerMenu {
     **/
     override public function onShow():Void {
         super.onShow();
-        if (GlobalPlayer.movie.mvId == '') {
+        if ((GlobalPlayer.movie.mvId == '') || (Global.ws.level > 50))  {
             this.ui.buttons['btMenus'].enabled = false;
-            this.ui.buttons['btMenus'].toolTip = Global.ln.get('tooltip-movie-nomovie');
+            this.ui.buttons['btMenus'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
             this.ui.buttons['btDialogues'].enabled = false;
-            this.ui.buttons['btDialogues'].toolTip = Global.ln.get('tooltip-movie-nomovie');
+            this.ui.buttons['btDialogues'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
         } else {
             this.ui.buttons['btMenus'].enabled = true;
             this.ui.buttons['btMenus'].toolTip = null;

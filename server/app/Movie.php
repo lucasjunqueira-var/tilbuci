@@ -3267,4 +3267,37 @@ class Movie extends BaseClass
             return (false);
         }
     }
+    
+    /**
+     * Saves the movie contraption settings
+     * @param   string  $user   request user
+     * @param   string  $movie  the movie id
+     * @param   string  $data   the json contraptions data
+     * @return  int error code
+     * 0 => contraptions saved
+     * 1 => not enough permissions
+     * 2 => corrupted contraption data
+     */
+    public function saveContraptions($user, $movie, $data) {
+        $ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id AND (mv_user=:user OR mv_collaborators LIKE :col)', [
+            ':id' => $movie, 
+            ':user' => $user, 
+            ':col' => '%' . trim($user) . '%', 
+        ]);
+        if (count($ck) > 0) {
+            $json = json_decode($data);
+            if (json_last_error() != JSON_ERROR_NONE) {
+                return (2);
+            } else {
+                $this->execute('UPDATE movies SET mv_contraptions=:cont WHERE mv_id=:id', [
+                    ':cont' => base64_encode(gzencode($data)), 
+                    ':id' => $movie, 
+                ]);
+                file_put_contents('../movie/'.$movie.'.movie/contraptions.json', $data);
+                return (0);
+            }
+        } else {
+            return (1);
+        }
+    }
 }

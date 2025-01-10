@@ -18,7 +18,7 @@ class PictureImage extends BaseImage {
     **/
     private var _loader:Loader;
 
-    public function new(ol:Dynamic) {
+    public function new(ol:Dynamic = null) {
         super('picture', false, ol);
         this._lastMedia = '';
         this._loader = new Loader();
@@ -68,7 +68,7 @@ class PictureImage extends BaseImage {
         this.oHeight = this._loader.content.height;
         var cont:Bitmap = cast this._loader.content;
         cont.smoothing = true;
-        this._onLoad(true);
+        if (this._onLoad != null) this._onLoad(true);
     }
 
     /**
@@ -76,6 +76,6 @@ class PictureImage extends BaseImage {
     **/
     private function onError(e:Event):Void {
         this._lastMedia = '';
-        this._onLoad(false);
+        if (this._onLoad != null) this._onLoad(false);
     }
 }

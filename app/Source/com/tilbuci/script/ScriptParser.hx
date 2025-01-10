@@ -221,9 +221,6 @@ class ScriptParser {
         Loads current movie contraptions.json file.
     **/
     public function loadContraptions():Void {
-
-trace ('load contraptions');
-
         if (GlobalPlayer.nocache) {
             new DataLoader(true, (GlobalPlayer.base + 'movie/' + GlobalPlayer.movie.mvId + '.movie/contraptions.json'), 'GET', [ 'rand' => Date.now().getTime() ], DataLoader.MODEJSON, onContraptions);
         } else {
@@ -253,7 +250,6 @@ trace ('load contraptions');
             }
             
         }
-        trace ('menus', GlobalPlayer.contraptions.menus);
     }
 
     /**
@@ -605,6 +601,25 @@ trace ('load contraptions');
                         return (true);
                     case 'system.quit':
                         return (GlobalPlayer.appQuit());
+
+                    // contraptions
+                    case 'contraption.menu':
+                        if (param.length >= 6) {
+                            var mn:String = this.parseString(param[0]);
+                            if (GlobalPlayer.contraptions.menus.exists(mn)) {
+                                var bts:Array<String> = this.parseString(param[1]).split(';');
+                                var acSelect:Dynamic = null;
+                                if (Reflect.hasField(inf, 'select')) acSelect = Reflect.field(inf, 'select');
+                                return (GlobalPlayer.contraptions.menuShow(mn, bts, this.parseString(param[2]), acSelect, this.parseString(param[3]), this.parseInt(param[4]), this.parseInt(param[5])));
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.menuhide':
+                        GlobalPlayer.contraptions.menuHide();
+                        return (true);
 
                     
                     // movie actions

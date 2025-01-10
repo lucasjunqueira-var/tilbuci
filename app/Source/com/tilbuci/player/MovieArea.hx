@@ -15,6 +15,8 @@ import openfl.events.Event;
 import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.Assets;
+import openfl.display.LineScaleMode;
+import openfl.display.JointStyle;
 
 /** ACTUATE **/
 import motion.easing.Cubic;

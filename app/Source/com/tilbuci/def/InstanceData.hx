@@ -175,6 +175,11 @@ class InstanceDesc {
     public var pan:Float = 0;
 
     /**
+        blend mode
+    **/
+    public var blend:String = 'normal';
+
+    /**
         blur filter
     **/
     public var blur:Array<String> = [ ];
@@ -183,6 +188,11 @@ class InstanceDesc {
         dropshadow filter
     **/
     public var dropshadow:Array<String> = [ ];
+
+    /**
+        glow filter
+    **/
+    public var glow:Array<String> = [ ];
 
     /**
         text format font
@@ -305,6 +315,19 @@ class InstanceDesc {
         if (this.ok && Reflect.hasField(data, 'textAlign')) {
             this.textAlign = Reflect.field(data, 'textAlign');
         } else this.ok = false;
+
+        // optional/new properties
+        if (this.ok && Reflect.hasField(data, 'glow')) {
+            this.glow = Reflect.field(data, 'glow').split(';');
+            if (this.glow.length != 5) this.glow = [ ];
+        } else {
+            this.glow = [ ];
+        }
+        if (this.ok && Reflect.hasField(data, 'blend')) {
+            this.blend = Reflect.field(data, 'blend');
+        } else {
+            this.blend = 'normal';
+        }
     }
 
     /**
@@ -316,11 +339,14 @@ class InstanceDesc {
         this.blur = null;
         while (this.dropshadow.length > 0) this.dropshadow.shift();
         this.dropshadow = null;
+        while (this.glow.length > 0) this.glow.shift();
+        this.glow = null;
         this.color = null;
         this.textFont = null;
         this.textColor = null;
         this.textBackground = null;
         this.textAlign = null;
+        this.blend = null;
     }
 
     /**
@@ -342,6 +368,8 @@ class InstanceDesc {
             pan: this.pan, 
             blur: this.blur.join(';'), 
             dropshadow: this.dropshadow.join(';'), 
+            glow: this.glow.join(';'), 
+            blend: this.blend, 
             textFont: this.textFont, 
             textSize: this.textSize, 
             textColor: this.textColor, 

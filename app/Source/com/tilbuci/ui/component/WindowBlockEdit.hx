@@ -37,6 +37,8 @@ class WindowBlockEdit extends PopupWindow {
 
     private var _scDirections:Array<Dynamic> = [ ];
 
+    private var _mnPlacement:Array<Dynamic> = [ ];
+
     /**
         Constructor.
         @param  ac  the menu action mehtod
@@ -65,6 +67,18 @@ class WindowBlockEdit extends PopupWindow {
             { text: Global.ln.get('window-movieprop-input-opright'), value: 'right'}, 
             { text: Global.ln.get('window-movieprop-input-opnin'), value: 'nin'}, 
             { text: Global.ln.get('window-movieprop-input-opnout'), value: 'nout'}, 
+        ];
+        this._mnPlacement = [
+            { text: Global.ln.get('placement-center'), value: 'center'},
+            { text: Global.ln.get('placement-centerleft'), value: 'centerleft'},
+            { text: Global.ln.get('placement-centerright'), value: 'centerright'},
+            { text: Global.ln.get('placement-top'), value: 'top'},
+            { text: Global.ln.get('placement-topleft'), value: 'topleft'},
+            { text: Global.ln.get('placement-topright'), value: 'topright'},
+            { text: Global.ln.get('placement-bottom'), value: 'bottom'},
+            { text: Global.ln.get('placement-bottomleft'), value: 'bottomleft'},
+            { text: Global.ln.get('placement-bottomright'), value: 'bottomright'},
+            { text: Global.ln.get('placement-absolute'), value: 'absolute'},
         ];
 
         // custom elements
@@ -220,6 +234,9 @@ class WindowBlockEdit extends PopupWindow {
                         this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
                     case 'navigation':
                         this.ui.setSelectOptions(('param-'+i), this._scDirections);
+                        this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                    case 'placement':
+                        this.ui.setSelectOptions(('param-'+i), this._mnPlacement);
                         this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
                     default:
                         this.ui.inputs['param-'+i].text = '';

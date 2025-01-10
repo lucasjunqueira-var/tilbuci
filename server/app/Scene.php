@@ -195,6 +195,8 @@ class Scene extends BaseClass
 								'pan' => 0, 
 								'blur' => '', 
 								'dropshadow' => '', 
+                                'glow' => '', 
+                                'blend' => 'normal', 
 								'textFont' => '', 
 								'textSize' => 12, 
 								'textColor' => '0xFFFFFF', 
@@ -220,6 +222,8 @@ class Scene extends BaseClass
 								'pan' => 0, 
 								'blur' => '', 
 								'dropshadow' => '', 
+                                'glow' => '', 
+                                'blend' => 'normal', 
 								'textFont' => '', 
 								'textSize' => 12, 
 								'textColor' => '0xFFFFFF', 
@@ -251,6 +255,8 @@ class Scene extends BaseClass
 								'pan' => (float)$vd['id_pan'], 
 								'blur' => $vd['id_blur'], 
 								'dropshadow' => $vd['id_dropshadow'], 
+                                'glow' => $vd['id_glow'], 
+                                'blend' => $vd['id_blend'], 
 								'textFont' => $vd['id_textfont'], 
 								'textSize' => (int)$vd['id_textsize'], 
 								'textColor' => $vd['id_textcolor'], 
@@ -277,6 +283,8 @@ class Scene extends BaseClass
 								'pan' => (float)$vd['id_pan'], 
 								'blur' => $vd['id_blur'], 
 								'dropshadow' => $vd['id_dropshadow'], 
+                                'glow' => $vd['id_glow'], 
+                                'blend' => $vd['id_blend'], 
 								'textFont' => $vd['id_textfont'], 
 								'textSize' => (int)$vd['id_textsize'], 
 								'textColor' => $vd['id_textcolor'], 
@@ -537,7 +545,7 @@ class Scene extends BaseClass
 								':play' => $ins['play'] ? '1' : '0', 
 							]);
 							$iid = $this->insertID();
-							$this->execute('INSERT INTO instancedesc (id_instance, id_position, id_order, id_x, id_y, id_alpha, id_width, id_height, id_rotation, id_visible, id_color, id_coloralpha, id_volume, id_pan, id_blur, id_dropshadow, id_textfont, id_textsize, id_textcolor, id_textbold, id_textitalic, id_textleading, id_textspacing, id_textbackground, id_textalign) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign)', [
+							$this->execute('INSERT INTO instancedesc (id_instance, id_position, id_order, id_x, id_y, id_alpha, id_width, id_height, id_rotation, id_visible, id_color, id_coloralpha, id_volume, id_pan, id_blur, id_dropshadow, id_glow, id_blend, id_textfont, id_textsize, id_textcolor, id_textbold, id_textitalic, id_textleading, id_textspacing, id_textbackground, id_textalign) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :glow, :blend,  :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign)', [
 								':instance' => $iid, 
 								':position' => 'h', 
 								':order' => $ins['horizontal']['order'], 
@@ -554,6 +562,8 @@ class Scene extends BaseClass
 								':pan' => $ins['horizontal']['pan'], 
 								':blur' => $ins['horizontal']['blur'], 
 								':dropshadow' => $ins['horizontal']['dropshadow'], 
+                                ':glow' => $ins['horizontal']['glow'], 
+                                ':blend' => $ins['horizontal']['blend'], 
 								':textfont' => $ins['horizontal']['textFont'], 
 								':textsize' => $ins['horizontal']['textSize'], 
 								':textcolor' => $ins['horizontal']['textColor'], 
@@ -564,7 +574,7 @@ class Scene extends BaseClass
 								':textbackground' => $ins['horizontal']['textBackground'], 
 								':textalign' => $ins['horizontal']['textAlign'], 
 							]);
-							$this->execute('INSERT INTO instancedesc (id_instance, id_position, id_order, id_x, id_y, id_alpha, id_width, id_height, id_rotation, id_visible, id_color, id_coloralpha, id_volume, id_pan, id_blur, id_dropshadow, id_textfont, id_textsize, id_textcolor, id_textbold, id_textitalic, id_textleading, id_textspacing, id_textbackground, id_textalign) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign)', [
+							$this->execute('INSERT INTO instancedesc (id_instance, id_position, id_order, id_x, id_y, id_alpha, id_width, id_height, id_rotation, id_visible, id_color, id_coloralpha, id_volume, id_pan, id_blur, id_dropshadow, id_glow, id_blend, id_textfont, id_textsize, id_textcolor, id_textbold, id_textitalic, id_textleading, id_textspacing, id_textbackground, id_textalign) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :glow, :blend, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign)', [
 								':instance' => $iid, 
 								':position' => 'v', 
 								':order' => $ins['vertical']['order'], 
@@ -581,6 +591,8 @@ class Scene extends BaseClass
 								':pan' => $ins['vertical']['pan'], 
 								':blur' => $ins['vertical']['blur'], 
 								':dropshadow' => $ins['vertical']['dropshadow'], 
+                                ':glow' => $ins['vertical']['glow'], 
+                                ':blend' => $ins['vertical']['blend'], 
 								':textfont' => $ins['vertical']['textFont'], 
 								':textsize' => $ins['vertical']['textSize'], 
 								':textcolor' => $ins['vertical']['textColor'], 

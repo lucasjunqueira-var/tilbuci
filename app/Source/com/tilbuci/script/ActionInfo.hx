@@ -26,6 +26,8 @@ class ActionInfo {
 
     private var _scDirections:Map<String, String> = [ ];
 
+    private var _mnPlacement:Map<String, String> = [ ];
+
     public function new() {
 
         // select values
@@ -49,6 +51,34 @@ class ActionInfo {
             'nin' => Global.ln.get('window-movieprop-input-opnin'), 
             'nout' => Global.ln.get('window-movieprop-input-opnout'), 
         ];
+        this._mnPlacement = [
+            'center' => Global.ln.get('placement-center'), 
+            'centerleft' => Global.ln.get('placement-centerleft'), 
+            'centerright' => Global.ln.get('placement-centerright'), 
+            'top' => Global.ln.get('placement-top'), 
+            'topleft' => Global.ln.get('placement-topleft'), 
+            'topright' => Global.ln.get('placement-topright'), 
+            'bottom' => Global.ln.get('placement-bottom'), 
+            'bottomleft' => Global.ln.get('placement-bottomleft'), 
+            'bottomright' => Global.ln.get('placement-bottomright'), 
+            'absolute' => Global.ln.get('placement-absolute'), 
+        ];
+
+        // contraptions
+        this.groups.push(new ActionInfoGroup(
+            Global.ln.get('window-acbcontraptions-title'), 
+            [
+                { n: Global.ln.get('acinfo-showmenu'), a: 'contraption.menu', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showmenu-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-showmenu-p2'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-showmenu-p3'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-showmenu-p4'), v: 'placement' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-showmenu-p5'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-showmenu-p6'), v: '' }, 
+                ], e: [ 'select' ] }, 
+                { n: Global.ln.get('acinfo-hidemenu'), a: 'contraption.menuhide', p: [ ], e: [ ] }, 
+            ]
+        ));
         
         // movie and scene
         this.groups.push(new ActionInfoGroup(
@@ -883,6 +913,12 @@ class ActionInfo {
                                     } else {
                                         ps.push(pr[i]);
                                     }
+                                } else if (gr.actions[ac].p[i].v == 'placement') {
+                                    if (this._mnPlacement.exists(pr[i])) {
+                                        ps.push(this._mnPlacement[pr[i]]);
+                                    } else {
+                                        ps.push(pr[i]);
+                                    }
                                 } else {
                                     ps.push(pr[i]);
                                 }
@@ -920,6 +956,12 @@ class ActionInfo {
                 case 'navigation':
                     if (this._scDirections.exists(val)) {
                         ret += this._scDirections[val];
+                    } else {
+                        ret += val;
+                    }
+                case 'placement':
+                    if (this._mnPlacement.exists(val)) {
+                        ret += this._mnPlacement[val];
                     } else {
                         ret += val;
                     }

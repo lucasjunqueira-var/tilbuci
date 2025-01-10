@@ -12,6 +12,7 @@ import feathers.controls.ListView;
 import feathers.data.ArrayCollection;
 import openfl.events.Event;
 import com.tilbuci.ui.base.HInterfaceContainer;
+import openfl.display.BlendMode;
 
 /** TILBUCI **/
 import com.tilbuci.data.GlobalPlayer;
@@ -35,6 +36,16 @@ class ColorPanel extends DropDownPanel {
         this._content = this.ui.forge('properties', [
             { tp: 'Label', id: 'alpha', tx: Global.ln.get('rightbar-color-alpha'), vr: '' }, 
             { tp: 'Numeric', id: 'alpha', mn: 0, mx: 100, st: 1, vl: 0, ch: changeProperties }, 
+            { tp: 'Label', id: 'blend', tx: Global.ln.get('rightbar-color-blend'), vr: '' }, 
+            { tp: 'Select', id: 'blend', vl: [
+                { text: Global.ln.get('rightbar-color-blnormal'), value: 'normal' }, 
+                { text: Global.ln.get('rightbar-color-bladd'), value: 'add' }, 
+                { text: Global.ln.get('rightbar-color-bldifference'), value: 'difference' }, 
+                { text: Global.ln.get('rightbar-color-blinvert'), value: 'invert' }, 
+                { text: Global.ln.get('rightbar-color-blmultiply'), value: 'multiply' }, 
+                { text: Global.ln.get('rightbar-color-blscreen'), value: 'screen' }, 
+                { text: Global.ln.get('rightbar-color-blsubtract'), value: 'subtract' }, 
+            ], sl: null, ch: changeProperties }, 
             { tp: 'Label', id: 'alphacolor', tx: Global.ln.get('rightbar-color-alphacolor'), vr: '' }, 
             { tp: 'Numeric', id: 'alphacolor', mn: 0, mx: 100, st: 1, vl: 0, ch: changeProperties }, 
             { tp: 'Label', id: 'red', tx: Global.ln.get('rightbar-color-red'), vr: '' }, 
@@ -65,6 +76,7 @@ class ColorPanel extends DropDownPanel {
     public function updateValues():Void {
         if (this._current != null) {
             this.ui.containers['properties'].enabled = false;
+            this.ui.setSelectValue('blend', this._current.getCurrentStr('blend'));
             this.ui.numerics['alpha'].value = Math.round(this._current.getCurrentNum('alpha') * 100);
             this.ui.numerics['alphacolor'].value = Math.round(this._current.getCurrentNum('coloralpha') * 100);
             var color:String = this._current.getCurrentStr('color');
@@ -76,6 +88,7 @@ class ColorPanel extends DropDownPanel {
     }
 
     private function clearValues():Void {
+        this.ui.setSelectValue('blend', 'normal');
         this.ui.containers['properties'].enabled = false;
         this.ui.numerics['alpha'].value = 0;
         this.ui.numerics['alphacolor'].value = 0;
@@ -89,6 +102,7 @@ class ColorPanel extends DropDownPanel {
         if ((this._current != null) && this.ui.containers['properties'].enabled) {
             if (Global.history.states.length == 0) Global.history.addState(Global.ln.get('rightbar-history-original'));
             GlobalPlayer.area.setCurrentNum('alpha', this.ui.numerics['alpha'].value / 100);
+            GlobalPlayer.area.setCurrentStr('blend', this.ui.selects['blend'].selectedItem.value);
             GlobalPlayer.area.setCurrentNum('coloralpha', this.ui.numerics['alphacolor'].value / 100);
             GlobalPlayer.area.setCurrentStr('color', StringStatic.rgbToHex(this.ui.numerics['red'].value, this.ui.numerics['green'].value, this.ui.numerics['blue'].value));
             if (this._timer == null) {
@@ -96,6 +110,16 @@ class ColorPanel extends DropDownPanel {
                 this._timer.run = this.saveHistory;
             }
             this._current.alpha = (this.ui.numerics['alpha'].value / 100);
+            // blend mode
+            switch (this.ui.selects['blend'].selectedItem.value) {
+                case 'add': this._current.blendMode = BlendMode.ADD;
+                case 'difference': this._current.blendMode = BlendMode.DIFFERENCE;
+                case 'invert': this._current.blendMode = BlendMode.INVERT;
+                case 'multiply': this._current.blendMode = BlendMode.MULTIPLY;
+                case 'screen': this._current.blendMode = BlendMode.SCREEN;
+                case 'subtract': this._current.blendMode = BlendMode.SUBTRACT;
+                default: this._current.blendMode = BlendMode.NORMAL;
+            }
         }
     }
 

@@ -284,6 +284,7 @@ class BlockAction {
             'cancel' => [ ], 
             'success' => [ ], 
             'error' => [ ], 
+            'select' => [ ], 
         ];
         for (ex in this.extras.keys()) {
             if (Reflect.hasField(json, ex)) {

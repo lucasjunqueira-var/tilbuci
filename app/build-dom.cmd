@@ -28,7 +28,7 @@ if %errorlevel% equ 0 (
     xcopy %export%assets\*.* %server%assets\ /E/Y/Q
     xcopy %export%manifest\*.* %server%manifest\ /E/Y/Q
     xcopy %export%lib\*.* %server%lib\ /E/Y/Q
-    start "" "http://tilbuci/editor/?cch=true&rd=dom"
+    start "" "http://tilbuci/app/?md=editor&cch=true&rd=dom"
     echo TilBuci started!
 ) else (
     echo TilBuci build error!
