@@ -1,4 +1,10 @@
-package com.tilbuci.script;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+ package com.tilbuci.script;
 
 /** OPENFL **/
 import feathers.controls.Label;
@@ -29,7 +35,7 @@ class AssistScene extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-acscene-title'), 500, 700, false);
+        super(ac, Global.ln.get('window-acscene-title'), 500, 640, false);
         this._idbuttons['btCopyMovieLoad'] = new IDButton('copymovieload', onCopyMovieLoad, Global.ln.get('window-acmovie-copyload'), Assets.getBitmapData('btCopy'));
         this._idbuttons['btShowMovieLoad'] = new IDButton('showmovieload', onShowMovieLoad, Global.ln.get('window-acvariable-show'));
         this._idbuttons['btCopyId'] = new IDButton('copyid', onCopyId, Global.ln.get('window-acscene-copyid'), Assets.getBitmapData('btCopy'));
@@ -55,6 +61,10 @@ class AssistScene extends PopupWindow {
                 { text: 'scene.pause', value: 'scene.pause' }, 
                 { text: 'scene.play', value: 'scene.play' }, 
                 { text: 'scene.playpause', value: 'scene.playpause' }, 
+                { text: 'scene.nextkeyframe', value: 'scene.nextkeyframe' }, 
+                { text: 'scene.previouskeyframe', value: 'scene.previouskeyframe' }, 
+                { text: 'scene.loadfirstkeyframe', value: 'scene.loadfirstkeyframe' }, 
+                { text: 'scene.loadlastkeyframe', value: 'scene.loadlastkeyframe' }, 
             ], sl: null }, 
             { tp: "Label", id: 'navigate', tx: Global.ln.get('window-acscene-navigate'), vr: '' }, 
             { tp: 'Select', id: 'navigate', vl: [

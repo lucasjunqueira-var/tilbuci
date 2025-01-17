@@ -63,6 +63,7 @@
 	<assets id="icDebug" path="assets/icons/icDebug.png"/>
 	<assets id="icShare" path="assets/icons/icShare.png"/>
 	<assets id="icGoogle" path="assets/icons/icGoogle.png"/>
+	<assets id="icContraption" path="assets/icons/icContraption.png"/>
 	<assets id="icServer" path="assets/icons/icServer.png"/>
 	<assets id="btPlus" path="assets/icons/btPlus.png"/>
 	<assets id="btPlugin" path="assets/icons/btPlugin.png"/>

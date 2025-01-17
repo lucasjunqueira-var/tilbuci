@@ -1,4 +1,10 @@
-package com.tilbuci.ui.window.movie;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+ package com.tilbuci.ui.window.movie;
 
 /** HAXE **/
 import feathers.controls.LayoutGroup;
@@ -386,6 +392,7 @@ class WindowMovieProperties extends PopupWindow {
 
         // input
         var inOptions:Array<Dynamic> = [
+            { text: Global.ln.get('window-movieprop-input-opnothing'), value: 'nothing' }, 
             { text: Global.ln.get('window-movieprop-input-opup'), value: 'up' }, 
             { text: Global.ln.get('window-movieprop-input-opdown'), value: 'down' }, 
             { text: Global.ln.get('window-movieprop-input-opleft'), value: 'left' }, 
@@ -393,6 +400,10 @@ class WindowMovieProperties extends PopupWindow {
             { text: Global.ln.get('window-movieprop-input-opnin'), value: 'nin' }, 
             { text: Global.ln.get('window-movieprop-input-opnout'), value: 'nout' }, 
             { text: Global.ln.get('window-movieprop-input-opsnippet'), value: '' }, 
+            { text: Global.ln.get('window-movieprop-input-opnextkf'), value: 'nextkf' }, 
+            { text: Global.ln.get('window-movieprop-input-opprevkf'), value: 'prevkf' }, 
+            { text: Global.ln.get('window-movieprop-input-opfirstkf'), value: 'firstkf' }, 
+            { text: Global.ln.get('window-movieprop-input-oplastkf'), value: 'lastkf' }, 
         ];
         var inArea:InterfaceContainer = new InterfaceContainer('v', 0, 0x666666);
         for (k in GlobalPlayer.mdata.inputs.keys()) {
@@ -555,6 +566,21 @@ class WindowMovieProperties extends PopupWindow {
                 case 'nout':
                     this.ui.setSelectValue(('input-'+k), 'nout');
                     this.ui.inputs['input-'+k].text = '';
+                case 'nothing':
+                    this.ui.setSelectValue(('input-'+k), 'nothing');
+                    this.ui.inputs['input-'+k].text = '';
+                case 'nextkf':
+                    this.ui.setSelectValue(('input-'+k), 'nextkf');
+                    this.ui.inputs['input-'+k].text = '';
+                case 'prevkf':
+                    this.ui.setSelectValue(('input-'+k), 'prevkf');
+                    this.ui.inputs['input-'+k].text = '';
+                case 'firstkf':
+                    this.ui.setSelectValue(('input-'+k), 'firstkf');
+                    this.ui.inputs['input-'+k].text = '';
+                case 'lastkf':
+                    this.ui.setSelectValue(('input-'+k), 'lastkf');
+                    this.ui.inputs['input-'+k].text = '';
                 default:
                     this.ui.setSelectValue(('input-'+k), '');
                     this.ui.inputs['input-'+k].text = GlobalPlayer.mdata.inputs[k];
@@ -641,9 +667,6 @@ class WindowMovieProperties extends PopupWindow {
             animation: this.ui.selects['movieanimation'].selectedItem.value, 
             highlight: this.ui.inputs['moviehighlight'].text
         });
-
-trace ('data', data);
-
         Global.ws.send(
             'Movie/Update', 
             [
@@ -1282,6 +1305,16 @@ trace ('data', data);
                     inputs[k] = 'nin';
                 case 'nout':
                     inputs[k] = 'nout';
+                case 'nothing':
+                    inputs[k] = 'nothing';
+                case 'nextkf':
+                    inputs[k] = 'nextkf';
+                case 'prevkf':
+                    inputs[k] = 'prevkf';
+                case 'firstkf':
+                    inputs[k] = 'firstkf';
+                case 'lastkf':
+                    inputs[k] = 'lastkf';
                 default:
                     inputs[k] = this.ui.inputs[('input-'+k)].text;
             }

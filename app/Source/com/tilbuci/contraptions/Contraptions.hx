@@ -1,4 +1,10 @@
-package com.tilbuci.contraptions;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+ package com.tilbuci.contraptions;
 
 import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.data.GlobalPlayer;
@@ -39,6 +45,7 @@ class Contraptions {
     }
 
     public function menuShow(name:String, options:Array<String>, variable:String, actions:Dynamic, pos:String, px:Int, py:Int):Bool {
+        this.menuHide();
         if (this.menus.exists(name)) {
             var mn:MenuContraption = this.menus[name];
             if (mn.ok) {
@@ -92,16 +99,21 @@ class Contraptions {
         }
     }
 
+    public function removeContraptions():Void {
+        this.menuHide();
+    }
+
     public function menuHide():Void {
         for (mn in this.menus) mn.remove();
+        if (this._menusOverlay == null) {
+            this._menusOverlay = GlobalPlayer.area.getOverlay('contraptions-menu');
+        }
         this._menusOverlay.graphics.clear();
     }
 
     private function onMenuSelect(val:String):Void {
-        this.menuHide();
         GlobalPlayer.parser.setInt(this._menuVariable, val);
         if (this._menuAction != null) GlobalPlayer.parser.run(this._menuAction, true);
-        this._menuAction = null;
     }
 
 }

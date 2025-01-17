@@ -18,7 +18,6 @@ class MenuContraptions extends DrawerMenu {
     public function new(ac:Dynamic) {
         super(ac, Global.ln.get('menu-contraptions-title'));
         this.addButton('btMenus', Global.ln.get('menu-contraptions-menus'), onMenus);
-        this.addButton('btDialogues', Global.ln.get('menu-contraptions-dialogues'), onDialogues);
     }
 
     /**
@@ -29,13 +28,9 @@ class MenuContraptions extends DrawerMenu {
         if ((GlobalPlayer.movie.mvId == '') || (Global.ws.level > 50))  {
             this.ui.buttons['btMenus'].enabled = false;
             this.ui.buttons['btMenus'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
-            this.ui.buttons['btDialogues'].enabled = false;
-            this.ui.buttons['btDialogues'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
         } else {
             this.ui.buttons['btMenus'].enabled = true;
             this.ui.buttons['btMenus'].toolTip = null;
-            this.ui.buttons['btDialogues'].enabled = true;
-            this.ui.buttons['btDialogues'].toolTip = null;
         }
     }
 
@@ -51,13 +46,6 @@ class MenuContraptions extends DrawerMenu {
     **/
     private  function onMenus(evt:TriggerEvent):Void {
         this._ac('menus');
-    }
-
-    /**
-        Dialogues
-    **/
-    private  function onDialogues(evt:TriggerEvent):Void {
-        this._ac('dialogues');
     }
 
 }

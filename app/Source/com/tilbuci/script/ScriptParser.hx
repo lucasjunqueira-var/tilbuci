@@ -1,4 +1,10 @@
-package com.tilbuci.script;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+ package com.tilbuci.script;
 
 /** TILBUCI **/
 import com.tilbuci.contraptions.MenuContraption;
@@ -492,6 +498,28 @@ class ScriptParser {
                 found = this.runInput('keyspace');
             case Keyboard.ENTER:
                 found = this.runInput('keyenter');
+            case Keyboard.HOME:
+                found = this.runInput('keyhome');
+            case Keyboard.END:
+                found = this.runInput('keyend');
+        }
+        return (found);
+    }
+
+    /**
+        Runs mouse-assigned actions.
+    **/
+    public function checkMouse(inpt:String):Bool {
+        var found:Bool = false;
+        switch (inpt) {
+            case 'mousemiddle':
+                found = this.runInput('mousemiddle');
+            case 'mouseright':
+                found = this.runInput('mouseright');
+            case 'mousewheelup':
+                found = this.runInput('mousewheelup');
+            case 'mousewheeldown':
+                found = this.runInput('mousewheeldown');
         }
         return (found);
     }
@@ -503,12 +531,17 @@ class ScriptParser {
         var found:Bool = false;
         if (GlobalPlayer.mdata.inputs.exists(name)) {
             switch (GlobalPlayer.mdata.inputs[name]) {
+                case 'nothing': found = false;
                 case 'up': this.run('{ "ac": "scene.navigate", "param": [ "up" ] }'); found = true;
                 case 'down': this.run('{ "ac": "scene.navigate", "param": [ "down" ] }'); found = true;
                 case 'left': this.run('{ "ac": "scene.navigate", "param": [ "left" ] }'); found = true;
                 case 'right': this.run('{ "ac": "scene.navigate", "param": [ "right" ] }'); found = true;
                 case 'nin': this.run('{ "ac": "scene.navigate", "param": [ "nin" ] }'); found = true;
                 case 'nout': this.run('{ "ac": "scene.navigate", "param": [ "nout" ] }'); found = true;
+                case 'nextkf': this.run('{ "ac": "scene.nextkeyframe", "param": [ "" ] }'); found = true;
+                case 'prevkf': this.run('{ "ac": "scene.previouskeyframe", "param": [ "" ] }'); found = true;
+                case 'lastkf': this.run('{ "ac": "scene.loadlastkeyframe", "param": [ "" ] }'); found = true;
+                case 'firstkf': this.run('{ "ac": "scene.loadfirstkeyframe", "param": [ "" ] }'); found = true;
                 default: found = this.run('{ "ac": "run", "param": [ "' + GlobalPlayer.mdata.inputs[name] + '" ] }');
             }
         }
@@ -601,6 +634,20 @@ class ScriptParser {
                         return (true);
                     case 'system.quit':
                         return (GlobalPlayer.appQuit());
+                    case 'system.visitoringroup':
+                        if ((param.length > 0) && Reflect.hasField(inf, 'then')) {
+                            if (GlobalPlayer.ws.groups.contains(this.parseString(param[0]))) {
+                                return (this.run(Reflect.field(inf, 'then'), true));
+                            } else {
+                                if (Reflect.hasField(inf, 'else')) {
+                                    return (this.run(Reflect.field(inf, 'else'), true));
+                                } else {
+                                    return (true);
+                                }
+                            }
+                        } else {
+                            return (false);
+                        }
 
                     // contraptions
                     case 'contraption.menu':
@@ -649,6 +696,34 @@ class ScriptParser {
                                 }
                             } else {
                                 return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'scene.nextkeyframe':
+                        var nkf:Int = GlobalPlayer.area.currentKf + 1;
+                        if (nkf >= GlobalPlayer.movie.scene.keyframes.length) nkf = 0;
+                        GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[nkf], nkf);
+                        return (true);
+                    case 'scene.previouskeyframe':
+                        var pkf:Int = GlobalPlayer.area.currentKf - 1;
+                        if (pkf < 0) pkf = GlobalPlayer.movie.scene.keyframes.length - 1;
+                        GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[pkf], pkf);
+                        return (true);
+                    case 'scene.loadfirstkeyframe':
+                        GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[0], 0);
+                        return (true);
+                    case 'scene.loadlastkeyframe':
+                        GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[(GlobalPlayer.movie.scene.keyframes.length - 1)], (GlobalPlayer.movie.scene.keyframes.length - 1));
+                        return (true);
+                    case 'scene.loadkeyframe':
+                        if (param.length > 0) {
+                            var lkf:Int = this.parseInt(param[0]) - 1;
+                            if ((lkf < 0) || (lkf > (GlobalPlayer.movie.scene.keyframes.length - 1))) {
+                                return (false);
+                            } else {
+                                GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[lkf], lkf);
+                                return (true);
                             }
                         } else {
                             return (false);

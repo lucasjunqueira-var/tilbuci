@@ -1,4 +1,10 @@
-package com.tilbuci.def;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+ package com.tilbuci.def;
 
 /** HAXE **/
 import com.tilbuci.data.GlobalPlayer;
@@ -26,6 +32,11 @@ class SceneData extends DefBase {
         share image path
     **/
     public var image:String = '';
+
+    /**
+        static scene?
+    **/
+    public var staticsc:Bool = false;
 
     /**
         collections used
@@ -69,6 +80,7 @@ class SceneData extends DefBase {
         this.title = '';
         this.about = '';
         this.image = '';
+        this.staticsc = false;
         for (nv in this.navigation.keys()) this.navigation.remove(nv);
         this.navigation = [ 'up' => '', 'down' => '', 'left' => '', 'right' => '', 'nin' => '', 'nout' => '' ];
         this.loop = 0;
@@ -90,6 +102,7 @@ class SceneData extends DefBase {
         @return all required fields sent on data?
     **/
     public function load(data:Map<String, Dynamic>):Bool {
+        GlobalPlayer.contraptions.removeContraptions();
         if (this.checkFields(data)) {
             this.title = data['title'];
             this.about = data['about'];
@@ -126,6 +139,12 @@ class SceneData extends DefBase {
             for (k in Reflect.fields(data['ackeyframes'])) {
                 this.ackeyframes.push(Reflect.field(data['ackeyframes'], k));
             }
+            // optional/new properties
+            if (data.exists('staticsc')) {
+                this.staticsc = data['staticsc'];
+            } else {
+                this.staticsc = false;
+            }
             return (true);
         } else {
             return (false);
@@ -154,6 +173,7 @@ class SceneData extends DefBase {
             title: this.title, 
             about: this.about, 
             image: this.image, 
+            staticsc: this.staticsc, 
             navigation: {
                 up: this.navigation['up'], 
                 down: this.navigation['down'], 
@@ -178,6 +198,7 @@ class SceneData extends DefBase {
         if (Reflect.hasField(obj, 'title')) this.title = Reflect.field(obj, 'title');
         if (Reflect.hasField(obj, 'about')) this.about = Reflect.field(obj, 'about');
         if (Reflect.hasField(obj, 'image')) this.image = Reflect.field(obj, 'image');
+        if (Reflect.hasField(obj, 'staticsc')) this.staticsc = Reflect.field(obj, 'staticsc');
         if (Reflect.hasField(obj, 'loop')) this.loop = Reflect.field(obj, 'loop');
         if (Reflect.hasField(obj, 'acstart')) this.acstart = Reflect.field(obj, 'acstart');
         if (Reflect.hasField(obj, 'ackeyframes')) this.ackeyframes = Reflect.field(obj, 'ackeyframes');

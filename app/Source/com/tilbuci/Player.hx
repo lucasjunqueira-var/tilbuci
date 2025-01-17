@@ -1,4 +1,10 @@
-package com.tilbuci;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+ package com.tilbuci;
 
 /** HAXE **/
 import openfl.geom.Point;
@@ -217,6 +223,11 @@ class Player extends Sprite {
         tomer to end touch event
     **/
     private var _touchTimer:Timer;
+
+    /**
+        last tme a mouse wheel move was detected
+    **/
+    private var _lastmwheel:Float = 0.0;
 
     /**
         Constructor.
@@ -651,6 +662,9 @@ class Player extends Sprite {
             this.stage.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
             this.stage.addEventListener(TouchEvent.TOUCH_END, onTouchEnd);
             this.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyboard);
+            this.stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+            this.stage.addEventListener(MouseEvent.MIDDLE_CLICK, onMouseMiddle);
+            this.stage.addEventListener(MouseEvent.RIGHT_CLICK, onMouseRight);
         }
     }
 
@@ -719,6 +733,43 @@ class Player extends Sprite {
                 for (p in GlobalPlayer.plugins) {
                     if (p.active && !found) found = p.checkKeyboard(evt.keyCode);
                 }
+            }
+        }
+    }
+
+    /**
+        Mouse wheel moved.
+    **/
+    private function onMouseWheel(evt:MouseEvent):Void {
+        if (this.stage.focus is Stage) {
+            if (this._lastmwheel < (Date.now().getTime() - 750)) {
+                this._lastmwheel = Date.now().getTime();
+                if (evt.delta < 0) {
+                    GlobalPlayer.parser.checkMouse('mousewheeldown');
+                } else if (evt.delta > 0) {
+                    GlobalPlayer.parser.checkMouse('mousewheelup');
+                }
+            }
+        }
+    }
+
+    /**
+        Mouse middle click.
+    **/
+    private function onMouseMiddle(evt:MouseEvent):Void {
+        if (this.stage.focus is Stage) {
+            GlobalPlayer.parser.checkMouse('mousemiddle');
+        }
+    }
+
+    /**
+        Mouse right click.
+    **/
+    private function onMouseRight(evt:MouseEvent):Void {
+        this.stage.showDefaultContextMenu = true;
+        if (this.stage.focus is Stage) {
+            if (GlobalPlayer.parser.checkMouse('mouseright')) {
+                this.stage.showDefaultContextMenu = false;
             }
         }
     }

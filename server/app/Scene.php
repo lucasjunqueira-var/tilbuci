@@ -1,5 +1,11 @@
 <?php
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 /** CLASS DEFINITIONS **/
 require_once('BaseClass.php');
 require_once('Collection.php');
@@ -150,6 +156,7 @@ class Scene extends BaseClass
 				'movie' => $movie, 
 				'about' => $ck[0]['sc_about'], 
 				'image' => $ck[0]['sc_image'], 
+                'staticsc' => ($ck[0]['sc_static'] == '1'), 
 				'navigation' => [
 					'up' => $ck[0]['sc_up'], 
 					'down' => $ck[0]['sc_down'], 
@@ -507,7 +514,7 @@ class Scene extends BaseClass
 					// saving scene version
 					$ackeyframes = [ ];
 					foreach ($scene['ackeyframes'] as $ack) $ackeyframes[] = $ack == '' ? '' : base64_encode(gzencode($ack));
-					$this->execute('INSERT INTO scenes (sc_id, sc_movie, sc_title, sc_about, sc_image, sc_up, sc_down, sc_left, sc_right, sc_nin, sc_nout, sc_collections, sc_loop, sc_acstart, sc_ackeyframes, sc_user) VALUES (:id, :movie, :title, :about, :image, :up, :down, :left, :right, :nin, :nout, :collections, :loop, :acstart, :ackeyframes, :user)', [
+					$this->execute('INSERT INTO scenes (sc_id, sc_movie, sc_title, sc_about, sc_image, sc_up, sc_down, sc_left, sc_right, sc_nin, sc_nout, sc_collections, sc_loop, sc_acstart, sc_ackeyframes, sc_user, sc_static) VALUES (:id, :movie, :title, :about, :image, :up, :down, :left, :right, :nin, :nout, :collections, :loop, :acstart, :ackeyframes, :user, :static)', [
 						':id' => $id, 
 						':movie' => $movie, 
 						':title' => $scene['title'], 
@@ -524,6 +531,7 @@ class Scene extends BaseClass
 						':acstart' => base64_encode(gzencode($scene['acstart'])), 
 						':ackeyframes' => implode(',', $ackeyframes), 
 						':user' => $user, 
+                        ':static' => ($scene['staticsc'] ? '1' : '0'), 
 					]);
 					$uid = $this->insertID();
 					

@@ -1,4 +1,10 @@
-package com.tilbuci.script;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+ package com.tilbuci.script;
 
 import haxe.macro.Expr.Case;
 import com.tilbuci.data.DataLoader;
@@ -63,22 +69,6 @@ class ActionInfo {
             'bottomright' => Global.ln.get('placement-bottomright'), 
             'absolute' => Global.ln.get('placement-absolute'), 
         ];
-
-        // contraptions
-        this.groups.push(new ActionInfoGroup(
-            Global.ln.get('window-acbcontraptions-title'), 
-            [
-                { n: Global.ln.get('acinfo-showmenu'), a: 'contraption.menu', p: [
-                    { t: 's', n: Global.ln.get('acinfo-showmenu-p1'), v: '' }, 
-                    { t: 's', n: Global.ln.get('acinfo-showmenu-p2'), v: '' }, 
-                    { t: 's', n: Global.ln.get('acinfo-showmenu-p3'), v: '' }, 
-                    { t: 's', n: Global.ln.get('acinfo-showmenu-p4'), v: 'placement' }, 
-                    { t: 'i', n: Global.ln.get('acinfo-showmenu-p5'), v: '' }, 
-                    { t: 'i', n: Global.ln.get('acinfo-showmenu-p6'), v: '' }, 
-                ], e: [ 'select' ] }, 
-                { n: Global.ln.get('acinfo-hidemenu'), a: 'contraption.menuhide', p: [ ], e: [ ] }, 
-            ]
-        ));
         
         // movie and scene
         this.groups.push(new ActionInfoGroup(
@@ -96,6 +86,13 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-scenepause'), a: 'scene.pause', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-sceneplay'), a: 'scene.play', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-sceneplaypause'), a: 'scene.playpause', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-scenenextkf'), a: 'scene.nextkeyframe', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-scenepreviouskf'), a: 'scene.previouskeyframe', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-scenefirstkf'), a: 'scene.loadfirstkeyframe', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-scenelastkf'), a: 'scene.loadlastkeyframe', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-sceneloadkf'), a: 'scene.loadkeyframe', p: [
+                    { t: 'i', n: Global.ln.get('acinfo-sceneloadkf-p1'), v: '' }
+                ], e: [ ] },
             ]
         ));
 
@@ -737,6 +734,9 @@ class ActionInfo {
                     { t: 's', n: Global.ln.get('acinfo-systemcopytext-p1'), v: '' }, 
                 ], e: [ ] },  
                 { n: Global.ln.get('acinfo-systemquit'), a: 'system.quit', p: [ ], e: [ ] },  
+                { n: Global.ln.get('acinfo-systemvisitoringroup'), a: 'system.visitoringroup', p: [
+                    { t: 's', n: Global.ln.get('acinfo-systemvisitoringroup-p1'), v: '' }, 
+                ], e: [ 'then', 'else' ] },   
                 { n: Global.ln.get('acinfo-systemlogout'), a: 'system.logout', p: [ ], e: [ ] },  
                 { n: Global.ln.get('acinfo-systemsendevent'), a: 'system.sendevent', p: [
                     { t: 's', n: Global.ln.get('acinfo-systemsendevent-p1'), v: '' }, 
@@ -793,6 +793,22 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-ifreplacefileset'), a: 'if.replacefileset', p: [
                     { t: 's', n: Global.ln.get('acinfo-ifreplacefileset-p1'), v: '' }
                 ], e: [ 'then', 'else' ] }, 
+            ]
+        ));
+
+        // contraptions
+        this.groups.push(new ActionInfoGroup(
+            Global.ln.get('window-acbcontraptions-title'), 
+            [
+                { n: Global.ln.get('acinfo-showmenu'), a: 'contraption.menu', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showmenu-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-showmenu-p2'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-showmenu-p3'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-showmenu-p4'), v: 'placement' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-showmenu-p5'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-showmenu-p6'), v: '' }, 
+                ], e: [ 'select' ] }, 
+                { n: Global.ln.get('acinfo-hidemenu'), a: 'contraption.menuhide', p: [ ], e: [ ] }, 
             ]
         ));
 

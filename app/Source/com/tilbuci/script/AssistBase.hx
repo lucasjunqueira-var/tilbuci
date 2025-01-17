@@ -1,4 +1,10 @@
-package com.tilbuci.script;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+ package com.tilbuci.script;
 
 /** OPENFL **/
 import feathers.controls.Label;
@@ -52,6 +58,8 @@ class AssistBase extends PopupWindow {
                 { tp: "TInput", id: 'p3', tx: '' }, 
                 { tp: "TInput", id: 'p4', tx: '' }, 
                 { tp: "TInput", id: 'p5', tx: '' }, 
+                { tp: "TInput", id: 'p6', tx: '' }, 
+                { tp: "TInput", id: 'p7', tx: '' }, 
                 { tp: "Custom", cont: this._idbuttons['btCopy'] }, 
                 { tp: "Custom", cont: this._idbuttons['btShow'] }, 
                 { tp: "Button", id: "close", tx: Global.ln.get('window-actions-close'), ac: onClose }, 
@@ -80,7 +88,7 @@ class AssistBase extends PopupWindow {
                     { text: Global.ln.get('window-globals-runtime'), value: "$_RUNTIME", asset: 'btString' }, 
                     { text: Global.ln.get('window-globals-wsserver'), value: "$_WSSERVER", asset: 'btString' }, 
                     { text: Global.ln.get('window-globals-version'), value: "$_VERSION", asset: 'btString' }, 
-                ], sl: [ ], ht: 145 }, 
+                ], sl: [ ], ht: 184 }, 
                 { tp: "Custom", cont: this._idbuttons['ggeneral'] }, 
                 { tp: "Label", id: 'ginstance', tx: Global.ln.get('window-globals-instance'), vr: '' }, 
                 { tp: "Label", id: 'ginstancep', tx: Global.ln.get('window-globals-instancep'), vr: Label.VARIANT_DETAIL }, 
@@ -153,6 +161,8 @@ class AssistBase extends PopupWindow {
         this.ui.inputs['p3'].text = '';
         this.ui.inputs['p4'].text = '';
         this.ui.inputs['p5'].text = '';
+        this.ui.inputs['p6'].text = '';
+        this.ui.inputs['p7'].text = '';
         this.ui.inputs['showAction'].text = '';
         var list:Array<Dynamic> = [ ];
         for (k in GlobalPlayer.area.getInstances()) list.push({ text: k, value: k });
@@ -185,8 +195,12 @@ class AssistBase extends PopupWindow {
                     ac += '"param": [ "' + this.ui.inputs['p1'].text + '", "' + this.ui.inputs['p2'].text + '", "' + this.ui.inputs['p3'].text + '" ]';
                 } else if (this._actions[k].p.length == 4) {
                     ac += '"param": [ "' + this.ui.inputs['p1'].text + '", "' + this.ui.inputs['p2'].text + '", "' + this.ui.inputs['p3'].text + '", "' + this.ui.inputs['p4'].text + '" ]';
-                } else {
+                } else if (this._actions[k].p.length == 5) {
                     ac += '"param": [ "' + this.ui.inputs['p1'].text + '", "' + this.ui.inputs['p2'].text + '", "' + this.ui.inputs['p3'].text + '", "' + this.ui.inputs['p4'].text + '", "' + this.ui.inputs['p5'].text + '" ]';
+                } else if (this._actions[k].p.length == 6) {
+                    ac += '"param": [ "' + this.ui.inputs['p1'].text + '", "' + this.ui.inputs['p2'].text + '", "' + this.ui.inputs['p3'].text + '", "' + this.ui.inputs['p4'].text + '", "' + this.ui.inputs['p5'].text + '", "' + this.ui.inputs['p6'].text + '" ]';
+                } else {
+                    ac += '"param": [ "' + this.ui.inputs['p1'].text + '", "' + this.ui.inputs['p2'].text + '", "' + this.ui.inputs['p3'].text + '", "' + this.ui.inputs['p4'].text + '", "' + this.ui.inputs['p5'].text + '", "' + this.ui.inputs['p6'].text + '", "' + this.ui.inputs['p7'].text + '" ]';
                 }
                 if (this._actions[k].c) {
                     ac += ', "then": [ ], "else": [ ]';
@@ -199,6 +213,9 @@ class AssistBase extends PopupWindow {
                 }
                 if (this._actions[k].d) {
                     ac += ', "success": [ ], "error": [ ]';
+                }
+                if (this._actions[k].s) {
+                    ac += ', "select": [ ]';
                 }
                 ac += ' }';
                 Global.copyText(ac);
@@ -225,8 +242,12 @@ class AssistBase extends PopupWindow {
                     ac += '"param": [ "' + this.ui.inputs['p1'].text + '", "' + this.ui.inputs['p2'].text + '", "' + this.ui.inputs['p3'].text + '" ]';
                 } else if (this._actions[k].p.length == 4) {
                     ac += '"param": [ "' + this.ui.inputs['p1'].text + '", "' + this.ui.inputs['p2'].text + '", "' + this.ui.inputs['p3'].text + '", "' + this.ui.inputs['p4'].text + '" ]';
-                } else {
+                } else if (this._actions[k].p.length == 5) {
                     ac += '"param": [ "' + this.ui.inputs['p1'].text + '", "' + this.ui.inputs['p2'].text + '", "' + this.ui.inputs['p3'].text + '", "' + this.ui.inputs['p4'].text + '", "' + this.ui.inputs['p5'].text + '" ]';
+                } else if (this._actions[k].p.length == 6) {
+                    ac += '"param": [ "' + this.ui.inputs['p1'].text + '", "' + this.ui.inputs['p2'].text + '", "' + this.ui.inputs['p3'].text + '", "' + this.ui.inputs['p4'].text + '", "' + this.ui.inputs['p5'].text + '", "' + this.ui.inputs['p6'].text + '" ]';
+                } else {
+                    ac += '"param": [ "' + this.ui.inputs['p1'].text + '", "' + this.ui.inputs['p2'].text + '", "' + this.ui.inputs['p3'].text + '", "' + this.ui.inputs['p4'].text + '", "' + this.ui.inputs['p5'].text + '", "' + this.ui.inputs['p6'].text + '", "' + this.ui.inputs['p7'].text + '" ]';
                 }
                 if (this._actions[k].c) {
                     ac += ', "then": [ ], "else": [ ]';
@@ -239,6 +260,9 @@ class AssistBase extends PopupWindow {
                 }
                 if (this._actions[k].d) {
                     ac += ', "success": [ ], "error": [ ]';
+                }
+                if (this._actions[k].s) {
+                    ac += ', "select": [ ]';
                 }
                 ac += ' }';
                 this.ui.inputs['showAction'].text = ac;
@@ -294,5 +318,6 @@ typedef VarAction = {
     var t:Bool;
     var i:Bool;
     var d:Bool;
+    var s:Bool;
     var ic:String;
 }

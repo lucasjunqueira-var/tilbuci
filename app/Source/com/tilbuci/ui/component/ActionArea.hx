@@ -1,4 +1,10 @@
-package com.tilbuci.ui.component;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+ package com.tilbuci.ui.component;
 
 /** FEATHERS UI **/
 import com.tilbuci.ui.base.BackgroundSkin;
@@ -70,6 +76,7 @@ class ActionArea extends ScrollContainer {
         this._idbuttons['variables'] = new IDButton('variables', onVariables, null, Assets.getBitmapData('btVariables'));
         this._idbuttons['data'] = new IDButton('data', onData, null, Assets.getBitmapData('btData'));
         this._idbuttons['plus'] = new IDButton('plus', onPlus, null, Assets.getBitmapData('btPlus'));
+        this._idbuttons['contraptions'] = new IDButton('contraptions', onContraptions, null, Assets.getBitmapData('btContraptions'));
         this._idbuttons['plugin'] = new IDButton('plugin', onPlugin, null, Assets.getBitmapData('btPlugin'));
 
         this._buttons.addChild(this._idbuttons['switch']);
@@ -79,6 +86,7 @@ class ActionArea extends ScrollContainer {
         this._buttons.addChild(this._idbuttons['variables']);
         this._buttons.addChild(this._idbuttons['data']);
         this._buttons.addChild(this._idbuttons['plus']);
+        this._buttons.addChild(this._idbuttons['contraptions']);
         this._buttons.addChild(this._idbuttons['plugin']);
         //this.addChild(this._buttons);
 
@@ -89,6 +97,7 @@ class ActionArea extends ScrollContainer {
         this._idbuttons['variables'].toolTip = Global.ln.get('tooltip-action-variables');
         this._idbuttons['data'].toolTip = Global.ln.get('tooltip-action-data');
         this._idbuttons['plus'].toolTip = Global.ln.get('tooltip-action-plus');
+        this._idbuttons['contraptions'].toolTip = Global.ln.get('tooltip-action-contraptions');
         this._idbuttons['plugin'].toolTip = Global.ln.get('tooltip-action-plugin');
 
         this._blockbuttons = new HInterfaceContainer();
@@ -217,6 +226,13 @@ class ActionArea extends ScrollContainer {
     **/
     private function onPlugin(evt:TriggerEvent = null):Void {
         Global.showWindow('assistantplugin');
+    }
+
+    /**
+        Opens the contraptions actions assistant.
+    **/
+    private function onContraptions(evt:TriggerEvent = null):Void {
+        Global.showWindow('assistantcontraptions');
     }
 
     /**

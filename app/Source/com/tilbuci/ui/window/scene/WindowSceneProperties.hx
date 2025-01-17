@@ -1,4 +1,10 @@
-package com.tilbuci.ui.window.scene;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+ package com.tilbuci.ui.window.scene;
 
 /** OPENFL **/
 import com.tilbuci.display.PictureImage;
@@ -62,17 +68,19 @@ class WindowSceneProperties extends PopupWindow {
 
         // about
         this._image = new PictureImage(this.onImageLoaded);
-        this._image.height = 190;
+        this._image.height = 130;
         this._image.visible = true;
         var image:InterfaceContainer = new InterfaceContainer('v', 10, 0x666666);
         image.width = 900;
-        image.height = 205;
+        image.height = 140;
         image.addChild(this._image);
         this.addForm(Global.ln.get('window-sceneprop-about'), this.ui.forge('about', [
             { tp: 'Label', id: 'title', tx: Global.ln.get('window-sceneprop-title'), vr: '' }, 
             { tp: 'TInput', id: 'title', tx: GlobalPlayer.movie.scene.title, vr: '' },  
             { tp: 'Label', id: 'about', tx: Global.ln.get('window-sceneprop-aboutscene'), vr: '' },
             { tp: 'TArea', id: 'about', tx: GlobalPlayer.movie.scene.about, vr: '', en: true, ht: 100 },  
+            { tp: 'Label', id: 'static', tx: Global.ln.get('window-sceneprop-static'), vr: '' }, 
+            { tp: 'Toggle', id: 'static', vl: false }, 
             { tp: 'Label', id: 'image', tx: Global.ln.get('window-sceneprop-image'), vr: '' }, 
             { tp: 'Button', id: 'image', tx: Global.ln.get('window-sceneprop-imagebt'), ac: this.onImage }, 
             { tp: 'Button', id: 'imagerm', tx: Global.ln.get('window-sceneprop-imagerm'), ac: this.onImageRemove }, 
@@ -157,6 +165,7 @@ class WindowSceneProperties extends PopupWindow {
         }
         this.ui.inputs['title'].text = GlobalPlayer.movie.scene.title;
         this.ui.tareas['about'].text = GlobalPlayer.movie.scene.about;
+        this.ui.toggles['static'].selected = GlobalPlayer.movie.scene.staticsc;
         this._acstart.setText(GlobalPlayer.movie.scene.acstart);
     }
 
@@ -256,6 +265,7 @@ class WindowSceneProperties extends PopupWindow {
                     GlobalPlayer.movie.scene.title = this.ui.inputs['title'].text;
                     GlobalPlayer.movie.scene.about = this.ui.tareas['about'].text;
                     GlobalPlayer.movie.scene.image = this._image.lastMedia;
+                    GlobalPlayer.movie.scene.staticsc = this.ui.toggles['static'].selected;
                     GlobalPlayer.movie.scene.navigation['up'] = this.ui.selects['nvup'].selectedItem.value;
                     GlobalPlayer.movie.scene.navigation['down'] = this.ui.selects['nvdown'].selectedItem.value;
                     GlobalPlayer.movie.scene.navigation['left'] = this.ui.selects['nvleft'].selectedItem.value;

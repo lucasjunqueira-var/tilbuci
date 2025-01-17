@@ -1,4 +1,10 @@
-package com.tilbuci.script;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+ package com.tilbuci.script;
 
 /** OPENFL **/
 import openfl.events.Event;
@@ -30,7 +36,7 @@ class AssistInstance extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-acinstance-title'), 800, 700, false);
+        super(ac, Global.ln.get('window-acinstance-title'), 800, 640, false);
         this._idbuttons['create'] = new IDButton('create', onCopy, Global.ln.get('window-acinstance-create'), Assets.getBitmapData('btCopy'));
         this._idbuttons['btShow'] = new IDButton('btShow', onShow, Global.ln.get('window-acvariable-show'));
         this._idbuttons['cpasset'] = new IDButton('cpasset', onAsset, Global.ln.get('window-acinstance-cpasset'), Assets.getBitmapData('btCopy'));

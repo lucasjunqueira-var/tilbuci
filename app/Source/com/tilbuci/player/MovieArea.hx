@@ -1,4 +1,10 @@
-package com.tilbuci.player;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+ package com.tilbuci.player;
 
 /** OPENFL **/
 import com.tilbuci.display.InstanceSelect;
@@ -471,14 +477,18 @@ class MovieArea extends Sprite {
                 GlobalPlayer.parser.run(GlobalPlayer.movie.scene.ackeyframes[this._currentKf]);
             }
         }
-        // load next keyframe
-        this._currentKf++;
-        if (this._currentKf >= GlobalPlayer.movie.scene.keyframes.length) this._currentKf = GlobalPlayer.movie.scene.loop;
-        this._kftoLoad = this._currentKf;
-        // playing?
-        if (this._playing) {
-            this._kftoLoad = -1;
-            this.loadKeyframe(GlobalPlayer.movie.scene.keyframes[this._currentKf], this._currentKf);
+        // load next keyframe?
+        if (!GlobalPlayer.movie.scene.staticsc) {
+            this._currentKf++;
+            if (this._currentKf >= GlobalPlayer.movie.scene.keyframes.length) this._currentKf = GlobalPlayer.movie.scene.loop;
+            this._kftoLoad = this._currentKf;
+            // playing?
+            if (this._playing) {
+                this._kftoLoad = -1;
+                this.loadKeyframe(GlobalPlayer.movie.scene.keyframes[this._currentKf], this._currentKf);
+            }
+        } else {
+            this._playing = false;
         }
     }
 

@@ -1,4 +1,10 @@
-package com.tilbuci.def;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+ package com.tilbuci.def;
 
 /** HAXE **/
 import com.tilbuci.ui.PlayerTheme;
@@ -248,12 +254,18 @@ class MovieData extends DefBase {
             'keyright' => 'right', 
             'keypup' => 'nout', 
             'keypdown' => 'nin', 
+            'keyhome' => 'nothing', 
+            'keyend' => 'nothing', 
             'keyspace' => '', 
             'keyenter' => '', 
             'swiperight' => 'right', 
             'swipeleft' => 'left', 
             'swipetop' => 'up', 
             'swipebottom' => 'down', 
+            'mousemiddle' => 'nothing', 
+            'mouseright' => 'nothing', 
+            'mousewheelup' => 'nothing', 
+            'mousewheeldown' => 'nothing', 
         ];
     }
 

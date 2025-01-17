@@ -1,4 +1,10 @@
-package com.tilbuci;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+ package com.tilbuci;
 
 /** HAXE **/
 import com.tilbuci.ui.window.contraptions.WindowContrMenu;
@@ -10,6 +16,7 @@ import com.tilbuci.script.AssistInstance;
 import com.tilbuci.script.AssistDataInput;
 import com.tilbuci.script.AssistPlus;
 import com.tilbuci.script.AssistPlugin;
+import com.tilbuci.script.AssistContraptions;
 import com.tilbuci.ui.window.media.WindowCollectionsAdd;
 import com.tilbuci.ui.window.media.WindowCollectionsRm;
 import com.tilbuci.ui.window.media.WindowCollections;
@@ -1370,6 +1377,7 @@ class Editor extends Drawer {
                 case 'assistantdata': this._windows['assistantdata'] = new AssistDataInput(actionAssistant);
                 case 'assistantplus': this._windows['assistantplus'] = new AssistPlus(actionAssistant);
                 case 'assistantplugin': this._windows['assistantplugin'] = new AssistPlugin(actionAssistant);
+                case 'assistantcontraptions': this._windows['assistantcontraptions'] = new AssistContraptions(actionAssistant);
 
                 case 'menus': this._windows['menus'] = new WindowContrMenu(actionWindowContrMenu);
 
