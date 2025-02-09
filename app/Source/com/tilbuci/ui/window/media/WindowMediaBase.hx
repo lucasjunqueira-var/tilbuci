@@ -54,12 +54,12 @@ class WindowMediaBase extends PopupWindow {
     private var _filenum:String = '1';
 
     /**
-        spritemaop number of frames
+        spritemap number of frames
     **/
     private var _frames:Int = 1;
 
     /**
-        spritemaop frame time
+        spritemap frame time
     **/
     private var _frtime:Int = 100;
 
@@ -236,6 +236,9 @@ class WindowMediaBase extends PopupWindow {
                 PopUpManager.removePopUp(this);
 
             } else if (this._mode == 'single') {
+
+trace ('set to asset');
+
                 // set to asset
                 this._mode = 'single';
                 this._ac('single', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);

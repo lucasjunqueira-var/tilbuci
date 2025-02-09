@@ -90,6 +90,11 @@ class ScriptParser {
     public var eventSend:Dynamic = null;
 
     /**
+        has the visitor ever clicked on the screen?
+    **/
+    public var hadInteraction:Bool = false;
+
+    /**
         ok/confirm/success actions on hold
     **/
     private var _acOk:Dynamic;
@@ -730,6 +735,12 @@ class ScriptParser {
                         }
 
                     // instance actions
+                    case 'instance.zoom':
+                        if (param.length > 0) {
+                            return (GlobalPlayer.contraptions.zoomInstance(this.parseString(param[0])));
+                        } else {
+                            return (false);
+                        }
                     case 'instance.setorder':
                         if (param.length == 2) {
                             return (GlobalPlayer.area.setProperty(this.parseString(param[0]), 'order', this.parseInt(param[1]), this.parseInt(param[1])));
@@ -1642,6 +1653,7 @@ class ScriptParser {
                                 case 'leftkeep': GlobalPlayer.mdata.origin = this.parseString(param[0]);
                                 case 'right': GlobalPlayer.mdata.origin = this.parseString(param[0]);
                                 case 'rightkeep': GlobalPlayer.mdata.origin = this.parseString(param[0]);
+                                case 'none': GlobalPlayer.mdata.origin = this.parseString(param[0]);
                                 default: GlobalPlayer.mdata.origin = 'alpha';
                             }
                             return (true);
@@ -2496,6 +2508,7 @@ class ScriptParser {
                     case '?_SERVER': return (GlobalPlayer.server);
                     case "?_PLAYING": return(GlobalPlayer.area.playing);
                     case "?_USERLOGGED": return(GlobalPlayer.ws.userLogged());
+                    case "?_HADINTERACTION": return(this.hadInteraction);
                     default:
                         // look on stantard variables
                         if (this._bools.exists(str.substr(1))) {

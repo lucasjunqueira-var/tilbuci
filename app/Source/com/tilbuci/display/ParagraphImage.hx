@@ -184,6 +184,7 @@ class ParagraphImage extends BaseImage {
     **/
     public function load(txt:String):Void {
         txt = GlobalPlayer.parser.parseString(txt);
+        this._lastMedia = txt;
         this._text.text = txt;
         this._text.scrollV = this._scrollPos = 0;
         if (this._loadTimer != null) {

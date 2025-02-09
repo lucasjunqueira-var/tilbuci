@@ -38,6 +38,7 @@ class ActionInfo {
 
         // select values
         this._mvOrigins = [
+            'none' => Global.ln.get('window-movieprop-ornone'), 
             'alpha' => Global.ln.get('window-movieprop-oralpha'), 
             'center' => Global.ln.get('window-movieprop-orcenter'), 
             'top' => Global.ln.get('window-movieprop-ortop'), 
@@ -397,6 +398,9 @@ class ActionInfo {
                     { t: 's', n: Global.ln.get('acinfo-instanceseek-p1'), v: 'instances' }, 
                     { t: 'i', n: Global.ln.get('acinfo-instanceseek-p2'), v: '' }, 
                 ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-instancezoom'), a: 'instance.zoom', p: [
+                    { t: 's', n: Global.ln.get('acinfo-instancezoom-p1'), v: 'instances' }, 
+                ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-instancesetparagraph'), a: 'instance.setparagraph', p: [
                     { t: 's', n: Global.ln.get('acinfo-instancesetparagraph-p1'), v: 'instances' }, 
                     { t: 's', n: Global.ln.get('acinfo-instancesetparagraph-p2'), v: '' }, 
@@ -481,10 +485,10 @@ class ActionInfo {
                     { t: 's', n: Global.ln.get('acinfo-instancesetvolume-p1'), v: 'instances' }, 
                     { t: 'f', n: Global.ln.get('acinfo-instancesetvolume-p2'), v: '' }, 
                 ], e: [ ] }, 
-                { n: Global.ln.get('acinfo-instancesetrotation'), a: 'instance.setrotation', p: [
+                /*{ n: Global.ln.get('acinfo-instancesetrotation'), a: 'instance.setrotation', p: [
                     { t: 's', n: Global.ln.get('acinfo-instancesetrotation-p1'), v: 'instances' }, 
                     { t: 'i', n: Global.ln.get('acinfo-instancesetrotation-p2'), v: '' }, 
-                ], e: [ ] }, 
+                ], e: [ ] }, */
                 { n: Global.ln.get('acinfo-instancescrolldown'), a: 'instance.scrolldown', p: [
                     { t: 's', n: Global.ln.get('acinfo-instancescrolldown-p1'), v: 'instances' }, 
                 ], e: [ ] }, 
@@ -557,9 +561,9 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-instanceclearvolume'), a: 'instance.clearvolume', p: [
                     { t: 's', n: Global.ln.get('acinfo-instanceclearvolume-p1'), v: 'instances' }, 
                 ], e: [ ] }, 
-                { n: Global.ln.get('acinfo-instanceclearrotation'), a: 'instance.clearrotation', p: [
+                /*{ n: Global.ln.get('acinfo-instanceclearrotation'), a: 'instance.clearrotation', p: [
                     { t: 's', n: Global.ln.get('acinfo-instanceclearrotation-p1'), v: 'instances' }, 
-                ], e: [ ] }, 
+                ], e: [ ] }, */
             ]
         ));
 

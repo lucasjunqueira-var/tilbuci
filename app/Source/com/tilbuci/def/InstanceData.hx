@@ -32,6 +32,11 @@ class InstanceData {
     public var action:String;
 
     /**
+        instance mouse over action
+    **/
+    public var actionover:String;
+
+    /**
         start playing after load?
     **/
     public var playOnLoad:Bool = true;
@@ -71,6 +76,9 @@ class InstanceData {
         } else this.ok = false;
         if (this.ok) if (!this.horizontal.ok || !this.vertical.ok) this.ok = false;
         if (this.ok) this.asset = this.asset.substr(0, 32);
+        if (this.ok && Reflect.hasField(data, 'actionover')) {
+            this.actionover = Reflect.field(data, 'actionover');
+        } else this.actionover = '';
     }
 
     /**
@@ -81,6 +89,7 @@ class InstanceData {
         this.collection = null;
         this.asset = null;
         this.action = null;
+        this.actionover = null;
         this.horizontal.kill();
         this.horizontal = null;
         this.vertical.kill();
@@ -95,6 +104,7 @@ class InstanceData {
             collection: this.collection, 
             asset: this.asset, 
             action: this.action, 
+            actionover: this.actionover, 
             play: this.playOnLoad, 
             horizontal: this.horizontal.toObject(), 
             vertical: this.vertical.toObject()

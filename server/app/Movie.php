@@ -15,7 +15,11 @@ require_once('Scene.php');
  */
 class Movie extends BaseClass
 {
-	
+	/**
+     * TilBuci expected version
+     */
+    private $version = 9;
+    
 	/**
 	 * current movie information
 	 */
@@ -115,7 +119,7 @@ class Movie extends BaseClass
 		if (count($ck) > 0) {
 			// basic movie information
 			$this->info = [
-				'version' => 2, 
+				'version' => $this->version, 
 				'id' => $id, 
 				'author' => $ck[0]['mv_author'], 
 				'copyright' => $ck[0]['mv_copyright'], 
@@ -141,6 +145,7 @@ class Movie extends BaseClass
 				'origin' => $ck[0]['mv_origin'], 
 				'animation' => $ck[0]['mv_animation'], 
                 'highlight' => $ck[0]['mv_highlight'], 
+                'loadingic' => $ck[0]['mv_loading'], 
 				'fonts' => ((is_null($ck[0]['mv_fonts']) || $ck[0]['mv_fonts'] == '') ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_fonts'])), true)), 
 				'style' => (is_null($ck[0]['mv_style']) || $ck[0]['mv_style'] == '') ? '' : gzdecode(base64_decode($ck[0]['mv_style'])), 
 				'actions' => ((is_null($ck[0]['mv_actions']) || $ck[0]['mv_actions'] == '') ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_actions'])), true)), 
@@ -401,6 +406,11 @@ class Movie extends BaseClass
 						$cols[] = 'mv_highlight=:high';
 						$vals[':high'] = $v;
 						$updt['highlight'] = $v;
+						break;
+                    case 'loadingic':
+						$cols[] = 'mv_loading=:load';
+						$vals[':load'] = $v;
+						$updt['loadingic'] = $v;
 						break;
 					case 'bigsize':
 						$cols[] = 'mv_screenbig=:bg';
@@ -1188,6 +1198,8 @@ class Movie extends BaseClass
                                         if (!isset($json['numbers'])) $json['numbers'] = [ ];
                                         if (!isset($json['flags'])) $json['flags'] = [ ];
                                         if (!isset($json['created'])) $json['created'] = date('Y-m-d H:i:s');
+                                        if (!isset($json['loadingic'])) $json['loadingic'] = '';
+                                        if (!isset($json['highlight'])) $json['highlight'] = '';
                                         $json['updated'] = date('Y-m-d H:i:s');
                                         if (!isset($json['plugins'])) {
                                             $json['plugins'] = [ ];
@@ -1197,7 +1209,7 @@ class Movie extends BaseClass
                                             $json['plugins'] = $plg;
                                         }
                                         file_put_contents('../movie/'.$movie.'.movie/movie.json', json_encode($json));
-                                        if (!$this->execute('INSERT INTO movies (mv_id, mv_user, mv_collaborators, mv_author, mv_title, mv_about, mv_copyright, mv_copyleft, mv_tags, mv_favicon, mv_image, mv_key, mv_start, mv_acstart, mv_screenbig, mv_screensmall, mv_screentype, mv_screenbg, mv_interval, mv_origin, mv_animation, mv_fonts, mv_style, mv_actions, mv_theme, mv_texts, mv_numbers, mv_flags, mv_plugins, mv_created, mv_updated) VALUES (:mv_id, :mv_user, :mv_collaborators, :mv_author, :mv_title, :mv_about, :mv_copyright, :mv_copyleft, :mv_tags, :mv_favicon, :mv_image, :mv_key, :mv_start, :mv_acstart, :mv_screenbig, :mv_screensmall, :mv_screentype, :mv_screenbg, :mv_interval, :mv_origin, :mv_animation, :mv_fonts, :mv_style, :mv_actions, :mv_theme, :mv_texts, :mv_numbers, :mv_flags, :mv_plugins, :mv_created, :mv_updated)', [
+                                        if (!$this->execute('INSERT INTO movies (mv_id, mv_user, mv_collaborators, mv_author, mv_title, mv_about, mv_copyright, mv_copyleft, mv_tags, mv_favicon, mv_image, mv_key, mv_start, mv_acstart, mv_screenbig, mv_screensmall, mv_screentype, mv_screenbg, mv_interval, mv_origin, mv_animation, mv_fonts, mv_style, mv_actions, mv_theme, mv_texts, mv_numbers, mv_flags, mv_plugins, mv_created, mv_updated, mv_loading, mv_highlight) VALUES (:mv_id, :mv_user, :mv_collaborators, :mv_author, :mv_title, :mv_about, :mv_copyright, :mv_copyleft, :mv_tags, :mv_favicon, :mv_image, :mv_key, :mv_start, :mv_acstart, :mv_screenbig, :mv_screensmall, :mv_screentype, :mv_screenbg, :mv_interval, :mv_origin, :mv_animation, :mv_fonts, :mv_style, :mv_actions, :mv_theme, :mv_texts, :mv_numbers, :mv_flags, :mv_plugins, :mv_created, :mv_updated, :mv_loading, :mv_highlight)', [
                                             ':mv_id' => $json['id'], 
                                             ':mv_user' => $user, 
                                             ':mv_collaborators' => '', 
@@ -1228,7 +1240,9 @@ class Movie extends BaseClass
                                             ':mv_flags' => count($json['flags']) == 0 ? '' : base64_encode(gzencode(json_encode($json['flags']))), 
                                             ':mv_plugins' => implode(',', $json['plugins']), 
                                             ':mv_created' => $json['created'], 
-                                            ':mv_updated' => $json['updated']
+                                            ':mv_updated' => $json['updated'], 
+                                            ':mv_loading' => $json['loadingic'], 
+                                            ':mv_highlight' => $json['highlight']
                                         ])) {
                                             // error saving movie
                                             $dir = '../movie/'.$movie.'.movie/';

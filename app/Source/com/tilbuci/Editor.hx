@@ -770,6 +770,15 @@ class Editor extends Drawer {
                 this._windows['mediapicture'].action('setmode', [
                     'mode' => 'single', 
                 ]);
+            case 'browseloadingic':
+                Global.temp['Media/Single'] = [
+                    'type' => 'spritemap', 
+                    'call' => 'browseloadingic'
+                ];
+                this.showWindow('mediaspritemap');
+                this._windows['mediaspritemap'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
             case 'window-notes':
                 this.showWindow('designnotes');
         }
@@ -1027,6 +1036,14 @@ class Editor extends Drawer {
             case 'single':
                 if (Global.temp.exists('Media/Single')) {
                     switch (Global.temp['Media/Single']['call']) {
+                        case 'browseloadingic':
+                            this._windows['propmovie'].action('browseloadingic', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                                'frames' => data['frames'], 
+                                'frtime' => data['frtime'], 
+                            ]);
                         case 'browsefavicon':
                             this._windows['propmovie'].action('browsefavicon', [
                                 'file' => data['path'] + data['file'], 

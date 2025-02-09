@@ -36,6 +36,7 @@ import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.data.GlobalPlayer;
 import com.tilbuci.ui.component.ActionArea;
 import com.tilbuci.ui.base.HPanelContainer;
+import com.tilbuci.display.SpritemapImage;
 
 class WindowMovieProperties extends PopupWindow {
 
@@ -68,6 +69,11 @@ class WindowMovieProperties extends PopupWindow {
         share image display
     **/
     private var _image:PictureImage;
+
+    /**
+        loading icon
+    **/
+    private var _loadingic:SpritemapImage;
 
     /**
         Constructor.
@@ -129,7 +135,20 @@ class WindowMovieProperties extends PopupWindow {
                 { tp: 'Button', id: 'saveabout', tx: Global.ln.get('window-movieprop-saveabout'), ac: this.onSaveAbout }
             ]), 440));
 
-        // animation
+        // animation & interaction
+        this.ui.createHContainer('imagesinteraction');
+
+        var loadingic:InterfaceContainer = new InterfaceContainer('v', 0, 0x666666);
+        loadingic.width = 395;
+        loadingic.height = 210;
+        this.ui.createLabel('loadingic', Global.ln.get('window-movieprop-loading'), Label.VARIANT_DETAIL, loadingic);
+        this.ui.createButton('loadingic', Global.ln.get('window-movieprop-loadingset'), onLoadingIc, loadingic);
+        this.ui.createButton('loadingicclear', Global.ln.get('window-movieprop-loadingclear'), onLoadingIcClear, loadingic);
+        this._loadingic = new SpritemapImage(onLoadingLoaded);
+        this._loadingic.width = this._loadingic.height = 32;
+        loadingic.addChild(this._loadingic);
+        this.ui.hcontainers['imagesinteraction'].addChild(loadingic);
+        this.ui.hcontainers['imagesinteraction'].width = 405;
         this.addForm(Global.ln.get('window-movieprop-animation'), this.ui.forge('anim', [
             { tp: 'Label', id: 'movietime', tx: Global.ln.get('window-movienew-timeframe'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'Select', id: 'movietime', vl: [
@@ -147,6 +166,7 @@ class WindowMovieProperties extends PopupWindow {
                 ], sl: '1.00' }, 
             { tp: 'Label', id: 'movieorigin', tx: Global.ln.get('window-movieprop-origin'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'Select', id: 'movieorigin', vl: [
+                { text: Global.ln.get('window-movieprop-ornone'), value: "none" }, 
                 { text: Global.ln.get('window-movieprop-oralpha'), value: "alpha" }, 
                 { text: Global.ln.get('window-movieprop-orcenter'), value: "center" }, 
                 { text: Global.ln.get('window-movieprop-ortop'), value: "top" }, 
@@ -190,7 +210,9 @@ class WindowMovieProperties extends PopupWindow {
                 { tp: 'Label', id: 'moviehighlight', tx: Global.ln.get('window-movieprop-highlight'), vr: Label.VARIANT_DETAIL }, 
                 { tp: 'TInput', id: 'moviehighlight', tx: '', vr: '' },  
 
-                { tp: 'Spacer', id: 'animspacer', ht: 235 }, 
+                { tp: 'Custom', id: 'moveilodingbt', cont: this.ui.hcontainers['imagesinteraction'] },
+
+                { tp: 'Spacer', id: 'animspacer', ht: 20 }, 
                 { tp: 'Button', id: 'saveanim', tx: Global.ln.get('window-movieprop-saveanim'), ac: this.onSaveAnim }
         ]));
 
@@ -480,6 +502,10 @@ class WindowMovieProperties extends PopupWindow {
                 this._favicon.load(data['file']);
             case 'browseimage':
                 this._image.load(data['file']);
+            case 'browseloadingic':
+                this._loadingic.frames = data['frames'];
+                this._loadingic.frtime = data['frtime'];
+                this._loadingic.load(data['file']);
         }
     }
 
@@ -508,6 +534,14 @@ class WindowMovieProperties extends PopupWindow {
             this._image.unload();
         } else {
             this._image.load(GlobalPlayer.mdata.image);
+        }
+        if (GlobalPlayer.mdata.loadingic[0] == '') {
+            this._loadingic.unload();
+            this._loadingic.visible = false;
+        } else {
+            this._loadingic.frames = Std.parseInt(GlobalPlayer.mdata.loadingic[1]);
+            this._loadingic.frtime = Std.parseInt(GlobalPlayer.mdata.loadingic[2]);
+            this._loadingic.load(GlobalPlayer.mdata.loadingic[0]);
         }
         this.ui.setSelectOptions('movieindex', [ ]);
         Global.ws.send('Scene/List', [ 'movie' => GlobalPlayer.movie.mvId ], this.onSceneList);
@@ -661,11 +695,20 @@ class WindowMovieProperties extends PopupWindow {
         } else {
             this.ui.inputs['moviehighlight'].text = color;
         }
+        var loadingData:Array<String> = [ '', '', ''];
+        if (this._loadingic.mediaLoaded) {
+            loadingData = [
+                this._loadingic.lastMedia, 
+                Std.string(this._loadingic.frames), 
+                Std.string(this._loadingic.frtime)
+            ];
+        }
         var data:String = StringStatic.jsonStringify({
             time: this.ui.selects['movietime'].selectedItem.value,
             origin: this.ui.selects['movieorigin'].selectedItem.value,
             animation: this.ui.selects['movieanimation'].selectedItem.value, 
-            highlight: this.ui.inputs['moviehighlight'].text
+            highlight: this.ui.inputs['moviehighlight'].text, 
+            loadingic: StringStatic.jsonStringify(loadingData)
         });
         Global.ws.send(
             'Movie/Update', 
@@ -748,6 +791,8 @@ class WindowMovieProperties extends PopupWindow {
                         case 'highlight': 
                             GlobalPlayer.mdata.highlight = Reflect.field(ar, k);
                             GlobalPlayer.mdata.highlightInt = Std.parseInt(GlobalPlayer.mdata.highlight);
+                        case 'loadingic':
+                            GlobalPlayer.mdata.loadingic = StringStatic.jsonParse(Reflect.field(ar, k));
                         case 'css':
                             GlobalPlayer.mdata.style = Reflect.field(ar, k);
                             GlobalPlayer.style.clear();
@@ -1428,6 +1473,30 @@ class WindowMovieProperties extends PopupWindow {
             this._image.height = this._image.oHeight * this._image.width / this._image.oWidth;
         }
         this._image.visible = true;
+    }
+
+    /**
+        Selects the loading icon.
+    **/
+    private function onLoadingIc(evt:TriggerEvent):Void {
+        this._ac('browseloadingic');
+    }
+
+    /**
+        Clears the favicon.
+    **/
+    private function onLoadingIcClear(evt:TriggerEvent):Void {
+        this._loadingic.visible = false;
+        this._loadingic.unload();
+    }
+
+    /**
+        The loading icon image was loaded.
+    **/
+    private function onLoadingLoaded(ok:Bool):Void {
+        this._loadingic.height = 80;
+        this._loadingic.width = this._loadingic.oWidth * this._loadingic.height / this._loadingic.oHeight;
+        this._loadingic.visible = true;
     }
 
     /**

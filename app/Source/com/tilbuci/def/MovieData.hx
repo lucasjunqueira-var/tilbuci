@@ -7,6 +7,7 @@
  package com.tilbuci.def;
 
 /** HAXE **/
+import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.ui.PlayerTheme;
 import haxe.Json;
 
@@ -178,6 +179,11 @@ class MovieData extends DefBase {
     public var highlight:String = '';
 
     /**
+        scene loading icon animation
+    **/
+    public var loadingic:Array<String> = [ '', '', '' ];
+
+    /**
         highlight color (int value)
     **/
     public var highlightInt:Null<Int> = null;
@@ -220,6 +226,7 @@ class MovieData extends DefBase {
         this.animation = 'linear';
         this.highlight = '';
         this.highlightInt = null;
+        this.loadingic = [ '', '', '' ];
         this.screen.clear();
         while (this.fonts.length > 0) {
             var ft:FontInfo = this.fonts.shift();
@@ -319,6 +326,15 @@ class MovieData extends DefBase {
                 for (t in Reflect.fields(data['inputs'])) {
                     this.inputs[t] = Reflect.field(data['inputs'], t);
                 }
+            }
+            if (data.exists('loadingic')) {
+                if (data['loadingic'] == '') {
+                    this.loadingic = [ '', '', '' ];
+                } else {
+                    this.loadingic = StringStatic.jsonParse(data['loadingic']);
+                }
+            } else {
+                this.loadingic = [ '', '', '' ];
             }
             GlobalPlayer.mdata = this;
             // setting animation transition
@@ -455,6 +471,8 @@ class MovieData extends DefBase {
             GlobalPlayer.theme = new PlayerTheme(this.theme);
             Theme.setTheme(GlobalPlayer.theme);
         }
+        // loadins scene icon
+        GlobalPlayer.contraptions.loadLoadingIc();
     }
 
     /**
@@ -488,6 +506,7 @@ class MovieData extends DefBase {
             animation: this.animation, 
             fonts: this.fonts, 
             highlight: this.highlight, 
+            loadingic: this.loadingic, 
             inputs: this.inputs
         }));
     }
@@ -541,6 +560,8 @@ class MovieData extends DefBase {
         this.plugins = null;
         this.highlight = null;
         this.highlightInt = null;
+        while (this.loadingic.length > 0) this.loadingic.shift();
+        this.loadingic = null;
         for (k in this.inputs.keys()) this.inputs.remove(k);
         this.inputs = null;
     }

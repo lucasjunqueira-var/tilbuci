@@ -1169,6 +1169,19 @@ class MovieArea extends Sprite {
     }
 
     /**
+        Picks an instance.
+        @param  name    the instance name
+        @return the selected instance or null if not found
+    **/
+    public function pickInstance(name:String):InstanceImage {
+        if (this._instances.exists(name)) {
+            return (this._instances[name]);
+        } else {
+            return (null);
+        }
+    }
+
+    /**
         Applies display area mask.
         @param  to  mask area?
     **/

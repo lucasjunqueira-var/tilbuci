@@ -128,6 +128,7 @@ class VideoImage extends BaseImage {
     **/
     public function load(media:String):Void {
         media = StringTools.replace(media, (GlobalPlayer.path + 'media/video/'), '');
+        this._lastMedia = media;
         var path:String = GlobalPlayer.parser.parsePath(GlobalPlayer.path + 'media/video/' + media);
         if (GlobalPlayer.mode == Player.MODE_EDITOR) {
             this._loaded = false;
@@ -208,6 +209,15 @@ class VideoImage extends BaseImage {
     public function stop():Void {
         this._stream.pause();
         this._stream.seek(0);
+    }
+
+    public function unload():Void {
+        if (this._loaded) {
+            this._stream.pause();
+            this._stream.seek(0);
+        }
+        this._lastMedia = '';
+        this._loaded = false;
     }
 
     /**

@@ -665,6 +665,7 @@ class Player extends Sprite {
             this.stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
             this.stage.addEventListener(MouseEvent.MIDDLE_CLICK, onMouseMiddle);
             this.stage.addEventListener(MouseEvent.RIGHT_CLICK, onMouseRight);
+            this.stage.addEventListener(MouseEvent.CLICK, onLeftClick);
         }
     }
 
@@ -759,6 +760,7 @@ class Player extends Sprite {
     private function onMouseMiddle(evt:MouseEvent):Void {
         if (this.stage.focus is Stage) {
             GlobalPlayer.parser.checkMouse('mousemiddle');
+            GlobalPlayer.parser.hadInteraction = true;
         }
     }
 
@@ -770,8 +772,17 @@ class Player extends Sprite {
         if (this.stage.focus is Stage) {
             if (GlobalPlayer.parser.checkMouse('mouseright')) {
                 this.stage.showDefaultContextMenu = false;
+                GlobalPlayer.parser.hadInteraction = true;
             }
         }
+    }
+
+    /**
+        Mouse left click.
+    **/
+    private function onLeftClick(evt:MouseEvent):Void {
+        this.stage.removeEventListener(MouseEvent.CLICK, onLeftClick);
+        GlobalPlayer.parser.hadInteraction = true;
     }
 
     /**

@@ -79,6 +79,7 @@ class AudioImage extends BaseImage {
     **/
     public function load(media:String):Void {
         media = StringTools.replace(media, (GlobalPlayer.path + 'media/audio/'), '');
+        this._lastMedia = media;
         this._loaded = false;
         if (this._channel != null) {
 			this._channel.removeEventListener(Event.SOUND_COMPLETE, soundComplete);

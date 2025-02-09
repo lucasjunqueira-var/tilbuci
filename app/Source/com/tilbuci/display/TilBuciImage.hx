@@ -133,6 +133,27 @@ class TilBuciImage extends Sprite {
     public var currentType(get, null):String;
     private function get_currentType():String { return (this._currentType); }
 
+    /**
+        current media
+    **/
+    public var currentMedia(get, null):String;
+    private function get_currentMedia():String {
+        switch (this._currentType) {
+            case 'picture':
+                return (this._picture.lastMedia);
+            case 'video':
+                return (this._video.lastMedia);
+            case 'spritemap':
+                return (this._spritemap.lastMedia);
+            case 'audio':
+                return (this._audio.lastMedia);
+            case 'paragraph':
+                return (this._paragraph.lastMedia);
+            default:
+                return ('');
+        }
+    }
+
     public function new(ol:Dynamic, name:String) {
         super();
         this._onLoad = ol;

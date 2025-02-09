@@ -95,6 +95,7 @@ class WindowBlockEdit extends PopupWindow {
         this.ui.createSelect('ggeneral', [
             { text: Global.ln.get('window-globals-playing'), value: "?_PLAYING", asset: 'btBool' }, 
             { text: Global.ln.get('window-globals-userlogged'), value: "?_USERLOGGED", asset: 'btBool' }, 
+            { text: Global.ln.get('window-globals-hadinteraction'), value: "?_HADINTERACTION", asset: 'btBool' }, 
             { text: Global.ln.get('window-globals-server'), value: "?_SERVER", asset: 'btBool' }, 
             { text: Global.ln.get('window-globals-keyframe'), value: "#_KEYFRAME", asset: 'btFloat' }, 
             { text: Global.ln.get('window-globals-areabig'), value: "#_AREABIG", asset: 'btFloat' }, 

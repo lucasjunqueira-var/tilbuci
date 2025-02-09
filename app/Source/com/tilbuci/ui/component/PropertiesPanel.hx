@@ -63,16 +63,17 @@ class PropertiesPanel extends DropDownPanel {
             { tp: 'Custom', cont: yContainer }, 
             { tp: 'Label', id: 'width', tx: Global.ln.get('rightbar-properties-width'), vr: '' }, 
             { tp: 'Numeric', id: 'width', mn: -10000, mx: 100000, st: 1, vl: 0, ch: changeProperties },
-            { tp: 'Button', id: 'aheight', tx: Global.ln.get('rightbar-properties-aheight'), cl: onAdjustHeight },
             { tp: 'Label', id: 'height', tx: Global.ln.get('rightbar-properties-height'), vr: '' }, 
             { tp: 'Numeric', id: 'height', mn: -10000, mx: 100000, st: 1, vl: 0, ch: changeProperties },
             { tp: 'Button', id: 'awidth', tx: Global.ln.get('rightbar-properties-awidth'), cl: onAdjustWidth },
+            { tp: 'Button', id: 'aheight', tx: Global.ln.get('rightbar-properties-aheight'), cl: onAdjustHeight },
+            { tp: 'Button', id: 'soriginal', tx: Global.ln.get('rightbar-properties-soriginal'), cl: onAdjustOriginal },
             { tp: 'Label', id: 'order', tx: Global.ln.get('rightbar-properties-order'), vr: '' }, 
             { tp: 'Custom', cont: orderContainer }, 
             { tp: 'Label', id: 'visible', tx: Global.ln.get('rightbar-properties-visible'), vr: '' }, 
             { tp: 'Toggle', id: 'visible', vl: false, ch: changeProperties },
-            { tp: 'Label', id: 'rotation', tx: Global.ln.get('rightbar-properties-rotation'), vr: '' }, 
-            { tp: 'Numeric', id: 'rotation', mn: -10000, mx: 100000, st: 1, vl: 0, ch: changeProperties }
+            /*{ tp: 'Label', id: 'rotation', tx: Global.ln.get('rightbar-properties-rotation'), vr: '' }, 
+            { tp: 'Numeric', id: 'rotation', mn: -10000, mx: 100000, st: 1, vl: 0, ch: changeProperties }*/
         ], 0x333333, (wd - 5));
         this.ui.containers['properties'].enabled = false;
         Global.history.propDisplay.push(this.updateValues);
@@ -99,7 +100,7 @@ class PropertiesPanel extends DropDownPanel {
             this.ui.numerics['py'].value = Math.round(this._current.getCurrentNum('y'));
             this.ui.numerics['width'].value = Math.round(this._current.getCurrentNum('width'));
             this.ui.numerics['height'].value = Math.round(this._current.getCurrentNum('height'));
-            this.ui.numerics['rotation'].value = Math.round(this._current.getCurrentNum('rotation'));
+            //this.ui.numerics['rotation'].value = Math.round(this._current.getCurrentNum('rotation'));
             this.ui.toggles['visible'].selected = this._current.getCurrentBool('visible');
             this.ui.containers['properties'].enabled = true;
         }
@@ -111,7 +112,7 @@ class PropertiesPanel extends DropDownPanel {
         this.ui.numerics['py'].value = 0;
         this.ui.numerics['width'].value = 0;
         this.ui.numerics['height'].value = 0;
-        this.ui.numerics['rotation'].value = 0;
+        //this.ui.numerics['rotation'].value = 0;
         this.ui.toggles['visible'].selected = true;
         this._current = null;
     }
@@ -123,7 +124,7 @@ class PropertiesPanel extends DropDownPanel {
             GlobalPlayer.area.setCurrentNum('y', this.ui.numerics['py'].value);
             GlobalPlayer.area.setCurrentNum('width', this.ui.numerics['width'].value);
             GlobalPlayer.area.setCurrentNum('height', this.ui.numerics['height'].value);
-            GlobalPlayer.area.setCurrentNum('rotation', this.ui.numerics['rotation'].value);
+            //GlobalPlayer.area.setCurrentNum('rotation', this.ui.numerics['rotation'].value);
             GlobalPlayer.area.setCurrentBool('visible', this.ui.toggles['visible'].selected);
             if (this._timer == null) {
                 this._timer = new Timer(2000);
@@ -139,6 +140,22 @@ class PropertiesPanel extends DropDownPanel {
             if (Global.history.states.length == 0) Global.history.addState(Global.ln.get('rightbar-history-original'));
             GlobalPlayer.area.setCurrentNum('width', nw);
             this.ui.numerics['width'].value = Math.round(nw);
+            if (this._timer == null) {
+                this._timer = new Timer(2000);
+                this._timer.run = this.saveHistory;
+            }
+        }
+        this.ui.containers['properties'].enabled = true;
+    }
+
+    private function onAdjustOriginal(evt:Event = null):Void {
+        this.ui.containers['properties'].enabled = false;
+        if ((this._current.oWidth() > 0) && (this._current.oHeight() > 0)) {
+            if (Global.history.states.length == 0) Global.history.addState(Global.ln.get('rightbar-history-original'));
+            GlobalPlayer.area.setCurrentNum('width', this._current.oWidth());
+            GlobalPlayer.area.setCurrentNum('height', this._current.oHeight());
+            this.ui.numerics['width'].value = Math.round(this._current.oWidth());
+            this.ui.numerics['height'].value = Math.round(this._current.oHeight());
             if (this._timer == null) {
                 this._timer = new Timer(2000);
                 this._timer.run = this.saveHistory;

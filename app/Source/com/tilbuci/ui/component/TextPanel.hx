@@ -50,7 +50,7 @@ class TextPanel extends DropDownPanel {
             { tp: 'Label', id: 'italic', tx: Global.ln.get('rightbar-text-italic'), vr: '' }, 
             { tp: 'Toggle', id: 'italic', vl: false, ch: changeProperties }, 
             { tp: 'Label', id: 'leading', tx: Global.ln.get('rightbar-text-leading'), vr: '' }, 
-            { tp: 'Numeric', id: 'leading', mn: -100, mx: 100, st: 1, vl: 0, ch: changeProperties }, 
+            { tp: 'Numeric', id: 'leading', mn: -1000, mx: 1000, st: 1, vl: 0, ch: changeProperties }, 
             //{ tp: 'Label', id: 'spacing', tx: Global.ln.get('rightbar-text-spacing'), vr: '' }, 
             //{ tp: 'Numeric', id: 'spacing', mn: -100, mx: 100, st: 1, vl: 0, ch: changeProperties }, 
             { tp: 'Label', id: 'align', tx: Global.ln.get('rightbar-text-align'), vr: '' }, 

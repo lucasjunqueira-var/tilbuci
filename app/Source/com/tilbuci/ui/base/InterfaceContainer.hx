@@ -27,6 +27,9 @@ class InterfaceContainer extends ScrollContainer {
             if (gap > 0) {
                 lay.gap = gap;
                 lay.setPadding(gap);
+            } else if (gap == 0) {
+                lay.gap = 10;
+                lay.setPadding(0); 
             }
             this.layout = lay;
         } else if (lay == 'h') {

@@ -34,6 +34,7 @@ class ActionPanel extends DropDownPanel {
         super(Global.ln.get('rightbar-action'), wd);
         this._content = this.ui.forge('properties', [
             { tp: 'Button', id: 'trigget', tx: Global.ln.get('rightbar-action-trigger'), ac: setTrigger }, 
+            { tp: 'Button', id: 'over', tx: Global.ln.get('rightbar-action-over'), ac: setOver }, 
         ], 0x333333, (wd - 5));
         this.ui.containers['properties'].enabled = false;
         Global.history.propDisplay.push(this.updateValues);
@@ -68,6 +69,10 @@ class ActionPanel extends DropDownPanel {
         Global.showActionWindow(GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].action, onOk, onCancel);
     }
 
+    private function setOver(evt:Event = null):Void {
+        Global.showActionWindow(GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].actionover, onOkOver, onCancelOver);
+    }
+
     private function onOk(newac:String):Void {
         if (Global.history.states.length == 0) Global.history.addState(Global.ln.get('rightbar-history-original'));
         GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].action = newac;
@@ -75,6 +80,16 @@ class ActionPanel extends DropDownPanel {
     }
 
     private function onCancel():Void {
+        // nothing to do
+    }
+
+    private function onOkOver(newac:String):Void {
+        if (Global.history.states.length == 0) Global.history.addState(Global.ln.get('rightbar-history-original'));
+        GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].actionover = newac;
+        Global.history.addState(Global.ln.get('rightbar-history-acover'));
+    }
+
+    private function onCancelOver():Void {
         // nothing to do
     }
 

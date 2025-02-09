@@ -86,6 +86,19 @@ class SpritemapImage extends BaseImage {
     }
 
     /**
+        Unloads current image.
+    **/
+    public function unload():Void {
+        this._mediaLoaded = false;
+        this._lastMedia = '';
+        try { this._loader.unload(); } catch (e) { }
+        if (this._timer != null) {
+            try { this._timer.stop(); } catch (e) { }
+            this._timer = null;
+        }
+    }
+
+    /**
         Releases resources used by the object.
     **/
     override public function kill():Void {

@@ -145,8 +145,10 @@ class SceneData extends DefBase {
             } else {
                 this.staticsc = false;
             }
+            GlobalPlayer.contraptions.hideLoadingIc();
             return (true);
         } else {
+            GlobalPlayer.contraptions.hideLoadingIc();
             return (false);
         }
     }

@@ -58,6 +58,7 @@ class AssistInstance extends PopupWindow {
                     { text: Global.ln.get('window-acinstance-next'), value: 'next' }, 
                     { text: Global.ln.get('window-acinstance-previous'), value: 'previous' }, 
                     { text: Global.ln.get('window-acinstance-seek'), value: 'seek' }, 
+                    { text: Global.ln.get('window-acinstance-zoom'), value: 'zoom' }, 
                     { text: Global.ln.get('window-acinstance-scrollbottom'), value: 'scrollbottom' }, 
                     { text: Global.ln.get('window-acinstance-scrolltop'), value: 'scrolltop' }, 
                     { text: Global.ln.get('window-acinstance-scrolldown'), value: 'scrolldown' }, 
@@ -85,7 +86,7 @@ class AssistInstance extends PopupWindow {
                     { text: Global.ln.get('window-acinstance-pfontleading'), value: 'fontleading' }, 
                     { text: Global.ln.get('window-acinstance-pparagraph'), value: 'paragraph' }, 
                     { text: Global.ln.get('window-acinstance-pvolume'), value: 'volume' }, 
-                    { text: Global.ln.get('window-acinstance-protation'), value: 'rotation' }, 
+                    //{ text: Global.ln.get('window-acinstance-protation'), value: 'rotation' }, 
 
                 ], sl: null }, 
                 { tp: "Label", id: 'horizontal', tx: Global.ln.get('window-acinstance-horizontal'), vr: '' }, 
@@ -113,6 +114,7 @@ class AssistInstance extends PopupWindow {
                 { tp: "Select", id: 'ggeneral', vl: [
                     { text: Global.ln.get('window-globals-playing'), value: "?_PLAYING", asset: 'btBool' }, 
                     { text: Global.ln.get('window-globals-userlogged'), value: "?_USERLOGGED", asset: 'btBool' }, 
+                    { text: Global.ln.get('window-globals-hadinteraction'), value: "?_HADINTERACTION", asset: 'btBool' }, 
                     { text: Global.ln.get('window-globals-server'), value: "?_SERVER", asset: 'btBool' }, 
                     { text: Global.ln.get('window-globals-keyframe'), value: "#_KEYFRAME", asset: 'btFloat' }, 
                     { text: Global.ln.get('window-globals-areabig'), value: "#_AREABIG", asset: 'btFloat' }, 
@@ -149,7 +151,7 @@ class AssistInstance extends PopupWindow {
                     { text: Global.ln.get('window-acinstance-pvolume'), value: "#_INSTANCEVOLUME:" }, 
                     { text: Global.ln.get('window-acinstance-porder'), value: "#_INSTANCEORDER:" }, 
                     { text: Global.ln.get('window-acinstance-pcoloralpha'), value: "#_INSTANCECOLORALPHA:" }, 
-                    { text: Global.ln.get('window-acinstance-protation'), value: "#_INSTANCEROTATION:" }, 
+                    //{ text: Global.ln.get('window-acinstance-protation'), value: "#_INSTANCEROTATION:" }, 
                     { text: Global.ln.get('window-acinstance-pfontsize'), value: "#_INSTANCEFONTSIZE:" }, 
                     { text: Global.ln.get('window-acinstance-pfontleading'), value: "#_INSTANCEFONTLEADING:" }, 
                     { text: Global.ln.get('window-acinstance-pcolor'), value: "$_INSTANCECOLOR:" }, 

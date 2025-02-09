@@ -133,6 +133,7 @@ class MovieInfo {
     **/
     public function loadScene(id:String, uid:Int = 0):Bool {
         if (this.mvLoaded) {
+            GlobalPlayer.contraptions.showLoadingIc();
             if ((GlobalPlayer.mode == Player.MODE_EDITOR) || (GlobalPlayer.mode == Player.MODE_EDPLAYER) || ((GlobalPlayer.mode == Player.MODE_PLAYER) && GlobalPlayer.mdata.identify)) {
                 // player requesting visitor identification?
                 if ((GlobalPlayer.mode == Player.MODE_PLAYER) && GlobalPlayer.mdata.identify) {

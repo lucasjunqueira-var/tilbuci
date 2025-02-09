@@ -164,6 +164,12 @@ class InstanceImage extends Sprite {
     private function get_currentType():String { return (this._imCurrent.currentType); }
 
     /**
+        current media
+    **/
+    public var currentMedia(get, null):String;
+    private function get_currentMedia():String { return (this._imCurrent.currentMedia); }
+
+    /**
         display width
     **/
     public var displayWidth(get, null):Float;
@@ -225,7 +231,9 @@ class InstanceImage extends Sprite {
 
         // place
         this._multSize = new Point(1, 1);
-        this.alpha = 0;
+        if (GlobalPlayer.mdata.origin != 'none') {
+            this.alpha = 0;
+        }
         this.rotation = 0;
         if (GlobalPlayer.movie.data.screen.type == 'landscape') {
             this.x = GlobalPlayer.mdata.screen.big / 2;
@@ -507,6 +515,9 @@ class InstanceImage extends Sprite {
                 }
             }
             switch (GlobalPlayer.mdata.origin) {
+                case 'none':
+                    this.alpha = 0;
+                    endAlpha = 0;
                 case 'alpha':
                     endAlpha = 0;
                 case 'top':
@@ -875,6 +886,13 @@ class InstanceImage extends Sprite {
                     }
                 }    
                 switch (GlobalPlayer.mdata.origin) {
+                    case 'none':
+                        this.x = this._desc.x;
+                        this.y = this._desc.y;
+                        this.width = this._desc.width * this._multSize.x;
+                        this.height = this._desc.height * this._multSize.y;
+                        this.alpha = this._desc.alpha;
+                        this.rotation = this._desc.rotation;
                     case 'alpha':
                         this.x = this._desc.x;
                         this.y = this._desc.y;
@@ -986,6 +1004,13 @@ class InstanceImage extends Sprite {
             this._imCurrent.filters = this._imOther.filters = [
                 new GlowFilter(GlobalPlayer.mdata.highlightInt, 1, 4, 4, 255, 1, true)
             ];
+        }
+        if (GlobalPlayer.canTrigger) {
+            if (GlobalPlayer.mode != Player.MODE_EDITOR) {
+                if (this._data.actionover != '') {
+                    GlobalPlayer.parser.run(this._data.actionover);
+                }
+            }
         }
     }
 
