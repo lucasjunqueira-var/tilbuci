@@ -72,8 +72,8 @@ class PropertiesPanel extends DropDownPanel {
             { tp: 'Custom', cont: orderContainer }, 
             { tp: 'Label', id: 'visible', tx: Global.ln.get('rightbar-properties-visible'), vr: '' }, 
             { tp: 'Toggle', id: 'visible', vl: false, ch: changeProperties },
-            /*{ tp: 'Label', id: 'rotation', tx: Global.ln.get('rightbar-properties-rotation'), vr: '' }, 
-            { tp: 'Numeric', id: 'rotation', mn: -10000, mx: 100000, st: 1, vl: 0, ch: changeProperties }*/
+            { tp: 'Label', id: 'rotation', tx: Global.ln.get('rightbar-properties-rotation'), vr: '' }, 
+            { tp: 'Numeric', id: 'rotation', mn: -10000, mx: 100000, st: 1, vl: 0, ch: changeProperties }
         ], 0x333333, (wd - 5));
         this.ui.containers['properties'].enabled = false;
         Global.history.propDisplay.push(this.updateValues);
@@ -100,7 +100,7 @@ class PropertiesPanel extends DropDownPanel {
             this.ui.numerics['py'].value = Math.round(this._current.getCurrentNum('y'));
             this.ui.numerics['width'].value = Math.round(this._current.getCurrentNum('width'));
             this.ui.numerics['height'].value = Math.round(this._current.getCurrentNum('height'));
-            //this.ui.numerics['rotation'].value = Math.round(this._current.getCurrentNum('rotation'));
+            this.ui.numerics['rotation'].value = Math.round(this._current.getCurrentNum('rotation'));
             this.ui.toggles['visible'].selected = this._current.getCurrentBool('visible');
             this.ui.containers['properties'].enabled = true;
         }
@@ -112,7 +112,7 @@ class PropertiesPanel extends DropDownPanel {
         this.ui.numerics['py'].value = 0;
         this.ui.numerics['width'].value = 0;
         this.ui.numerics['height'].value = 0;
-        //this.ui.numerics['rotation'].value = 0;
+        this.ui.numerics['rotation'].value = 0;
         this.ui.toggles['visible'].selected = true;
         this._current = null;
     }
@@ -124,7 +124,7 @@ class PropertiesPanel extends DropDownPanel {
             GlobalPlayer.area.setCurrentNum('y', this.ui.numerics['py'].value);
             GlobalPlayer.area.setCurrentNum('width', this.ui.numerics['width'].value);
             GlobalPlayer.area.setCurrentNum('height', this.ui.numerics['height'].value);
-            //GlobalPlayer.area.setCurrentNum('rotation', this.ui.numerics['rotation'].value);
+            GlobalPlayer.area.setCurrentNum('rotation', this.ui.numerics['rotation'].value);
             GlobalPlayer.area.setCurrentBool('visible', this.ui.toggles['visible'].selected);
             if (this._timer == null) {
                 this._timer = new Timer(2000);

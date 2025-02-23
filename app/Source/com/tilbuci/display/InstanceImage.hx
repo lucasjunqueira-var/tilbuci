@@ -205,6 +205,44 @@ class InstanceImage extends Sprite {
         }
     }
 
+    override public function get_width():Float {
+        if (this._mask != null) {
+            return (this._mask.width);
+        } else {
+            return (super.width);
+        }
+    }
+
+    override public function get_height():Float {
+        if (this._mask != null) {
+            return (this._mask.height);
+        } else {
+            return (super.height);
+        }
+    }
+
+    override public function set_width(to:Float):Float {
+        if (this._mask != null) {
+            this._mask.width = to;
+            this._im1.width = to;
+            this._im2.width = to;
+        } else {
+            //super.width = to;
+        }
+        return (to);
+    }
+
+    override public function set_height(to:Float):Float {
+        if (this._mask != null) {
+            this._mask.height = to;
+            this._im1.height = to;
+            this._im2.height = to;
+        } else {
+            //super.height = to;
+        }
+        return (to);
+    }
+
     public function new(nm:String, onSel:Dynamic) {
         super();
         this._name = nm;
@@ -788,8 +826,8 @@ class InstanceImage extends Sprite {
                 this._imOther = this._im2;
             }
             // content transition
-            var curW:Float = this.width;
-            var curH:Float = this.height;
+            //var curW:Float = this.width;
+            //var curH:Float = this.height;
             Actuate.stop(this._imCurrent);
             Actuate.stop(this._imOther);
             var trans:String = GlobalPlayer.movie.collections[this._data.collection].transition;
@@ -810,7 +848,7 @@ class InstanceImage extends Sprite {
                     Actuate.tween(this._imCurrent, GlobalPlayer.movie.collections[this._data.collection].time, { alpha: 1 });
                     Actuate.tween(this._imOther, GlobalPlayer.movie.collections[this._data.collection].time, { alpha: 0 });
                 case 'right':
-                    this._multSize.x = 2;
+                    this._multSize.x = 1;//2;
                     this._multSize.y = 1;
                     this._imCurrent.x = this._imCurrent.width;
                     this._imOther.x = 0;
@@ -820,7 +858,7 @@ class InstanceImage extends Sprite {
                     Actuate.tween(this._imCurrent, GlobalPlayer.movie.collections[this._data.collection].time, { x: 0 });
                     Actuate.tween(this._imOther, GlobalPlayer.movie.collections[this._data.collection].time, { x: -this._imCurrent.width });
                 case 'left':
-                    this._multSize.x = 2;
+                    this._multSize.x = 1;//2;
                     this._multSize.y = 1;
                     this._imCurrent.x = -this._imCurrent.width;
                     this._imOther.x = 0;
@@ -831,7 +869,7 @@ class InstanceImage extends Sprite {
                     Actuate.tween(this._imOther, GlobalPlayer.movie.collections[this._data.collection].time, { x: this._imCurrent.width });
                 case 'top':
                     this._multSize.x = 1;
-                    this._multSize.y = 2;
+                    this._multSize.y = 1;//2;
                     this._imCurrent.y = -this._imCurrent.height;
                     this._imOther.y = 0;
                     this._imCurrent.x = this._imOther.x = 0;
@@ -841,7 +879,7 @@ class InstanceImage extends Sprite {
                     Actuate.tween(this._imOther, GlobalPlayer.movie.collections[this._data.collection].time, { y: this._imCurrent.height });
                 case 'bottom':
                     this._multSize.x = 1;
-                    this._multSize.y = 2;
+                    this._multSize.y = 1;//2;
                     this._imCurrent.y = this._imCurrent.height;
                     this._imOther.y = 0;
                     this._imCurrent.x = this._imOther.x = 0;
@@ -856,8 +894,8 @@ class InstanceImage extends Sprite {
                     this._imCurrent.alpha = 1;
                     this._imOther.alpha = 0;
             }
-            this._mask.width = this._im1.width = this._im2.width;// = this._imCurrent.oWidth();
-            this._mask.height = this._im1.height = this._im2.height;// = this._imCurrent.oHeight();
+            //this._mask.width = this._im1.width = this._im2.width;// = this._imCurrent.oWidth();
+            //this._mask.height = this._im1.height = this._im2.height;// = this._imCurrent.oHeight();
             this._mask.x = this._display.x = this._mask.y = this._display.y = 0;
             this._display.setChildIndex(this._imCurrent, 1);
             this._display.setChildIndex(this._imOther, 0);

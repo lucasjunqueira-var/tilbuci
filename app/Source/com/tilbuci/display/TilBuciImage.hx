@@ -521,7 +521,7 @@ class TilBuciImage extends Sprite {
         if ((this._currentType == 'paragraph') || (this._currentType == 'html')) {
             this._oWidth = wd;
             this._oHeight = ht;
-            this.width = this.height = (GlobalPlayer.mdata.screen.big / 2) * GlobalPlayer.multiply;
+            //this.width = this.height = (GlobalPlayer.mdata.screen.big / 2) * GlobalPlayer.multiply;
         }
     }
 

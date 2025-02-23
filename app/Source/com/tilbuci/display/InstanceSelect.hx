@@ -186,7 +186,7 @@ class InstanceSelect extends Sprite {
             case 'width': 
                 desc.width = val;
                 var newval:Float = val;
-                if ((this.image.transition == 'right') || (this.image.transition == 'left')) newval = val * 2;
+                if ((this.image.transition == 'right') || (this.image.transition == 'left')) newval = val * 1;//2;
                 if ((this.image.currentType == 'paragraph') || (this.image.currentType == 'html')) {
                     this.image.setTextSize(newval, this.image.height);
                     this.image.width = newval;
@@ -196,7 +196,7 @@ class InstanceSelect extends Sprite {
             case 'height':
                 desc.height = val;
                 var newval:Float = val;
-                if ((this.image.transition == 'top') || (this.image.transition == 'bottom')) newval = val * 2;
+                if ((this.image.transition == 'top') || (this.image.transition == 'bottom')) newval = val * 1;//2;
                 if ((this.image.currentType == 'paragraph') || (this.image.currentType == 'html')) {
                     this.image.setTextSize(this.image.width, newval);
                     this.image.height = newval;

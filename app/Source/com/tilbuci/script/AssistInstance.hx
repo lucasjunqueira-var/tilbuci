@@ -86,7 +86,7 @@ class AssistInstance extends PopupWindow {
                     { text: Global.ln.get('window-acinstance-pfontleading'), value: 'fontleading' }, 
                     { text: Global.ln.get('window-acinstance-pparagraph'), value: 'paragraph' }, 
                     { text: Global.ln.get('window-acinstance-pvolume'), value: 'volume' }, 
-                    //{ text: Global.ln.get('window-acinstance-protation'), value: 'rotation' }, 
+                    { text: Global.ln.get('window-acinstance-protation'), value: 'rotation' }, 
 
                 ], sl: null }, 
                 { tp: "Label", id: 'horizontal', tx: Global.ln.get('window-acinstance-horizontal'), vr: '' }, 
@@ -151,7 +151,7 @@ class AssistInstance extends PopupWindow {
                     { text: Global.ln.get('window-acinstance-pvolume'), value: "#_INSTANCEVOLUME:" }, 
                     { text: Global.ln.get('window-acinstance-porder'), value: "#_INSTANCEORDER:" }, 
                     { text: Global.ln.get('window-acinstance-pcoloralpha'), value: "#_INSTANCECOLORALPHA:" }, 
-                    //{ text: Global.ln.get('window-acinstance-protation'), value: "#_INSTANCEROTATION:" }, 
+                    { text: Global.ln.get('window-acinstance-protation'), value: "#_INSTANCEROTATION:" }, 
                     { text: Global.ln.get('window-acinstance-pfontsize'), value: "#_INSTANCEFONTSIZE:" }, 
                     { text: Global.ln.get('window-acinstance-pfontleading'), value: "#_INSTANCEFONTLEADING:" }, 
                     { text: Global.ln.get('window-acinstance-pcolor'), value: "$_INSTANCECOLOR:" }, 
