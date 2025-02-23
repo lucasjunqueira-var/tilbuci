@@ -38,13 +38,25 @@ class TextPanel extends DropDownPanel {
     public function new(wd:Float) {
         super(Global.ln.get('rightbar-text'), wd);
         this._timer = null;
+
+        var colorCont:HInterfaceContainer = this.ui.createHContainer('colorcont', 0x333333);
+        this.ui.createTInput('color', '', '', colorCont);
+        this.ui.createButton('color', Global.ln.get('default-set'), changeProperties, colorCont);
+        colorCont.width = wd - 5;
+
+        var bgcolorCont:HInterfaceContainer = this.ui.createHContainer('bgcolorcont', 0x333333);
+        this.ui.createTInput('background', '', '', bgcolorCont);
+        this.ui.createButton('background', Global.ln.get('default-set'), changeProperties, bgcolorCont);
+        bgcolorCont.width = wd - 5;
+
         this._content = this.ui.forge('properties', [
             { tp: 'Label', id: 'font', tx: Global.ln.get('rightbar-text-font'), vr: '' }, 
             { tp: 'Select', id: 'font', vl: [ ], sl: null, ch: changeProperties }, 
             { tp: 'Label', id: 'size', tx: Global.ln.get('rightbar-text-size'), vr: '' }, 
             { tp: 'Numeric', id: 'size', mn: 4, mx: 1000, st: 1, vl: 12, ch: changeProperties }, 
             { tp: 'Label', id: 'color', tx: Global.ln.get('rightbar-text-color'), vr: '' }, 
-            { tp: 'TInput', id: 'color', tx: '', vr: '', ch: changeProperties }, 
+            //{ tp: 'TInput', id: 'color', tx: '', vr: '', ch: changeProperties }, 
+            { tp: 'Custom', cont: colorCont },
             { tp: 'Label', id: 'bold', tx: Global.ln.get('rightbar-text-bold'), vr: '' }, 
             { tp: 'Toggle', id: 'bold', vl: false, ch: changeProperties }, 
             { tp: 'Label', id: 'italic', tx: Global.ln.get('rightbar-text-italic'), vr: '' }, 
@@ -61,7 +73,8 @@ class TextPanel extends DropDownPanel {
                 { text: Global.ln.get('rightbar-text-aljustify'), value: 'justify' }
             ], sl: 'left', ch: changeProperties }, 
             { tp: 'Label', id: 'background', tx: Global.ln.get('rightbar-text-background'), vr: '' }, 
-            { tp: 'TInput', id: 'background', tx: '', vr: '', ch: changeProperties }
+            //{ tp: 'TInput', id: 'background', tx: '', vr: '', ch: changeProperties }
+            { tp: 'Custom', cont: bgcolorCont },
         ], 0x333333, (wd - 5));
         this.ui.containers['properties'].enabled = false;
         Global.history.propDisplay.push(this.updateValues);

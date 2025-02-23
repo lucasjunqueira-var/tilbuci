@@ -38,13 +38,25 @@ class FilterPanel extends DropDownPanel {
     public function new(wd:Float) {
         super(Global.ln.get('rightbar-filter'), wd);
         this._timer = null;
+
+        var glCont:HInterfaceContainer = this.ui.createHContainer('colorcont', 0x333333);
+        this.ui.createTInput('glcolor', '', '', glCont);
+        this.ui.createButton('glcolor', Global.ln.get('default-set'), changeProperties, glCont);
+        glCont.width = wd - 5;
+
+        var dsCont:HInterfaceContainer = this.ui.createHContainer('colorcont', 0x333333);
+        this.ui.createTInput('dscolor', '', '', dsCont);
+        this.ui.createButton('dscolor', Global.ln.get('default-set'), changeProperties, dsCont);
+        dsCont.width = wd - 5;
+
         this._content = this.ui.forge('properties', [
             { tp: 'Label', id: 'glow', tx: Global.ln.get('rightbar-filter-glow'), vr: '' }, 
             { tp: 'Toggle', id: 'glow', vl: false, ch: changeProperties }, 
             { tp: 'Label', id: 'glblur', tx: Global.ln.get('rightbar-filter-glblur'), vr: 'detail' }, 
             { tp: 'Numeric', id: 'glblur', mn: 0, mx: 100, st: 1, vl: 0, ch: changeProperties }, 
             { tp: 'Label', id: 'glcolor', tx: Global.ln.get('rightbar-filter-glcolor'), vr: 'detail' }, 
-            { tp: 'TInput', id: 'glcolor', tx: '', vr: '', ch: changeProperties }, 
+            //{ tp: 'TInput', id: 'glcolor', tx: '', vr: '', ch: changeProperties },
+            { tp: 'Custom', cont: glCont }, 
             { tp: 'Label', id: 'glstrength', tx: Global.ln.get('rightbar-filter-glstrength'), vr: 'detail' }, 
             { tp: 'Numeric', id: 'glstrength', mn: 0, mx: 100, st: 1, vl: 0, ch: changeProperties }, 
             { tp: 'Label', id: 'glalpha', tx: Global.ln.get('rightbar-filter-glalpha'), vr: 'detail' }, 
@@ -68,7 +80,8 @@ class FilterPanel extends DropDownPanel {
             { tp: 'Label', id: 'dsangle', tx: Global.ln.get('rightbar-filter-dsangle'), vr: 'detail' }, 
             { tp: 'Numeric', id: 'dsangle', mn: 0, mx: 360, st: 1, vl: 0, ch: changeProperties }, 
             { tp: 'Label', id: 'dscolor', tx: Global.ln.get('rightbar-filter-dscolor'), vr: 'detail' }, 
-            { tp: 'TInput', id: 'dscolor', tx: '', vr: '', ch: changeProperties }, 
+            //{ tp: 'TInput', id: 'dscolor', tx: '', vr: '', ch: changeProperties }, 
+            { tp: 'Custom', cont: dsCont },
             { tp: 'Label', id: 'dsalpha', tx: Global.ln.get('rightbar-filter-dsalpha'), vr: 'detail' }, 
             { tp: 'Numeric', id: 'dsalpha', mn: 0, mx: 100, st: 1, vl: 0, ch: changeProperties }, 
             { tp: 'Label', id: 'dsblurx', tx: Global.ln.get('rightbar-filter-dsblurx'), vr: 'detail' }, 
