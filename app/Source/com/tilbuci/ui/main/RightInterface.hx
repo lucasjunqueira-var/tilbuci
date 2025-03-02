@@ -31,7 +31,7 @@ class RightInterface extends ScrollContainer {
 
     private var _panels:Array<DropDownPanel> = [ ];
 
-    public function new(centerMethod:Dynamic) {
+    public function new(centerMethod:Dynamic, startWindow:Dynamic = null) {
         super();
 
         var lay:VerticalLayout = new VerticalLayout();
@@ -53,6 +53,8 @@ class RightInterface extends ScrollContainer {
         this._panels.push(new SoundPanel(200));
         this._panels.push(new FilterPanel(200));
         this._panels.push(new HistoryPanel(200, centerMethod));
+
+        this._panels[1].startWindow = startWindow;
 
         var iPanel:InstancesPanel = cast (this._panels[0]);
         var mPanel:MediaPanel = cast (this._panels[1]);

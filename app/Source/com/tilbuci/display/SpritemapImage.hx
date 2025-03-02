@@ -41,6 +41,11 @@ class SpritemapImage extends BaseImage {
     private var _loader:Loader;
 
     /**
+        warn listeners about file loading?
+    **/
+    private var _warn:Bool = true;
+
+    /**
         current frame number
     **/
     private var _current:Int = 0;
@@ -120,10 +125,23 @@ class SpritemapImage extends BaseImage {
         }
     }
 
+    public function updateFrames(fr:Int, tm:Int):Void {
+        if (this._mediaLoaded) {
+            this.frames = fr;
+            this.frtime = tm;
+            this._warn = false;
+            this.load(this._lastMedia);
+        }
+    }
+
     /**
         Media loded successfully.
     **/
     private function onOk(e:Event):Void {
+        if (this._timer != null) {
+            try { this._timer.stop(); } catch (e) { }
+            this._timer = null;
+        }
         this._mediaLoaded = true;
         this.oWidth = this._loader.content.width / this.frames;
         this.oHeight = this._loader.content.height;
@@ -137,13 +155,12 @@ class SpritemapImage extends BaseImage {
         this._loader.unload();
         this._current = 0;
         this.loadFrame();
-        this._onLoad(true);
-        if (this._timer != null) {
-            try { this._timer.stop(); } catch (e) { }
-            this._timer = null;
-        }
+        if (this._warn) this._onLoad(true);
+        
+        
         this._timer = new Timer(this.frtime);
         this._timer.run = this.nextFrame;
+        this._warn = true;
     }
 
     /**
@@ -167,6 +184,7 @@ class SpritemapImage extends BaseImage {
         Error while loading the media.
     **/
     private function onError(e:Event):Void {
+        this._warn = true;
         this._mediaLoaded = false;
         this._onLoad(false);
     }

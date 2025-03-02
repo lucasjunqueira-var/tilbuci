@@ -285,6 +285,12 @@ class TilBuciImage extends Sprite {
         return (true);
     }
 
+    public function updateFrames(fr:Int, tm:Int):Void {
+        if (this._currentType == 'spritemap') {
+            this._spritemap.updateFrames(fr, tm);
+        }
+    }
+
     /**
         Starts the internal timer for some asset types.
     **/

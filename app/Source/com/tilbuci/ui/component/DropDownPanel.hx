@@ -24,6 +24,8 @@ class DropDownPanel extends Panel {
 
     public var callbacks:Array<Dynamic> = [ ];
 
+    public var startWindow = null;
+
     private var _open:Bool = false;
 
     private var _content:FeathersControl;

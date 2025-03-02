@@ -42,8 +42,12 @@ class ActionPanel extends DropDownPanel {
 
     override public function updateContent(data:Map<String, Dynamic> = null):Void {
         if (data.exists('nm')) {
-            this._current = GlobalPlayer.area.instanceRef(data['nm']);
-            this.updateValues();
+            if (data['nm'] == '') {
+                this.clearValues();
+            } else {
+                this._current = GlobalPlayer.area.instanceRef(data['nm']);
+                this.updateValues();
+            }
         } else {
             this.clearValues();
         }

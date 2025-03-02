@@ -150,6 +150,8 @@ class WindowMediaShape extends WindowMediaBase {
 
             if (this._mode == 'asset') {
                 this.ui.buttons['btadd'].text = Global.ln.get('window-media-addshape');
+            } else if (this._mode == 'assetsingle') {
+                this.ui.buttons['btadd'].text = Global.ln.get('window-media-addshape');
             } else if (this._mode == 'newasset') {
                 this.ui.buttons['btadd'].text = Global.ln.get('window-media-addast');
             } else {
@@ -172,6 +174,11 @@ class WindowMediaShape extends WindowMediaBase {
                 // set to asset
                 this._mode = 'simple';
                 this._ac('addasset', [ 'path' => '', 'type' => this._type, 'file' => strdesc, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime), 'num' => this._filenum ]);
+                PopUpManager.removePopUp(this);
+            } else if (this._mode == 'assetsingle') {
+                // set to asset
+                this._mode = 'simple';
+                this._ac('assetsingle', [ 'path' => '', 'type' => this._type, 'file' => strdesc, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime), 'num' => this._filenum ]);
                 PopUpManager.removePopUp(this);
             } else if (this._mode == 'newasset') {
                 // add new asset

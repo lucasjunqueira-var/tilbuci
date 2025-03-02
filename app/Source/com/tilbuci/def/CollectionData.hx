@@ -74,7 +74,7 @@ class CollectionData extends DefBase {
     }
 
     /**
-        Gets a clen representation of current object.
+        Gets a clean representation of current object.
     **/
     public function toObject():Dynamic {
         var asts:Dynamic = { };
@@ -86,6 +86,26 @@ class CollectionData extends DefBase {
             assets: asts
         });
     }
+
+    public function cloneData():ColDataClone {
+        var clone:ColDataClone = {
+            name: this.name, 
+            transition: this.transition, 
+            time: this.time, 
+            assets: assets, 
+            assetOrder: assetOrder
+        };
+        return (clone);
+    }
+
+    /*typedef ColDataClone = {
+        var name:String;
+        var transition:String;
+        var time:Float;
+        var assets:Map<String, AssetData>;
+        var assetOrder:Array<String>;
+    }*/
+
 
     /**
         Releases resopurces used by the object.
@@ -125,4 +145,15 @@ class CollectionData extends DefBase {
         this._acLoad = null;
     }
 
+}
+
+/**
+    Collection data object clone.
+**/
+typedef ColDataClone = {
+    var name:String;
+    var transition:String;
+    var time:Float;
+    var assets:Map<String, AssetData>;
+    var assetOrder:Array<String>;
 }

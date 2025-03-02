@@ -738,6 +738,10 @@ class InstanceImage extends Sprite {
         this._imCurrent.seek(time);
     }
 
+    public function updateFrames(fr:Int, tm:Int):Void {
+        this._imCurrent.updateFrames(fr, tm);
+    }
+
     /**
         Fixes a property value.
         @param  prop    the property name

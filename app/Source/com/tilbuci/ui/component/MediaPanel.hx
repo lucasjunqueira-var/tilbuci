@@ -38,16 +38,17 @@ class MediaPanel extends DropDownPanel {
             { tp: 'Label', id: 'name', tx: Global.ln.get('rightbar-media-name'), vr: '' }, 
             { tp: 'TInput', id: 'name', tx: '', vr: '' }, 
             { tp: 'Label', id: 'collection', tx: Global.ln.get('rightbar-media-collection'), vr: '' }, 
-            { tp: 'Select', id: 'collection', vl: [ ], sl: null, ch: changeCol }, 
+            { tp: 'Select', id: 'collection', vl: [ ], sl: null, ch: changeCol },
+            { tp: 'Button', id: 'collection', tx: Global.ln.get('rightbar-media-collectioned'), ac: onCollection },  
             { tp: 'Label', id: 'asset', tx: Global.ln.get('rightbar-media-asset'), vr: '' }, 
             { tp: 'Select', id: 'asset', vl: [ ], sl: null }, 
+            { tp: 'Button', id: 'asset', tx: Global.ln.get('rightbar-media-asseted'), ac: onAsset }, 
             { tp: 'Label', id: 'playonload', tx: Global.ln.get('rightbar-media-playonload'), vr: '' }, 
             { tp: 'Toggle', id: 'playonload', vl: true }, 
             { tp: 'Spacer', id: 'update', ht: 5 }, 
             { tp: 'Button', id: 'update', tx: Global.ln.get('rightbar-media-update'), ac: onUpdate }, 
-            { tp: 'Spacer', id: 'update', ht: 5 }, 
-            { tp: 'Button', id: 'update', tx: Global.ln.get('rightbar-media-cache'), ac: onCache }, 
-            { tp: 'Spacer', id: 'remove', ht: 10 }, 
+            { tp: 'Spacer', id: 'cache', ht: 10 }, 
+            { tp: 'Button', id: 'cache', tx: Global.ln.get('rightbar-media-cache'), ac: onCache }, 
             { tp: 'Button', id: 'remove', tx: Global.ln.get('rightbar-media-remove'), ac: onRemove }
         ], 0x333333, (wd - 5));
         this.ui.containers['properties'].enabled = false;
@@ -56,8 +57,12 @@ class MediaPanel extends DropDownPanel {
 
     override public function updateContent(data:Map<String, Dynamic> = null):Void {
         if (data.exists('nm')) {
-            this._current = GlobalPlayer.area.instanceRef(data['nm']);
-            this.updateValues();
+            if (data['nm'] == '') {
+                this.clearValues();
+            } else {
+                this._current = GlobalPlayer.area.instanceRef(data['nm']);
+                this.updateValues();
+            }
         } else {
             this.clearValues();
         }
@@ -111,6 +116,26 @@ class MediaPanel extends DropDownPanel {
         }
     }
 
+    private function onCollection(evt:Event = null):Void {
+        if (this._current != null) {
+            this.startWindow('collectionbase', [
+                'instance' => this._current.getCurrentStr('instance'), 
+                'collection' => this._current.getCurrentStr('collection'), 
+                'asset' => this._current.getCurrentStr('asset'), 
+            ]);
+        }
+    }
+
+    private function onAsset(evt:Event = null):Void {
+        if (this._current != null) {
+            this.startWindow('assetbase', [
+                'instance' => this._current.getCurrentStr('instance'), 
+                'collection' => this._current.getCurrentStr('collection'), 
+                'asset' => this._current.getCurrentStr('asset'), 
+            ]);
+        }
+    }
+
     private function onUpdate(evt:Event = null):Void {
         if ((this.ui.inputs['name'].text == '') || (this.ui.inputs['name'].text.length < 3)) {
             Global.showMsg(Global.ln.get('rightbar-media-noid'));
@@ -143,10 +168,19 @@ class MediaPanel extends DropDownPanel {
     }
 
     private function onCache(evt:Event = null):Void {
-        if (Global.history.states.length == 0) Global.history.addState(Global.ln.get('rightbar-history-original'));
-        GlobalPlayer.area.setCurrentPrecache();
-        this.ui.toggles['playonload'].selected = false;
-        Global.history.addState(Global.ln.get('rightbar-history-cache'));
+        if (this._current.getInstName() != '') {
+            var nm:String = this._current.getInstName();
+            Global.showPopup(Global.ln.get('rightbar-media'), Global.ln.get('rightbar-media-precachecheck'), 300, 220, Global.ln.get('default-ok'), onCacheConfirm, 'confirm', Global.ln.get('default-cancel'));
+        }
+    }
+
+    private function onCacheConfirm(ok:Bool):Void {
+        if (ok) {
+            if (Global.history.states.length == 0) Global.history.addState(Global.ln.get('rightbar-history-original'));
+            GlobalPlayer.area.setCurrentPrecache();
+            this.ui.toggles['playonload'].selected = false;
+            Global.history.addState(Global.ln.get('rightbar-history-cache'));
+        }
     }
 
     private function onRemove(evt:Event = null):Void {

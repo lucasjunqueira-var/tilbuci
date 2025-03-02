@@ -391,10 +391,11 @@ class WindowCollections extends PopupWindow {
     /**
         Updates the selected collection.
     **/
-    private function onUpdateCol(evt:TriggerEvent):Void {
+    private function onUpdateCol(evt:TriggerEvent):Bool {
         if (this.ui.lists['collections'].selectedItem != null) {
             if (this.ui.inputs['coltitle'].text.length < 3) {
                 Global.showPopup(Global.ln.get('window-collection-title'), Global.ln.get('window-collection-colnameer'), 320, 180, Global.ln.get('default-ok'));
+                return (false);
             } else {
                 this._collections[this.ui.lists['collections'].selectedItem.value.id].collection.title = this.ui.inputs['coltitle'].text;
                 this._collections[this.ui.lists['collections'].selectedItem.value.id].collection.transition = this.ui.selects['coltrans'].selectedItem.value;
@@ -402,7 +403,10 @@ class WindowCollections extends PopupWindow {
                 this.ui.lists['collections'].selectedItem.text = this.ui.inputs['coltitle'].text;
                 this.ui.lists['collections'].dataProvider.updateAt(this.ui.lists['collections'].selectedIndex);
                 this._changed = true;
+                return (true);
             }
+        } else {
+            return (true);
         }
     }
 
@@ -698,7 +702,7 @@ class WindowCollections extends PopupWindow {
             case '': current = '';
             case 'loop': current = '';
             case 'next': current = '';
-            case 'previosu': current = '';
+            case 'previous': current = '';
             case 'stop': current = '';
             default: current = this._curast.action;
         }
@@ -800,10 +804,14 @@ class WindowCollections extends PopupWindow {
         Applies all changes.
     **/
     private function onApply(evt:TriggerEvent):Void {
-        if (this._changed) {
-            Global.showPopup(Global.ln.get('window-collection-title'), Global.ln.get('window-collection-colapplyok'), 320, 220, Global.ln.get('default-ok'), onApplySure, 'confirm', Global.ln.get('default-cancel'));
+        if (this.onUpdateCol(null)) {
+            if (this._changed) {
+                Global.showPopup(Global.ln.get('window-collection-title'), Global.ln.get('window-collection-colapplyok'), 320, 220, Global.ln.get('default-ok'), onApplySure, 'confirm', Global.ln.get('default-cancel'));
+            } else {
+                PopUpManager.removePopUp(this);
+            }
         } else {
-            PopUpManager.removePopUp(this);
+            // nothing to do
         }
     }
 

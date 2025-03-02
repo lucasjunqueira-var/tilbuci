@@ -131,6 +131,9 @@ class WindowMediaBase extends PopupWindow {
                 if (data['mode'] == 'asset') {
                     this._mode = 'asset';
                     this._filenum = data['num'];
+                } else if (data['mode'] == 'assetsingle') {
+                    this._mode = 'assetsingle';
+                    this._filenum = data['num'];
                 } else if (data['mode'] == 'newasset') {
                     this._mode = 'newasset';
                 } else if (data['mode'] == 'single') {
@@ -229,16 +232,17 @@ class WindowMediaBase extends PopupWindow {
                 this._mode = 'simple';
                 this._ac('addasset', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime), 'num' => this._filenum ]);
                 PopUpManager.removePopUp(this);
+            } else if (this._mode == 'assetsingle') {
+                // set to asset
+                this._mode = 'simple';
+                this._ac('assetsingle', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime), 'num' => this._filenum ]);
+                PopUpManager.removePopUp(this);
             } else if (this._mode == 'newasset') {
                 // set to asset
                 this._mode = 'simple';
                 this._ac('addnewasset', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
                 PopUpManager.removePopUp(this);
-
             } else if (this._mode == 'single') {
-
-trace ('set to asset');
-
                 // set to asset
                 this._mode = 'single';
                 this._ac('single', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
@@ -281,6 +285,8 @@ trace ('set to asset');
                 } else if (this._mode == 'newasset') {
                     this.ui.buttons['btadd'].text = Global.ln.get('window-media-addast');
                 } else if (this._mode == 'single') {
+                    this.ui.buttons['btadd'].text = Global.ln.get('window-media-addsingle');
+                } else if (this._mode == 'assetsingle') {
                     this.ui.buttons['btadd'].text = Global.ln.get('window-media-addsingle');
                 } else {
                     this.ui.buttons['btadd'].text = Global.ln.get('window-media-addstage');

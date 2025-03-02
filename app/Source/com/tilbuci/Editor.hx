@@ -7,6 +7,7 @@
  package com.tilbuci;
 
 /** HAXE **/
+import com.tilbuci.ui.window.media.WindowCollectionBase;
 import com.tilbuci.ui.window.contraptions.WindowContrMenu;
 import com.tilbuci.script.ActionInfo;
 import feathers.core.ToolTipManager;
@@ -28,6 +29,8 @@ import com.tilbuci.ui.window.media.WindowMediaSpritemap;
 import com.tilbuci.ui.window.media.WindowMediaShape;
 import com.tilbuci.ui.window.media.WindowMediaParagraph;
 import com.tilbuci.ui.window.media.WindowMediaText;
+import com.tilbuci.ui.window.media.WindowAssetBase;
+import com.tilbuci.ui.window.media.WindowCollectionBase;
 import com.tilbuci.ui.window.exchange.WindowExchangeExport;
 import com.tilbuci.ui.window.exchange.WindowExchangeImport;
 import com.tilbuci.ui.window.exchange.WindowExchangeWebsite;
@@ -384,7 +387,7 @@ class Editor extends Drawer {
         Global.history = new History();
 
         // right area
-        this._rightArea = new RightInterface(this._playerControls.centerPlayer);
+        this._rightArea = new RightInterface(this._playerControls.centerPlayer, this.startWindow);
 
         // menus
         this._menus['left-movie'] = new MenuMovie(actionMenuMovie);
@@ -561,6 +564,23 @@ class Editor extends Drawer {
                 this.opened = false;
             case 'window-notes':
                 this.showWindow('designnotes');
+        }
+    }
+
+    private function startWindow(name:String, data:Map<String, Dynamic> = null):Bool {
+        switch (name) {
+            case 'assetbase':
+                this.opened = false;
+                this.showWindow('assetbase');
+                this._windows['assetbase'].action('start', data);
+                return (true);
+            case 'collectionbase':
+                this.opened = false;
+                this.showWindow('collectionbase');
+                this._windows['collectionbase'].action('start', data);
+                return (true);
+            default:
+                return (false);
         }
     }
 
@@ -900,6 +920,82 @@ class Editor extends Drawer {
     }
 
     /**
+        Basic collection window actions.
+        @param  ac  the action id
+    **/
+    private function actionCollection(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'window-notes':
+                this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Basic asset window actions.
+        @param  ac  the action id
+    **/
+    private function actionAsset(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'window-notes':
+                this.showWindow('designnotes');
+                case 'file':
+                    switch (data['type']) {
+                        case 'picture':
+                            this.showWindow('mediapicture');
+                            this._windows['mediapicture'].action('setmode', [
+                                'mode' => 'assetsingle', 
+                                'num' => data['num']
+                            ]);
+                        case 'video':
+                            this.showWindow('mediavideo');
+                            this._windows['mediavideo'].action('setmode', [
+                                'mode' => 'assetsingle', 
+                                'num' => data['num']
+                            ]);
+                        case 'audio':
+                            this.showWindow('mediaaudio');
+                            this._windows['mediaaudio'].action('setmode', [
+                                'mode' => 'assetsingle', 
+                                'num' => data['num']
+                            ]);
+                        case 'html':
+                            this.showWindow('mediahtml');
+                            this._windows['mediahtml'].action('setmode', [
+                                'mode' => 'assetsingle', 
+                                'num' => data['num']
+                            ]);
+                        case 'spritemap':
+                            this.showWindow('mediaspritemap');
+                            this._windows['mediaspritemap'].action('setmode', [
+                                'mode' => 'assetsingle', 
+                                'num' => data['num']
+                            ]);
+                        case 'shape':
+                            this.showWindow('mediashape');
+                            this._windows['mediashape'].action('setmode', [
+                                'mode' => 'assetsingle', 
+                                'num' => data['num'], 
+                                'current' => data['current'], 
+                            ]);
+                        case 'paragraph':
+                            this.showWindow('mediaparagraph');
+                            this._windows['mediaparagraph'].action('setmode', [
+                                'mode' => 'assetsingle', 
+                                'num' => data['num'], 
+                                'current' => data['current'], 
+                            ]);
+                        case 'text':
+                            this.showWindow('mediatext');
+                            this._windows['mediatext'].action('setmode', [
+                                'mode' => 'assetsingle', 
+                                'num' => data['num'], 
+                                'current' => data['current'], 
+                            ]);
+                    }
+        }
+    }
+
+    /**
         Media windows actions.
         @param  ac  the action id
     **/
@@ -1027,6 +1123,14 @@ class Editor extends Drawer {
                 ]);
             case 'addnewasset':
                 this._windows['mediacollection'].action('addasset', [
+                    'file' => data['path'] + data['file'], 
+                    'type' => data['type'], 
+                    'name' => data['file'], 
+                    'frames' => data['frames'], 
+                    'frtime' => data['frtime']
+                ]);
+            case 'assetsingle':
+                this._windows['assetbase'].action('setfile', [
                     'file' => data['path'] + data['file'], 
                     'type' => data['type'], 
                     'name' => data['file'], 
@@ -1387,6 +1491,9 @@ class Editor extends Drawer {
                 case 'mediaparagraph': this._windows['mediaparagraph'] = new WindowMediaParagraph(actionMedia, 'simple');
                 case 'mediatext': this._windows['mediatext'] = new WindowMediaText(actionMedia, 'simple');
                 case 'mediaembed': this._windows['mediaembed'] = new WindowMediaEmbed(actionMedia);
+
+                case 'assetbase': this._windows['assetbase'] = new WindowAssetBase(actionAsset);
+                case 'collectionbase': this._windows['collectionbase'] = new WindowCollectionBase(actionCollection);
 
                 case 'assistantscene': this._windows['assistantscene'] = new AssistScene(actionAssistant);
                 case 'assistantvariables': this._windows['assistantvariables'] = new AssistVariables(actionAssistant);

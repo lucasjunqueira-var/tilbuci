@@ -77,6 +77,11 @@ class WindowMediaParagraph extends WindowMediaBase {
                 this._mode = 'simple';
                 this._ac('addasset', [ 'path' => '', 'type' => this._type, 'file' => this.ui.tareas['text'].text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime), 'num' => this._filenum ]);
                 PopUpManager.removePopUp(this);
+            } else if (this._mode == 'assetsingle') {
+                // set to asset
+                this._mode = 'simple';
+                this._ac('assetsingle', [ 'path' => '', 'type' => this._type, 'file' => this.ui.tareas['text'].text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime), 'num' => this._filenum ]);
+                PopUpManager.removePopUp(this);
             } else if (this._mode == 'newasset') {
                 // add new asset
                 this._mode = 'simple';

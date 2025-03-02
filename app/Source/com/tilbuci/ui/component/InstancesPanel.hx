@@ -36,6 +36,7 @@ class InstancesPanel extends DropDownPanel {
     private function onNone(evt:TriggerEvent):Void {
         GlobalPlayer.area.imgSelect();
         this.reloadContent();
+        for (cb in this.callbacks) cb([ 'nm' => '' ]);
     }
 
     private function onRand(evt:TriggerEvent):Void {
