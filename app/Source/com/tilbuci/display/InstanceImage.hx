@@ -259,8 +259,8 @@ class InstanceImage extends Sprite {
         this._display.mask = this._mask;
 
         // add images
-        this._im1 = new TilBuciImage(this.onLoad, nm);
-        this._im2 = new TilBuciImage(this.onLoad, nm);
+        this._im1 = new TilBuciImage(this.onLoad, nm, this.onTimedAc);
+        this._im2 = new TilBuciImage(this.onLoad, nm, this.onTimedAc);
         this._imCurrent = this._im1;
         this._imOther = this._im2;
         this._current = 1;
@@ -1016,6 +1016,14 @@ class InstanceImage extends Sprite {
             // place content
             if (this._changeAsset == '') this.place();
             this._changeAsset = '';
+        }
+    }
+
+    private function onTimedAc(time:Int):Void {
+        if (GlobalPlayer.canTrigger) {
+            if (this._data.timedAc.exists(time+'s')) {
+                GlobalPlayer.parser.run(this._data.timedAc[time+'s']);
+            }
         }
     }
 

@@ -154,20 +154,26 @@ class TilBuciImage extends Sprite {
         }
     }
 
-    public function new(ol:Dynamic, name:String) {
+    /**
+        timed acton callback
+    **/
+    private var _onTimedAc:Dynamic;
+
+    public function new(ol:Dynamic, name:String, tac:Dynamic = null) {
         super();
         this._onLoad = ol;
         this.graphics.beginFill(1, 0);
         this.graphics.drawRect(0, 0, 8, 8);
         this.graphics.endFill();
         this._name = name;
+        this._onTimedAc = tac;
 
         // add image types
         this._picture = new PictureImage(this.onLoad);
         this.addChild(this._picture);
-        this._video = new VideoImage(this.onLoad, this.onEnd);
+        this._video = new VideoImage(this.onLoad, this.onEnd, tac);
         this.addChild(this._video);
-        this._audio = new AudioImage(this.onLoad, this.onEnd);
+        this._audio = new AudioImage(this.onLoad, this.onEnd, tac);
         this.addChild(this._audio);
         this._text = new TextImage(this.onLoad);
         this.addChild(this._text);
@@ -572,6 +578,7 @@ class TilBuciImage extends Sprite {
     **/
     private function onTimer():Void {
         this._currentTime++;
+        this._onTimedAc(this._currentTime);
         if (this._currentTime >= this._totalTime) {
             this._currentTime = 0;
             if (this._useTimer) {
@@ -652,6 +659,7 @@ class TilBuciImage extends Sprite {
             this._playing = false;
         }
         this._name = null;
+        this._onTimedAc = null;
     }
 
     /**

@@ -6,6 +6,9 @@
 
  package com.tilbuci.display;
 
+/** HAXE **/
+import haxe.Timer;
+
 /** OPENFL **/
 import openfl.media.SoundChannel;
 import openfl.media.Sound;
@@ -41,12 +44,28 @@ class AudioImage extends BaseImage {
     **/
     private var _onEnd:Dynamic;
 
-    public function new(ol:Dynamic, end:Dynamic) {
+    /**
+        timer count
+    **/
+    private var _timer:Timer;
+
+    /**
+        last dispatched time
+    **/
+    private var _currentTime:Int = 0;
+
+    /**
+        timed action function
+    **/
+    private var _onTimedAc:Dynamic;
+
+    public function new(ol:Dynamic, end:Dynamic, ta:Dynamic = null) {
         super('audio', true, ol);
         this._onEnd = end;
         this._sound = new Sound();  
         this._sound.addEventListener(Event.COMPLETE, onComplete);
         this._sound.addEventListener(IOErrorEvent.IO_ERROR, onError);
+        this._onTimedAc = ta;
     }
 
     /**
@@ -127,10 +146,15 @@ class AudioImage extends BaseImage {
 			this._channel.stop();
 			this._channel = null;
 		}
+        this._onTimedAc = null;
+        if (this._timer != null) {
+            try { this._timer.stop(); } catch (e) { }
+            this._timer = null;
+        }
     }
 
     /**
-        Starts video playback.
+        Starts audio playback.
     **/
     public function play():Void {
         if (this._loaded) {
@@ -143,6 +167,13 @@ class AudioImage extends BaseImage {
             }
             this._channel = this._sound.play(pos);
             this._channel.addEventListener(Event.SOUND_COMPLETE, soundComplete);
+            if (this._timer != null) {
+                try { this._timer.stop(); } catch (e) { }
+                this._timer = null;
+            }
+            this._currentTime = 0;
+            this._timer = new Timer(1000);
+            this._timer.run = this.onTimer;
         }
     }
 
@@ -161,6 +192,23 @@ class AudioImage extends BaseImage {
     public function stop():Void {
         if (this._loaded) {
             this._channel.stop();
+            if (this._timer != null) {
+                try { this._timer.stop(); } catch (e) { }
+                this._timer = null;
+            }
+        }
+    }
+
+    /**
+        Media playback.
+    **/
+    private function onTimer():Void {
+        var tm:Int = Math.round(this._channel.position / 1000);
+        if (this._currentTime != tm) {
+            if (this._onTimedAc != null) {
+                this._currentTime = tm;
+                this._onTimedAc(tm);
+            }
         }
     }
 

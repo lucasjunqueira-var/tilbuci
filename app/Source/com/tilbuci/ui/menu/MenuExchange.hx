@@ -19,6 +19,7 @@ class MenuExchange extends DrawerMenu {
         super(ac, Global.ln.get('menu-exhange-title'));
         this.addButton('btExport', Global.ln.get('menu-exchange-export'), onExport);
         this.addButton('btWebsite', Global.ln.get('menu-exchange-site'), onWebsite);
+        this.addButton('btWebsite', Global.ln.get('menu-exchange-iframe'), onIframe);
         this.addButton('btPwa', Global.ln.get('menu-exchange-pwa'), onPwa);
         this.addButton('btPublish', Global.ln.get('menu-exchange-publish'), onPublish);
         this.addButton('btDesktop', Global.ln.get('menu-exchange-desktop'), onDesktop);
@@ -86,6 +87,13 @@ class MenuExchange extends DrawerMenu {
     **/
     private  function onWebsite(evt:TriggerEvent):Void {
         this._ac('website');
+    }
+
+    /**
+        Export current movie as an iframe.
+    **/
+    private  function onIframe(evt:TriggerEvent):Void {
+        this._ac('iframe');
     }
 
     /**

@@ -6,6 +6,8 @@
 
  package com.tilbuci.def;
 
+import com.tilbuci.statictools.StringStatic;
+
 /**
     Instance information.
 **/
@@ -35,6 +37,11 @@ class InstanceData {
         instance mouse over action
     **/
     public var actionover:String;
+
+    /**
+        timed actions
+    **/
+    public var timedAc:Map<String, String> = [ ];
 
     /**
         start playing after load?
@@ -79,6 +86,23 @@ class InstanceData {
         if (this.ok && Reflect.hasField(data, 'actionover')) {
             this.actionover = Reflect.field(data, 'actionover');
         } else this.actionover = '';
+        if (this.ok && Reflect.hasField(data, 'timedac')) {
+            var tmdac:String = Std.string(Reflect.field(data, 'timedac'));
+            if (tmdac == '') {
+                this.timedAc = [ ];
+            } else {
+                var js:Dynamic = StringStatic.jsonParse(tmdac);
+                if (js == false) {
+                    this.timedAc = [ ];
+                } else {
+                    for (tm in Reflect.fields(js)) {
+                        this.timedAc[tm] = Reflect.field(js, tm);
+                    }
+                }
+            }
+        } else {
+            this.timedAc = [ ];
+        }
     }
 
     /**
@@ -94,17 +118,22 @@ class InstanceData {
         this.horizontal = null;
         this.vertical.kill();
         this.vertical = null;
+        for (k in this.timedAc.keys()) this.timedAc.remove(k);
+        this.timedAc = null;
     }
 
     /**
         Gets a clean object description of the instance.
     **/
     public function toObject():Dynamic {
+        var tmac:String = '';
+        if (Lambda.count(this.timedAc) > 0) tmac = StringStatic.jsonStringify(this.timedAc);
         return({
             collection: this.collection, 
             asset: this.asset, 
             action: this.action, 
             actionover: this.actionover, 
+            timedac: tmac, 
             play: this.playOnLoad, 
             horizontal: this.horizontal.toObject(), 
             vertical: this.vertical.toObject()

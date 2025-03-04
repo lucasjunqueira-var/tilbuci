@@ -62,9 +62,20 @@ class VideoImage extends BaseImage {
     **/
     private var _current:String = '';
 
-    public function new(ol:Dynamic, end:Dynamic) {
+    /**
+        last time sent for timed actions
+    **/
+    private var _lasttime:Int = 0;
+
+    /**
+        method to call for timed actions
+    **/
+    private var _onTimedAc:Dynamic;
+
+    public function new(ol:Dynamic, end:Dynamic, ta:Dynamic = null) {
         super('video', true, ol);
         this._onEnd = end;
+        this._onTimedAc = ta;
 
         // adding the clickable background
         this._bg = new Shape();
@@ -183,6 +194,7 @@ class VideoImage extends BaseImage {
 		this._stream = null;
         this._onEnd = null;
         this._current = null;
+        this._onTimedAc = null;
     }
 
     /**
@@ -285,7 +297,16 @@ class VideoImage extends BaseImage {
 	 * Playstatus data received.
 	 */
 	private function playstatusEvent(data:Dynamic):Void {
-		// trace ('playstatusEvent', data);
+		//trace ('playstatusEvent', data);
+        if (this._stream.time != null) {
+            if (this._onTimedAc != null) {
+                var time:Int = Math.round(this._stream.time);
+                if (time != this._lasttime) {
+                    this._lasttime = time;
+                    this._onTimedAc(time);
+                }
+            }
+        }
 	}
 
     /**

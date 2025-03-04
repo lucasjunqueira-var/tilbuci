@@ -7,7 +7,6 @@
  package com.tilbuci;
 
 /** HAXE **/
-import com.tilbuci.ui.window.media.WindowCollectionBase;
 import com.tilbuci.ui.window.contraptions.WindowContrMenu;
 import com.tilbuci.script.ActionInfo;
 import feathers.core.ToolTipManager;
@@ -31,9 +30,11 @@ import com.tilbuci.ui.window.media.WindowMediaParagraph;
 import com.tilbuci.ui.window.media.WindowMediaText;
 import com.tilbuci.ui.window.media.WindowAssetBase;
 import com.tilbuci.ui.window.media.WindowCollectionBase;
+import com.tilbuci.ui.window.media.WindowTimedAction;
 import com.tilbuci.ui.window.exchange.WindowExchangeExport;
 import com.tilbuci.ui.window.exchange.WindowExchangeImport;
 import com.tilbuci.ui.window.exchange.WindowExchangeWebsite;
+import com.tilbuci.ui.window.exchange.WindowExchangeIframe;
 import com.tilbuci.ui.window.exchange.WindowExchangePwa;
 import com.tilbuci.ui.window.exchange.WindowExchangePublish;
 import com.tilbuci.ui.window.exchange.WindowExchangeDesktop;
@@ -579,6 +580,11 @@ class Editor extends Drawer {
                 this.showWindow('collectionbase');
                 this._windows['collectionbase'].action('start', data);
                 return (true);
+            case 'timedaction':
+                this.opened = false;
+                this.showWindow('timedaction');
+                this._windows['timedaction'].action('start', data);
+                return (true);
             default:
                 return (false);
         }
@@ -664,6 +670,9 @@ class Editor extends Drawer {
             case 'website':
                 this.opened = false;
                 this.showWindow('exchangewebsite');
+            case 'iframe':
+                this.opened = false;
+                this.showWindow('exchangeiframe');
             case 'pwa':
                 this.opened = false;
                 this.showWindow('exchangepwa');
@@ -924,6 +933,17 @@ class Editor extends Drawer {
         @param  ac  the action id
     **/
     private function actionCollection(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'window-notes':
+                this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Timed actions window actions.
+        @param  ac  the action id
+    **/
+    private function actionTimed(ac:String, data:Map<String, Dynamic> = null):Void {
         switch (ac) {
             case 'window-notes':
                 this.showWindow('designnotes');
@@ -1474,6 +1494,7 @@ class Editor extends Drawer {
                 case 'exchangeexport': this._windows['exchangeexport'] = new WindowExchangeExport(actionExchange);
                 case 'exchangeimport': this._windows['exchangeimport'] = new WindowExchangeImport(actionExchange);
                 case 'exchangewebsite': this._windows['exchangewebsite'] = new WindowExchangeWebsite(actionExchange);
+                case 'exchangeiframe': this._windows['exchangeiframe'] = new WindowExchangeIframe(actionExchange);
                 case 'exchangepwa': this._windows['exchangepwa'] = new WindowExchangePwa(actionExchange);
                 case 'exchangepub': this._windows['exchangepub'] = new WindowExchangePublish(actionExchange);
                 case 'exchangedesk': this._windows['exchangedesk'] = new WindowExchangeDesktop(actionExchange);
@@ -1494,6 +1515,7 @@ class Editor extends Drawer {
 
                 case 'assetbase': this._windows['assetbase'] = new WindowAssetBase(actionAsset);
                 case 'collectionbase': this._windows['collectionbase'] = new WindowCollectionBase(actionCollection);
+                case 'timedaction': this._windows['timedaction'] = new WindowTimedAction(actionTimed);
 
                 case 'assistantscene': this._windows['assistantscene'] = new AssistScene(actionAssistant);
                 case 'assistantvariables': this._windows['assistantvariables'] = new AssistVariables(actionAssistant);

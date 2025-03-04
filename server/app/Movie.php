@@ -1445,9 +1445,10 @@ class Movie extends BaseClass
      * @param	string	$mode	the render mode
      * @param   string    $sitemap    website base for sitemap (don't create if blank)
      * @param   string    $location    export as zip or to the sites folder?
+     * @param   bool    $iframe add and iframe.html file embed example?
 	 * @return	string|bool the path to the exported file or false on error
 	 */
-	public function exportSite($user, $movie, $mode, $sitemap, $location) {
+	public function exportSite($user, $movie, $mode, $sitemap, $location, $iframe = false) {
 		// check user: movie owner?
 		if (!is_null($this->db)) {
 			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [
@@ -1618,6 +1619,19 @@ class Movie extends BaseClass
                                 @copy('../../export/runtimes/website-dom.js', ('../../export/site-'.$movie.'/TilBuci.js'));
                             } else {
                                 @copy('../../export/runtimes/website-webgl.js', ('../../export/site-'.$movie.'/TilBuci.js'));
+                            }
+                            // iframe?
+                            if ($iframe) {
+                                $ifcontent = file_get_contents('../../export/iframe/iframe.html');
+                                $ifheight = round(((int)$this->info['screen']['small'] * 640) / (int)$this->info['screen']['big']);
+                                $ifcontent = str_replace([
+                                    '[TITLE]', 
+                                    '[HEIGHT]'
+                                ], [
+                                    $this->info['title'], 
+                                    $ifheight
+                                ], $ifcontent);
+                                file_put_contents('../../export/site-'.$movie.'/iframe.html', $ifcontent);
                             }
                             // favicon
                             if ($this->info['favicon'] != '') {

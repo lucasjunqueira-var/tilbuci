@@ -85,6 +85,9 @@ class WSMovie extends Webservice
                 case 'Movie/ExportSite':
 					$this->exportSite();
 					break;
+                case 'Movie/ExportIframe':
+					$this->exportIframe();
+					break;
                 case 'Movie/ExportPwa':
 					$this->exportPwa();
 					break;
@@ -369,6 +372,22 @@ class WSMovie extends Webservice
 		if ($this->requiredFields(['movie', 'mode', 'sitemap', 'location'])) {
 			$mv = new Movie;
             $exp = $mv->exportSite($this->user, $this->req['movie'], $this->req['mode'], $this->req['sitemap'], $this->req['location']);
+            if ($exp === false) {
+                $this->returnRequest([ 'e' => 1, 'exp' => '' ]);
+            } else {
+                $this->returnRequest([ 'e' => 0, 'exp' => $exp ]);
+            }
+		}
+	}
+    
+    /**
+	 * Exports a movie for iframe embed.
+	 */
+	private function exportIframe() {
+		// required fields received?
+		if ($this->requiredFields(['movie', 'location'])) {
+			$mv = new Movie;
+            $exp = $mv->exportSite($this->user, $this->req['movie'], 'webgl', '', $this->req['location'], true);
             if ($exp === false) {
                 $this->returnRequest([ 'e' => 1, 'exp' => '' ]);
             } else {

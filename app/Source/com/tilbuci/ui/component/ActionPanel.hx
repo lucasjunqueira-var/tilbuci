@@ -35,6 +35,7 @@ class ActionPanel extends DropDownPanel {
         this._content = this.ui.forge('properties', [
             { tp: 'Button', id: 'trigget', tx: Global.ln.get('rightbar-action-trigger'), ac: setTrigger }, 
             { tp: 'Button', id: 'over', tx: Global.ln.get('rightbar-action-over'), ac: setOver }, 
+            { tp: 'Button', id: 'timed', tx: Global.ln.get('rightbar-action-timed'), ac: setTimed }, 
         ], 0x333333, (wd - 5));
         this.ui.containers['properties'].enabled = false;
         Global.history.propDisplay.push(this.updateValues);
@@ -75,6 +76,14 @@ class ActionPanel extends DropDownPanel {
 
     private function setOver(evt:Event = null):Void {
         Global.showActionWindow(GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].actionover, onOkOver, onCancelOver);
+    }
+
+    private function setTimed(evt:Event = null):Void {
+        this.startWindow('timedaction', [
+            'instance' => this._current.getCurrentStr('instance'), 
+            'collection' => this._current.getCurrentStr('collection'), 
+            'asset' => this._current.getCurrentStr('asset'), 
+        ]);
     }
 
     private function onOk(newac:String):Void {

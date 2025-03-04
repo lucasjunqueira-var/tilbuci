@@ -120,6 +120,8 @@ class WindowAssetBase extends PopupWindow {
                         this._asset = GlobalPlayer.movie.collections[this._instance.getCurrentStr('collection')].assets[this._instance.getCurrentStr('asset')];
                         if (this._asset.ok) {
                             this._endAction = this._asset.action;
+                            this._frames = this._asset.frames;
+                            this._frtime = this._asset.frtime;
                             this.show();
                         } else {
                             Global.showMsg(Global.ln.get('window-asset-noasset'));
@@ -149,27 +151,24 @@ class WindowAssetBase extends PopupWindow {
         this._interface.addChild(this.ui.labels['name']);
         this._interface.addChild(this.ui.inputs['name']);
         this.ui.inputs['name'].text = this._asset.name;
+        this.ui.inputs['atfile'].text = this._asset.file['@1'];
 
         switch (this._asset.type) {
             case 'picture':
                 this._interface.addChild(this.ui.labels['atfile']);
                 this._interface.addChild(this.ui.hcontainers['atfile']);
-                this.ui.inputs['atfile'].text = this._asset.file['@1'];
                 this._interface.addChild(this.ui.labels['asttime']);
                 this._interface.addChild(this.ui.numerics['asttime']);
                 this.ui.numerics['asttime'].value = this._asset.time;
             case 'video':
                 this._interface.addChild(this.ui.labels['atfile']);
                 this._interface.addChild(this.ui.hcontainers['atfile']);
-                this.ui.inputs['atfile'].text = this._asset.file['@1'];
             case 'audio':
                 this._interface.addChild(this.ui.labels['atfile']);
                 this._interface.addChild(this.ui.hcontainers['atfile']);
-                this.ui.inputs['atfile'].text = this._asset.file['@1'];
             case 'html':
                 this._interface.addChild(this.ui.labels['atfile']);
                 this._interface.addChild(this.ui.hcontainers['atfile']);
-                this.ui.inputs['atfile'].text = this._asset.file['@1'];
                 this._interface.addChild(this.ui.labels['asttime']);
                 this._interface.addChild(this.ui.numerics['asttime']);
                 this.ui.numerics['asttime'].value = this._asset.time;
