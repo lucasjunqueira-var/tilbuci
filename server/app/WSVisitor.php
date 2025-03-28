@@ -467,9 +467,9 @@ class WSVisitor extends Webservice
 	 */
 	private function event() {
 		// required fields received?
-		if ($this->requiredFields(['name', 'data', 'movieid', 'sceneid', 'movietitle', 'scenetitle', 'visitor'])) {
+		if ($this->requiredFields(['name', 'data', 'movieid', 'sceneid', 'movietitle', 'scenetitle', 'visitor', 'sessionid'])) {
             if (!isset($this->req['when'])) $this->req['when'] = date('Y-m-d H:i:s');
-			$this->data->execute('INSERT INTO events (ev_when, ev_name, ev_movie, ev_moviename, ev_scene, ev_scenename, ev_visitor, ev_extra) VALUES (:wh, :nm, :mv, :mvname, :sc, :scname, :vis, :ex)', [
+			$this->data->execute('INSERT INTO events (ev_when, ev_name, ev_movie, ev_moviename, ev_scene, ev_scenename, ev_visitor, ev_extra, ev_session) VALUES (:wh, :nm, :mv, :mvname, :sc, :scname, :vis, :ex, :session)', [
                 ':wh' => $this->req['when'], 
                 ':nm' => $this->req['name'], 
                 ':mv' => $this->req['movieid'], 
@@ -478,6 +478,7 @@ class WSVisitor extends Webservice
                 ':scname' => $this->req['scenetitle'], 
                 ':vis' => $this->req['visitor'], 
                 ':ex' => $this->req['data'], 
+                ':session' => $this->req['sessionid'], 
             ]);
             $this->returnRequest([ 'e' => 0 ]);
 		}

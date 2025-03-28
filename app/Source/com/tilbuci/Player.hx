@@ -546,9 +546,6 @@ class Player extends Sprite {
         // hide mouse over
         GlobalPlayer.area.noMouseOver();
 
-        // scene start actions
-        if (GlobalPlayer.movie.scene.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.scene.acstart);
-
         // warn plugins
         for (p in GlobalPlayer.plugins) {
             if (p.active && p.ready) p.info.onNewScene(GlobalPlayer.movie.scene.title, GlobalPlayer.movie.scId, GlobalPlayer.movie.scene.keyframes.length);
@@ -585,6 +582,9 @@ class Player extends Sprite {
 
         // display scene
         GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[0], 0);
+
+        // scene start actions
+        if (GlobalPlayer.movie.scene.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.scene.acstart);
 
         // start counting fps
         if ((GlobalPlayer.mode == Player.MODE_PLAYER) && (GlobalPlayer.fps == 'calc')) {

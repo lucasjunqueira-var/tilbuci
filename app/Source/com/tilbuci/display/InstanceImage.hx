@@ -766,6 +766,7 @@ class InstanceImage extends Sprite {
     **/
     public function setText(txt:String):Void {
         this._imCurrent.setText(txt);
+        this._imOther.setText(txt);
     }
 
     /**

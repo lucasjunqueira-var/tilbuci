@@ -548,7 +548,7 @@ class Visitor extends Data
             }
             // prepare the new file
             $fname = 'events_'.date('Y-m-d_h-m-s').'.csv';
-            $content = [ 'Recorded date;Event date;Event name;Movie ID;Movie title;Scene ID;Scene title;Visitor;Additional information' ];
+            $content = [ 'Recorded date;Event date;Event name;Movie ID;Movie title;Scene ID;Scene title;Visitor;Session ID;Additional information' ];
             $cols = [ ];
             $vals = [ ];
             if ($movie != '') {
@@ -570,6 +570,7 @@ class Visitor extends Data
                     str_replace(';', ',', trim($v['ev_scene'])), 
                     str_replace(';', ',', trim($v['ev_scenename'])), 
                     ($v['ev_visitor'] == 'system' ? '' : str_replace(';', ',', trim($v['ev_visitor']))), 
+                    str_replace(';', ',', trim($v['ev_session'])), 
                     str_replace(';', ',', trim($v['ev_extra'])), 
                 ]);
             }

@@ -1515,6 +1515,7 @@ class ScriptParser {
                                 'movietitle' => GlobalPlayer.mdata.title, 
                                 'scenetitle' => GlobalPlayer.movie.scene.title, 
                                 'visitor' => GlobalPlayer.ws.user, 
+                                'sessionid' => GlobalPlayer.session, 
                             ];
                             GlobalPlayer.ws.send('Visitor/Event', this._lastEvent, onDataEvent);
                             return (true);
