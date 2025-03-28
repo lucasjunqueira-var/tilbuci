@@ -7,6 +7,7 @@
  package com.tilbuci;
 
 /** HAXE **/
+import com.tilbuci.statictools.StringStatic;
 import openfl.geom.Point;
 import openfl.events.MouseEvent;
 import openfl.events.TouchEvent;
@@ -239,6 +240,10 @@ class Player extends Sprite {
     **/
     public function new(path:String = null, mode:String = null, sOrient:String = null, nocache:Bool = true, callback:Dynamic = null) {
         super();
+
+        // session identifier
+        GlobalPlayer.session = DateTools.format(Date.now(), "%Y-%m-%d_%H:%M:%S") + '_' + StringStatic.random();
+        GlobalPlayer.session = GlobalPlayer.session.substr(0, 32);
 
         // adjust values
         if (sOrient == null) sOrient = Player.ORIENTATION_LANDSCAPE;

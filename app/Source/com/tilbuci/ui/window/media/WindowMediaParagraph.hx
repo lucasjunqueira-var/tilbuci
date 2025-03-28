@@ -43,10 +43,19 @@ class WindowMediaParagraph extends WindowMediaBase {
     **/
     override public function startInterface(evt:Event = null):Void {
         super.startInterface();
+
+        this.ui.createHContainer('addtocol');
+        this.ui.createButton('addcolast', Global.ln.get('window-media-addcolast'), onAddAsset, this.ui.hcontainers['addtocol']);
+        this.ui.createButton('addtocol', Global.ln.get('window-media-addtocol'), onAddToCol, this.ui.hcontainers['addtocol']);
+        this.ui.createSelect('addtocol', [ ], null, this.ui.hcontainers['addtocol']);
+        this.ui.createToggle('close', true, this.ui.hcontainers['addtocol']);
+        this.ui.createLabel('close', Global.ln.get('window-media-closeafter'), '', this.ui.hcontainers['addtocol']);
+
         this.addForm(Global.ln.get('window-mdparagraph-title'), this.ui.forge('leftcol', [
             { tp: 'Label', id: 'about', tx: Global.ln.get('window-mdparagraph-about'), vr: '' }, 
             { tp: 'TArea', id: 'text', tx: '', vr: '', en: true }, 
             { tp: 'Button', id: 'btadd', tx: Global.ln.get('window-mdparagraph-set'), ac: this.onOpen }, 
+            { tp: 'Custom', cont: this.ui.hcontainers['addtocol'] }
         ]));
         this.ui.tareas['text'].height = 530;
     }
@@ -57,7 +66,22 @@ class WindowMediaParagraph extends WindowMediaBase {
     override public function acStart():Void {
         this._path = '';
         this.ui.tareas['text'].text = '';
-        this.ui.tareas['text'].height = 530;
+        this.ui.hcontainers['addtocol'].setWidth(960, [ 260, 260, 260, 40, 100]);
+        var list:Array<Dynamic> = [ ];
+        for (k in GlobalPlayer.movie.collections.keys()) {
+            list.push({
+                text: GlobalPlayer.movie.collections[k].name, 
+                value: k
+            });
+        }
+        this.ui.setSelectOptions('addtocol', list);
+        if (list.length > 0) {
+            this.ui.hcontainers['addtocol'].visible = true;
+            this.ui.tareas['text'].height = 500;
+        } else {
+            this.ui.hcontainers['addtocol'].visible = false;
+            this.ui.tareas['text'].height = 530;
+        }
     }
 
     /**
@@ -95,12 +119,48 @@ class WindowMediaParagraph extends WindowMediaBase {
         }
     }
 
+    override private function onAddToCol(evt:TriggerEvent):Void {
+        if ((this.ui.tareas['text'].text != '') && (this.ui.selects['addtocol'].selectedItem != null)) {
+            this._ac('addtocol', [ 'stage' => 'true', 'col' => this.ui.selects['addtocol'].selectedItem.value, 'path' => '', 'type' => this._type, 'file' => this.ui.tareas['text'].text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
+            if (this.ui.toggles['close'].selected) {
+                PopUpManager.removePopUp(this);
+            } else {
+                this.ui.tareas['text'].text = '';
+                Global.showMsg(Global.ln.get('window-media-addedstage'));
+            }
+        }
+    }
+
+    override private function onAddAsset(evt:TriggerEvent):Void {
+        if ((this.ui.tareas['text'].text != '') && (this.ui.selects['addtocol'].selectedItem != null)) {
+            this._ac('addtocol', [ 'stage' => 'false', 'col' => this.ui.selects['addtocol'].selectedItem.value, 'path' => '', 'type' => this._type, 'file' => this.ui.tareas['text'].text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
+            if (this.ui.toggles['close'].selected) {
+                PopUpManager.removePopUp(this);
+            } else {
+                this.ui.tareas['text'].text = '';
+                Global.showMsg(Global.ln.get('window-media-addedcol'));
+            }
+        }
+    }
+
     /**
         Window custom actions.
     **/
     override public function action(ac:String, data:Map<String, Dynamic> = null):Void {
         super.action(ac, data);
         this.ui.tareas['text'].text = data['current'];
+        if ((data['mode'] == 'asset') || (data['mode'] == 'assetsingle') || (data['mode'] == 'newasset') || (data['mode'] == 'single')) {
+            this.ui.tareas['text'].height = 530;
+            this.ui.hcontainers['addtocol'].visible = false;
+        } else {
+            if (this.ui.selects['addtocol'].dataProvider.length > 0) {
+                this.ui.hcontainers['addtocol'].visible = true;
+                this.ui.tareas['text'].height = 500;
+            } else {
+                this.ui.hcontainers['addtocol'].visible = false;
+                this.ui.tareas['text'].height = 530;
+            }
+        }
     }
 
 }

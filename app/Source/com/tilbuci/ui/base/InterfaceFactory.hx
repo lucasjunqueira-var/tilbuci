@@ -697,21 +697,21 @@ class InterfaceFactory {
     **/
     public function setListSelectValue(id:String, val:Dynamic):Bool {
         if (this.lists.exists(id)) {
-            var found:Bool = false;
-            for (n in 0...this.lists[id].dataProvider.length) {
-                if (this.lists[id].dataProvider.get(n).value == val) {
-                    this.lists[id].selectedIndex = n;
-                    found = true;
-                }
-            }
-            return (found);
-        } else {
             if (val == null) {
                 this.lists[id].selectedItem = null;
                 return (true);
             } else {
-                return (false);
+                var found:Bool = false;
+                for (n in 0...this.lists[id].dataProvider.length) {
+                    if (this.lists[id].dataProvider.get(n).value == val) {
+                        this.lists[id].selectedIndex = n;
+                        found = true;
+                    }
+                }
+                return (found);
             }
+        } else {
+            return (false);
         }
     }
 

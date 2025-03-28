@@ -115,6 +115,15 @@ class WindowBlockEdit extends PopupWindow {
             { text: Global.ln.get('window-globals-runtime'), value: "$_RUNTIME", asset: 'btString' }, 
             { text: Global.ln.get('window-globals-wsserver'), value: "$_WSSERVER", asset: 'btString' }, 
             { text: Global.ln.get('window-globals-version'), value: "$_VERSION", asset: 'btString' }, 
+            { text: Global.ln.get('window-globals-session'), value: "$_SESSION", asset: 'btString' }, 
+            { text: Global.ln.get('window-globals-date'), value: "$_DATE", asset: 'btString' }, 
+            { text: Global.ln.get('window-globals-time'), value: "$_TIME", asset: 'btString' }, 
+            { text: Global.ln.get('window-globals-year'), value: "$_YEAR", asset: 'btString' }, 
+            { text: Global.ln.get('window-globals-month'), value: "$_MONTH", asset: 'btString' }, 
+            { text: Global.ln.get('window-globals-day'), value: "$_DAY", asset: 'btString' }, 
+            { text: Global.ln.get('window-globals-hour'), value: "$_HOUR", asset: 'btString' }, 
+            { text: Global.ln.get('window-globals-minute'), value: "$_MINUTE", asset: 'btString' }, 
+            { text: Global.ln.get('window-globals-second'), value: "$_SECOND", asset: 'btString' }, 
         ], null, this.ui.hcontainers['ggeneral'], false);
         this.ui.hcontainers['ggeneral'].addChild(new IDButton('ggeneral', onGeneral, Global.ln.get('window-globals-get'), Assets.getBitmapData('btCopy'), false));
         this.ui.createHContainer('ginstancep');

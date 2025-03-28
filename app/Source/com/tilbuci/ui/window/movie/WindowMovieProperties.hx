@@ -997,6 +997,8 @@ class WindowMovieProperties extends PopupWindow {
                 }
                 snar.push({ text: this.ui.inputs['snippetsname'].text, value: scrtext });
                 this.ui.setListValues('snippetslist', snar);
+                this.ui.inputs['snippetsname'].text = '';
+                this._acsnippet.setText('');
             }
         }
     }

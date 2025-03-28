@@ -55,9 +55,10 @@ class WindowCollectionsAdd extends PopupWindow {
         // create interface
         this._colint = this.ui.createColumnHolder('columns',
             this.ui.forge('leftcol', [
+                { tp: 'Label', id: 'scene', tx: Global.ln.get('window-collectionadd-colscene'), vr: Label.VARIANT_DETAIL }, 
+                { tp: 'List', id: 'scene', vl: [ ], ht: 235, sl: null, ch: this.onSceneChange },  
                 { tp: 'Label', id: 'collections', tx: Global.ln.get('window-collectionadd-cols'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'List', id: 'collections', vl: [ ], ht: 470, sl: null, ch: this.onColChange },  
-                { tp: 'Label', id: 'assets', tx: Global.ln.get('window-collectionadd-colsabout'), vr: Label.VARIANT_DETAIL },                
+                { tp: 'List', id: 'collections', vl: [ ], ht: 235, sl: null, ch: this.onColChange },  
             ]),
             this.ui.forge('rightcol', [
                 { tp: 'Label', id: 'assets', tx: Global.ln.get('window-collection-assets'), vr: Label.VARIANT_DETAIL }, 
@@ -65,6 +66,7 @@ class WindowCollectionsAdd extends PopupWindow {
                 { tp: 'Button', id: 'assetstage', tx: Global.ln.get('window-collection-assetstagenew'), ac: this.onAssetAdd }, 
             ]));
         this.addForm(Global.ln.get('window-media-file'), this._colint);
+        this.ui.setListToIcon('scene');
         this.ui.setListToIcon('collections');
         this.ui.setListToIcon('assets');
         this.ui.listDbClick('assets', this.onAssetAdd);
@@ -83,10 +85,25 @@ class WindowCollectionsAdd extends PopupWindow {
         Loads current movie collections.
     **/
     private function loadCollections():Void {
-        this.ui.lists['collections'].selectedItem = null;
+        this.ui.lists['scene'].alpha = 1;
+        this.ui.lists['collections'].alpha = 1;
+
         this.ui.lists['assets'].selectedItem = null;
-        this.ui.setListValues('collections', [ ]);
         this.ui.setListValues('assets', [ ]);
+
+        this.ui.lists['scene'].selectedItem = null;
+        var list:Array<Dynamic> = [ ];
+        for (k in GlobalPlayer.movie.collections.keys()) {
+            list.push({
+                text: GlobalPlayer.movie.collections[k].name, 
+                value: k, 
+                user: (GlobalPlayer.movie.collections[k].assetOrder.length + ' ' + Global.ln.get('window-collection-numassets'))
+            });
+        }
+        this.ui.setListValues('scene', list);
+
+        this.ui.lists['collections'].selectedItem = null;
+        this.ui.setListValues('collections', [ ]);
         Global.ws.send('Media/ListCollections', [ 'movie' => GlobalPlayer.movie.mvId ], this.onList);
     }
 
@@ -118,10 +135,33 @@ class WindowCollectionsAdd extends PopupWindow {
         A new collection was selected on the list.
     **/
     private function onColChange(evt:Event = null):Void {
+        this.ui.lists['scene'].alpha = 0.75;
+        this.ui.lists['collections'].alpha = 1;
         this.ui.lists['assets'].selectedItem = null;
         this.ui.setListValues('assets', [ ]);
         if (this.ui.lists['collections'].selectedItem != null) {
             Global.ws.send('Media/ListColAssets', [ 'uid' => this.ui.lists['collections'].selectedItem.value.uid ], this.onAssetList);
+        }
+    }
+
+    /**
+        A new collection from current scene was selected on the list.
+    **/
+    private function onSceneChange(evt:Event = null):Void {
+        this.ui.lists['scene'].alpha = 1;
+        this.ui.lists['collections'].alpha = 0.75;
+        this.ui.lists['assets'].selectedItem = null;
+        this.ui.setListValues('assets', [ ]);
+        if (this.ui.lists['scene'].selectedItem != null) {
+            var list:Array<Dynamic> = [ ];
+            for (n in GlobalPlayer.movie.collections[this.ui.lists['scene'].selectedItem.value].assetOrder) {
+                list.push({
+                    text: GlobalPlayer.movie.collections[this.ui.lists['scene'].selectedItem.value].assets[n].name, 
+                    user: Global.ln.get('menu-media-' + GlobalPlayer.movie.collections[this.ui.lists['scene'].selectedItem.value].assets[n].type), 
+                    value: { c: 's', v: n }
+                });
+            }
+            this.ui.setListValues('assets', list);
         }
     }
 
@@ -136,7 +176,7 @@ class WindowCollectionsAdd extends PopupWindow {
             if (ld.map['e'] == 0) {
                 var alist:Array<AssetInfo> = cast ld.map['list'];
                 var list = [ ];
-                for (i in alist) list.push({ text: i.name, user: Global.ln.get('menu-media-' + i.type), value: i });
+                for (i in alist) list.push({ text: i.name, user: Global.ln.get('menu-media-' + i.type), value: { c: 'm', v: i } });
                 this.ui.setListValues('assets', list);
             } else {
                 this.ui.createWarning(Global.ln.get('window-collection-title'), Global.ln.get('window-collection-nolist'), 300, 180, this.stage);
@@ -150,39 +190,46 @@ class WindowCollectionsAdd extends PopupWindow {
     **/
     private function onAssetAdd(evt:TriggerEvent):Void {
         if (this.ui.lists['assets'].selectedItem != null) {
-            var col:CollectionInfo = this.ui.lists['collections'].selectedItem.value;
-            var cdata:CollectionData = new CollectionData(col.id, null, false);
-            cdata.name = col.title;
-            cdata.transition = col.transition;
-            cdata.time = col.time;
-            for (i in 0...this.ui.lists['assets'].dataProvider.length) {
-                var ast:AssetInfo = cast this.ui.lists['assets'].dataProvider.get(i).value;
-                var adata:AssetData = 
-                cdata.assets[ast.id] = new AssetData({
-                    order: ast.order, 
-                    name: ast.name, 
-                    type: ast.type, 
-                    time: ast.time, 
-                    action: ast.action, 
-                    frames: ast.frames, 
-                    frtime: ast.frtime, 
-                    file: {
-                        '@1': ast.file1, 
-                        '@2': ast.file2, 
-                        '@3': ast.file3, 
-                        '@4': ast.file4, 
-                        '@5': ast.file5, 
-                    }
-                });
-                cdata.assetOrder.push(ast.id);
+            if (this.ui.lists['assets'].selectedItem.value.c == 's') {
+                this._ac('addinstance', [
+                    'collection' => this.ui.lists['scene'].selectedItem.value, 
+                    'asset' => this.ui.lists['assets'].selectedItem.value.v
+                ]);
+            } else {
+                var col:CollectionInfo = this.ui.lists['collections'].selectedItem.value;
+                var cdata:CollectionData = new CollectionData(col.id, null, false);
+                cdata.name = col.title;
+                cdata.transition = col.transition;
+                cdata.time = col.time;
+                for (i in 0...this.ui.lists['assets'].dataProvider.length) {
+                    var ast:AssetInfo = cast this.ui.lists['assets'].dataProvider.get(i).value.v;
+                    var adata:AssetData = 
+                    cdata.assets[ast.id] = new AssetData({
+                        order: ast.order, 
+                        name: ast.name, 
+                        type: ast.type, 
+                        time: ast.time, 
+                        action: ast.action, 
+                        frames: ast.frames, 
+                        frtime: ast.frtime, 
+                        file: {
+                            '@1': ast.file1, 
+                            '@2': ast.file2, 
+                            '@3': ast.file3, 
+                            '@4': ast.file4, 
+                            '@5': ast.file5, 
+                        }
+                    });
+                    cdata.assetOrder.push(ast.id);
+                }
+                cdata.ok = true;
+                GlobalPlayer.movie.collections[col.id] = cdata;
+                GlobalPlayer.movie.scene.collections.push(col.id);
+                this._ac('addinstance', [
+                    'collection' => col.id, 
+                    'asset' => this.ui.lists['assets'].selectedItem.value.v.id
+                ]);
             }
-            cdata.ok = true;
-            GlobalPlayer.movie.collections[col.id] = cdata;
-            GlobalPlayer.movie.scene.collections.push(col.id);
-            this._ac('addinstance', [
-                'collection' => col.id, 
-                'asset' => this.ui.lists['assets'].selectedItem.value.id
-            ]);
             PopUpManager.removePopUp(this);
         }
     }

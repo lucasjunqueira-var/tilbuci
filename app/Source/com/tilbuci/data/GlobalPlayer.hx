@@ -33,6 +33,11 @@ import com.tilbuci.player.MovieArea;
 class GlobalPlayer {
 
     /**
+        current player session identifier
+    **/
+    public static var session:String = '';
+
+    /**
         system ready?
     **/
     public static var ready:Bool = false;

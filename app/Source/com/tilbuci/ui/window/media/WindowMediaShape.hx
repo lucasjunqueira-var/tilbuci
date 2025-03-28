@@ -53,6 +53,14 @@ class WindowMediaShape extends WindowMediaBase {
     **/
     override public function startInterface(evt:Event = null):Void {
         super.startInterface();
+
+        this.ui.createHContainer('addtocol');
+        this.ui.createButton('addcolast', Global.ln.get('window-media-addcolast'), onAddAsset, this.ui.hcontainers['addtocol']);
+        this.ui.createButton('addtocol', Global.ln.get('window-media-addtocol'), onAddToCol, this.ui.hcontainers['addtocol']);
+        this.ui.createSelect('addtocol', [ ], null, this.ui.hcontainers['addtocol']);
+        this.ui.createToggle('close', true, this.ui.hcontainers['addtocol']);
+        this.ui.createLabel('close', Global.ln.get('window-media-closeafter'), '', this.ui.hcontainers['addtocol']);
+
         this._shape = new ShapeImage(onShape);
         this.addForm(Global.ln.get('window-mdshape-title'), this.ui.createColumnHolder('columns',
             this.ui.forge('leftcol', [
@@ -82,7 +90,7 @@ class WindowMediaShape extends WindowMediaBase {
                 { tp: 'Numeric', id: 'bdalpha', mn: 0, mx: 100, vl: 100, st: 1 }, 
                 { tp: 'Label', id: 'rotation', tx: Global.ln.get('window-mdshape-rotation'), vr: '' }, 
                 { tp: 'Numeric', id: 'rotation', mn: 0, mx: 359, vl: 0, st: 1 }, 
-                { tp: 'Spacer', id: 'show', ht: 20 }, 
+                //{ tp: 'Spacer', id: 'show', ht: 20 }, 
                 { tp: 'Button', id: 'show', tx: Global.ln.get('window-mdshape-show'), ac: this.onShow }, 
             ]),
             this.ui.forge('rightcol', [
@@ -91,7 +99,8 @@ class WindowMediaShape extends WindowMediaBase {
             this.ui.forge('bottom', [
                 { tp: 'Spacer', id: 'btadd', ht: 10 }, 
                 { tp: 'Button', id: 'btadd', tx: Global.ln.get('window-mdshape-show'), ac: this.onOpen }, 
-            ]), 540));
+                { tp: 'Custom', cont: this.ui.hcontainers['addtocol'] }
+            ]), 510));
         this.ui.buttons['btadd'].visible = false;
     }
 
@@ -100,8 +109,21 @@ class WindowMediaShape extends WindowMediaBase {
     **/
     override public function acStart():Void {
         this._path = '';
+        this._mode = 'simple';
         this._shape.visible = false;
         this._desc = null;
+
+        this.ui.hcontainers['addtocol'].setWidth(960, [ 260, 260, 260, 40, 100]);
+        var list:Array<Dynamic> = [ ];
+        for (k in GlobalPlayer.movie.collections.keys()) {
+            list.push({
+                text: GlobalPlayer.movie.collections[k].name, 
+                value: k
+            });
+        }
+        this.ui.setSelectOptions('addtocol', list);
+        this.ui.hcontainers['addtocol'].visible = false;
+        this.ui.buttons['btadd'].visible = false;
     }
 
     /**
@@ -142,12 +164,13 @@ class WindowMediaShape extends WindowMediaBase {
 
     private function onShape(ok:Bool):Void {
         if (ok) {
-            this._shape.width = this._shape.oWidth;
-            this._shape.height = this._shape.oHeight;
+            this._shape.width = this._shape.oWidth - 50;
+            this._shape.height = this._shape.oHeight - 50;
             this._shape.x = (500 - this._shape.width) / 2;
             this._shape.y = (500 - this._shape.height) / 2;
             this._shape.visible = true;
 
+            this.ui.hcontainers['addtocol'].visible = false;
             if (this._mode == 'asset') {
                 this.ui.buttons['btadd'].text = Global.ln.get('window-media-addshape');
             } else if (this._mode == 'assetsingle') {
@@ -156,11 +179,15 @@ class WindowMediaShape extends WindowMediaBase {
                 this.ui.buttons['btadd'].text = Global.ln.get('window-media-addast');
             } else {
                 this.ui.buttons['btadd'].text = Global.ln.get('window-media-addstage');
+                if (this.ui.selects['addtocol'].dataProvider.length > 0) {
+                    this.ui.hcontainers['addtocol'].visible = true;
+                }
             }
             this.ui.buttons['btadd'].visible = true;
         } else {
             this._desc = null;
             this.ui.buttons['btadd'].visible = false;
+            this.ui.hcontainers['addtocol'].visible = false;
         }
     }
 
@@ -193,6 +220,38 @@ class WindowMediaShape extends WindowMediaBase {
         }
     }
 
+    override private function onAddToCol(evt:TriggerEvent):Void {
+        if ((this._desc != null) && (this.ui.selects['addtocol'].selectedItem != null)) {
+            var strdesc:String = StringStatic.jsonStringify(this._desc);
+            this._ac('addtocol', [ 'stage' => 'true', 'col' => this.ui.selects['addtocol'].selectedItem.value, 'path' => '', 'type' => this._type, 'file' => strdesc, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
+            if (this.ui.toggles['close'].selected) {
+                PopUpManager.removePopUp(this);
+            } else {
+                this._shape.visible = false;
+                this._desc = null;
+                this.ui.buttons['btadd'].visible = false;
+                this.ui.hcontainers['addtocol'].visible = false;
+                Global.showMsg(Global.ln.get('window-media-addedstage'));
+            }
+        }
+    }
+
+    override private function onAddAsset(evt:TriggerEvent):Void {
+        if ((this._desc != null) && (this.ui.selects['addtocol'].selectedItem != null)) {
+            var strdesc:String = StringStatic.jsonStringify(this._desc);
+            this._ac('addtocol', [ 'stage' => 'false', 'col' => this.ui.selects['addtocol'].selectedItem.value, 'path' => '', 'type' => this._type, 'file' => strdesc, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
+            if (this.ui.toggles['close'].selected) {
+                PopUpManager.removePopUp(this);
+            } else {
+                this._shape.visible = false;
+                this._desc = null;
+                this.ui.buttons['btadd'].visible = false;
+                this.ui.hcontainers['addtocol'].visible = false;
+                Global.showMsg(Global.ln.get('window-media-addedcol'));
+            }
+        }
+    }
+
     /**
         Window custom actions.
     **/
@@ -211,7 +270,7 @@ class WindowMediaShape extends WindowMediaBase {
             this.ui.numerics['rotation'].value = this._desc.rotation;
             this._shape.load(data['current']);
             this.ui.setSelectValue('shape', this._desc.type);
-        }   
+        } 
     }
 
 }

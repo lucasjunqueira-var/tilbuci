@@ -7,6 +7,7 @@
  package com.tilbuci;
 
 /** HAXE **/
+import com.tilbuci.def.AssetData;
 import com.tilbuci.ui.window.contraptions.WindowContrMenu;
 import com.tilbuci.script.ActionInfo;
 import feathers.core.ToolTipManager;
@@ -1035,6 +1036,110 @@ class Editor extends Drawer {
                     this._player.createCollection((Global.ln.get('menu-media-text') + ' ' + Date.now().toString()), onMediaAddStage, data['file']);
                 } else {
                     this._player.createCollection(data['file'], onMediaAddStage, data['file']);
+                }
+            case 'addtocol':
+                var astname:String = 'media';
+                if (data['type'] == 'shape') {
+                    astname = Global.ln.get('menu-media-shape');
+                } else if (data['type'] == 'paragraph') {
+                    astname = Global.ln.get('menu-media-paragraph');
+                } else if (data['type'] == 'text') {
+                    astname = Global.ln.get('menu-media-text');
+                } else {
+                    astname = data['file'];
+                }
+                var idast:String = StringStatic.md5(astname).substr(0, 10);
+                while (GlobalPlayer.movie.collections[data['col']].assets.exists(idast)) {
+                    idast = StringStatic.md5(idast).substr(0, 10);
+                }
+                GlobalPlayer.movie.collections[data['col']].assets[idast] = new AssetData({
+                    name: astname, 
+                    type: data['type'], 
+                    order: Lambda.count(GlobalPlayer.movie.collections[data['col']].assets), 
+                    time: 5, 
+                    action: 'loop', 
+                    frames: Std.parseInt(data['frames']), 
+                    frtime: Std.parseInt(data['frtime']), 
+                    file: {
+                        "@1": data['path'] + data['file'], 
+                        "@2": data['path'] + data['file'], 
+                        "@3": data['path'] + data['file'], 
+                        "@4": data['path'] + data['file'], 
+                        "@5": data['path'] + data['file']
+                    }
+                });
+                GlobalPlayer.movie.collections[data['col']].assetOrder.push(idast);
+                if (data['stage'] == 'true') {
+                    var instid:String = StringStatic.md5(idast).substr(0, 10);
+                    while (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf].exists(instid)) {
+                        instid = StringStatic.md5(instid).substr(0, 10);
+                    }
+                    var ordH:Int = -1;
+                    var ordV:Int = -1;
+                    if (Lambda.count(GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf]) > 0) {
+                        for (i in GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf].keys()) {
+                            if (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][i].horizontal.order > ordH) ordH = GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][i].horizontal.order + 1;
+                            if (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][i].vertical.order > ordV) ordV = GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][i].vertical.order + 1;
+                        }
+                    } else {
+                        ordH = ordV = 0;
+                    }
+                    this._player.addInstance(instid, {
+                        collection: data['col'], 
+                        asset: idast, 
+                        action: '', 
+                        play: true, 
+                        horizontal: {
+                            order: ordH, 
+                            x: 0, 
+                            y: 0,
+                            alpha: 1, 
+                            width: 320, 
+                            height: 320, 
+                            rotation: 0, 
+                            visible: true, 
+                            color: '0xFFFFFF', 
+                            colorAlpha: 0, 
+                            volume: 1, 
+                            pan: 0, 
+                            blur: '', 
+                            dropshadow: '', 
+                            textFont: 'sans', 
+                            textSize: 20, 
+                            textColor: '0xFFFFFF', 
+                            textBold: false, 
+                            textItalic: false,
+                            textLeading: 10, 
+                            textSpacing: 0, 
+                            textBackground: '', 
+                            textAlign: 'left'
+                        }, 
+                        vertical: {
+                            order: ordV, 
+                            x: 0, 
+                            y: 0,
+                            alpha: 1, 
+                            width: 320, 
+                            height: 320, 
+                            rotation: 0, 
+                            visible: true, 
+                            color: '0xFFFFFF', 
+                            colorAlpha: 0, 
+                            volume: 1, 
+                            pan: 0, 
+                            blur: '', 
+                            dropshadow: '', 
+                            textFont: 'sans', 
+                            textSize: 20, 
+                            textColor: '0xFFFFFF', 
+                            textBold: false, 
+                            textItalic: false,
+                            textLeading: 10, 
+                            textSpacing: 0, 
+                            textBackground: '', 
+                            textAlign: 'left'
+                        }
+                    });
                 }
             case 'addcollection':
             case 'newasset':

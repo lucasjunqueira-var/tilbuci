@@ -90,12 +90,26 @@ class WindowMediaBase extends PopupWindow {
             nf.addChild(this.ui.createButton('newfolder', Global.ln.get('window-media-newfolder'), onNewFolder, null, false));
             nf.setWidth(960);
 
+            this.ui.createHContainer('colselect');
+            this.ui.createLabel('colname', Global.ln.get('window-media-colname'), '', this.ui.hcontainers['colselect']);
+            this.ui.createSelect('addtocol', [ ], null, this.ui.hcontainers['colselect']);
+            this.ui.createToggle('close', true, this.ui.hcontainers['colselect']);
+            this.ui.createLabel('close', Global.ln.get('window-media-closeafter'), '', this.ui.hcontainers['colselect']);
+
+            this.ui.createHContainer('addtocol');
+            this.ui.createButton('addcolast', Global.ln.get('window-media-addcolast'), onAddAsset, this.ui.hcontainers['addtocol']);
+            this.ui.createButton('addtocol', Global.ln.get('window-media-addtocol'), onAddToCol, this.ui.hcontainers['addtocol']);
+            this.ui.hcontainers['addtocol'].setWidth(460);
+
             // create interface
             this.addForm(Global.ln.get('window-media-file'), this.ui.createColumnHolder('columns',
             this.ui.forge('leftcol', [
                 { tp: 'Label', id: 'filestitle', tx: Global.ln.get('window-media-file'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'List', id: 'fileslist', vl: [ ], ht: 420, sl: null }, 
+                { tp: 'List', id: 'fileslist', vl: [ ], ht: 350, sl: null }, 
                 { tp: 'Button', id: 'btadd', tx: '', ac: this.onOpen }, 
+                { tp: 'Spacer', id: 'colselect', ht: 5, ln: true }, 
+                { tp: 'Custom', cont: this.ui.hcontainers['colselect'] }, 
+                { tp: 'Custom', cont: this.ui.hcontainers['addtocol'] }
             ]),
             this.ui.forge('rightcol', [
                 { tp: 'Custom', cont: this._preview }, 
@@ -149,7 +163,23 @@ class WindowMediaBase extends PopupWindow {
     **/
     override public function acStart():Void {
         this._path = '';
+        this._mode = 'simple';
         this.loadPath();
+
+        this.ui.spacers['colselect'].alpha = 0;
+        this.ui.hcontainers['addtocol'].visible = false;
+        this.ui.hcontainers['addtocol'].setWidth(460);
+        this.ui.hcontainers['colselect'].visible = false;
+        this.ui.hcontainers['colselect'].setWidth(460, [ 80, 210, 40, 100 ]);
+
+        var list:Array<Dynamic> = [ ];
+        for (k in GlobalPlayer.movie.collections.keys()) {
+            list.push({
+                text: GlobalPlayer.movie.collections[k].name, 
+                value: k
+            });
+        }
+        this.ui.setSelectOptions('addtocol', list);
     }
 
     /**
@@ -205,6 +235,50 @@ class WindowMediaBase extends PopupWindow {
             } else {
                 this.ui.createWarning(Global.ln.get('window-media-title'), Global.ln.get('window-media-nolist'), 300, 180, this.stage);
                 PopUpManager.removePopUp(this);
+            }
+        }
+    }
+
+    private function onAddToCol(evt:TriggerEvent):Void {
+        if ((this.ui.lists['fileslist'].selectedItem != null) && (this.ui.selects['addtocol'].selectedItem != null)) {
+            if (this.ui.lists['fileslist'].selectedItem.type == 'f') {
+                this._ac('addtocol', [ 'stage' => 'true', 'col' => this.ui.selects['addtocol'].selectedItem.value, 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
+                if (this.ui.toggles['close'].selected) {
+                    PopUpManager.removePopUp(this);
+                } else {
+                    this.ui.lists['fileslist'].selectedIndex = -1;
+                    this.ui.buttons['btadd'].enabled = false;
+                    this.ui.buttons['btadd'].visible = false;
+                    this.ui.buttons['btremove'].enabled = false;
+                    this.ui.buttons['btremove'].visible = false;
+                    this._preview.hide();
+                    this.ui.hcontainers['addtocol'].visible = false;
+                    this.ui.hcontainers['colselect'].visible = false;
+                    this.ui.spacers['colselect'].alpha = 0;
+                    Global.showMsg(Global.ln.get('window-media-addedstage'));
+                }
+            }
+        }
+    }
+
+    private function onAddAsset(evt:TriggerEvent):Void {
+        if ((this.ui.lists['fileslist'].selectedItem != null) && (this.ui.selects['addtocol'].selectedItem != null)) {
+            if (this.ui.lists['fileslist'].selectedItem.type == 'f') {
+                this._ac('addtocol', [ 'stage' => 'false', 'col' => this.ui.selects['addtocol'].selectedItem.value, 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
+                if (this.ui.toggles['close'].selected) {
+                    PopUpManager.removePopUp(this);
+                } else {
+                    this.ui.lists['fileslist'].selectedIndex = -1;
+                    this.ui.buttons['btadd'].enabled = false;
+                    this.ui.buttons['btadd'].visible = false;
+                    this.ui.buttons['btremove'].enabled = false;
+                    this.ui.buttons['btremove'].visible = false;
+                    this._preview.hide();
+                    this.ui.hcontainers['addtocol'].visible = false;
+                    this.ui.hcontainers['colselect'].visible = false;
+                    this.ui.spacers['colselect'].alpha = 0;
+                    Global.showMsg(Global.ln.get('window-media-addedcol'));
+                }
             }
         }
     }
@@ -274,22 +348,44 @@ class WindowMediaBase extends PopupWindow {
                 this.ui.buttons['btremove'].visible = true;
                 this.ui.buttons['btremove'].text = Global.ln.get('window-media-removedir');
                 this._preview.hide();
+                this.ui.hcontainers['addtocol'].visible = false;
+                this.ui.hcontainers['colselect'].visible = false;
+                this.ui.spacers['colselect'].alpha = 0;
             } else if (this.ui.lists['fileslist'].selectedItem.type == 'up') {
                 this.ui.buttons['btadd'].text = Global.ln.get('window-media-uplevel');
                 this.ui.buttons['btremove'].enabled = false;
                 this.ui.buttons['btremove'].visible = false;
                 this._preview.hide();
+                this.ui.hcontainers['addtocol'].visible = false;
+                this.ui.hcontainers['colselect'].visible = false;
+                this.ui.spacers['colselect'].alpha = 0;
             } else {
                 if (this._mode == 'asset') {
                     this.ui.buttons['btadd'].text = Global.ln.get('window-media-addcol') + ' @' + this._filenum;
+                    this.ui.hcontainers['addtocol'].visible = false;
+                    this.ui.hcontainers['colselect'].visible = false;
+                    this.ui.spacers['colselect'].alpha = 0;
                 } else if (this._mode == 'newasset') {
                     this.ui.buttons['btadd'].text = Global.ln.get('window-media-addast');
+                    this.ui.hcontainers['addtocol'].visible = false;
+                    this.ui.hcontainers['colselect'].visible = false;
+                    this.ui.spacers['colselect'].alpha = 0;
                 } else if (this._mode == 'single') {
                     this.ui.buttons['btadd'].text = Global.ln.get('window-media-addsingle');
+                    this.ui.hcontainers['addtocol'].visible = false;
+                    this.ui.hcontainers['colselect'].visible = false;
+                    this.ui.spacers['colselect'].alpha = 0;
                 } else if (this._mode == 'assetsingle') {
                     this.ui.buttons['btadd'].text = Global.ln.get('window-media-addsingle');
+                    this.ui.hcontainers['addtocol'].visible = false;
+                    this.ui.hcontainers['colselect'].visible = false;
+                    this.ui.spacers['colselect'].alpha = 0;
                 } else {
                     this.ui.buttons['btadd'].text = Global.ln.get('window-media-addstage');
+                    if (this.ui.selects['addtocol'].dataProvider.length > 0) {
+                        this.ui.hcontainers['colselect'].visible = this.ui.hcontainers['addtocol'].visible = true;
+                        this.ui.spacers['colselect'].alpha = 100;
+                    }
                 }
                 this.ui.buttons['btremove'].enabled = true;
                 this.ui.buttons['btremove'].visible = true;
@@ -320,6 +416,9 @@ class WindowMediaBase extends PopupWindow {
             Global.ws.send('Media/NewFolder', [ 'movie' => GlobalPlayer.movie.mvId, 'type' => this._type, 'path' => this._path, 'name' => this.ui.inputs['newfolder'].text ], this.onNewFolderReturn);
             this.ui.inputs['newfolder'].text = '';
         }
+        this.ui.hcontainers['addtocol'].visible = false;
+        this.ui.hcontainers['colselect'].visible = false;
+        this.ui.spacers['colselect'].alpha = 0;
     }
 
     /**
@@ -355,6 +454,9 @@ class WindowMediaBase extends PopupWindow {
             } else if (this.ui.lists['fileslist'].selectedItem.type == 'f') {
                 Global.ws.send('Media/DeleteFile', [ 'movie' => GlobalPlayer.movie.mvId, 'type' => this._type, 'path' => this._path, 'name' => this.ui.lists['fileslist'].selectedItem.text ], this.onRemoveFile);
             }
+            this.ui.hcontainers['addtocol'].visible = false;
+            this.ui.hcontainers['colselect'].visible = false;
+            this.ui.spacers['colselect'].alpha = 0;
         }
     }
 
@@ -372,6 +474,9 @@ class WindowMediaBase extends PopupWindow {
                 this.ui.createWarning(Global.ln.get('window-media-title'), Global.ln.get('window-media-removedirer'), 300, 180, this.stage);
             }
         }
+        this.ui.hcontainers['addtocol'].visible = false;
+        this.ui.hcontainers['colselect'].visible = false;
+        this.ui.spacers['colselect'].alpha = 0;
     }
 
     /**
@@ -396,6 +501,9 @@ class WindowMediaBase extends PopupWindow {
     private function onUpload(evt:TriggerEvent):Void {
         this._preview.onStop(null);
         Global.up.browseForMedia(onFileSelcted, this._type);
+        this.ui.hcontainers['addtocol'].visible = false;
+        this.ui.hcontainers['colselect'].visible = false;
+        this.ui.spacers['colselect'].alpha = 0;
     }
 
     /**

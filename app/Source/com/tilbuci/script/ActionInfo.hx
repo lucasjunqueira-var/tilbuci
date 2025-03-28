@@ -132,8 +132,8 @@ class ActionInfo {
                 ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-stringconcat'), a: 'string.concat', p: [
                     { t: 's', n: Global.ln.get('acinfo-stringconcat-p1'), v: '' }, 
-                    { t: 's', n: Global.ln.get('acinfo-stringconcat-p2'), v: '' }, 
-                    { t: 's', n: Global.ln.get('acinfo-stringconcat-p3'), v: '' }, 
+                    { t: '', n: Global.ln.get('acinfo-stringconcat-p2'), v: '' }, 
+                    { t: '', n: Global.ln.get('acinfo-stringconcat-p3'), v: '' }, 
                 ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-stringreplace'), a: 'string.replace', p: [
                     { t: 's', n: Global.ln.get('acinfo-stringreplace-p1'), v: '' }, 

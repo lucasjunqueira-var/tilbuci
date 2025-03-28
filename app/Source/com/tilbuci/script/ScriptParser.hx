@@ -307,7 +307,31 @@ class ScriptParser {
         @return always true
     **/
     public function concatString(name:String, str1:String, str2:String):Bool {
-        this._strings[this.parseString(name)] = this.parseString(str1) + this.parseString(str2);
+        if (str1.substr(0, 1) == '#') {
+            if (this._ints.exists(str1.substr(1)))  str1 = Std.string(this._ints[str1.substr(1)]);
+                else if (this._floats.exists(str1.substr(1))) str1 = Std.string(this._floats[str1.substr(1)]);
+                else str1 = this.parseString(str1);
+        } else if (str1.substr(0, 1) == '?') {
+            if (this._bools.exists(str1.substr(1))) {
+                if (this._bools[str1.substr(1)]) str1 = 'true';
+                    else str1 = 'false';
+            } else str1 = this.parseString(str1);
+        } else {
+            str1 = this.parseString(str1);
+        }
+        if (str2.substr(0, 1) == '#') {
+            if (this._ints.exists(str2.substr(1))) str2 = Std.string(this._ints[str2.substr(1)]);
+                else if (this._floats.exists(str2.substr(1))) str2 = Std.string(this._floats[str2.substr(1)]);
+                else str2 = this.parseString(str2);
+        } else if (str2.substr(0, 1) == '?') {
+            if (this._bools.exists(str2.substr(1))) {
+                if (this._bools[str2.substr(1)]) str2 = 'true';
+                    else str2 = 'false';
+            } else str2 = this.parseString(str2);
+        } else {
+            str2 = this.parseString(str2);
+        }
+        this._strings[this.parseString(name)] = str1 + str2;
         return (true);
     }
 
@@ -2435,6 +2459,15 @@ class ScriptParser {
                     case "$_USERNAME": return (GlobalPlayer.ws.getUser());
                     case "$_URLMOVIE": return(GlobalPlayer.base + 'app?mv=' + GlobalPlayer.movie.mvId);
                     case "$_URLSCENE": return(GlobalPlayer.base + 'app?mv=' + GlobalPlayer.movie.mvId + '&sc=' + GlobalPlayer.movie.scId);
+                    case "$_SESSION": return(GlobalPlayer.session);
+                    case "$_YEAR": return(DateTools.format(Date.now(), "%Y"));
+                    case "$_MONTH": return(DateTools.format(Date.now(), "%m"));
+                    case "$_DAY": return(DateTools.format(Date.now(), "%d"));
+                    case "$_HOUR": return(DateTools.format(Date.now(), "%H"));
+                    case "$_MINUTE": return(DateTools.format(Date.now(), "%M"));
+                    case "$_SECOND": return(DateTools.format(Date.now(), "%S"));
+                    case "$_DATE": return(DateTools.format(Date.now(), "%Y-%m-%d"));
+                    case "$_TIME": return(DateTools.format(Date.now(), "%H:%M:%S"));
                     default:
                         // look on stantard variables
                         if (this._strings.exists(str.substr(1))) {

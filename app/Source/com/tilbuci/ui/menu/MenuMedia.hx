@@ -16,9 +16,8 @@ class MenuMedia extends DrawerMenu {
     **/
     public function new(ac:Dynamic) {
         super(ac, Global.ln.get('menu-media-title'));
-        this.addButton('btCollections', Global.ln.get('menu-media-collections'), onCollections);
         this.addButton('btCollectionsAdd', Global.ln.get('menu-media-collectionsadd'), onCollectionsAdd);
-        this.addButton('btCollectionsRm', Global.ln.get('menu-media-collectionsrm'), onCollectionsRm);
+        this.ui.createSpacer('addcol', 5, false, this._holder);
         this.addButton('btAudio', Global.ln.get('menu-media-audio'), onAudio);
         this.addButton('btHtml', Global.ln.get('menu-media-html'), onHtml);
         this.addButton('btParagraph', Global.ln.get('menu-media-paragraph'), onParagraph);
@@ -27,7 +26,11 @@ class MenuMedia extends DrawerMenu {
         this.addButton('btSpritemap', Global.ln.get('menu-media-spritemap'), onSpritemap);
         //this.addButton('btText', Global.ln.get('menu-media-text'), onText);
         this.addButton('btVideo', Global.ln.get('menu-media-video'), onVideo);
+        this.ui.createSpacer('embed', 5, false, this._holder);
         this.addButton('btEmbed', Global.ln.get('menu-media-embed'), onEmbed);
+        this.ui.createSpacer('managecol', 5, false, this._holder);
+        this.addButton('btCollections', Global.ln.get('menu-media-collections'), onCollections);
+        this.addButton('btCollectionsRm', Global.ln.get('menu-media-collectionsrm'), onCollectionsRm);
     }
 
     /**
