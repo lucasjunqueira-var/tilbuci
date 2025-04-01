@@ -99,7 +99,7 @@ class WindowExchangeImport extends PopupWindow {
     **/
     private function onCheckId(evt:TriggerEvent):Void {
         this._movieid = '';
-        if (this.ui.inputs['movieid'].text.length > 3) {
+        if (this.ui.inputs['movieid'].text.length >= 3) {
             Global.ws.send('Movie/ImportID', [
                 'movie' => this.ui.inputs['movieid'].text, 
             ], onCheckIdReturn);

@@ -1502,9 +1502,27 @@ class ScriptParser {
                             GlobalPlayer.area.showStatesInput(this._acOk, this._acError);
                             return (true);
                     case 'data.event':
-                            var prData:Array<String> = [ ];
+                            var prData:Array<Dynamic> = [ ];
                             if (param.length > 1) {
-                                for (i in 1...param.length) prData.push(this.parseString(param[i]));
+                                for (i in 1...param.length) {
+                                    if (Std.string(param[i]).substr(0, 1) == '#') {
+                                        if (this._ints.exists(Std.string(param[i]).substr(1))) {
+                                            prData.push(this._ints[Std.string(param[i]).substr(1)]);
+                                        } else if (this._floats.exists(Std.string(param[i]).substr(1))) {
+                                            prData.push(this._floats[Std.string(param[i]).substr(1)]);
+                                        } else {
+                                            prData.push(this.parseString(param[i]));
+                                        }
+                                    } else if (Std.string(param[i]).substr(0, 1) == '?') {
+                                        if (this._bools.exists(Std.string(param[i]).substr(1))) {
+                                            prData.push(this._bools[Std.string(param[i]).substr(1)]);
+                                        } else {
+                                            prData.push(this.parseString(param[i]));
+                                        }
+                                    } else {
+                                        prData.push(this.parseString(param[i]));
+                                    }
+                                }
                             }
                             this._lastEvent = [
                                 'name' => this.parseString(param[0]), 

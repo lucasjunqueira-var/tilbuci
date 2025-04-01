@@ -34,6 +34,12 @@ class MediaPanel extends DropDownPanel {
 
     public function new(wd:Float) {
         super(Global.ln.get('rightbar-media'), wd);
+
+        this.ui.createHContainer('playback', 0x333333);
+        this.ui.createIconButton('play', onPlay, new Bitmap(Assets.getBitmapData('btPlay')), null, this.ui.hcontainers['playback']);
+        this.ui.createIconButton('pause', onPause, new Bitmap(Assets.getBitmapData('btPause')), null, this.ui.hcontainers['playback']);
+        this.ui.createIconButton('stop', onStop, new Bitmap(Assets.getBitmapData('btStop')), null, this.ui.hcontainers['playback']);
+
         this._content = this.ui.forge('properties', [
             { tp: 'Label', id: 'name', tx: Global.ln.get('rightbar-media-name'), vr: '' }, 
             { tp: 'TInput', id: 'name', tx: '', vr: '' }, 
@@ -49,8 +55,11 @@ class MediaPanel extends DropDownPanel {
             { tp: 'Button', id: 'update', tx: Global.ln.get('rightbar-media-update'), ac: onUpdate }, 
             { tp: 'Spacer', id: 'cache', ht: 10 }, 
             { tp: 'Button', id: 'cache', tx: Global.ln.get('rightbar-media-cache'), ac: onCache }, 
-            { tp: 'Button', id: 'remove', tx: Global.ln.get('rightbar-media-remove'), ac: onRemove }
+            { tp: 'Button', id: 'remove', tx: Global.ln.get('rightbar-media-remove'), ac: onRemove }, 
+            { tp: 'Spacer', id: 'playback', ht: 10 },
+            { tp: 'Custom', cont: this.ui.hcontainers['playback'] }
         ], 0x333333, (wd - 5));
+        this.ui.hcontainers['playback'].setWidth(Math.round(wd - 5));
         this.ui.containers['properties'].enabled = false;
         Global.history.propDisplay.push(this.updateValues);
     }
@@ -197,6 +206,31 @@ class MediaPanel extends DropDownPanel {
                 GlobalPlayer.area.imgSelect();
                 GlobalPlayer.area.removeInstance(nm);
                 this.clearValues();
+            }
+        }
+    }
+
+    private function onPlay(evt:Event = null):Void {
+        if (this._current != null) {
+            if ((this._current.currentType == 'video') || (this._current.currentType == 'audio')) {
+                this._current.play();
+            }
+        }
+    }
+
+    private function onPause(evt:Event = null):Void {
+        if (this._current != null) {
+            if ((this._current.currentType == 'video') || (this._current.currentType == 'audio')) {
+                this._current.pause();
+            }
+        }
+    }
+
+    private function onStop(evt:Event = null):Void {
+        if (this._current != null) {
+            if ((this._current.currentType == 'video') || (this._current.currentType == 'audio')) {
+                this._current.stop();
+                this._current.seek(0);
             }
         }
     }

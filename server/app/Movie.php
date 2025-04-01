@@ -18,7 +18,7 @@ class Movie extends BaseClass
 	/**
      * TilBuci expected version
      */
-    private $version = 9;
+    private $version = 11;
     
 	/**
 	 * current movie information
@@ -1260,7 +1260,7 @@ class Movie extends BaseClass
                                         } else {
                                             // strings.json
                                             if (!is_file('../movie/'.$movie.'.movie/strings.json')) {
-                                                file_put_contents('../movie/'.$movie.'.movie/strings.json', '{"default":{"sample":"sample text"}}');
+                                               file_put_contents('../movie/'.$movie.'.movie/strings.json', '{"default":{"sample":"sample text"}}');
                                             }
                                             // collections
                                             if (!is_dir('../movie/'.$movie.'.movie/collection')) {
@@ -1312,7 +1312,7 @@ class Movie extends BaseClass
                                                     if (json_last_error() == JSON_ERROR_NONE) {
                                                         $ackeyframes = [ ];
                                                         foreach ($json['ackeyframes'] as $ack) $ackeyframes[] = $ack == '' ? '' : base64_encode(gzencode($ack));
-                                                        $this->execute('INSERT INTO scenes (sc_id, sc_movie, sc_published, sc_title, sc_about, sc_image, sc_up, sc_down, sc_left, sc_right, sc_nin, sc_nout, sc_collections, sc_loop, sc_acstart, sc_ackeyframes, sc_user, sc_date) VALUES (:sc_id, :sc_movie, :sc_published, :sc_title, :sc_about, :sc_image, :sc_up, :sc_down, :sc_left, :sc_right, :sc_nin, :sc_nout, :sc_collections, :sc_loop, :sc_acstart, :sc_ackeyframes, :sc_user, :sc_date)', [
+                                                        $this->execute('INSERT INTO scenes (sc_id, sc_movie, sc_published, sc_title, sc_about, sc_image, sc_up, sc_down, sc_left, sc_right, sc_nin, sc_nout, sc_collections, sc_loop, sc_acstart, sc_ackeyframes, sc_user, sc_date, sc_static) VALUES (:sc_id, :sc_movie, :sc_published, :sc_title, :sc_about, :sc_image, :sc_up, :sc_down, :sc_left, :sc_right, :sc_nin, :sc_nout, :sc_collections, :sc_loop, :sc_acstart, :sc_ackeyframes, :sc_user, :sc_date, :sc_static)', [
                                                             ':sc_id' => $json['id'], 
                                                             ':sc_movie' => $movie, 
                                                             ':sc_published' => '1', 
@@ -1331,6 +1331,7 @@ class Movie extends BaseClass
                                                             ':sc_ackeyframes' => implode(',', $ackeyframes), 
                                                             ':sc_user' => $user, 
                                                             ':sc_date' => date('Y-m-d H:i:s'), 
+                                                            ':sc_static' => (isset($json['staticsc']) ? ($json['staticsc'] === true ? '1' : '0') : '0'), 
                                                         ]);
                                                         $sceneid = $this->insertID();
                                                         $kforder = 0;
@@ -1341,16 +1342,18 @@ class Movie extends BaseClass
                                                             ]);
                                                             $kfid = $this->insertID();
                                                             foreach ($kf as $kin => $vin) {
-                                                                $this->execute('INSERT INTO instances (in_keyframe, in_name, in_collection, in_asset, in_action, in_play) VALUES (:in_keyframe, :in_name, :in_collection, :in_asset, :in_action, :in_play)', [
+                                                                $this->execute('INSERT INTO instances (in_keyframe, in_name, in_collection, in_asset, in_action, in_play, in_actionover, in_timedac) VALUES (:in_keyframe, :in_name, :in_collection, :in_asset, :in_action, :in_play, :in_actionover, :in_timedac)', [
                                                                     ':in_keyframe' => $kfid, 
                                                                     ':in_name' => $kin, 
                                                                     ':in_collection' => $vin['collection'], 
                                                                     ':in_asset' => $vin['asset'], 
                                                                     ':in_action' => $vin['action'] == '' ? '' : base64_encode(gzencode($vin['action'])), 
                                                                     ':in_play' => $vin['play'] == true ? '1' : '0', 
+                                                                    ':in_actionover' => (isset($vin['actionover']) ? ($vin['actionover'] == '' ? '' : base64_encode(gzencode($vin['actionover']))) : ''), 
+                                                                    ':in_timedac' => (isset($vin['timedac']) ? ($vin['timedac'] == '' ? '' : base64_encode(gzencode($vin['timedac']))) : ''), 
                                                                 ]);
                                                                 $inid = $this->insertID();
-                                                                $this->execute('INSERT INTO instancedesc (id_instance, id_position, id_order, id_x, id_y, id_alpha, id_width, id_height, id_rotation, id_visible, id_color, id_coloralpha, id_volume, id_pan, id_blur, id_dropshadow, id_textfont, id_textsize, id_textcolor, id_textbold, id_textitalic, id_textleading, id_textspacing, id_textbackground, id_textalign) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign)', [
+                                                                $this->execute('INSERT INTO instancedesc (id_instance, id_position, id_order, id_x, id_y, id_alpha, id_width, id_height, id_rotation, id_visible, id_color, id_coloralpha, id_volume, id_pan, id_blur, id_dropshadow, id_textfont, id_textsize, id_textcolor, id_textbold, id_textitalic, id_textleading, id_textspacing, id_textbackground, id_textalign, id_glow, id_blend) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign, :glow, :blend)', [
                                                                     ':instance' => $inid, 
                                                                     ':position' => 'h', 
                                                                     ':order' => $vin['horizontal']['order'], 
@@ -1376,8 +1379,10 @@ class Movie extends BaseClass
                                                                     ':textspacing' => $vin['horizontal']['textSpacing'], 
                                                                     ':textbackground' => $vin['horizontal']['textBackground'], 
                                                                     ':textalign' => $vin['horizontal']['textAlign'], 
+                                                                    ':glow' => (isset($vin['horizontal']['glow']) ? $vin['horizontal']['glow'] : ''), 
+                                                                    ':blend' => (isset($vin['horizontal']['blend']) ? $vin['horizontal']['blend'] : ''), 
                                                                 ]);
-                                                                $this->execute('INSERT INTO instancedesc (id_instance, id_position, id_order, id_x, id_y, id_alpha, id_width, id_height, id_rotation, id_visible, id_color, id_coloralpha, id_volume, id_pan, id_blur, id_dropshadow, id_textfont, id_textsize, id_textcolor, id_textbold, id_textitalic, id_textleading, id_textspacing, id_textbackground, id_textalign) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign)', [
+                                                                $this->execute('INSERT INTO instancedesc (id_instance, id_position, id_order, id_x, id_y, id_alpha, id_width, id_height, id_rotation, id_visible, id_color, id_coloralpha, id_volume, id_pan, id_blur, id_dropshadow, id_textfont, id_textsize, id_textcolor, id_textbold, id_textitalic, id_textleading, id_textspacing, id_textbackground, id_textalign, id_glow, id_blend) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign, :glow, :blend)', [
                                                                     ':instance' => $inid, 
                                                                     ':position' => 'v', 
                                                                     ':order' => $vin['vertical']['order'], 
@@ -1403,6 +1408,8 @@ class Movie extends BaseClass
                                                                     ':textspacing' => $vin['vertical']['textSpacing'], 
                                                                     ':textbackground' => $vin['vertical']['textBackground'], 
                                                                     ':textalign' => $vin['vertical']['textAlign'], 
+                                                                    ':glow' => (isset($vin['horizontal']['glow']) ? $vin['horizontal']['glow'] : ''), 
+                                                                    ':blend' => (isset($vin['horizontal']['blend']) ? $vin['horizontal']['blend'] : ''), 
                                                                 ]);
                                                             }
                                                             $kforder++;

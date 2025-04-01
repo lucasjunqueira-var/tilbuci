@@ -814,7 +814,6 @@ class InstanceImage extends Sprite {
     **/
     private function onLoad(ok:Bool):Void {
         if (ok) {
-
             // setting image size
             this._im1.width = this._im2.width = (GlobalPlayer.mdata.screen.big / 2) * GlobalPlayer.multiply;
             this._im1.height = this._im2.height = (GlobalPlayer.mdata.screen.big / 2) * GlobalPlayer.multiply;
@@ -831,8 +830,6 @@ class InstanceImage extends Sprite {
                 this._imOther = this._im2;
             }
             // content transition
-            //var curW:Float = this.width;
-            //var curH:Float = this.height;
             Actuate.stop(this._imCurrent);
             Actuate.stop(this._imOther);
             var trans:String = GlobalPlayer.movie.collections[this._data.collection].transition;

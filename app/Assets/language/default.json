@@ -773,7 +773,7 @@
 	"window-exchexport-about": "Exported movies are saved as ZIP files that you can download and import on other TilBuci installations or use on your own project. Notice that this process may take some time. If you are sure you want to export the current movie, click the button below. After creating the ZIP file, the download will automatically start.", 
 	"window-exchexport-button": "Export the current movie", 
 	"window-exchexport-error": "Error while exporting your movie.", 
-	"window-exchexport-ok": "Your movie was exported. Please wait for the download to begin. You can also download the zip file from  the export folder of your TulBuci installation server.", 
+	"window-exchexport-ok": "Your movie was exported. Please wait for the download to begin. You can also download the zip file from  the export folder of your TilBuci installation server.", 
 	
 	"window-exchimport-title": "Movie import",
 	"window-exchimport-aboutid": "To begin the movie import process, please provide a movie ID (you may use the same one of the exported movie, but that is not required).",
@@ -830,7 +830,7 @@
 	"window-exchpwa-nolang": "You must provide a valid language code like en-US or pt-BR.",
 	"window-exchpwa-nourl": "Pelase provide an access url starting with https://",
 	"window-exchpwa-error": "Error while exporting your PWA application.", 
-	"window-exchpwa-ok": "Your PWA application was exported. Please wait for the download to begin. You can also download the zip file from  the export folder of your TulBuci installation server.", 
+	"window-exchpwa-ok": "Your PWA application was exported. Please wait for the download to begin. You can also download the zip file from  the export folder of your TilBuci installation server.", 
 	"window-exchpwa-location": "Export to (your installation must run from HTTPS to enable the /pwa export option)",
 	"window-exchpwa-locsite": "/pwa folder",
 	"window-exchpwa-loczip": "zip file",
@@ -840,7 +840,7 @@
 	"window-exchpub-about": "You can export your creation for publishing on services like itch.io or Game Jolt. Just click the button below to export a zip file. At the services, include your creation as an HTML project. You may need to allow the service domain to communicate with this TilBuci installation to use online features like login or save states (just go to Visitors left menu and look for the CORS tab - itch.io and gamejolt.com are automatically enabled).",
 	"window-exchpub-button": "Export the movie",
 	"window-exchpub-error": "Error while exporting your movie. Please try again.",
-	"window-exchpub-ok": "Your movie was exported. Please wait for the download to begin. You can also download the zip file from  the export folder of your TulBuci installation server.", 
+	"window-exchpub-ok": "Your movie was exported. Please wait for the download to begin. You can also download the zip file from  the export folder of your TilBuci installation server.", 
 	
 	"window-exchdesk-title": "Save movie as a desktop app",
 	"window-exchdesk-about": "You can export your movie as an ElectronJS project to create a desktop application for Windows, Linux or macOS systems, just fill the form values. You can use the system.quit action to close yout application - this is important if you are creating a fullscreen or kiosk application. After the project is creted, TilBuci will start downloading a zip file. Please check out the included readme.txt file for further instructions. Desktop applications require some movie information like the icon, the author and a description.",
@@ -878,7 +878,7 @@
 	"window-exchcord-aboutcord": "The mobile apps are created using Apache Cordova.", 
 	"window-exchcord-buttoncord": "Visit the Apache Cordova site", 
 	"window-exchcord-error": "Error while exporting your project. Please try again.",
-	"window-exchcord-ok": "Your project was exported. Please wait for the download to begin. You can also download the zip file from the export folder of your TulBuci installation server.", 
+	"window-exchcord-ok": "Your project was exported. Please wait for the download to begin. You can also download the zip file from the export folder of your TilBuci installation server.", 
 	
 	"window-media-file": "Files",
 	"window-media-preview": "Preview",

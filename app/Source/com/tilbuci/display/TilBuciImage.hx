@@ -162,7 +162,7 @@ class TilBuciImage extends Sprite {
     public function new(ol:Dynamic, name:String, tac:Dynamic = null) {
         super();
         this._onLoad = ol;
-        this.graphics.beginFill(1, 0);
+        this.graphics.beginFill(0, 0);
         this.graphics.drawRect(0, 0, 8, 8);
         this.graphics.endFill();
         this._name = name;

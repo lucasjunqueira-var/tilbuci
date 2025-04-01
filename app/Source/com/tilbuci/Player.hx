@@ -513,7 +513,7 @@ class Player extends Sprite {
                 }
             }
             // movie start actions
-            if (GlobalPlayer.mode == Player.MODE_PLAYER) if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);
+            if (GlobalPlayer.mode != Player.MODE_EDITOR) if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);
             // warn plugins
             //if (GlobalPlayer.mode == Player.MODE_PLAYER) for (p in GlobalPlayer.plugins) {
             if (true) for (p in GlobalPlayer.plugins) {
@@ -584,7 +584,7 @@ class Player extends Sprite {
         GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[0], 0);
 
         // scene start actions
-        if (GlobalPlayer.movie.scene.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.scene.acstart);
+        if ((GlobalPlayer.movie.scene.acstart != '') && (GlobalPlayer.mode != Player.MODE_EDITOR)) GlobalPlayer.parser.run(GlobalPlayer.movie.scene.acstart);
 
         // start counting fps
         if ((GlobalPlayer.mode == Player.MODE_PLAYER) && (GlobalPlayer.fps == 'calc')) {
