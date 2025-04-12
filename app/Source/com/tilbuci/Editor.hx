@@ -9,6 +9,7 @@
 /** HAXE **/
 import com.tilbuci.def.AssetData;
 import com.tilbuci.ui.window.contraptions.WindowContrMenu;
+import com.tilbuci.ui.window.contraptions.WindowContrCover;
 import com.tilbuci.script.ActionInfo;
 import feathers.core.ToolTipManager;
 import com.tilbuci.script.AssistVariables;
@@ -649,6 +650,9 @@ class Editor extends Drawer {
             case 'menus':
                 this.opened = false;
                 this.showWindow('menus');
+            case 'cover':
+                this.opened = false;
+                this.showWindow('cover');
             case 'menu-close':
                 this.opened = false;
             case 'window-notes':
@@ -742,7 +746,7 @@ class Editor extends Drawer {
                 this.opened = false;
             case 'menubrowseimgbg':
                 Global.temp['Media/Single'] = [
-                    'type' => '´picture', 
+                    'type' => 'picture', 
                     'call' => 'menubrowseimgbg'
                 ];
                 this.showWindow('mediapicture');
@@ -751,17 +755,39 @@ class Editor extends Drawer {
                 ]);
             case 'menubrowseimgbt':
                 Global.temp['Media/Single'] = [
-                    'type' => '´picture', 
+                    'type' => 'picture', 
                     'call' => 'menubrowseimgbt'
                 ];
                 this.showWindow('mediapicture');
                 this._windows['mediapicture'].action('setmode', [
                     'mode' => 'single', 
                 ]);
-            case 'menubrowseimgsl':
+            case 'window-notes':
+                this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Contraption cover actions.
+        @param  ac  the action id
+    **/
+    private function actionWindowContrCover(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+            case 'landscape':
                 Global.temp['Media/Single'] = [
-                    'type' => '´picture', 
-                    'call' => 'menubrowseimgsl'
+                    'type' => 'picture', 
+                    'call' => 'landscapecover'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'portrait':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'portraitcover'
                 ];
                 this.showWindow('mediapicture');
                 this._windows['mediapicture'].action('setmode', [
@@ -828,7 +854,7 @@ class Editor extends Drawer {
                 if (GlobalPlayer.movie.mvId != '') GlobalPlayer.movie.loadScene(null, data['id']);
             case 'browsesceneimage':
                 Global.temp['Media/Single'] = [
-                    'type' => '´picture', 
+                    'type' => 'picture', 
                     'call' => 'browsesceneimage'
                 ];
                 this.showWindow('mediapicture');
@@ -850,6 +876,15 @@ class Editor extends Drawer {
                 this.opened = false;
             case 'window-notes':
                 this.showWindow('designnotes');
+            case 'browsecordovaicon':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'browsecordovaicon'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
         }
     }
 
@@ -1303,8 +1338,20 @@ class Editor extends Drawer {
                                 'type' => data['type'], 
                                 'name' => data['file'], 
                             ]);
-                        case 'menubrowseimgsl':
-                            this._windows['menus'].action('menubrowseimgsl', [
+                        case 'browsecordovaicon':
+                            this._windows['exchangecord'].action('browsecordovaicon', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'landscapecover':
+                            this._windows['cover'].action('landscape', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'portraitcover':
+                            this._windows['cover'].action('portrait', [
                                 'file' => data['path'] + data['file'], 
                                 'type' => data['type'], 
                                 'name' => data['file'], 
@@ -1631,6 +1678,7 @@ class Editor extends Drawer {
                 case 'assistantcontraptions': this._windows['assistantcontraptions'] = new AssistContraptions(actionAssistant);
 
                 case 'menus': this._windows['menus'] = new WindowContrMenu(actionWindowContrMenu);
+                case 'cover': this._windows['cover'] = new WindowContrCover(actionWindowContrCover);
 
                 case 'visitors': this._windows['visitors'] = new WindowVisitors(actionWindowVisitors, this.build);
                 case 'designnotes': this._windows['designnotes'] = new WindowNotes(actionWindowNotes);

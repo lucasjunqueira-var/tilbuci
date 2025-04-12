@@ -36,7 +36,7 @@ class WindowContrMenu extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-contrmenu-title'), 1000, 640, false, true, true);
+        super(ac, Global.ln.get('window-contrmenu-title'), 1000, 510, false, true, true);
     }
 
     /**
@@ -56,30 +56,21 @@ class WindowContrMenu extends PopupWindow {
         this.ui.createIconButton('imgimgbtdel', this.acImgbtdel, new Bitmap(Assets.getBitmapData('btDel')), this.ui.hcontainers['imgbt'], false);
         this.ui.inputs['imgbt'].enabled = false;
         this.ui.hcontainers['imgbt'].setWidth(460, [350, 50, 50]);
-        this.ui.createHContainer('imgsl');
-        this.ui.createTInput('imgsl', '', '', this.ui.hcontainers['imgsl'], false);
-        this.ui.createIconButton('imgsl', this.acImgsl, new Bitmap(Assets.getBitmapData('btOpenfile')), this.ui.hcontainers['imgsl'], false);
-        this.ui.createIconButton('imgsldel', this.acImgsldel, new Bitmap(Assets.getBitmapData('btDel')), this.ui.hcontainers['imgsl'], false);
-        this.ui.inputs['imgsl'].enabled = false;
-        this.ui.hcontainers['imgsl'].setWidth(460, [350, 50, 50]);
 
         // creating columns
         this.addForm(Global.ln.get('window-kfmanage-title'), this.ui.createColumnHolder('columns', 
             this.ui.forge('leftcol', [
                 { tp: 'Label', id: 'registered', tx: Global.ln.get('window-contrmenu-registered'), vr: '' }, 
-                { tp: 'List', id: 'registered', vl: [ ], sl: null, ht: 445 }, 
+                { tp: 'List', id: 'registered', vl: [ ], sl: null, ht: 200 }, 
                 { tp: 'Button', id: 'load', tx: Global.ln.get('window-contrmenu-load'), ac: loadMenu }, 
                 { tp: 'Button', id: 'remove', tx: Global.ln.get('window-contrmenu-remove'), ac: removeMenu },
+                { tp: 'Spacer', id: 'add', ht: 15, ln: true }, 
+                { tp: 'Label', id: 'name', tx: Global.ln.get('window-contrmenu-name'), vr: 'detail' }, 
+                { tp: 'TInput', id: 'name', tx: '', vr: '' }, 
+                { tp: 'Button', id: 'add', tx: Global.ln.get('window-contrmenu-add'), ac: addMenu },
             ]), 
             this.ui.forge('rightcol', [
                 { tp: 'Label', id: 'properties', tx: Global.ln.get('window-contrmenu-properties'), vr: '' }, 
-                { tp: 'Label', id: 'name', tx: Global.ln.get('window-contrmenu-name'), vr: 'detail' }, 
-                { tp: 'TInput', id: 'name', tx: '', vr: '' },  
-                /*{ tp: 'Label', id: 'mode', tx: Global.ln.get('window-contrmenu-mode'), vr: 'detail' }, 
-                { tp: 'Select', id: 'mode', vl: [
-                    { text: Global.ln.get('window-contrmenu-modev'), value: 'v' }, 
-                    { text: Global.ln.get('window-contrmenu-modeh'), value: 'h' }, 
-                ], sl: null }, */
                 { tp: 'Label', id: 'font', tx: Global.ln.get('window-contrmenu-font'), vr: 'detail' }, 
                 { tp: 'Select', id: 'font', vl: [ ], sl: null }, 
                 { tp: 'Label', id: 'fontsize', tx: Global.ln.get('window-contrmenu-fontsize'), vr: 'detail' },
@@ -93,16 +84,12 @@ class WindowContrMenu extends PopupWindow {
                 { tp: 'Label', id: 'imgbg', tx: Global.ln.get('window-contrmenu-imgbg'), vr: 'detail' },
                 { tp: 'Custom', cont: this.ui.hcontainers['imgbg'] }, 
                 { tp: 'Label', id: 'imgbt', tx: Global.ln.get('window-contrmenu-imgbt'), vr: 'detail' },
-                { tp: 'Custom', cont: this.ui.hcontainers['imgbt'] }, 
-                { tp: 'Label', id: 'imgsl', tx: Global.ln.get('window-contrmenu-imgsl'), vr: 'detail' },
-                { tp: 'Custom', cont: this.ui.hcontainers['imgsl'] }, 
-                { tp: 'Spacer', id: 'add', ht: 8, ln: false }, 
-                { tp: 'Button', id: 'add', tx: Global.ln.get('window-contrmenu-add'), ac: addMenu },
+                { tp: 'Custom', cont: this.ui.hcontainers['imgbt'] },               
             ]),
             this.ui.forge('bottom', [
                 { tp: 'Button', id: 'save', tx: Global.ln.get('window-contrmenu-save'), ac: saveMenu },
             ])
-            , 550));
+            , 410));
             this.ui.listDbClick('registered', this.loadMenu);
             super.startInterface();
     }
@@ -144,7 +131,6 @@ class WindowContrMenu extends PopupWindow {
         this.ui.numerics['fontsize'].value = 20;
         this.ui.inputs['imgbg'].text = '';
         this.ui.inputs['imgbt'].text = '';
-        this.ui.inputs['imgsl'].text = '';
     }
 
     private function loadMenu(evt:Event):Void {
@@ -159,7 +145,6 @@ class WindowContrMenu extends PopupWindow {
                 this.ui.numerics['fontsize'].value = Math.round(this._list[this.ui.lists['registered'].selectedItem.value].fontsize);
                 this.ui.inputs['imgbg'].text = this._list[this.ui.lists['registered'].selectedItem.value].background;
                 this.ui.inputs['imgbt'].text = this._list[this.ui.lists['registered'].selectedItem.value].buton;
-                this.ui.inputs['imgsl'].text = this._list[this.ui.lists['registered'].selectedItem.value].selected;
             }
         }
     }
@@ -173,8 +158,6 @@ class WindowContrMenu extends PopupWindow {
                 this.ui.inputs['imgbg'].text = data['file'];
             case 'menubrowseimgbt':
                 this.ui.inputs['imgbt'].text = data['file'];
-            case 'menubrowseimgsl':
-                this.ui.inputs['imgsl'].text = data['file'];
         }
     }
 
@@ -222,7 +205,6 @@ class WindowContrMenu extends PopupWindow {
                     fontsize: this.ui.numerics['fontsize'].value, 
                     background: this.ui.inputs['imgbg'].text, 
                     buton: this.ui.inputs['imgbt'].text, 
-                    selected: this.ui.inputs['imgsl'].text, 
                     bgcolor: StringStatic.colorHex(this.ui.inputs['cover'].text, '#000000'), 
                     bgalpha: (this.ui.numerics['coveralpha'].value / 100), 
                 });
@@ -250,14 +232,6 @@ class WindowContrMenu extends PopupWindow {
 
     private function acImgbtdel(evt:Event):Void {
         this.ui.inputs['imgbt'].text = '';
-    }
-
-    private function acImgsl(evt:Event):Void {
-        this._ac('menubrowseimgsl');
-    }
-
-    private function acImgsldel(evt:Event):Void {
-        this.ui.inputs['imgsl'].text = '';
     }
 
     private function onSaveReturn(ok:Bool, ld:DataLoader):Void {

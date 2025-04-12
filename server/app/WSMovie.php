@@ -449,9 +449,9 @@ class WSMovie extends Webservice
 	 */
 	private function exportCordova() {
 		// required fields received?
-		if ($this->requiredFields(['movie', 'mode', 'appid', 'appsite', 'appauthor', 'appemail', 'applicense'])) {
+		if ($this->requiredFields(['movie', 'mode', 'appid', 'appsite', 'appauthor', 'appemail', 'applicense', 'fullscr', 'icon'])) {
 			$mv = new Movie;
-            $exp = $mv->exportCordova($this->user, $this->req['movie'], $this->req['mode'], $this->req['appid'], $this->req['appsite'], $this->req['appauthor'], $this->req['appemail'], $this->req['applicense']);
+            $exp = $mv->exportCordova($this->user, $this->req['movie'], $this->req['mode'], $this->req['appid'], $this->req['appsite'], $this->req['appauthor'], $this->req['appemail'], $this->req['applicense'], $this->req['fullscr'], $this->req['icon']);
             if ($exp === false) {
                 $this->returnRequest([ 'e' => 1, 'exp' => '' ]);
             } else {

@@ -7,6 +7,8 @@
  package com.tilbuci.contraptions;
 
 /** OPENFL **/
+import openfl.filters.GlowFilter;
+import com.tilbuci.data.GlobalPlayer;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
 import openfl.text.TextFormat;
@@ -19,25 +21,19 @@ class ContraptionButton extends Sprite {
 
     private var _img:PictureImage;
 
-    private var _over:PictureImage;
-
     private var _text:TextField;
 
     private var _value:String;
 
     private var _ac:Dynamic;
 
-    public function new(val:String, action:Dynamic, image:String, text:String, font:String, ftsize:Int, ftcolor:Int, over:String = null) {
+    public function new(val:String, action:Dynamic, image:String, text:String, font:String, ftsize:Int, ftcolor:Int) {
         super();
 
         this._value = val;
         this._ac = action;
 
-        if ((over != null) && (over != '')) {
-            this._over = new PictureImage();
-            this._over.load(over);
-            this.addChild(this._over);
-            this._over.visible = false;
+        if ((GlobalPlayer.mdata.highlightInt != null) && !GlobalPlayer.isMobile()) {
             this.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
             this.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
         }
@@ -70,10 +66,6 @@ class ContraptionButton extends Sprite {
         this._img.kill();
         this._img = null;
         this._text = null;
-        if (this._over != null) {
-            this._over.kill();
-            this._over = null;
-        }
         this._value = null;
         this._ac = null;
     }
@@ -88,18 +80,17 @@ class ContraptionButton extends Sprite {
     }
 
     private function onMouseOver(evt:Event):Void {
-        this._over.width = this._img.width;
-        this._over.height = this._img.height;
-        this._img.visible = false;
-        this._over.visible = true;
+        this.filters = [
+            new GlowFilter(GlobalPlayer.mdata.highlightInt, 1, 4, 4, 255, 1, true)
+        ];
     }
 
     private function onMouseOut(evt:Event):Void {
-        this._img.visible = true;
-        this._over.visible = false;
+        this.filters = [ ];
     }
 
     private function onClick(evt:Event):Void {
+        this.filters = [ ];
         this._ac(this._value);
     }
 

@@ -17,6 +17,7 @@ class MenuContraptions extends DrawerMenu {
     **/
     public function new(ac:Dynamic) {
         super(ac, Global.ln.get('menu-contraptions-title'));
+        this.addButton('btCover', Global.ln.get('menu-contraptions-cover'), onCover);
         this.addButton('btMenus', Global.ln.get('menu-contraptions-menus'), onMenus);
     }
 
@@ -27,10 +28,14 @@ class MenuContraptions extends DrawerMenu {
         super.onShow();
         if ((GlobalPlayer.movie.mvId == '') || (Global.ws.level > 50))  {
             this.ui.buttons['btMenus'].enabled = false;
+            this.ui.buttons['btCover'].enabled = false;
             this.ui.buttons['btMenus'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
+            this.ui.buttons['btCover'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
         } else {
             this.ui.buttons['btMenus'].enabled = true;
             this.ui.buttons['btMenus'].toolTip = null;
+            this.ui.buttons['btCover'].enabled = true;
+            this.ui.buttons['btCover'].toolTip = null;
         }
     }
 
@@ -46,6 +51,13 @@ class MenuContraptions extends DrawerMenu {
     **/
     private  function onMenus(evt:TriggerEvent):Void {
         this._ac('menus');
+    }
+
+    /**
+        Cover
+    **/
+    private  function onCover(evt:TriggerEvent):Void {
+        this._ac('cover');
     }
 
 }

@@ -49,6 +49,7 @@ class AssistPlus extends AssistBase {
             'system.openurl' => { p: ['s'], s:false, c: false, t: false, i: false, d:false, ic: 'icSystem' }, 
             'system.quit' => { p: [], s:false, c: false, t: false, i: false, d:false, ic: 'icSystem' }, 
             'system.sendevent' => { p: ['s'], s:false, c: false, t: false, i: false, d:false, ic: 'icSystem' }, 
+            'system.setkftime' => { p: ['i'], s:false, c: false, t: false, i: false, d:false, ic: 'icSystem' }, 
             'css.clear' => { p: [ ], s:false, c: false, t: false, i: false, d:false, ic: 'icText' }, 
             'css.set' => { p: ['s'], s:false, c: false, t: false, i: false, d:false, ic: 'icText' }, 
             'timer.clear' => { p: ['s'], s:false, c: false, t: false, i: false, d:false, ic: 'icTimer' }, 

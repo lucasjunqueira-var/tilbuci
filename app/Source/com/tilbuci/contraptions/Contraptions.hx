@@ -6,6 +6,7 @@
 
  package com.tilbuci.contraptions;
 
+import com.tilbuci.player.MovieArea;
 import openfl.events.MouseEvent;
 import com.tilbuci.display.InstanceImage;
 import com.tilbuci.display.VideoImage;
@@ -23,6 +24,10 @@ class Contraptions {
     private var _menuAction:Dynamic;
     private var _menuVariable:String;
 
+    // cover contraption
+    public var covers:Map<String, CoverContraption> = [ ];
+    private var _coverOverlay:Sprite;
+
     // scene loading icon
     private var _loadingOverlay:Sprite;
     private var _loadingIc:SpritemapImage;
@@ -36,19 +41,35 @@ class Contraptions {
 
     }
 
+    private function getLayers():Void {
+        if (this._coverOverlay == null) this._coverOverlay = GlobalPlayer.area.getOverlay('contraptions-cover');
+        this._coverOverlay.mouseEnabled = false;
+        if (this._zoomOverlay == null) this._zoomOverlay = GlobalPlayer.area.getOverlay('contraptions-zoom');
+        if (this._menusOverlay == null) this._menusOverlay = GlobalPlayer.area.getOverlay('contraptions-menu');
+        if (this._loadingOverlay == null) this._loadingOverlay = GlobalPlayer.area.getOverlay('contraptions-loading');
+        this._loadingOverlay.mouseEnabled = false;
+    }
+
     public function clear():Void {
+        this.getLayers();
+        for (k in this.covers.keys()) {
+            this.covers[k].kill();
+            this.covers.remove(k);
+        }
+        this._coverOverlay.graphics.clear();
         for (k in this.menus.keys()) {
             this.menus[k].kill();
             this.menus.remove(k);
-        }
-        if (this._menusOverlay == null) {
-            this._menusOverlay = GlobalPlayer.area.getOverlay('contraptions-menu');
         }
         this._menusOverlay.graphics.clear();
     }
 
     public function getData():String {
         var data:Map<String, Array<Dynamic>> = [ ];
+        data['covers'] = new Array<Dynamic>();
+        for (cv in this.covers) {
+            data['covers'].push(cv.toObject());
+        }
         data['menus'] = new Array<Dynamic>();
         for (mn in this.menus) {
             data['menus'].push(mn.toObject());
@@ -112,14 +133,16 @@ class Contraptions {
     }
 
     public function removeContraptions():Void {
+        this.hideCover();
         this.menuHide();
+        this.hideLoadingIc();
+        this.removeZoom();
     }
 
     public function menuHide():Void {
+        if (this._coverOverlay == null) this._coverOverlay = GlobalPlayer.area.getOverlay('contraptions-cover');
         for (mn in this.menus) mn.remove();
-        if (this._menusOverlay == null) {
-            this._menusOverlay = GlobalPlayer.area.getOverlay('contraptions-menu');
-        }
+        this.getLayers();
         this._menusOverlay.graphics.clear();
     }
 
@@ -130,7 +153,7 @@ class Contraptions {
 
     public function loadLoadingIc() {
         if (this._loadingOverlay == null) {
-            this._loadingOverlay = GlobalPlayer.area.getOverlay('contraptions-loading');
+            this.getLayers();
             this._loadingOverlay.visible = false;
             this._loadingIc = new SpritemapImage(onLoadingIc);
             this._loadingOverlay.addChild(this._loadingIc);
@@ -173,7 +196,7 @@ class Contraptions {
 
     public function zoomInstance(inst:String):Bool {
         if (this._zoomOverlay == null) {
-            this._zoomOverlay = GlobalPlayer.area.getOverlay('contraptions-zoom');
+            this.getLayers();
             this._zoomOverlay.visible = false;
             this._zoomPicture = new PictureImage(onZoomPic);
             this._zoomPicture.visible = false;
@@ -284,6 +307,42 @@ class Contraptions {
         this._zoomPicture.unload();
         this._zoomVideo.unload();
         GlobalPlayer.area.play();
+    }
+
+    private function removeZoom():Void {
+        if (this._zoomOverlay != null) {
+            if (this._zoomPicture != null) {
+                if (this._zoomPicture.hasEventListener(MouseEvent.CLICK)) this._zoomPicture.removeEventListener(MouseEvent.CLICK, onZoomPClick);
+                this._zoomPicture.visible = false;
+                this._zoomPicture.unload();
+            }
+            if (this._zoomVideo != null) {
+                if (this._zoomVideo.hasEventListener(MouseEvent.CLICK)) this._zoomVideo.removeEventListener(MouseEvent.CLICK, onZoomVClick);
+                this._zoomVideo.visible = false;
+                this._zoomVideo.unload();
+            }
+            this._zoomOverlay.visible = false;
+        }
+    }
+
+    public function showCover(name:String):Bool {
+        this.getLayers();
+        if (this.covers.exists(name)) {
+            this._coverOverlay.removeChildren();
+            this._coverOverlay.addChild(this.covers[name].getCover());
+            this._coverOverlay.mouseEnabled = this.covers[name].holdClick;
+            this._coverOverlay.visible = true;
+            return (true);
+        } else {
+            return (false);
+        }
+    }
+
+    public function hideCover():Void {
+        this.getLayers();
+        this._coverOverlay.removeChildren();
+        this._coverOverlay.visible = false;
+        this._coverOverlay.mouseEnabled = false;
     }
 
 }

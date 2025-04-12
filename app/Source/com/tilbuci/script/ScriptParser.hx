@@ -7,6 +7,7 @@
  package com.tilbuci.script;
 
 /** TILBUCI **/
+import com.tilbuci.contraptions.CoverContraption;
 import com.tilbuci.contraptions.MenuContraption;
 import feathers.core.FocusManager;
 import openfl.ui.Keyboard;
@@ -248,7 +249,16 @@ class ScriptParser {
         GlobalPlayer.contraptions.clear();
         if (ok) {
             for (k in Reflect.fields(ld.json)) {
-                if (k == 'menus') {
+                if (k == 'covers') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'covers'))) {
+                        var cv:CoverContraption = new CoverContraption();
+                        if (cv.load(Reflect.field(Reflect.field(ld.json, 'covers'), k2))) {
+                            GlobalPlayer.contraptions.covers[cv.id] = cv;
+                        } else {
+                            cv.kill();
+                        }
+                    }
+                } else if (k == 'menus') {
                     for (k2 in  Reflect.fields(Reflect.field(ld.json, 'menus'))) {
                         var mn:MenuContraption = new MenuContraption();
                         if (mn.load(Reflect.field(Reflect.field(ld.json, 'menus'), k2))) {
@@ -628,6 +638,28 @@ class ScriptParser {
                             this.eventSend(map);
                             return (true);
                         }
+                    case 'system.setkftime':
+                        if (param.length > 0) {
+                            var kftime:Int = this.parseInt(param[0]);
+                            if (kftime >= 250) {
+                                GlobalPlayer.mdata.time = kftime / 1000;
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+
+
+                        if (this.eventSend == null) {
+                            return (false);
+                        } else {
+                            var map:Map<String, String> = [ ];
+                            for (i in 0...param.length) map['v' + i] = this.parseString(param[i]);
+                            this.eventSend(map);
+                            return (true);
+                        }
                     case 'system.openembed':
                         if (GlobalPlayer.mode == Player.MODE_EDITOR) {
                             return (true);
@@ -695,6 +727,21 @@ class ScriptParser {
                         }
                     case 'contraption.menuhide':
                         GlobalPlayer.contraptions.menuHide();
+                        return (true);
+                    case 'contraption.cover':
+                        if (param.length > 0) {
+                            return (GlobalPlayer.contraptions.showCover(this.parseString(param[0])));
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.coverhide':
+                        GlobalPlayer.contraptions.hideCover();
+                        return (true);
+                    case 'contraption.showloading':
+                        GlobalPlayer.contraptions.showLoadingIc();
+                        return (true);
+                    case 'contraption.hideloading':
+                        GlobalPlayer.contraptions.hideLoadingIc();
                         return (true);
 
                     

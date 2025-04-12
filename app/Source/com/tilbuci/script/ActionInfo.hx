@@ -745,6 +745,9 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-systemsendevent'), a: 'system.sendevent', p: [
                     { t: 's', n: Global.ln.get('acinfo-systemsendevent-p1'), v: '' }, 
                 ], e: [ ] },  
+                { n: Global.ln.get('acinfo-systemsetkftime'), a: 'system.setkftime', p: [
+                    { t: 'i', n: Global.ln.get('acinfo-systemsetkftime-p1'), v: '' }, 
+                ], e: [ ] },  
                 { n: Global.ln.get('acinfo-cssset'), a: 'css.set', p: [
                     { t: 's', n: Global.ln.get('acinfo-cssset-p1'), v: '' }, 
                 ], e: [ ] },  
@@ -813,6 +816,12 @@ class ActionInfo {
                     { t: 'i', n: Global.ln.get('acinfo-showmenu-p6'), v: '' }, 
                 ], e: [ 'select' ] }, 
                 { n: Global.ln.get('acinfo-hidemenu'), a: 'contraption.menuhide', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-showcover'), a: 'contraption.cover', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showcover-p1'), v: '' }, 
+                ], e: [ 'select' ] }, 
+                { n: Global.ln.get('acinfo-hidecover'), a: 'contraption.coverhide', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-showloading'), a: 'contraption.showloading', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-hideloading'), a: 'contraption.hideloading', p: [ ], e: [ ] },
             ]
         ));
 

@@ -31,8 +31,6 @@ class MenuContraption extends Sprite {
 
     public var buton:String = '';
 
-    public var selected:String = '';
-
     public var bgcolor:String = '0x000000';
 
     public var bgalpha:Float = 0;
@@ -58,7 +56,7 @@ class MenuContraption extends Sprite {
             this.addChild(this._bgbitmap);
             while (this._buttons.length > 0) this._buttons.shift().kill();
             for (i in 0...bts.length) {
-                this._buttons.push(new ContraptionButton(Std.string(i), this.onClick, this.buton, bts[i], this.font, this.fontsize, StringStatic.colorInt(this.fontcolor), this.selected));
+                this._buttons.push(new ContraptionButton(Std.string(i), this.onClick, this.buton, bts[i], this.font, this.fontsize, StringStatic.colorInt(this.fontcolor)));
             }
             var px:Float = (this._bgbitmap.oWidth - this._btsize.x) / 2;
             var gap:Float = (this._bgbitmap.oHeight - (this._btsize.y * this._buttons.length)) / (this._buttons.length + 1);
@@ -90,7 +88,6 @@ class MenuContraption extends Sprite {
             fontsize: this.fontsize, 
             background: this.background, 
             buton: this.buton, 
-            selected: this.selected, 
             bgcolor: this.bgcolor, 
             bgalpha: this.bgalpha
         });
@@ -111,8 +108,6 @@ class MenuContraption extends Sprite {
                 else this.background = '';
             if (Reflect.hasField(data, 'buton')) this.buton = Reflect.field(data, 'buton');
                 else this.buton = '';
-            if (Reflect.hasField(data, 'selected')) this.selected = Reflect.field(data, 'selected');
-                else this.selected = '';
             if (Reflect.hasField(data, 'bgcolor')) this.bgcolor = Reflect.field(data, 'bgcolor');
                 else this.bgcolor = '0x000000';
             if (Reflect.hasField(data, 'bgalpha')) this.bgalpha = Reflect.field(data, 'bgalpha');
@@ -134,7 +129,7 @@ class MenuContraption extends Sprite {
     public function kill():Void {
         if (this.parent != null) this.parent.removeChild(this);
         this.removeChildren();
-        this.id = this.font = this.fontcolor = this.background = this.buton = this.selected = this.bgcolor = this.mode = null;
+        this.id = this.font = this.fontcolor = this.background = this.buton = this.bgcolor = this.mode = null;
         if (this._bgbitmap != null) {
             this._bgbitmap.kill();
             this._bgbitmap = null;
@@ -154,7 +149,6 @@ class MenuContraption extends Sprite {
             fontsize: this.fontsize, 
             background: this.background, 
             buton: this.buton, 
-            selected: this.selected, 
             bgcolor: this.bgcolor, 
             bgalpha: this.bgalpha
         });

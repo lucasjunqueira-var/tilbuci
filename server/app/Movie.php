@@ -1417,6 +1417,7 @@ class Movie extends BaseClass
                                                     }
                                                 }
                                             }
+                                            
                                             // media folder
                                             if (!is_dir('../movie/'.$movie.'.movie/media')) !$this->createDir('../movie/'.$movie.'.movie/media');
                                             if (!is_dir('../movie/'.$movie.'.movie/media/picture')) !$this->createDir('../movie/'.$movie.'.movie/media/picture');
@@ -1425,6 +1426,20 @@ class Movie extends BaseClass
                                             if (!is_dir('../movie/'.$movie.'.movie/media/html')) !$this->createDir('../movie/'.$movie.'.movie/media/html');
                                             if (!is_dir('../movie/'.$movie.'.movie/media/font')) !$this->createDir('../movie/'.$movie.'.movie/media/font');
                                             if (!is_dir('../movie/'.$movie.'.movie/media/spritemap')) !$this->createDir('../movie/'.$movie.'.movie/media/spritemap');
+                                            
+                                            // additional files
+                                            $stringsjson = '';
+                                            if (is_file('../movie/'.$movie.'.movie/strings.json')) $stringsjson = file_get_contents('../movie/'.$movie.'.movie/strings.json');
+                                            $contraptions = '';
+                                            if (is_file('../movie/'.$movie.'.movie/contraptions.json')) $contraptions = file_get_contents('../movie/'.$movie.'.movie/contraptions.json');
+                                            if ($contraptions != '') $contraptions = base64_encode(gzencode($contraptions));
+                                            if ($stringsjson != '') $stringsjson = base64_encode(gzencode($stringsjson));
+                                            $this->execute('UPDATE movies SET mv_contraptions=:cont, mv_strings=:str WHERE mv_id=:id', [
+                                                ':cont' => $contraptions, 
+                                                ':str' => $stringsjson, 
+                                                ':id' => $movie,
+                                            ]);
+                                            
                                             // movie imported
                                             @unlink('../../export/' . $movie . '.zip');
                                             return (0);
@@ -2789,9 +2804,11 @@ class Movie extends BaseClass
      * @param	string	$appauthor content author name
      * @param	string	$appemail  author e-mail
      * @param	string	$applicense    app distribution license name
+     * @param	string	$fullscr    run app in fullcrssen? "true" or "false"
+     * @param	string	$icon    app icon file
 	 * @return	string|bool the path to the exported file or false on error
 	 */
-	public function exportCordova($user, $movie, $mode, $appid, $appsite, $appauthor, $appemail, $applicense) {
+	public function exportCordova($user, $movie, $mode, $appid, $appsite, $appauthor, $appemail, $applicense, $fullscr, $icon) {
 		// check user: movie owner?
 		if (!is_null($this->db)) {
 			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [
@@ -2913,13 +2930,24 @@ class Movie extends BaseClass
                             $this->info['identify'] = false;
                             $this->info['vsgroups'] = '';
                             file_put_contents(('../../export/mobile-'.$movie.'/'.$movie.'/www/movie/'.$movie.'.movie/movie.json'), json_encode($this->info));
+                            // icon
+                            if ($icon != '') {
+                                if (is_file('../../export/mobile-'.$movie.'/'.$movie.'/www/movie/'.$movie.'.movie/media/picture/'.$icon)) {
+                                    $this->createDir('../../export/mobile-'.$movie.'/'.$movie.'/res/');
+                                    if (!copy(('../../export/mobile-'.$movie.'/'.$movie.'/www/movie/'.$movie.'.movie/media/picture/'.$icon), ('../../export/mobile-'.$movie.'/'.$movie.'/res/icon.png'))) {
+                                        $icon = '';
+                                    }
+                                } else {
+                                    $icon = '';
+                                }
+                            }
                             // readme and config files
                             if ($mode == 'update') {
                                 @copy('../../export/cordova/readme-update.txt', ('../../export/mobile-'.$movie.'/readme.txt'));
                             } else {
-                                $txt = file_get_contents('../../export/cordova/readme.txt');
+                                $txt = file_get_contents('../../export/cordova/readme.html');
                                 $txt = str_replace('[APPID]', $movie, $txt);
-                                file_put_contents(('../../export/mobile-'.$movie.'/readme.txt'), $txt);
+                                file_put_contents(('../../export/mobile-'.$movie.'/readme.html'), $txt);
                                 $txt = file_get_contents('../../export/mobile-'.$movie.'/'.$movie.'/config.xml');
                                 $txt = str_replace([
                                     '[APPDOMAIN]', 
@@ -2928,7 +2956,9 @@ class Movie extends BaseClass
                                     '[APPABOUT]', 
                                     '[APPEMAIL]', 
                                     '[APPSITE]', 
-                                    '[APPAUTHOR]'
+                                    '[APPAUTHOR]', 
+                                    '[APPFULLSCR]', 
+                                    '[APPICON]'
                                 ], [
                                     $appid, 
                                     '1.0.0', 
@@ -2936,7 +2966,9 @@ class Movie extends BaseClass
                                     $this->info['description'], 
                                     $appemail, 
                                     $appsite, 
-                                    $appauthor
+                                    $appauthor, 
+                                    (($fullscr == 'true') ? '<preference name="Fullscreen" value="true" />' : ''), 
+                                    (($icon == '') ? '' : '<icon src="res/icon.png" />'), 
                                 ], $txt);
                                 file_put_contents(('../../export/mobile-'.$movie.'/'.$movie.'/config.xml'), $txt);
                                 $txt = file_get_contents('../../export/mobile-'.$movie.'/'.$movie.'/package.json');
