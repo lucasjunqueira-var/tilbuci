@@ -10,6 +10,7 @@
 import com.tilbuci.def.AssetData;
 import com.tilbuci.ui.window.contraptions.WindowContrMenu;
 import com.tilbuci.ui.window.contraptions.WindowContrCover;
+import com.tilbuci.ui.window.contraptions.WindowContrMusic;
 import com.tilbuci.script.ActionInfo;
 import feathers.core.ToolTipManager;
 import com.tilbuci.script.AssistVariables;
@@ -653,6 +654,9 @@ class Editor extends Drawer {
             case 'cover':
                 this.opened = false;
                 this.showWindow('cover');
+            case 'music':
+                this.opened = false;
+                this.showWindow('music');
             case 'menu-close':
                 this.opened = false;
             case 'window-notes':
@@ -791,6 +795,28 @@ class Editor extends Drawer {
                 ];
                 this.showWindow('mediapicture');
                 this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'window-notes':
+                this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Contraption music actions.
+        @param  ac  the action id
+    **/
+    private function actionWindowContrMusic(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+            case 'music':
+                Global.temp['Media/Single'] = [
+                    'type' => 'audio', 
+                    'call' => 'music'
+                ];
+                this.showWindow('mediaaudio');
+                this._windows['mediaaudio'].action('setmode', [
                     'mode' => 'single', 
                 ]);
             case 'window-notes':
@@ -1356,6 +1382,12 @@ class Editor extends Drawer {
                                 'type' => data['type'], 
                                 'name' => data['file'], 
                             ]);
+                        case 'music':
+                            this._windows['music'].action('music', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
                     }
                     Global.temp.remove('Media/Single');
                 }
@@ -1679,6 +1711,7 @@ class Editor extends Drawer {
 
                 case 'menus': this._windows['menus'] = new WindowContrMenu(actionWindowContrMenu);
                 case 'cover': this._windows['cover'] = new WindowContrCover(actionWindowContrCover);
+                case 'music': this._windows['music'] = new WindowContrMusic(actionWindowContrMusic);
 
                 case 'visitors': this._windows['visitors'] = new WindowVisitors(actionWindowVisitors, this.build);
                 case 'designnotes': this._windows['designnotes'] = new WindowNotes(actionWindowNotes);

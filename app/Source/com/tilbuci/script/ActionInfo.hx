@@ -818,10 +818,19 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-hidemenu'), a: 'contraption.menuhide', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-showcover'), a: 'contraption.cover', p: [
                     { t: 's', n: Global.ln.get('acinfo-showcover-p1'), v: '' }, 
-                ], e: [ 'select' ] }, 
+                ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-hidecover'), a: 'contraption.coverhide', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-showloading'), a: 'contraption.showloading', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-hideloading'), a: 'contraption.hideloading', p: [ ], e: [ ] },
+                { n: Global.ln.get('acinfo-musicplay'), a: 'contraption.musicplay', p: [
+                    { t: 's', n: Global.ln.get('acinfo-musicplay-p1'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-musicpause'), a: 'contraption.musicpause', p: [ ], e: [ ] },
+                { n: Global.ln.get('acinfo-musicstop'), a: 'contraption.musicstop', p: [ ], e: [ ] },
+                { n: Global.ln.get('acinfo-musicvolume'), a: 'contraption.musicvolume', p: [
+                    { t: 'i', n: Global.ln.get('acinfo-musicvolume-p1'), v: '' }, 
+                ], e: [ ] },
+
             ]
         ));
 

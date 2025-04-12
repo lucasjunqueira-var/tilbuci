@@ -37,6 +37,9 @@ class Contraptions {
     private var _zoomPicture:PictureImage;
     private var _zoomVideo:VideoImage;
 
+    // music
+    public var musics:Map<String, MusicContraption> = [ ];
+
     public function new() {
 
     }
@@ -73,6 +76,10 @@ class Contraptions {
         data['menus'] = new Array<Dynamic>();
         for (mn in this.menus) {
             data['menus'].push(mn.toObject());
+        }
+        data['musics'] = new Array<Dynamic>();
+        for (ms in this.musics) {
+            data['musics'].push(ms.toObject());
         }
         return(StringStatic.jsonStringify(data));
     }
@@ -137,6 +144,31 @@ class Contraptions {
         this.menuHide();
         this.hideLoadingIc();
         this.removeZoom();
+        this.musicStop();
+    }
+
+    public function musicPlay(name:String):Bool {
+        if (this.musics.exists(name)) {
+            for (ms in this.musics) {
+                if (ms.id == name) ms.play();
+                    else ms.pause();
+            }
+            return (true);
+        } else {
+            return (false);
+        }
+    }
+
+    public function musicPause():Void {
+        for (ms in this.musics) ms.pause();
+    }
+
+    public function musicStop():Void {
+        for (ms in this.musics) ms.stop();
+    }
+
+    public function musicVolume(vol:Int):Void {
+        for (ms in this.musics) ms.volume(vol);
     }
 
     public function menuHide():Void {

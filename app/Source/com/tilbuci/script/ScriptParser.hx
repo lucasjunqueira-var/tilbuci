@@ -9,6 +9,7 @@
 /** TILBUCI **/
 import com.tilbuci.contraptions.CoverContraption;
 import com.tilbuci.contraptions.MenuContraption;
+import com.tilbuci.contraptions.MusicContraption;
 import feathers.core.FocusManager;
 import openfl.ui.Keyboard;
 import com.tilbuci.js.ExternBrowser;
@@ -265,6 +266,15 @@ class ScriptParser {
                             GlobalPlayer.contraptions.menus[mn.id] = mn;
                         } else {
                             mn.kill();
+                        }
+                    }
+                } else if (k == 'musics') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'musics'))) {
+                        var ms:MusicContraption = new MusicContraption();
+                        if (ms.load(Reflect.field(Reflect.field(ld.json, 'musics'), k2))) {
+                            GlobalPlayer.contraptions.musics[ms.id] = ms;
+                        } else {
+                            ms.kill();
                         }
                     }
                 }
@@ -743,6 +753,25 @@ class ScriptParser {
                     case 'contraption.hideloading':
                         GlobalPlayer.contraptions.hideLoadingIc();
                         return (true);
+                    case 'contraption.musicplay':
+                        if (param.length > 0) {
+                            return (GlobalPlayer.contraptions.musicPlay(this.parseString(param[0])));
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.musicpause':
+                        GlobalPlayer.contraptions.musicPause();
+                        return (true);
+                    case 'contraption.musicstop':
+                        GlobalPlayer.contraptions.musicStop();
+                        return (true);
+                    case 'contraption.musicvolume':
+                        if (param.length > 0) {
+                            GlobalPlayer.contraptions.musicVolume(this.parseInt(param[0]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
 
                     
                     // movie actions

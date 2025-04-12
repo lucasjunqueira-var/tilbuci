@@ -7,6 +7,7 @@
  package com.tilbuci.display;
 
 /** HAXE **/
+import openfl.media.SoundTransform;
 import haxe.Timer;
 
 /** OPENFL **/
@@ -55,6 +56,16 @@ class AudioImage extends BaseImage {
     private var _currentTime:Int = 0;
 
     /**
+        sound channel position
+    **/
+    private var _channelPos:Float = -1;
+
+    /**
+        sound transform
+    **/
+    private var _transform:SoundTransform;
+
+    /**
         timed action function
     **/
     private var _onTimedAc:Dynamic;
@@ -100,6 +111,8 @@ class AudioImage extends BaseImage {
         media = StringTools.replace(media, (GlobalPlayer.path + 'media/audio/'), '');
         this._lastMedia = media;
         this._loaded = false;
+        this._channelPos = -1;
+        this._transform = null;
         if (this._channel != null) {
 			this._channel.removeEventListener(Event.SOUND_COMPLETE, soundComplete);
 			this._channel.stop();
@@ -114,10 +127,11 @@ class AudioImage extends BaseImage {
         @param  vol sound volume
         @param  pan sound pan
     **/
-    public function iterateSound(vol:Float, pan:Float):Void {
+    public function iterateSound(vol:Float, pan:Float = 0):Void {
         if (this._channel != null) {
             //Actuate.transform(this._channel, GlobalPlayer.mdata.time).sound(vol, pan);
             Actuate.transform(this._channel, GlobalPlayer.mdata.time).sound(vol, null);
+            this._transform = new SoundTransform(vol, 0);
         }
     }
 
@@ -159,19 +173,20 @@ class AudioImage extends BaseImage {
     public function play():Void {
         if (this._loaded) {
             var pos:Float = 0;
+            if (this._channelPos > 0) pos = this._channelPos;
+            this._channelPos = -1;
             if (this._channel != null) {
-                pos = this._channel.position;
                 this._channel.removeEventListener(Event.SOUND_COMPLETE, soundComplete);
                 this._channel.stop();
                 this._channel = null;
             }
-            this._channel = this._sound.play(pos);
+            this._channel = this._sound.play(pos, 0, this._transform);
             this._channel.addEventListener(Event.SOUND_COMPLETE, soundComplete);
             if (this._timer != null) {
                 try { this._timer.stop(); } catch (e) { }
                 this._timer = null;
             }
-            this._currentTime = 0;
+            this._currentTime = Math.round(pos/1000);
             this._timer = new Timer(1000);
             this._timer.run = this.onTimer;
         }
@@ -182,6 +197,7 @@ class AudioImage extends BaseImage {
     **/
     public function pause():Void {
         if (this._loaded) {
+            this._channelPos = this._channel.position;
             this._channel.stop();
         }
     }
@@ -196,6 +212,7 @@ class AudioImage extends BaseImage {
                 try { this._timer.stop(); } catch (e) { }
                 this._timer = null;
             }
+            this._channelPos = -1;
         }
     }
 
