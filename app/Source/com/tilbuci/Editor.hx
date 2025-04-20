@@ -11,6 +11,7 @@ import com.tilbuci.def.AssetData;
 import com.tilbuci.ui.window.contraptions.WindowContrMenu;
 import com.tilbuci.ui.window.contraptions.WindowContrCover;
 import com.tilbuci.ui.window.contraptions.WindowContrMusic;
+import com.tilbuci.ui.window.contraptions.WindowContrForm;
 import com.tilbuci.script.ActionInfo;
 import feathers.core.ToolTipManager;
 import com.tilbuci.script.AssistVariables;
@@ -654,6 +655,9 @@ class Editor extends Drawer {
             case 'cover':
                 this.opened = false;
                 this.showWindow('cover');
+            case 'form':
+                this.opened = false;
+                this.showWindow('form');
             case 'music':
                 this.opened = false;
                 this.showWindow('music');
@@ -792,6 +796,46 @@ class Editor extends Drawer {
                 Global.temp['Media/Single'] = [
                     'type' => 'picture', 
                     'call' => 'portraitcover'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'window-notes':
+                this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Contraption form actions.
+        @param  ac  the action id
+    **/
+    private function actionWindowContrForm(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+            case 'formbackground':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'formbackground'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'formbtok':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'formbtok'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'formbtcancel':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'formbtcancel'
                 ];
                 this.showWindow('mediapicture');
                 this._windows['mediapicture'].action('setmode', [
@@ -1388,6 +1432,24 @@ class Editor extends Drawer {
                                 'type' => data['type'], 
                                 'name' => data['file'], 
                             ]);
+                        case 'formbackground':
+                            this._windows['form'].action('formbackground', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'formbtok':
+                            this._windows['form'].action('formbtok', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'formbtcancel':
+                            this._windows['form'].action('formbtcancel', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
                     }
                     Global.temp.remove('Media/Single');
                 }
@@ -1712,6 +1774,7 @@ class Editor extends Drawer {
                 case 'menus': this._windows['menus'] = new WindowContrMenu(actionWindowContrMenu);
                 case 'cover': this._windows['cover'] = new WindowContrCover(actionWindowContrCover);
                 case 'music': this._windows['music'] = new WindowContrMusic(actionWindowContrMusic);
+                case 'form': this._windows['form'] = new WindowContrForm(actionWindowContrForm);
 
                 case 'visitors': this._windows['visitors'] = new WindowVisitors(actionWindowVisitors, this.build);
                 case 'designnotes': this._windows['designnotes'] = new WindowNotes(actionWindowNotes);

@@ -7,9 +7,11 @@
  package com.tilbuci.script;
 
 /** TILBUCI **/
+import haxe.macro.Expr.Function;
 import com.tilbuci.contraptions.CoverContraption;
 import com.tilbuci.contraptions.MenuContraption;
 import com.tilbuci.contraptions.MusicContraption;
+import com.tilbuci.contraptions.FormContraption;
 import feathers.core.FocusManager;
 import openfl.ui.Keyboard;
 import com.tilbuci.js.ExternBrowser;
@@ -247,6 +249,7 @@ class ScriptParser {
         @param  ld  loader reference
     **/
     private function onContraptions(ok:Bool, ld:DataLoader = null):Void {
+        GlobalPlayer.contraptions.removeAll();
         GlobalPlayer.contraptions.clear();
         if (ok) {
             for (k in Reflect.fields(ld.json)) {
@@ -275,6 +278,15 @@ class ScriptParser {
                             GlobalPlayer.contraptions.musics[ms.id] = ms;
                         } else {
                             ms.kill();
+                        }
+                    }
+                } else if (k == 'forms') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'forms'))) {
+                        var fc:FormContraption = new FormContraption();
+                        if (fc.load(Reflect.field(Reflect.field(ld.json, 'forms'), k2))) {
+                            GlobalPlayer.contraptions.forms[fc.id] = fc;
+                        } else {
+                            fc.kill();
                         }
                     }
                 }
@@ -769,6 +781,31 @@ class ScriptParser {
                         if (param.length > 0) {
                             GlobalPlayer.contraptions.musicVolume(this.parseInt(param[0]));
                             return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.form':
+                        if (param.length > 2) {
+                            var acOk:Dynamic = null;
+                            var acCancel:Dynamic = null;
+                            if (Reflect.hasField(inf, 'ok')) acOk = Reflect.field(inf, 'ok');
+                            if (Reflect.hasField(inf, 'cancel')) acCancel = Reflect.field(inf, 'cancel');
+                            return(GlobalPlayer.contraptions.showForm(this.parseString(param[0]), this.parseInt(param[1]), this.parseInt(param[2]), acOk, acCancel));
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.formvalue':
+                        if (param.length > 1) {
+                            return(GlobalPlayer.contraptions.setFormValue(this.parseString(param[0]), param[1]));
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.formhide':
+                        GlobalPlayer.contraptions.hideForm();
+                        return (true);
+                    case 'contraption.formsetstepper':
+                        if (param.length > 3) {
+                            return (GlobalPlayer.contraptions.setFormStepper(this.parseString(param[0]), this.parseInt(param[1]), this.parseInt(param[2]), this.parseInt(param[3])));
                         } else {
                             return (false);
                         }
@@ -2514,6 +2551,13 @@ class ScriptParser {
                     } else {
                         return ('');
                     }
+                } else {
+                    return ('');
+                }
+            } else if (str.substr(0, 6) == "$_FORM") {
+                var arstr:Array<String> = str.split(':');
+                if (arstr.length == 2) {
+                    return (GlobalPlayer.contraptions.getFormValue(arstr[1]));
                 } else {
                     return ('');
                 }

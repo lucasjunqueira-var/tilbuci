@@ -20,6 +20,7 @@ class MenuContraptions extends DrawerMenu {
         this.addButton('btCover', Global.ln.get('menu-contraptions-cover'), onCover);
         this.addButton('btMenus', Global.ln.get('menu-contraptions-menus'), onMenus);
         this.addButton('btMusic', Global.ln.get('menu-contraptions-music'), onMusic);
+        this.addButton('btForms', Global.ln.get('menu-contraptions-forms'), onForms);
     }
 
     /**
@@ -34,6 +35,8 @@ class MenuContraptions extends DrawerMenu {
             this.ui.buttons['btCover'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
             this.ui.buttons['btMusic'].enabled = false;
             this.ui.buttons['btMusic'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
+            this.ui.buttons['btForms'].enabled = false;
+            this.ui.buttons['btForms'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
         } else {
             this.ui.buttons['btMenus'].enabled = true;
             this.ui.buttons['btMenus'].toolTip = null;
@@ -41,6 +44,8 @@ class MenuContraptions extends DrawerMenu {
             this.ui.buttons['btCover'].toolTip = null;
             this.ui.buttons['btMusic'].enabled = true;
             this.ui.buttons['btMusic'].toolTip = null;
+            this.ui.buttons['btForms'].enabled = true;
+            this.ui.buttons['btForms'].toolTip = null;
         }
     }
 
@@ -70,6 +75,13 @@ class MenuContraptions extends DrawerMenu {
     **/
     private  function onMusic(evt:TriggerEvent):Void {
         this._ac('music');
+    }
+
+    /**
+        Forms
+    **/
+    private  function onForms(evt:TriggerEvent):Void {
+        this._ac('form');
     }
 
 }

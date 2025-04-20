@@ -183,6 +183,7 @@ class WindowBlockEdit extends PopupWindow {
                     { text: Global.ln.get('window-globals-number'), value: "#_NUMBERS:" }, 
                     { text: Global.ln.get('window-globals-flag'), value: "?_FLAGS:" }, 
                     { text: Global.ln.get('window-acinput-text'), value: "$_INPUT:" }, 
+                    { text: Global.ln.get('window-acform-text'), value: "$_FORM:" },
                     { text: Global.ln.get('window-acnumeric-text'), value: "#_NUMERIC:" }, 
                     { text: Global.ln.get('window-actoggle-text'), value: "?_TOGGLE:" }, 
                 ], sl: [ ], ht: 95 }, 
@@ -359,7 +360,6 @@ class WindowBlockEdit extends PopupWindow {
         }
         if (ok) {
             if (this._blac != null) {
-                trace ('edit');
                 this._blac.param = param;
                 this._onOk(false);
             } else {

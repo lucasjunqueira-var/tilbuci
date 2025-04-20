@@ -40,6 +40,11 @@ class Contraptions {
     // music
     public var musics:Map<String, MusicContraption> = [ ];
 
+    // forms
+    public var forms:Map<String, FormContraption> = [ ];
+    private var _formsOverlay:Sprite;
+    private var _formcurrent:String = '';
+
     public function new() {
 
     }
@@ -48,6 +53,7 @@ class Contraptions {
         if (this._coverOverlay == null) this._coverOverlay = GlobalPlayer.area.getOverlay('contraptions-cover');
         this._coverOverlay.mouseEnabled = false;
         if (this._zoomOverlay == null) this._zoomOverlay = GlobalPlayer.area.getOverlay('contraptions-zoom');
+        if (this._formsOverlay == null) this._formsOverlay = GlobalPlayer.area.getOverlay('contraptions-forms');
         if (this._menusOverlay == null) this._menusOverlay = GlobalPlayer.area.getOverlay('contraptions-menu');
         if (this._loadingOverlay == null) this._loadingOverlay = GlobalPlayer.area.getOverlay('contraptions-loading');
         this._loadingOverlay.mouseEnabled = false;
@@ -67,6 +73,25 @@ class Contraptions {
         this._menusOverlay.graphics.clear();
     }
 
+    public function removeAll():Void {
+        for (k in this.menus.keys()) {
+            this.menus[k].kill();
+            this.menus.remove(k);
+        }
+        for (k in this.covers.keys()) {
+            this.covers[k].kill();
+            this.covers.remove(k);
+        }
+        for (k in this.musics.keys()) {
+            this.musics[k].kill();
+            this.musics.remove(k);
+        }
+        for (k in this.forms.keys()) {
+            this.forms[k].kill();
+            this.forms.remove(k);
+        }
+    }
+
     public function getData():String {
         var data:Map<String, Array<Dynamic>> = [ ];
         data['covers'] = new Array<Dynamic>();
@@ -80,6 +105,10 @@ class Contraptions {
         data['musics'] = new Array<Dynamic>();
         for (ms in this.musics) {
             data['musics'].push(ms.toObject());
+        }
+        data['forms'] = new Array<Dynamic>();
+        for (ms in this.forms) {
+            data['forms'].push(ms.toObject());
         }
         return(StringStatic.jsonStringify(data));
     }
@@ -142,6 +171,7 @@ class Contraptions {
     public function removeContraptions():Void {
         this.hideCover();
         this.menuHide();
+        this.hideForm();
         this.hideLoadingIc();
         this.removeZoom();
         this.musicStop();
@@ -375,6 +405,50 @@ class Contraptions {
         this._coverOverlay.removeChildren();
         this._coverOverlay.visible = false;
         this._coverOverlay.mouseEnabled = false;
+    }
+
+    public function hideForm():Void {
+        this._formsOverlay.removeChildren();
+        this._formsOverlay.visible = false;
+    }
+
+    public function showForm(nm:String, px:Int, py:Int, acok:Dynamic = null, accancel:Dynamic = null):Bool {
+        this.hideForm();
+        if (this.forms.exists(nm)) {
+            this.forms[nm].start(acok, accancel);
+            this.forms[nm].x = px;
+            this.forms[nm].y = py;
+            this._formsOverlay.addChild(this.forms[nm]);
+            this._formsOverlay.visible = true;
+            this._formcurrent = nm;
+            return (true);
+        } else {
+            return (false);
+        }
+    }
+
+    public function setFormValue(nm:String, val:String):Bool {
+        if (this._formcurrent == '') {
+            return (false);
+        } else {
+            return (this.forms[this._formcurrent].setValue(nm, val));
+        }
+    }
+
+    public function setFormStepper(nm:String, min:Int, max:Int, stp:Int):Bool {
+        if (this._formcurrent == '') {
+            return (false);
+        } else {
+            return (this.forms[this._formcurrent].setStepper(nm, min, max, stp));
+        }
+    }
+
+    public function getFormValue(nm:String):String {
+        if (this._formcurrent == '') {
+            return ('');
+        } else {
+            return (this.forms[this._formcurrent].getValue(nm));
+        }
     }
 
 }

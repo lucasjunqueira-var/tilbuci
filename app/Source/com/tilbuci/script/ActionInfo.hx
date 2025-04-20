@@ -830,7 +830,22 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-musicvolume'), a: 'contraption.musicvolume', p: [
                     { t: 'i', n: Global.ln.get('acinfo-musicvolume-p1'), v: '' }, 
                 ], e: [ ] },
-
+                { n: Global.ln.get('acinfo-showform'), a: 'contraption.form', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showform-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-showform-p2'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-showform-p3'), v: '' }, 
+                ], e: [ 'ok', 'cancel' ] }, 
+                { n: Global.ln.get('acinfo-setformvalue'), a: 'contraption.formvalue', p: [
+                    { t: 's', n: Global.ln.get('acinfo-setformvalue-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-setformvalue-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-setformstepper'), a: 'contraption.formsetstepper', p: [
+                    { t: 's', n: Global.ln.get('acinfo-setformstepper-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-setformstepper-p2'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-setformstepper-p3'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-setformstepper-p4'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-hideform'), a: 'contraption.formhide', p: [ ], e: [ ] }, 
             ]
         ));
 

@@ -40,6 +40,10 @@ class AssistContraptions extends AssistBase {
             'contraption.musicpause' => { p: [ ], c: false, t: false, i: false, d:false, s:false, ic: 'icContraption' },
             'contraption.musicstop' => { p: [ ], c: false, t: false, i: false, d:false, s:false, ic: 'icContraption' },
             'contraption.musicvolume' => { p: ['i'], c: false, t: false, i: false, d:false, s:false, ic: 'icContraption' },
+            'contraption.form' => { p: ['s', 'i', 'i'], c: false, t: false, i: true, d:false, s: true, ic: 'icContraption' }, 
+            'contraption.formvalue' => { p: ['s', 's'], c: false, t: false, i: false, d:false, s: true, ic: 'icContraption' }, 
+            'contraption.formsetstepper' => { p: ['s', 'i', 'i', 'i'], c: false, t: false, i: false, d:false, s: true, ic: 'icContraption' }, 
+            'contraption.formhide' => { p: [ ], c: false, t: false, i: false, d:false, s:false, ic: 'icContraption' },
         ]);
     }
 
