@@ -36,6 +36,11 @@ class SpritemapImage extends BaseImage {
     public var frtime:Int = 100;
 
     /**
+        start playing after loading?
+    **/
+    public var playOnLoad:Bool = true;
+
+    /**
         content loader
     **/
     private var _loader:Loader;
@@ -60,7 +65,7 @@ class SpritemapImage extends BaseImage {
     **/
     private var _display:Array<Bitmap> = [ ];
 
-    public function new(ol:Dynamic) {
+    public function new(ol:Dynamic = null) {
         super('spritemap', false, ol);
         this._loader = new Loader();
         this._loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onOk);
@@ -155,12 +160,42 @@ class SpritemapImage extends BaseImage {
         this._loader.unload();
         this._current = 0;
         this.loadFrame();
-        if (this._warn) this._onLoad(true);
+        if (this._warn && (this._onLoad != null)) this._onLoad(true);
         
-        
+        if (this.playOnLoad) {
+            this._timer = new Timer(this.frtime);
+            this._timer.run = this.nextFrame;
+        }
+
+        this._warn = true;
+    }
+
+    public function pause():Void {
+        this.playOnLoad = false;
+        if (this._timer != null) {
+            try {
+                this._timer.stop();
+                this._timer = null;
+            } catch (e) { }
+        }
+    }
+
+    public function play():Void {
+        this.pause();
+        this.playOnLoad = true;
         this._timer = new Timer(this.frtime);
         this._timer.run = this.nextFrame;
-        this._warn = true;
+    }
+
+    public function setFrame(num:Int):Bool {
+        if ((num > 0) && (num <= this.frames)) {
+            this.pause();
+            this._current = num - 1;
+            this.loadFrame();
+            return (true);
+        } else {
+            return (false);
+        }
     }
 
     /**
@@ -186,6 +221,6 @@ class SpritemapImage extends BaseImage {
     private function onError(e:Event):Void {
         this._warn = true;
         this._mediaLoaded = false;
-        this._onLoad(false);
+        if (this._onLoad != null) this._onLoad(false);
     }
 }

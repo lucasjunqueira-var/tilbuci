@@ -846,6 +846,29 @@ class ActionInfo {
                     { t: 'i', n: Global.ln.get('acinfo-setformstepper-p4'), v: '' }, 
                 ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-hideform'), a: 'contraption.formhide', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-showinterf'), a: 'contraption.interface', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showinterf-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-showinterf-p2'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-showinterf-p3'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-hideinterf'), a: 'contraption.interfacehide', p: [
+                    { t: 's', n: Global.ln.get('acinfo-hideinterf-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-hideallinterf'), a: 'contraption.interfacehideall', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-interftext'), a: 'contraption.interfacetext', p: [
+                    { t: 's', n: Global.ln.get('acinfo-interftext-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-interftext-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-interfframe'), a: 'contraption.interfaceanimframe', p: [
+                    { t: 's', n: Global.ln.get('acinfo-interfframe-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-interfframe-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-interfplay'), a: 'contraption.interfaceanimplay', p: [
+                    { t: 's', n: Global.ln.get('acinfo-interfplay-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-interfpause'), a: 'contraption.interfaceanimpause', p: [
+                    { t: 's', n: Global.ln.get('acinfo-interfpause-p1'), v: '' }, 
+                ], e: [ ] }, 
             ]
         ));
 

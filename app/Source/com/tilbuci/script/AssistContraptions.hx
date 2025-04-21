@@ -44,6 +44,13 @@ class AssistContraptions extends AssistBase {
             'contraption.formvalue' => { p: ['s', 's'], c: false, t: false, i: false, d:false, s: true, ic: 'icContraption' }, 
             'contraption.formsetstepper' => { p: ['s', 'i', 'i', 'i'], c: false, t: false, i: false, d:false, s: true, ic: 'icContraption' }, 
             'contraption.formhide' => { p: [ ], c: false, t: false, i: false, d:false, s:false, ic: 'icContraption' },
+            'contraption.interface' => { p: ['s', 'i', 'i'], c: false, t: false, i: false, d:false, s: true, ic: 'icContraption' }, 
+            'contraption.interfacehide' => { p: ['s'], c: false, t: false, i: false, d:false, s: true, ic: 'icContraption' }, 
+            'contraption.interfacehideall' => { p: [ ], c: false, t: false, i: false, d:false, s: true, ic: 'icContraption' }, 
+            'contraption.interfacetext' => { p: ['s', 's'], c: false, t: false, i: false, d:false, s: true, ic: 'icContraption' }, 
+            'contraption.interfaceanimframe' => { p: ['s', 'i'], c: false, t: false, i: false, d:false, s: true, ic: 'icContraption' }, 
+            'contraption.interfaceanimplay' => { p: ['s'], c: false, t: false, i: false, d:false, s: true, ic: 'icContraption' }, 
+            'contraption.interfaceanimpause' => { p: ['s'], c: false, t: false, i: false, d:false, s: true, ic: 'icContraption' }, 
         ]);
     }
 

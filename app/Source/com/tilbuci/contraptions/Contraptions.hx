@@ -45,6 +45,10 @@ class Contraptions {
     private var _formsOverlay:Sprite;
     private var _formcurrent:String = '';
 
+    // interface
+    public var interf:Map<String, InterfaceContraption> = [ ];
+    private var _interfaceOverlay:Sprite;
+
     public function new() {
 
     }
@@ -55,6 +59,7 @@ class Contraptions {
         if (this._zoomOverlay == null) this._zoomOverlay = GlobalPlayer.area.getOverlay('contraptions-zoom');
         if (this._formsOverlay == null) this._formsOverlay = GlobalPlayer.area.getOverlay('contraptions-forms');
         if (this._menusOverlay == null) this._menusOverlay = GlobalPlayer.area.getOverlay('contraptions-menu');
+        if (this._interfaceOverlay == null) this._interfaceOverlay = GlobalPlayer.area.getOverlay('contraptions-interface');
         if (this._loadingOverlay == null) this._loadingOverlay = GlobalPlayer.area.getOverlay('contraptions-loading');
         this._loadingOverlay.mouseEnabled = false;
     }
@@ -71,6 +76,16 @@ class Contraptions {
             this.menus.remove(k);
         }
         this._menusOverlay.graphics.clear();
+        for (k in this.forms.keys()) {
+            this.forms[k].kill();
+            this.forms.remove(k);
+        }
+        this._formsOverlay.graphics.clear();
+        for (k in this.interf.keys()) {
+            this.interf[k].kill();
+            this.interf.remove(k);
+        }
+        this._interfaceOverlay.graphics.clear();
     }
 
     public function removeAll():Void {
@@ -89,6 +104,10 @@ class Contraptions {
         for (k in this.forms.keys()) {
             this.forms[k].kill();
             this.forms.remove(k);
+        }
+        for (k in this.interf.keys()) {
+            this.interf[k].kill();
+            this.interf.remove(k);
         }
     }
 
@@ -109,6 +128,10 @@ class Contraptions {
         data['forms'] = new Array<Dynamic>();
         for (ms in this.forms) {
             data['forms'].push(ms.toObject());
+        }
+        data['interf'] = new Array<Dynamic>();
+        for (ms in this.interf) {
+            data['interf'].push(ms.toObject());
         }
         return(StringStatic.jsonStringify(data));
     }
@@ -175,6 +198,7 @@ class Contraptions {
         this.hideLoadingIc();
         this.removeZoom();
         this.musicStop();
+        this.hideAllInterfaces();
     }
 
     public function musicPlay(name:String):Bool {
@@ -448,6 +472,64 @@ class Contraptions {
             return ('');
         } else {
             return (this.forms[this._formcurrent].getValue(nm));
+        }
+    }
+
+    public function hideAllInterfaces():Void {
+        this._interfaceOverlay.removeChildren();
+        this._interfaceOverlay.visible = false;
+    }
+
+    public function hideInterface(nm:String):Void {
+        if (this.interf.exists(nm)) {
+            this.interf[nm].remove();
+        }
+        if (this._interfaceOverlay.numChildren == 0) this._interfaceOverlay.visible = false;
+    }
+
+    public function showInterface(nm:String, px:Int, py:Int):Bool {
+        this.hideInterface(nm);
+        if (this.interf.exists(nm)) {
+            this.interf[nm].start();
+            this.interf[nm].x = px;
+            this.interf[nm].y = py;
+            this._interfaceOverlay.addChild(this.interf[nm]);
+            this._interfaceOverlay.visible = true;
+            return (true);
+        } else {
+            return (false);
+        }
+    }
+
+    public function setInterfaceText(nm:String, tx:String):Bool {
+        if (this.interf.exists(nm)) {
+            return (this.interf[nm].setText(tx));
+        } else {
+            return (false);
+        }
+    }
+
+    public function setInterfaceFrame(nm:String, fr:Int):Bool {
+        if (this.interf.exists(nm)) {
+            return (this.interf[nm].setMapFrame(fr));
+        } else {
+            return (false);
+        }
+    }
+
+    public function pauseInterface(nm:String):Bool {
+        if (this.interf.exists(nm)) {
+            return (this.interf[nm].pauseMap());
+        } else {
+            return (false);
+        }
+    }
+
+    public function playInterface(nm:String):Bool {
+        if (this.interf.exists(nm)) {
+            return (this.interf[nm].playMap());
+        } else {
+            return (false);
         }
     }
 

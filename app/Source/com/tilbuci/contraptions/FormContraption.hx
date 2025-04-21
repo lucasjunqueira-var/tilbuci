@@ -141,9 +141,11 @@ class FormContraption extends Sprite {
                 for (el in this.elem) {
                     switch (el.type) {
                         case 'background':
-                            this._graphics['background'] = new PictureImage();
-                            this._graphics['background'].load(el.file);
-                            this._graphics['background'].visible = true;
+                            if (el.file != '') {
+                                this._graphics['background'] = new PictureImage();
+                                this._graphics['background'].load(el.file);
+                                this._graphics['background'].visible = true;
+                            }
                         case 'btok':
                             this._graphics['btok'] = new PictureImage();
                             this._graphics['btok'].load(el.file);
@@ -154,14 +156,16 @@ class FormContraption extends Sprite {
                             this._graphics['btok'].addEventListener(MouseEvent.MOUSE_OVER, onOkOver);
                             this._graphics['btok'].addEventListener(MouseEvent.MOUSE_OUT, onOkOut);
                         case 'btcancel':
-                            this._graphics['btcancel'] = new PictureImage();
-                            this._graphics['btcancel'].load(el.file);
-                            this._graphics['btcancel'].visible = true;
-                            this._graphics['btcancel'].x = el.x;
-                            this._graphics['btcancel'].y = el.y;
-                            this._graphics['btcancel'].addEventListener(MouseEvent.CLICK, onCancel);
-                            this._graphics['btcancel'].addEventListener(MouseEvent.MOUSE_OVER, onCancelOver);
-                            this._graphics['btcancel'].addEventListener(MouseEvent.MOUSE_OUT, onCancelOut);
+                            if (el.file != '') {
+                                this._graphics['btcancel'] = new PictureImage();
+                                this._graphics['btcancel'].load(el.file);
+                                this._graphics['btcancel'].visible = true;
+                                this._graphics['btcancel'].x = el.x;
+                                this._graphics['btcancel'].y = el.y;
+                                this._graphics['btcancel'].addEventListener(MouseEvent.CLICK, onCancel);
+                                this._graphics['btcancel'].addEventListener(MouseEvent.MOUSE_OVER, onCancelOver);
+                                this._graphics['btcancel'].addEventListener(MouseEvent.MOUSE_OUT, onCancelOut);
+                            }
                         case 'input':
                             this._inputs[el.name] = new TextInput();
                             this._inputs[el.name].x = el.x;

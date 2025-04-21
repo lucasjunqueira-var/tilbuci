@@ -12,6 +12,7 @@ import com.tilbuci.contraptions.CoverContraption;
 import com.tilbuci.contraptions.MenuContraption;
 import com.tilbuci.contraptions.MusicContraption;
 import com.tilbuci.contraptions.FormContraption;
+import com.tilbuci.contraptions.InterfaceContraption;
 import feathers.core.FocusManager;
 import openfl.ui.Keyboard;
 import com.tilbuci.js.ExternBrowser;
@@ -287,6 +288,15 @@ class ScriptParser {
                             GlobalPlayer.contraptions.forms[fc.id] = fc;
                         } else {
                             fc.kill();
+                        }
+                    }
+                } else if (k == 'interf') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'interf'))) {
+                        var it:InterfaceContraption = new InterfaceContraption();
+                        if (it.load(Reflect.field(Reflect.field(ld.json, 'interf'), k2))) {
+                            GlobalPlayer.contraptions.interf[it.id] = it;
+                        } else {
+                            it.kill();
                         }
                     }
                 }
@@ -806,6 +816,46 @@ class ScriptParser {
                     case 'contraption.formsetstepper':
                         if (param.length > 3) {
                             return (GlobalPlayer.contraptions.setFormStepper(this.parseString(param[0]), this.parseInt(param[1]), this.parseInt(param[2]), this.parseInt(param[3])));
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.interface':
+                        if (param.length > 2) {
+                            return(GlobalPlayer.contraptions.showInterface(this.parseString(param[0]), this.parseInt(param[1]), this.parseInt(param[2])));
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.interfacehide':
+                        if (param.length > 0) {
+                            GlobalPlayer.contraptions.hideInterface(this.parseString(param[0]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.interfacehideall':
+                        GlobalPlayer.contraptions.hideAllInterfaces();
+                        return (true);
+                    case 'contraption.interfacetext':
+                        if (param.length > 1) {
+                            return(GlobalPlayer.contraptions.setInterfaceText(this.parseString(param[0]), this.parseString(param[1])));
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.interfaceanimframe':
+                        if (param.length > 1) {
+                            return(GlobalPlayer.contraptions.setInterfaceFrame(this.parseString(param[0]), this.parseInt(param[1])));
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.interfaceanimplay':
+                        if (param.length > 0) {
+                            return(GlobalPlayer.contraptions.playInterface(this.parseString(param[0])));
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.interfaceanimpause':
+                        if (param.length > 0) {
+                            return(GlobalPlayer.contraptions.pauseInterface(this.parseString(param[0])));
                         } else {
                             return (false);
                         }

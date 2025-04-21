@@ -12,6 +12,7 @@ import com.tilbuci.ui.window.contraptions.WindowContrMenu;
 import com.tilbuci.ui.window.contraptions.WindowContrCover;
 import com.tilbuci.ui.window.contraptions.WindowContrMusic;
 import com.tilbuci.ui.window.contraptions.WindowContrForm;
+import com.tilbuci.ui.window.contraptions.WindowContrInterf;
 import com.tilbuci.script.ActionInfo;
 import feathers.core.ToolTipManager;
 import com.tilbuci.script.AssistVariables;
@@ -658,6 +659,9 @@ class Editor extends Drawer {
             case 'form':
                 this.opened = false;
                 this.showWindow('form');
+            case 'interfaces':
+                this.opened = false;
+                this.showWindow('interfaces');
             case 'music':
                 this.opened = false;
                 this.showWindow('music');
@@ -839,6 +843,46 @@ class Editor extends Drawer {
                 ];
                 this.showWindow('mediapicture');
                 this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'window-notes':
+                this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Contraption interface actions.
+        @param  ac  the action id
+    **/
+    private function actionWindowContrInterf(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+            case 'intbackground':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'intbackground'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'intimage':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'intimage'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'intanim':
+                Global.temp['Media/Single'] = [
+                    'type' => 'spritemap', 
+                    'call' => 'intanim'
+                ];
+                this.showWindow('mediaspritemap');
+                this._windows['mediaspritemap'].action('setmode', [
                     'mode' => 'single', 
                 ]);
             case 'window-notes':
@@ -1450,6 +1494,26 @@ class Editor extends Drawer {
                                 'type' => data['type'], 
                                 'name' => data['file'], 
                             ]);
+                        case 'intbackground':
+                            this._windows['interfaces'].action('intbackground', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'intimage':
+                            this._windows['interfaces'].action('intimage', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'intanim':
+                            this._windows['interfaces'].action('intanim', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                                'frames' => data['frames'], 
+                                'frtime' => data['frtime'], 
+                            ]);
                     }
                     Global.temp.remove('Media/Single');
                 }
@@ -1775,6 +1839,7 @@ class Editor extends Drawer {
                 case 'cover': this._windows['cover'] = new WindowContrCover(actionWindowContrCover);
                 case 'music': this._windows['music'] = new WindowContrMusic(actionWindowContrMusic);
                 case 'form': this._windows['form'] = new WindowContrForm(actionWindowContrForm);
+                case 'interfaces': this._windows['interfaces'] = new WindowContrInterf(actionWindowContrInterf);
 
                 case 'visitors': this._windows['visitors'] = new WindowVisitors(actionWindowVisitors, this.build);
                 case 'designnotes': this._windows['designnotes'] = new WindowNotes(actionWindowNotes);

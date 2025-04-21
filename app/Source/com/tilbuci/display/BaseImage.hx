@@ -17,6 +17,11 @@ class BaseImage extends Sprite {
     public var type:String = '';
 
     /**
+        addiional information about the image
+    **/
+    public var extraInfo:Array<String> = [ ];
+
+    /**
         use media time
     **/
     private var _autoTimer:Bool = false;
@@ -59,6 +64,7 @@ class BaseImage extends Sprite {
         this._mediaLoaded = false;
         this.visible = false;
         this._lastMedia = '';
+        this.mouseChildren = false;
     }
 
     /**
@@ -68,6 +74,8 @@ class BaseImage extends Sprite {
         this.removeChildren();
         this.type = null;
         this._onLoad = null;
+        while (this.extraInfo.length > 0) this.extraInfo.shift();
+        this.extraInfo = null;
     }
 
 }

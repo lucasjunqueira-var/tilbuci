@@ -21,6 +21,7 @@ class MenuContraptions extends DrawerMenu {
         this.addButton('btMenus', Global.ln.get('menu-contraptions-menus'), onMenus);
         this.addButton('btMusic', Global.ln.get('menu-contraptions-music'), onMusic);
         this.addButton('btForms', Global.ln.get('menu-contraptions-forms'), onForms);
+        this.addButton('btInterfaces', Global.ln.get('menu-contraptions-interfaces'), onInterfaces);
     }
 
     /**
@@ -37,6 +38,8 @@ class MenuContraptions extends DrawerMenu {
             this.ui.buttons['btMusic'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
             this.ui.buttons['btForms'].enabled = false;
             this.ui.buttons['btForms'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
+            this.ui.buttons['btInterfaces'].enabled = false;
+            this.ui.buttons['btInterfaces'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
         } else {
             this.ui.buttons['btMenus'].enabled = true;
             this.ui.buttons['btMenus'].toolTip = null;
@@ -46,6 +49,8 @@ class MenuContraptions extends DrawerMenu {
             this.ui.buttons['btMusic'].toolTip = null;
             this.ui.buttons['btForms'].enabled = true;
             this.ui.buttons['btForms'].toolTip = null;
+            this.ui.buttons['btInterfaces'].enabled = true;
+            this.ui.buttons['btInterfaces'].toolTip = null;
         }
     }
 
@@ -82,6 +87,13 @@ class MenuContraptions extends DrawerMenu {
     **/
     private  function onForms(evt:TriggerEvent):Void {
         this._ac('form');
+    }
+
+    /**
+        Interfaces
+    **/
+    private  function onInterfaces(evt:TriggerEvent):Void {
+        this._ac('interfaces');
     }
 
 }
