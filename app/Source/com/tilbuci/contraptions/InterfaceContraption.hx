@@ -43,10 +43,10 @@ class InterfaceContraption extends Sprite {
     public function start():Bool {
         if (this.ok) {
             if (!this._created) {
+                var imnum:Int = 1;
                 for (el in this.elem) {
                     var pi:PictureImage;
                     var opt:Array<String>;
-                    var imnum:Int = 1;
                     switch (el.type) {
                         case 'background':
                             if (el.file != '') {
