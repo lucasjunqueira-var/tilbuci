@@ -7,6 +7,7 @@
  package com.tilbuci.script;
 
 /** TILBUCI **/
+import com.tilbuci.player.MovieArea;
 import haxe.macro.Expr.Function;
 import com.tilbuci.contraptions.CoverContraption;
 import com.tilbuci.contraptions.MenuContraption;
@@ -726,7 +727,152 @@ class ScriptParser {
                         ExternEmbed.embed_setfull();
                         return (true);
                     case 'system.quit':
-                        return (GlobalPlayer.appQuit());
+                        #if runtimedesktop
+                            return (GlobalPlayer.appQuit());
+                        #else
+                            return (false);
+                        #end
+                    case 'system.pwainstall':
+                        #if runtimepwa
+                            return (GlobalPlayer.pwaInstall());
+                        #else
+                            return (false);
+                        #end
+                    case 'system.ifhorizontal':
+                        if (GlobalPlayer.area.pOrientation == MovieArea.HORIENTATION) {
+                            if (Reflect.hasField(inf, 'then')) {
+                                return (this.run(Reflect.field(inf, 'then'), true));
+                            } else {
+                                return (true);
+                            }
+                        } else {
+                            if (Reflect.hasField(inf, 'else')) {
+                                return (this.run(Reflect.field(inf, 'else'), true));
+                            } else {
+                                return (true);
+                            }
+                        }
+                    case 'system.ifvertical':
+                        if (GlobalPlayer.area.pOrientation == MovieArea.VORIENTATION) {
+                            if (Reflect.hasField(inf, 'then')) {
+                                return (this.run(Reflect.field(inf, 'then'), true));
+                            } else {
+                                return (true);
+                            }
+                        } else {
+                            if (Reflect.hasField(inf, 'else')) {
+                                return (this.run(Reflect.field(inf, 'else'), true));
+                            } else {
+                                return (true);
+                            }
+                        }
+                    case 'system.ifpwainstalled':
+                        #if runtimepwa
+                            if (ExternBrowser.TBB_installedPwa()) {
+                                if (Reflect.hasField(inf, 'then')) {
+                                    return (this.run(Reflect.field(inf, 'then'), true));
+                                } else {
+                                    return (true);
+                                }
+                            } else {
+                                if (Reflect.hasField(inf, 'else')) {
+                                    return (this.run(Reflect.field(inf, 'else'), true));
+                                } else {
+                                    return (true);
+                                }
+                            }
+                        #else
+                            if (Reflect.hasField(inf, 'else')) {
+                                return (this.run(Reflect.field(inf, 'else'), true));
+                            } else {
+                                return (true);
+                            }
+                        #end
+                    case 'system.ifwebsite':
+                        #if runtimewebsite
+                            if (Reflect.hasField(inf, 'then')) {
+                                return (this.run(Reflect.field(inf, 'then'), true));
+                            } else {
+                                return (true);
+                            }
+                        #else
+                            if (Reflect.hasField(inf, 'else')) {
+                                return (this.run(Reflect.field(inf, 'else'), true));
+                            } else {
+                                return (true);
+                            }
+                        #end
+                    case 'system.ifpwa':
+                        #if runtimepwa
+                            if (Reflect.hasField(inf, 'then')) {
+                                return (this.run(Reflect.field(inf, 'then'), true));
+                            } else {
+                                return (true);
+                            }
+                        #else
+                            if (Reflect.hasField(inf, 'else')) {
+                                return (this.run(Reflect.field(inf, 'else'), true));
+                            } else {
+                                return (true);
+                            }
+                        #end
+                    case 'system.ifdesktop':
+                        #if runtimedesktop
+                            if (Reflect.hasField(inf, 'then')) {
+                                return (this.run(Reflect.field(inf, 'then'), true));
+                            } else {
+                                return (true);
+                            }
+                        #else
+                            if (Reflect.hasField(inf, 'else')) {
+                                return (this.run(Reflect.field(inf, 'else'), true));
+                            } else {
+                                return (true);
+                            }
+                        #end
+                    case 'system.ifmobile':
+                        #if runtimemobile
+                            if (Reflect.hasField(inf, 'then')) {
+                                return (this.run(Reflect.field(inf, 'then'), true));
+                            } else {
+                                return (true);
+                            }
+                        #else
+                            if (Reflect.hasField(inf, 'else')) {
+                                return (this.run(Reflect.field(inf, 'else'), true));
+                            } else {
+                                return (true);
+                            }
+                        #end
+                    case 'system.ifpublish':
+                        #if runtimepublish
+                            if (Reflect.hasField(inf, 'then')) {
+                                return (this.run(Reflect.field(inf, 'then'), true));
+                            } else {
+                                return (true);
+                            }
+                        #else
+                            if (Reflect.hasField(inf, 'else')) {
+                                return (this.run(Reflect.field(inf, 'else'), true));
+                            } else {
+                                return (true);
+                            }
+                        #end
+                    case 'system.ifplayer':
+                        #if tilbuciplayer
+                            if (Reflect.hasField(inf, 'then')) {
+                                return (this.run(Reflect.field(inf, 'then'), true));
+                            } else {
+                                return (true);
+                            }
+                        #else
+                            if (Reflect.hasField(inf, 'else')) {
+                                return (this.run(Reflect.field(inf, 'else'), true));
+                            } else {
+                                return (true);
+                            }
+                        #end
+
                     case 'system.visitoringroup':
                         if ((param.length > 0) && Reflect.hasField(inf, 'then')) {
                             if (GlobalPlayer.ws.groups.contains(this.parseString(param[0]))) {
@@ -863,6 +1009,7 @@ class ScriptParser {
                     
                     // movie actions
                     case 'movie.load':
+                        GlobalPlayer.contraptions.removeContraptions(true);
                         GlobalPlayer.movie.loadMovie(this.parseString(param[0]));
                         return (true);
 

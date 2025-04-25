@@ -251,7 +251,7 @@ class EditorPlayback extends Panel {
         Closes the playback area.
     **/
     private function onClose(evt:TriggerEvent):Void {
-        GlobalPlayer.contraptions.removeContraptions();
+        GlobalPlayer.contraptions.removeContraptions(true);
         GlobalPlayer.mode = Player.MODE_EDITOR;
         GlobalPlayer.area.maskArea(false);
         GlobalPlayer.area.pause();

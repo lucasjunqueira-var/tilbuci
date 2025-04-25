@@ -2,11 +2,12 @@
     "name": "[APPNAME]",
     "short_name": "[APPSHORTNAME]",
     "start_url": "[APPSTART]",
+    "id": "[APPID]", 
     "display": "standalone",
     "background_color": "#000000",
     "theme_color": "[APPCOLOR]",
     "orientation": "[APPORIENTATION]",
-	"scope": "/",
+	"scope": "[APPSCOPE]",
 	"lang": "[APPLANG]",
     "icons": [{
             "src": "favicon.png",

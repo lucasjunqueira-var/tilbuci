@@ -25,19 +25,60 @@
 			var meta = document.getElementById ("viewport");
 			meta.setAttribute ('content', 'width=device-width, initial-scale=' + (2 / window.devicePixelRatio) + ', user-scalable=no');
 		}
-        // iphone/ipad installation popup
-		const isIos = () => {
-		  const userAgent = window.navigator.userAgent.toLowerCase();
-		  return /iphone|ipad|ipod/.test( userAgent );
-		}
+        
+        // check if running on iphone/ipad
+        function TBB_isIos() {
+            const userAgent = window.navigator.userAgent.toLowerCase();
+            return (/iphone|ipad|ipod/.test(userAgent));
+        }
+        
+        function TBB_installedPwa() {
+            if (TBB_isIos()) {
+                return (window.navigator.standalone === true);
+            } else {
+                return (window.matchMedia('(display-mode: standalone)').matches);
+            }
+        }
+        
 		// detects if device is in standalone mode
-		const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+		/*const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
 		if (isIos() && !isInStandaloneMode()) {
-		  this.setState({ showInstallMessage: true });
-		}
+            this.setState({ showInstallMessage: true });
+		}*/
+        
+        // service worker initialize
 		if ('serviceWorker' in navigator) {
-		  navigator.serviceWorker.register('serviceWorker.js');
+            navigator.serviceWorker.register('serviceWorker.js');
 		}
+        
+        // pwa install
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+        function TBB_showInstallPrompt() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        // PWA installation accepted
+                        deferredPrompt = null;
+                    } else {
+                        // PWA installation dismissed
+                    }
+                });
+            }
+        }
+        
+        function checkPwa() {
+            if (TBB_installedPwa()) {
+                console.log('está instalado');
+            } else {
+                console.log('não instalado');
+            }
+        }
+        setTimeout(checkPwa, 1500);
 	</script>
 	<style>
 		[SITEFONTS]

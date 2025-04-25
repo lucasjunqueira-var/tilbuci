@@ -191,14 +191,14 @@ class Contraptions {
         }
     }
 
-    public function removeContraptions():Void {
+    public function removeContraptions(interf:Bool = false):Void {
         this.hideCover();
         this.menuHide();
         this.hideForm();
         this.hideLoadingIc();
         this.removeZoom();
         this.musicStop();
-        this.hideAllInterfaces();
+        if (interf) this.hideAllInterfaces();
     }
 
     public function musicPlay(name:String):Bool {

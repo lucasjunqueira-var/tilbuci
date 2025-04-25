@@ -39,6 +39,21 @@ extern class ExternBrowser {
     **/
     static function TBB_isMobile():Bool;
 
+    /**
+        Checks if running from an iPhone or an iPad.
+    **/
+    static function TBB_isIos():Bool;
+
+    /**
+        Shows a PWA install prompt.
+    **/
+    static function TBB_showInstallPrompt():Void;
+
+    /**
+       Running from an installed pwa?
+    **/
+    static function TBB_installedPwa():Bool;
+
 }
 
 #end

@@ -250,6 +250,25 @@ class GlobalPlayer {
         Quits a desktop application.
         @return was the quit command sent?
     **/
+    public static function pwaInstall():Bool {
+        #if (js && html5)
+            var ok:Bool = false;
+            try {
+                ExternBrowser.TBB_showInstallPrompt();
+                ok = true;
+            } catch (e) { 
+                ok = false;
+            }
+            return (ok);
+        #else 
+            return (false);
+        #end
+    }
+
+    /**
+        Enters fullscreen.
+        @return was the quit command sent?
+    **/
     public static function fullscreen():Bool {
         #if (js && html5)
             var ok:Bool = false;

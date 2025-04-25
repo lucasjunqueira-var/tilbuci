@@ -737,7 +737,17 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-systemcopytext'), a: 'system.copytext', p: [
                     { t: 's', n: Global.ln.get('acinfo-systemcopytext-p1'), v: '' }, 
                 ], e: [ ] },  
+                { n: Global.ln.get('acinfo-systemifhorizontal'), a: 'system.ifhorizontal', p: [ ], e: [ 'then', 'else' ] }, 
+                { n: Global.ln.get('acinfo-systemifvertical'), a: 'system.ifvertical', p: [ ], e: [ 'then', 'else' ] }, 
                 { n: Global.ln.get('acinfo-systemquit'), a: 'system.quit', p: [ ], e: [ ] },  
+                { n: Global.ln.get('acinfo-systempwainstall'), a: 'system.pwainstall', p: [ ], e: [ ] },  
+                { n: Global.ln.get('acinfo-systemifwebsite'), a: 'system.ifwebsite', p: [ ], e: [ 'then', 'else' ] }, 
+                { n: Global.ln.get('acinfo-systemifpwa'), a: 'system.ifpwa', p: [ ], e: [ 'then', 'else' ] }, 
+                { n: Global.ln.get('acinfo-systemifpwainstalled'), a: 'system.ifpwainstalled', p: [ ], e: [ 'then', 'else' ] }, 
+                { n: Global.ln.get('acinfo-systemifdesktop'), a: 'system.ifdesktop', p: [ ], e: [ 'then', 'else' ] }, 
+                { n: Global.ln.get('acinfo-systemifmobile'), a: 'system.ifmobile', p: [ ], e: [ 'then', 'else' ] }, 
+                { n: Global.ln.get('acinfo-systemifpublish'), a: 'system.ifpublish', p: [ ], e: [ 'then', 'else' ] }, 
+                { n: Global.ln.get('acinfo-systemifplayer'), a: 'system.ifplayer', p: [ ], e: [ 'then', 'else' ] }, 
                 { n: Global.ln.get('acinfo-systemvisitoringroup'), a: 'system.visitoringroup', p: [
                     { t: 's', n: Global.ln.get('acinfo-systemvisitoringroup-p1'), v: '' }, 
                 ], e: [ 'then', 'else' ] },   

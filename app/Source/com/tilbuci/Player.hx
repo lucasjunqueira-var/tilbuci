@@ -715,6 +715,19 @@ class Player extends Sprite {
                     this._touchTimer.run = this.endTouch;
                 }
             }
+        } else if ((Date.now().getTime() - this._touchStartTime) > 1200) {
+            GlobalPlayer.canTrigger = false;            
+            if (!GlobalPlayer.parser.runInput('touchhold')) {
+                GlobalPlayer.canTrigger = true;
+            }
+            if (!GlobalPlayer.canTrigger) {
+                if (this._touchTimer != null) {
+                    try { this._touchTimer.stop(); } catch (e) { }
+                    this._touchTimer = null;
+                }
+                this._touchTimer = new Timer(300);
+                this._touchTimer.run = this.endTouch;
+            }
         }
     }
 

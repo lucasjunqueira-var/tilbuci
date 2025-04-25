@@ -1695,6 +1695,8 @@ class Movie extends BaseClass
                                 // save at the sites folder
                                 if (!is_dir('../sites')) $this->createDir('../sites');
                                 if (is_dir('../sites/'.$movie)) $this->removeFileDir('../sites/'.$movie);
+                                $redirect = file_get_contents('../../export/pwa/redirect.php');
+                                file_put_contents('../sites/index.php', $redirect);
                                 $this->copyDir(('../../export/site-'.$movie), ('../sites/'.$movie));
                                 $this->removeFileDir('../../export/site-'.$movie);
                                 if ($pub) {
@@ -1788,8 +1790,7 @@ class Movie extends BaseClass
                                 $url . 'assets/tilbuci/btClose.png', 
                                 $url . 'assets/tilbuci/btOk.png', 
                                 $url . 'manifest/default.json', 
-                                $url . 'movie/' . $movie . '.movie/movie.json', 
-                                $url . 'movie/' . $movie . '.movie/strings.json'
+                                $url . 'movie/' . $movie . '.movie/movie.json'
                             ];
                             // fonts
                             $fonts = [ ];
@@ -1880,6 +1881,9 @@ class Movie extends BaseClass
                             $this->info['identify'] = false;
                             $this->info['vsgroups'] = '';
                             file_put_contents(('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/movie.json'), json_encode($this->info));
+                            // offline movie files
+                            if (is_file('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/strings.json')) $offline[] = $url . 'movie/'.$movie.'.movie/strings.json';
+                            if (is_file('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/contraptions.json')) $offline[] = $url . 'movie/'.$movie.'.movie/contraptions.json';
                             // check offline scenes
                             $collections = [ ];
                             $cks = $this->queryAll('SELECT sc_id, sc_collections FROM scenes WHERE sc_movie=:mv AND sc_published=:pub', [ ':mv' => $movie, ':pub' => '1' ]);
@@ -1894,7 +1898,7 @@ class Movie extends BaseClass
                             }
                             // check offline collections
                             foreach ($collections as $vc) {
-                                $offline[] = $url . 'movie/'.$movie.'.movie/collection/' . $vc . '.json';
+                                if (is_file('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/collection/' . $vc . '.json')) $offline[] = $url . 'movie/'.$movie.'.movie/collection/' . $vc . '.json';
                                 // offline collection assets
                                 $cka = $this->queryAll('SELECT at_type, at_file1, at_file2, at_file3, at_file4, at_file5 FROM assets WHERE at_collection=:col AND FIND_IN_SET(at_type, :types)', [
                                     ':col' => $movie . $vc, 
@@ -1903,7 +1907,11 @@ class Movie extends BaseClass
                                 foreach ($cka as $va) {
                                     for ($ia=1; $ia<=5; $ia++) {
                                         $path = $url . 'movie/'.$movie.'.movie/media/' . $va['at_type'] . '/' . $va['at_file'.$ia];
-                                        if (!in_array($path, $offline)) $offline[] = $path;    
+                                        if (!in_array($path, $offline)) {
+                                            if (is_file('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/' . $va['at_type'] . '/' . $va['at_file'.$ia])) {
+                                                $offline[] = $path; 
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -1933,16 +1941,20 @@ class Movie extends BaseClass
                                     '[APPNAME]', 
                                     '[APPSHORTNAME]', 
                                     '[APPSTART]', 
+                                    '[APPID]', 
                                     '[APPCOLOR]', 
                                     '[APPORIENTATION]', 
                                     '[APPLANG]', 
+                                    '[APPSCOPE]'
                                 ], [
                                     $name, 
                                     $shortname, 
                                     ($url . 'index.html'), 
+                                    ($url . 'index.html'), 
                                     $color, 
                                     $orientation, 
                                     $lang, 
+                                    $url
                                 ], $manifest);
                             file_put_contents('../../export/pwa-'.$movie.'/manifest.json', $manifest);
                             if ($location == 'zip') {
@@ -1973,6 +1985,8 @@ class Movie extends BaseClass
                                 // save at the pwa folder
                                 if (!is_dir('../pwa')) $this->createDir('../pwa');
                                 if (is_dir('../pwa/'.$movie)) $this->removeFileDir('../pwa/'.$movie);
+                                $redirect = file_get_contents('../../export/pwa/redirect.php');
+                                file_put_contents('../pwa/index.php', $redirect);
                                 $this->copyDir(('../../export/pwa-'.$movie), ('../pwa/'.$movie));
                                 $this->removeFileDir('../../export/pwa-'.$movie);
                                 if ($pub) {
