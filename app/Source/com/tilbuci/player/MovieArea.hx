@@ -158,6 +158,16 @@ class MovieArea extends Sprite {
     private var _overlays:Map<String, Sprite> = [ ];
 
     /**
+        display area below the scene
+    **/
+    private var _bloverlay:Sprite;
+
+    /**
+        registered overlays below content
+    **/
+    private var _bloverlays:Map<String, Sprite> = [ ];
+
+    /**
         movie background
     **/
     private var _bg:Shape;
@@ -221,6 +231,7 @@ class MovieArea extends Sprite {
         this._mask = new Shape();
         this._holder = new Sprite();
         this._overlay = new Sprite();
+        this._bloverlay = new Sprite();
         this._uiBg = new Shape();
         this._uiBg.graphics.beginFill(0, 0.5);
         this._uiBg.graphics.drawRect(0, 0, 32, 32);
@@ -231,6 +242,7 @@ class MovieArea extends Sprite {
         this._inputPanel = new PlayerInput(this._uiBg);
         this._uiArea.addChild(this._inputPanel);
         this._holder.addChild(this._bg);
+        this._holder.addChild(this._bloverlay);
         this._holder.addChild(this._scene);
         this._holder.addChild(this._inputArea);
         this._holder.addChild(this._overlay);
@@ -874,30 +886,52 @@ class MovieArea extends Sprite {
     /**
         Gets a reference to an overlay layer.
         @param  name    the overlay name (creates one if doesn't exist)
+        @param  below   get overley below movie content?
         @return a reference to the overlay
     **/
-    public function getOverlay(name:String):Sprite {
-        if (!this._overlays.exists(name)) {
-            this._overlays[name] = new Sprite();
-            this._overlay.addChild(this._overlays[name]);
+    public function getOverlay(name:String, below:Bool = false):Sprite {
+        if (below) {
+            if (!this._bloverlays.exists(name)) {
+                this._bloverlays[name] = new Sprite();
+                this._bloverlay.addChild(this._bloverlays[name]);
+            }
+            return (this._bloverlays[name]);
+        } else {
+            if (!this._overlays.exists(name)) {
+                this._overlays[name] = new Sprite();
+                this._overlay.addChild(this._overlays[name]);
+            }
+            return (this._overlays[name]);
         }
-        return (this._overlays[name]);
     }
 
     /**
         Removes an overlay layer.
         @param  name    the layer name to remove
+        @param  below   overlay below content?
         @return was the layer found and removed?
     **/
-    public function removeOverlay(name:String):Bool {
-        if (this._overlays.exists(name)) {
-            this._overlay.removeChild(this._overlays[name]);
-            this._overlays[name].removeChildren();
-            this._overlays[name].graphics.clear();
-            this._overlays.remove(name);
-            return (true);
+    public function removeOverlay(name:String, below:Bool = false):Bool {
+        if (below) {
+            if (this._bloverlays.exists(name)) {
+                this._bloverlay.removeChild(this._bloverlays[name]);
+                this._bloverlays[name].removeChildren();
+                this._bloverlays[name].graphics.clear();
+                this._bloverlays.remove(name);
+                return (true);
+            } else {
+                return (false);
+            }
         } else {
-            return (false);
+            if (this._overlays.exists(name)) {
+                this._overlay.removeChild(this._overlays[name]);
+                this._overlays[name].removeChildren();
+                this._overlays[name].graphics.clear();
+                this._overlays.remove(name);
+                return (true);
+            } else {
+                return (false);
+            }
         }
     }
 
@@ -952,6 +986,10 @@ class MovieArea extends Sprite {
         this._overlays = null;
         this._overlay.removeChildren();
         this._overlay = null;
+        for (o in this._bloverlays.keys()) this.removeOverlay(o, true);
+        this._bloverlays = null;
+        this._bloverlay.removeChildren();
+        this._bloverlay = null;
         for (i in this._instances.keys()) {
             this._instances[i].kill();
             this._instances.remove(i);
@@ -1209,6 +1247,7 @@ class MovieArea extends Sprite {
     private function place():Void {
         // removing the overlay display
         this._holder.removeChild(this._overlay);
+        this._holder.removeChild(this._bloverlay);
 
         // setting correct scale
         if (this.pOrientation == MovieArea.VORIENTATION) {
@@ -1252,6 +1291,11 @@ class MovieArea extends Sprite {
             else if (GlobalPlayer.multiply > 5) GlobalPlayer.multiply = 5;
         
         // returning the overlay display
+        this._holder.removeChildren();
+        this._holder.addChild(this._bg);
+        this._holder.addChild(this._bloverlay);
+        this._holder.addChild(this._scene);
+        this._holder.addChild(this._inputArea);
         this._holder.addChild(this._overlay);
 
         // warn plugins

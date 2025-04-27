@@ -515,14 +515,21 @@ class Player extends Sprite {
             // movie start actions
             if (GlobalPlayer.mode != Player.MODE_EDITOR) if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);
             // warn plugins
-            //if (GlobalPlayer.mode == Player.MODE_PLAYER) for (p in GlobalPlayer.plugins) {
+            var plgs:Array<String> = [ ];
             if (true) for (p in GlobalPlayer.plugins) {
-                if (p.active && p.ready) p.info.onNewMovie(GlobalPlayer.mdata.title, GlobalPlayer.movie.mvId, GlobalPlayer.mdata.screen.big, GlobalPlayer.mdata.screen.small);
+                if (p.active) {
+                    plgs.push(p.pltitle + ' (' + p.plname + ')');
+                    p.info.onNewMovie(GlobalPlayer.mdata.title, GlobalPlayer.movie.mvId, GlobalPlayer.mdata.screen.big, GlobalPlayer.mdata.screen.small);
+                }
             }
             // callback
             if (GlobalPlayer.callback != null) {
                 GlobalPlayer.callback('movieload', ['id' => GlobalPlayer.movie.mvId]);
             }
+            // print movie load
+            trace(GlobalPlayer.mdata.title + ' movie loaded.');
+            if (plgs.length == 0) trace ('No plugins used.');
+                else trace('Plugins used: ' + plgs.join(', ') + '.');
             // event
             this.dispatchEvent(new TilBuciEvent(TilBuciEvent.MOVIE_LOADED, [
                 'id' => GlobalPlayer.movie.mvId, 

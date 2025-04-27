@@ -13,6 +13,7 @@ import com.tilbuci.ui.window.contraptions.WindowContrCover;
 import com.tilbuci.ui.window.contraptions.WindowContrMusic;
 import com.tilbuci.ui.window.contraptions.WindowContrForm;
 import com.tilbuci.ui.window.contraptions.WindowContrInterf;
+import com.tilbuci.ui.window.contraptions.WindowContrBackground;
 import com.tilbuci.script.ActionInfo;
 import feathers.core.ToolTipManager;
 import com.tilbuci.script.AssistVariables;
@@ -656,6 +657,9 @@ class Editor extends Drawer {
             case 'cover':
                 this.opened = false;
                 this.showWindow('cover');
+            case 'background':
+                this.opened = false;
+                this.showWindow('background');
             case 'form':
                 this.opened = false;
                 this.showWindow('form');
@@ -800,6 +804,37 @@ class Editor extends Drawer {
                 Global.temp['Media/Single'] = [
                     'type' => 'picture', 
                     'call' => 'portraitcover'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'window-notes':
+                this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Contraption background actions.
+        @param  ac  the action id
+    **/
+    private function actionWindowContrBackground(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+            case 'landscape':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'landscapebackground'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'portrait':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'portraitbackground'
                 ];
                 this.showWindow('mediapicture');
                 this._windows['mediapicture'].action('setmode', [
@@ -1470,6 +1505,18 @@ class Editor extends Drawer {
                                 'type' => data['type'], 
                                 'name' => data['file'], 
                             ]);
+                        case 'landscapebackground':
+                            this._windows['background'].action('landscape', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'portraitbackground':
+                            this._windows['background'].action('portrait', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
                         case 'music':
                             this._windows['music'].action('music', [
                                 'file' => data['path'] + data['file'], 
@@ -1837,6 +1884,7 @@ class Editor extends Drawer {
 
                 case 'menus': this._windows['menus'] = new WindowContrMenu(actionWindowContrMenu);
                 case 'cover': this._windows['cover'] = new WindowContrCover(actionWindowContrCover);
+                case 'background': this._windows['background'] = new WindowContrBackground(actionWindowContrBackground);
                 case 'music': this._windows['music'] = new WindowContrMusic(actionWindowContrMusic);
                 case 'form': this._windows['form'] = new WindowContrForm(actionWindowContrForm);
                 case 'interfaces': this._windows['interfaces'] = new WindowContrInterf(actionWindowContrInterf);

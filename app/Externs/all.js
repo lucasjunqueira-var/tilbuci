@@ -62,6 +62,18 @@ function TBB_isMobile() {
     return check;
 }
 
+/**
+ * Checks if running from an iPhone or an iPad.
+ */
+function TBB_isIos() {
+    if (TBB_isMobile()) {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        return (/iphone|ipad|ipod/.test(userAgent));
+    } else {
+        return (false);
+    }
+}
+
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this

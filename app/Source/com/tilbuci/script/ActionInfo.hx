@@ -830,6 +830,10 @@ class ActionInfo {
                     { t: 's', n: Global.ln.get('acinfo-showcover-p1'), v: '' }, 
                 ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-hidecover'), a: 'contraption.coverhide', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-showbg'), a: 'contraption.background', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showbg-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-hidebg'), a: 'contraption.backgroundhide', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-showloading'), a: 'contraption.showloading', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-hideloading'), a: 'contraption.hideloading', p: [ ], e: [ ] },
                 { n: Global.ln.get('acinfo-musicplay'), a: 'contraption.musicplay', p: [

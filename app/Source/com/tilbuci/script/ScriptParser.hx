@@ -14,6 +14,7 @@ import com.tilbuci.contraptions.MenuContraption;
 import com.tilbuci.contraptions.MusicContraption;
 import com.tilbuci.contraptions.FormContraption;
 import com.tilbuci.contraptions.InterfaceContraption;
+import com.tilbuci.contraptions.BackgroundContraption;
 import feathers.core.FocusManager;
 import openfl.ui.Keyboard;
 import com.tilbuci.js.ExternBrowser;
@@ -262,6 +263,15 @@ class ScriptParser {
                             GlobalPlayer.contraptions.covers[cv.id] = cv;
                         } else {
                             cv.kill();
+                        }
+                    }
+                } else if (k == 'backgrounds') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'backgrounds'))) {
+                        var bg:BackgroundContraption = new BackgroundContraption();
+                        if (bg.load(Reflect.field(Reflect.field(ld.json, 'backgrounds'), k2))) {
+                            GlobalPlayer.contraptions.backgrounds[bg.id] = bg;
+                        } else {
+                            bg.kill();
                         }
                     }
                 } else if (k == 'menus') {
@@ -914,6 +924,15 @@ class ScriptParser {
                         }
                     case 'contraption.coverhide':
                         GlobalPlayer.contraptions.hideCover();
+                        return (true);
+                    case 'contraption.background':
+                        if (param.length > 0) {
+                            return (GlobalPlayer.contraptions.showBackground(this.parseString(param[0])));
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.backgroundhide':
+                        GlobalPlayer.contraptions.hideBackground();
                         return (true);
                     case 'contraption.showloading':
                         GlobalPlayer.contraptions.showLoadingIc();

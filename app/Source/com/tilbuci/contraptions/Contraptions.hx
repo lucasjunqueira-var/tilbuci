@@ -28,6 +28,10 @@ class Contraptions {
     public var covers:Map<String, CoverContraption> = [ ];
     private var _coverOverlay:Sprite;
 
+    // background contraption
+    public var backgrounds:Map<String, BackgroundContraption> = [ ];
+    private var _backgroundOverlay:Sprite;
+
     // scene loading icon
     private var _loadingOverlay:Sprite;
     private var _loadingIc:SpritemapImage;
@@ -56,6 +60,8 @@ class Contraptions {
     private function getLayers():Void {
         if (this._coverOverlay == null) this._coverOverlay = GlobalPlayer.area.getOverlay('contraptions-cover');
         this._coverOverlay.mouseEnabled = false;
+        if (this._backgroundOverlay == null) this._backgroundOverlay = GlobalPlayer.area.getOverlay('contraptions-background', true);
+        this._backgroundOverlay.mouseEnabled = false;
         if (this._zoomOverlay == null) this._zoomOverlay = GlobalPlayer.area.getOverlay('contraptions-zoom');
         if (this._formsOverlay == null) this._formsOverlay = GlobalPlayer.area.getOverlay('contraptions-forms');
         if (this._menusOverlay == null) this._menusOverlay = GlobalPlayer.area.getOverlay('contraptions-menu');
@@ -71,6 +77,11 @@ class Contraptions {
             this.covers.remove(k);
         }
         this._coverOverlay.graphics.clear();
+        for (k in this.backgrounds.keys()) {
+            this.backgrounds[k].kill();
+            this.backgrounds.remove(k);
+        }
+        this._backgroundOverlay.graphics.clear();
         for (k in this.menus.keys()) {
             this.menus[k].kill();
             this.menus.remove(k);
@@ -97,6 +108,10 @@ class Contraptions {
             this.covers[k].kill();
             this.covers.remove(k);
         }
+        for (k in this.backgrounds.keys()) {
+            this.backgrounds[k].kill();
+            this.backgrounds.remove(k);
+        }
         for (k in this.musics.keys()) {
             this.musics[k].kill();
             this.musics.remove(k);
@@ -116,6 +131,10 @@ class Contraptions {
         data['covers'] = new Array<Dynamic>();
         for (cv in this.covers) {
             data['covers'].push(cv.toObject());
+        }
+        data['backgrounds'] = new Array<Dynamic>();
+        for (cv in this.backgrounds) {
+            data['backgrounds'].push(cv.toObject());
         }
         data['menus'] = new Array<Dynamic>();
         for (mn in this.menus) {
@@ -191,14 +210,17 @@ class Contraptions {
         }
     }
 
-    public function removeContraptions(interf:Bool = false):Void {
-        this.hideCover();
+    public function removeContraptions(all:Bool = false):Void {
         this.menuHide();
         this.hideForm();
         this.hideLoadingIc();
         this.removeZoom();
-        this.musicStop();
-        if (interf) this.hideAllInterfaces();
+        if (all) {
+            this.musicStop();
+            this.hideCover();
+            this.hideBackground();
+            this.hideAllInterfaces();
+        }
     }
 
     public function musicPlay(name:String):Bool {
@@ -429,6 +451,25 @@ class Contraptions {
         this._coverOverlay.removeChildren();
         this._coverOverlay.visible = false;
         this._coverOverlay.mouseEnabled = false;
+    }
+
+    public function showBackground(name:String):Bool {
+        this.getLayers();
+        if (this.backgrounds.exists(name)) {
+            this._backgroundOverlay.removeChildren();
+            this._backgroundOverlay.addChild(this.backgrounds[name].getCover());
+            this._backgroundOverlay.visible = true;
+            return (true);
+        } else {
+            return (false);
+        }
+    }
+
+    public function hideBackground():Void {
+        this.getLayers();
+        this._backgroundOverlay.removeChildren();
+        this._backgroundOverlay.visible = false;
+        this._backgroundOverlay.mouseEnabled = false;
     }
 
     public function hideForm():Void {

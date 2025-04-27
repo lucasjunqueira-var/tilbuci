@@ -35,7 +35,13 @@ class Plugin extends EventDispatcher {
     **/
     public var pltitle(get, null):String;
     private var _pltitle:String;
-    private function get_pltitle():String { return (this._pltitle); }
+    private function get_pltitle():String {
+        if ((this._pltitle == null) || (this._pltitle == '')) {
+            return (this._plname);
+        } else {
+            return (this._pltitle);
+        }
+    }
 
     /**
         plugin server file (without ".php")
