@@ -44,6 +44,12 @@ Discover who is visiting your creations with various statistics possibilities wh
 
 ![access](https://tilbuci.com.br/site/wp-content/uploads/2024/09/visitor-1024x576.png)
 
+## Contraptions
+
+Several automation options simplify the creation of common structures such as menus, forms, backgrounds, and interfaces.
+
+![contraptions](https://tilbuci.com.br/files/github/contraptions.jpg)
+
 ## Various exporting options
 
 Use the TilBuci own player or export your creation in many formats!
@@ -62,6 +68,16 @@ Use the TilBuci own player or export your creation in many formats!
     
 
 ![exporting](https://tilbuci.com.br/site/wp-content/uploads/2024/09/home06-1024x576.jpg)
+
+## Javascript disclaimer
+
+TilBuci is provided in the form of a Javascript archive. Even though the non-minified version is distributed together with the compressed one, it should not be considered the source code of this project: use the code in this repository as the source. It is written in Haxe and then converted to Javascript.
+
+The base software does not make any requests to domains other than the one where it is installed, not even to TilBuci's own website, as can be seen in the source code. Plugins can be used to meet the need for connections to other domains. Whenever a new movie is loaded by TilBuci, information about which plugins are currently active is traced in the browser console. This way, visitors can confirm whether the content they are viewing is made only with the base software or if a plugin is used.
+
+## Visitor tracking disclaimer
+
+TilBuci offers features for tracking visitors' access to content. If visitor identification is not used (another feature available in the software that asks for visitor confirmation during a login process), the information recorded does not contain data that can be used to identify the visitor, not even as loose as IP addresses. Plugins, however, such as Google Analytics, may be used by content creators for this tracking.
 
 ## A free, open-source tool
 
