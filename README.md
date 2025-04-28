@@ -16,13 +16,13 @@ Support both horizontal and vertical screens in the same movie. The software eve
 
 ## Rich media support
 
-Use pictures, audios, videos, html and many more media types in your creations. You can also embed your own HTML5 projects made with other tools seamlessly into the content.
+Use pictures, audios, videos, html and many more media types in your creations. You can even embed your own HTML5 projects made with other tools seamlessly into the content.
 
 ![media](https://tilbuci.com.br/site/wp-content/uploads/2024/09/home03-1024x576.jpg)
 
 ## Simple interaction setting methods
 
-Use the action block editor to easily add interaction to your creations. Expert users may also access the code editor directly.
+Use the action block editor to easily add interaction to your creations. Expert users may also access the code editor directly. If you want to learn more about creating interactions in TilBuci, check out the Scripting Actions manual: https://tilbuci.com.br/files/TilBuci-ScriptingActions.pdf
 
 ![interaction](https://tilbuci.com.br/site/wp-content/uploads/2024/09/home04-1024x576.jpg)
 
