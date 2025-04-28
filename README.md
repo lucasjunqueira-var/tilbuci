@@ -85,6 +85,8 @@ TilBuci is a free, open source tool, licensed under MPL 2.0, developed using [Ha
 
 Please access the TilBuci website for more information: [https://tilbuci.com.br/](https://tilbuci.com.br/)
 
+Want to learn more about creating interactions in TilBuci? Check out the TilBuci Scripting Actions manual: https://tilbuci.com.br/files/TilBuci-ScriptingActions.pdf
+
 You can also try TilBuci online before even downloading and installing it. Just access [https://try.tilbuci.com.br/](https://try.tilbuci.com.br/)
 
 Feel free to send impressions and discussions to our e-mail: [doggo@tilbuci.com.br](mailto:doggo@tilbuci.com.br)
