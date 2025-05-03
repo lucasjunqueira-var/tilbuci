@@ -693,16 +693,6 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
-
-
-                        if (this.eventSend == null) {
-                            return (false);
-                        } else {
-                            var map:Map<String, String> = [ ];
-                            for (i in 0...param.length) map['v' + i] = this.parseString(param[i]);
-                            this.eventSend(map);
-                            return (true);
-                        }
                     case 'system.openembed':
                         if (GlobalPlayer.mode == Player.MODE_EDITOR) {
                             return (true);

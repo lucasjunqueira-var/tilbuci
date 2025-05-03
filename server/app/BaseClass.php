@@ -66,6 +66,21 @@ class BaseClass
 	public function decrypt($string) {
 		return(openssl_decrypt($string, 'AES-128-CTR', $this->conf['encKey'], 0, $this->conf['encVec']));
 	}
+    
+    /**
+     * Encrypt a TilBuci json file.
+     * @param string $movie the movie ID
+     * @param string $content the json file content
+     * @return string the encrypted content
+     */
+    public function encryptTBFile($movie, $content) {
+        $iv = openssl_random_pseudo_bytes(16);
+        $encrypted = openssl_encrypt($content, 'AES-256-CBC', mb_strtolower(md5($movie)), OPENSSL_RAW_DATA, $iv);
+        $combined = $iv . $encrypted;
+        $txt = 'TB' . base64_encode($combined);
+        $txt = substr($txt, 0, (strlen($txt) - 9)) . 'b' . substr($txt, -9);
+        return ($txt);
+    }
 	
 	/**
 	 * Loads a language file.

@@ -488,7 +488,7 @@ class PlayerInput extends Panel {
         if (this._inputType == 'secretkey') {
             var secretkey:String = '';
             if (GlobalPlayer.mdata.key != '') {
-                secretkey = StringStatic.decrypt(GlobalPlayer.mdata.key, 'skey', GlobalPlayer.secret);
+                secretkey = StringStatic.decryptKey(GlobalPlayer.mdata.key, 'skey', GlobalPlayer.secret);
             }
             if ((this._inputText.text == secretkey) || (GlobalPlayer.mdata.key == '')) {
                 GlobalPlayer.secretKey = GlobalPlayer.mdata.key;

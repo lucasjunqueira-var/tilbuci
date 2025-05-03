@@ -184,6 +184,11 @@ class MovieData extends DefBase {
     public var loadingic:Array<String> = [ '', '', '' ];
 
     /**
+        encrypt movie files?
+    **/
+    public var encrypted:Bool = false;
+
+    /**
         highlight color (int value)
     **/
     public var highlightInt:Null<Int> = null;
@@ -227,6 +232,7 @@ class MovieData extends DefBase {
         this.highlight = '';
         this.highlightInt = null;
         this.loadingic = [ '', '', '' ];
+        this.encrypted = false;
         this.screen.clear();
         while (this.fonts.length > 0) {
             var ft:FontInfo = this.fonts.shift();
@@ -336,6 +342,11 @@ class MovieData extends DefBase {
                 }
             } else {
                 this.loadingic = [ '', '', '' ];
+            }
+            if (data.exists('encrypted')) {
+                this.encrypted = data['encrypted'];
+            } else {
+                this.encrypted = false;
             }
             GlobalPlayer.mdata = this;
             // setting animation transition
@@ -508,6 +519,7 @@ class MovieData extends DefBase {
             fonts: this.fonts, 
             highlight: this.highlight, 
             loadingic: this.loadingic, 
+            encrypted: this.encrypted, 
             inputs: this.inputs
         }));
     }

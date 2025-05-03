@@ -7,6 +7,8 @@
  package;
 
 /** OPENFL **/
+import haxe.io.Bytes;
+import com.tilbuci.data.DataLoader;
 import openfl.ui.Keyboard;
 import openfl.events.KeyboardEvent;
 import com.tilbuci.event.TilBuciEvent;
@@ -138,8 +140,9 @@ class Main extends Application
 			this._player.setSize(this.stage.stageWidth, this.stage.stageHeight);
 			this.stage.addChild(this._player);
 			this.stage.addEventListener(Event.RESIZE, onStageResize);
-			//this.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		}
+
+		this.debug();
 	}
 
 	/**
@@ -150,23 +153,10 @@ class Main extends Application
 	}
 
 	/**
-		Key pressed.
+		Debug
 	**/
-	private function onKeyDown(evt:KeyboardEvent):Void {
-		switch (evt.keyCode) {
-			case Keyboard.UP:
-				this._player.runAction('{ "ac": "scene.navigate", "param": [ "up" ] }');
-			case Keyboard.DOWN:
-				this._player.runAction('{ "ac": "scene.navigate", "param": [ "down" ] }');
-			case Keyboard.LEFT:
-				this._player.runAction('{ "ac": "scene.navigate", "param": [ "left" ] }');
-			case Keyboard.RIGHT:
-				this._player.runAction('{ "ac": "scene.navigate", "param": [ "right" ] }');
-			case Keyboard.PAGE_UP:
-				this._player.runAction('{ "ac": "scene.navigate", "param": [ "nout" ] }');
-			case Keyboard.PAGE_DOWN:
-				this._player.runAction('{ "ac": "scene.navigate", "param": [ "nin" ] }');
-		}
+	private function debug():Void {
+		
 	}
 	
 }

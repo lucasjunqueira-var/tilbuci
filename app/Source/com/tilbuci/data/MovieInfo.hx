@@ -108,6 +108,7 @@ class MovieInfo {
         @param  path    path to the movie folder
     **/
     public function loadMovie(path:String):Void {
+        GlobalPlayer.loadingMovie = path;
         this._mvId = '';
         this._scId = '';
         this.data.clear();

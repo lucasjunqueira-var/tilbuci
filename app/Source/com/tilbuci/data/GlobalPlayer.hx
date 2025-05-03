@@ -108,6 +108,11 @@ class GlobalPlayer {
     public static var movie:MovieInfo = null;
 
     /**
+        movie being loaded
+    **/
+    public static var loadingMovie:String = '';
+
+    /**
         current movie data
     **/
     public static var mdata:MovieData = null;

@@ -92,40 +92,34 @@ if (is_file('player.json')) {
 if ($mode != 'editor') {
 	if ($movie != '') {
 		$link .= '?mv='.urlencode($movie);
-		if (is_file('../movie/'.$movie.'.movie/movie.json')) {
-			$json = json_decode(file_get_contents('../movie/'.$movie.'.movie/movie.json'), true);
-			if (json_last_error() == JSON_ERROR_NONE) {
-				$title = $json['title'];
-				$about = $json['description'];
-				$tags = count($json['tags']) == 0 ? '' : implode(',', $json['tags']);
-				if (($json['favicon'] != '') && ($baselink != '')) $favicon = $baselink . 'movie/' . $movie . '.movie/media/picture/' . $json['favicon'];
-				if (($json['image'] != '') && ($baselink != '')) $image = $baselink . 'movie/' . $movie . '.movie/media/picture/' . $json['image'];
-			}
-		}
+        $ck = $data->queryAll('SELECT mv_title, mv_about, mv_tags, mv_favicon, mv_image FROM movies WHERE mv_id=:mv', [':mv'=>$movie]);
+        if (count($ck) > 0) {
+            $title = $ck[0]['mv_title'];
+            $about = $ck[0]['mv_about'];
+            $tags = $ck[0]['mv_tags'];
+            if (($ck[0]['mv_favicon'] != '') && ($baselink != '')) $favicon = $baselink . 'movie/' . $movie . '.movie/media/picture/' . $ck[0]['mv_favicon'];
+            if (($ck[0]['mv_image'] != '') && ($baselink != '')) $image = $baselink . 'movie/' . $movie . '.movie/media/picture/' . $ck[0]['mv_image'];
+        }
 		if ($scene != '') {
 			$link .= '&sc='.urlencode($scene);
-			if (is_file('../movie/'.$movie.'.movie/scene/'.$scene.'.json')) {
-				$json = json_decode(file_get_contents('../movie/'.$movie.'.movie/scene/'.$scene.'.json'), true);
-				if (json_last_error() == JSON_ERROR_NONE) {
-					$title = $json['title'];
-					if ($json['about'] != '') $about = $json['about'];
-					if (($json['image'] != '') && ($baselink != '')) $image = $baselink . 'movie/' . $movie . '.movie/media/picture/' . $json['image'];
-				}
-			}
+            $ck = $data->queryAll('SELECT sc_title, sc_about, sc_image FROM scenes WHERE sc_movie=:mv AND sc_id=:id', [':mv'=>$movie, ':id'=>$scene]);
+            if (count($ck) > 0) {
+                $title = $ck[0]['sc_title'];
+                if ($ck[0]['sc_about'] != '') $about = $ck[0]['sc_about'];
+                if (($ck[0]['sc_image'] != '') && ($baselink != '')) $image = $baselink . 'movie/' . $movie . '.movie/media/picture/' . $ck[0]['sc_image'];
+            }
 		}
 		$cssmovie = $movie;
 	} else {
 		$movie = $json['start'];
-		if (is_file('../movie/'.$movie.'.movie/movie.json')) {
-			$json = json_decode(file_get_contents('../movie/'.$movie.'.movie/movie.json'), true);
-			if (json_last_error() == JSON_ERROR_NONE) {
-				$title = $json['title'];
-				$about = $json['description'];
-				$tags = count($json['tags']) == 0 ? '' : implode(',', $json['tags']);
-				if (($json['favicon'] != '') && ($baselink != '')) $favicon = $baselink . 'movie/' . $movie . '.movie/media/picture/' . $json['favicon'];
-				if (($json['image'] != '') && ($baselink != '')) $image = $baselink . 'movie/' . $movie . '.movie/media/picture/' . $json['image'];
-			}
-		}
+		$ck = $data->queryAll('SELECT mv_title, mv_about, mv_tags, mv_favicon, mv_image FROM movies WHERE mv_id=:mv', [':mv'=>$movie]);
+        if (count($ck) > 0) {
+            $title = $ck[0]['mv_title'];
+            $about = $ck[0]['mv_about'];
+            $tags = $ck[0]['mv_tags'];
+            if (($ck[0]['mv_favicon'] != '') && ($baselink != '')) $favicon = $baselink . 'movie/' . $movie . '.movie/media/picture/' . $ck[0]['mv_favicon'];
+            if (($ck[0]['mv_image'] != '') && ($baselink != '')) $image = $baselink . 'movie/' . $movie . '.movie/media/picture/' . $ck[0]['mv_image'];
+        }
 		$cssmovie = $movie;
 		$movie = '';
 	}

@@ -26,6 +26,7 @@ class MenuMovie extends DrawerMenu {
         this.addButton('btUsers', Global.ln.get('menu-movie-users'), onUsers);
         this.addButton('btRemove', Global.ln.get('menu-movie-remove'), onRemove);
         this.addButton('btNavigation', Global.ln.get('menu-movie-navigation'), onNavigation);
+        this.addButton('btRepublish', Global.ln.get('menu-movie-republish'), onRepublish);
         this.addButton('btNotes', Global.ln.get('menu-movie-notes'), onNotes);
         this.addButton('btPlayer', Global.ln.get('menu-movie-player'), onPlayer);
     }
@@ -62,6 +63,8 @@ class MenuMovie extends DrawerMenu {
             this.ui.buttons['btNavigation'].toolTip = null;
             this.ui.buttons['btNotes'].enabled = true;
             this.ui.buttons['btNotes'].toolTip = null;
+            this.ui.buttons['btRepublish'].enabled = true;
+            this.ui.buttons['btRepublish'].toolTip = null;
         } else {
             if (Global.ws.level <= 50) {
                 this.ui.buttons['btRemove'].enabled = true;
@@ -75,11 +78,13 @@ class MenuMovie extends DrawerMenu {
             this.ui.buttons['btNotes'].enabled = false;
             this.ui.buttons['btProperties'].enabled = false;
             this.ui.buttons['btUsers'].enabled = false;
+            this.ui.buttons['btRepublish'].enabled = false;
             this.ui.buttons['btProperties'].toolTip = Global.ln.get('tooltip-movie-nomovie');
             this.ui.buttons['btUsers'].toolTip = Global.ln.get('tooltip-movie-nomovie');
             this.ui.buttons['btPlayer'].toolTip = Global.ln.get('tooltip-movie-nomovie');
             this.ui.buttons['btNavigation'].toolTip = Global.ln.get('tooltip-movie-nomovie');
             this.ui.buttons['btNotes'].toolTip = Global.ln.get('tooltip-movie-nomovie');
+            this.ui.buttons['btRepublish'].toolTip = Global.ln.get('tooltip-movie-nomovie');
         }
     }
 
@@ -130,6 +135,13 @@ class MenuMovie extends DrawerMenu {
     **/
     private  function onNavigation(evt:TriggerEvent):Void {
         this._ac('navigation');
+    }
+
+    /**
+        Shows the republish window.
+    **/
+    private  function onRepublish(evt:TriggerEvent):Void {
+        this._ac('republish');
     }
 
     /**

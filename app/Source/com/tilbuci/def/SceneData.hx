@@ -7,6 +7,7 @@
  package com.tilbuci.def;
 
 /** HAXE **/
+import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.data.GlobalPlayer;
 import haxe.Json;
 

@@ -87,16 +87,6 @@ class DataLoader extends EventDispatcher {
     private var _mode:Int = 0;
 
     /**
-        key to decrypt loaded content
-    **/
-    private var _key:String = null;
-
-    /**
-        secret to decrypt loaded content
-    **/
-    private var _secret:Bytes = null;
-
-    /**
         last loaded url
     **/
     public var url:String = '';
@@ -136,8 +126,8 @@ class DataLoader extends EventDispatcher {
         @param  mode    response processing mode
         @param  ac  a listener method (null for none, must receive two parameters: bool => operation successful?, DataLoader => reference to this loader)
         @param  pr  progress information callback
-        @param  key a key to decrypt loaded content (null to ignore)
-        @param  secret  secret bytes to decrypt loaded content (null to ignore)
+        @param  key a key to decrypt loaded content (deprecated)
+        @param  secret  secret bytes to decrypt loaded content (deprecated)
         @param  end method to call juste before the callback action
         @param  extra   extra information to hold at the object
         @param  timeout time in miliseconds to wait for the response (0 for os default)
@@ -175,8 +165,8 @@ class DataLoader extends EventDispatcher {
         @param  mode    response processing mode
         @param  ac  a listener method (null for none, must receive two parameters: bool => operation successful?, DataLoader => reference to this loader)
         @param  pr  progress information callback
-        @param  key a key to decrypt loaded content (null to ignore)
-        @param  secret  secret bytes to decrypt loaded content (null to ignore)
+        @param  key a key to decrypt loaded content (deprecated)
+        @param  secret  secret bytes to decrypt loaded content (deprecated)
         @param  end method to call juste before the callback action
         @param  extra   extra information to hold at the object
         @param  timeout time in miliseconds to wait for the response (0 for os default)
@@ -209,14 +199,6 @@ class DataLoader extends EventDispatcher {
         this._pr = pr;
         // extra information
         this.extra = extra;
-        // decryption data
-        if ((key != null) && (secret != null)) {
-            this._key = key;
-            this._secret = secret;
-        } else {
-            this._key = null;
-            this._secret = null;
-        }
         // prepare parameters
         var variables:URLVariables = new URLVariables();
         if (params != null) {
@@ -259,8 +241,6 @@ class DataLoader extends EventDispatcher {
         this._loader = null;
         this._ac = null;
         this._pr = null;
-        this._key = null;
-        this._secret = null;
         this.binary = null;
         this.rawtext = null;
         this.json = null;
@@ -276,8 +256,8 @@ class DataLoader extends EventDispatcher {
         @return the loaded text (decrypted if encrypted)
     **/
     private function finalText(loaded:String):String {
-        if (this._key != null) {
-            return (StringStatic.decrypt(loaded, this._key, this._secret));
+        if ((loaded.substr(0, 2) == 'TB') && (loaded.substr(-10, 1) == 'b')) {
+            return (StringStatic.decrypt(loaded, StringStatic.md5(GlobalPlayer.loadingMovie).toLowerCase()));
         } else {
             return (loaded);
         }
@@ -322,30 +302,21 @@ class DataLoader extends EventDispatcher {
                     ok = true;
                 }
             case DataLoader.MODEBINTXT:
-                if (this._key == null) {
-                    ok = false;
-                } else {
-                    this.binary = this._loader.data;
-                    this.rawtext = this.finalText(Base64.encode(this.binary));
-                    ok = true;
-                }
+                this.binary = this._loader.data;
+                this.rawtext = this.finalText(Base64.encode(this.binary));
             case DataLoader.MODEBINMAP:
-                if (this._key == null) {
+                this.binary = this._loader.data;
+                this.rawtext = this.finalText(Base64.encode(this.binary));
+                var js:Dynamic = StringStatic.jsonParse(this.rawtext);
+                if (js == false) {
                     ok = false;
+                    this.rawtext = null;
+                    this.binary = null;
                 } else {
-                    this.binary = this._loader.data;
-                    this.rawtext = this.finalText(Base64.encode(this.binary));
-                    var js:Dynamic = StringStatic.jsonParse(this.rawtext);
-                    if (js == false) {
-                        ok = false;
-                        this.rawtext = null;
-                        this.binary = null;
-                    } else {
-                        this.json = js;
-                        this.map = [ ];
-                        for (k in Reflect.fields(js)) this.map[k] = Reflect.field(js, k);
-                        ok = true;
-                    }
+                    this.json = js;
+                    this.map = [ ];
+                    for (k in Reflect.fields(js)) this.map[k] = Reflect.field(js, k);
+                    ok = true;
                 }
             default:
                 this.binary = this._loader.data;

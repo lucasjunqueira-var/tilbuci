@@ -91,9 +91,10 @@ class Collection extends BaseClass
 	
 	/**
 	 * Publish the current collection to file.
+     * @param bool $decrypt force decrypted file?
 	 * @return bool was the collection published?
 	 */
-	public function publish() {
+	public function publish($decrypt = false) {
 		if ($this->loaded) {
 			// creating folders
 			$ok = true;
@@ -105,8 +106,20 @@ class Collection extends BaseClass
 				// no folders
 				return (false);
 			} else {
+                // encrypted?
+                $encr = false;
+                if (!$decrypt) {
+                    $ck = $this->queryAll('SELECT mv_encrypted FROM movies WHERE mv_id=:mv', [':mv'=>$movie]);
+                    if (count($ck) > 0) {
+                        $encr = $ck[0]['mv_encrypted'] == '1';
+                    }
+                }
 				// save collection file
-				file_put_contents(('../movie/'.$movie.'.movie/collection/' . $id . '.json'), json_encode($this->info));
+                if ($encr) {
+                    file_put_contents(('../movie/'.$movie.'.movie/collection/' . $id . '.json'), $this->encryptTBFile($movie, json_encode($this->info)));
+                } else {
+                    file_put_contents(('../movie/'.$movie.'.movie/collection/' . $id . '.json'), json_encode($this->info));
+                }
 				return (true);
 			}
 		} else {

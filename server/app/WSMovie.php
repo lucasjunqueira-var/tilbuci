@@ -121,6 +121,9 @@ class WSMovie extends Webservice
                 case 'Movie/SaveContraptions':
 					$this->saveContraptions();
 					break;
+                case 'Movie/Republish':
+					$this->republish();
+					break;
 				default:
 					$this->returnRequest([ 'e' => -9 ]);
 					break;
@@ -566,6 +569,17 @@ class WSMovie extends Webservice
 		if ($this->requiredFields(['movie', 'data'])) {
 			$mv = new Movie;
             $this->returnRequest([ 'e' => $mv->saveContraptions($this->user, $this->req['movie'], $this->req['data']) ]);
+		}
+	}
+    
+    /**
+	 * Re-publishes all movie files.
+	 */
+	private function republish() {
+		// required fields received?
+		if ($this->requiredFields(['movie', 'newest'])) {
+			$mv = new Movie;
+            $this->returnRequest([ 'e' => $mv->republish($this->user, $this->req['movie'], $this->req['newest']) ]);
 		}
 	}
 }

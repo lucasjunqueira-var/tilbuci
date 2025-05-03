@@ -9,6 +9,7 @@
 /** CLASS DEFINITIONS **/
 require_once('BaseClass.php');
 require_once('Scene.php');
+require_once('Collection.php');
 
 /**
  * Movie information.
@@ -146,6 +147,7 @@ class Movie extends BaseClass
 				'animation' => $ck[0]['mv_animation'], 
                 'highlight' => $ck[0]['mv_highlight'], 
                 'loadingic' => $ck[0]['mv_loading'], 
+                'encrypted' => $ck[0]['mv_encrypted'] == '1' ? true : false, 
 				'fonts' => ((is_null($ck[0]['mv_fonts']) || $ck[0]['mv_fonts'] == '') ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_fonts'])), true)), 
 				'style' => (is_null($ck[0]['mv_style']) || $ck[0]['mv_style'] == '') ? '' : gzdecode(base64_decode($ck[0]['mv_style'])), 
 				'actions' => ((is_null($ck[0]['mv_actions']) || $ck[0]['mv_actions'] == '') ? [ ] : json_decode(gzdecode(base64_decode($ck[0]['mv_actions'])), true)), 
@@ -190,10 +192,11 @@ class Movie extends BaseClass
 	}
 	
 	/**
-	 * Publicsh the current movie to file.
+	 * Publish the current movie to file.
+     * @param bool $decrypt force decrypted file?
 	 * @return bool was the movie published?
 	 */
-	public function publish() {
+	public function publish($decrypt = false) {
 		if ($this->loaded) {
 			// creating folders
 			$ok = true;
@@ -213,8 +216,17 @@ class Movie extends BaseClass
 				// no folders
 				return (false);
 			} else {
-				// save movie file
-				file_put_contents(('../movie/'.$id.'.movie/movie.json'), json_encode($this->info));
+                // decrypted file?
+                if ($decrypt) {
+                    file_put_contents(('../movie/'.$id.'.movie/movie.json'), json_encode($this->info));
+                } else {
+                    // save movie file
+                    if ($this->info['encrypted']) {
+                        file_put_contents(('../movie/'.$id.'.movie/movie.json'), $this->encryptTBFile($this->info['id'], json_encode($this->info)));
+                    } else {
+                        file_put_contents(('../movie/'.$id.'.movie/movie.json'), json_encode($this->info));
+                    }
+                }
 				return (true);
 			}
 		} else {
@@ -411,6 +423,11 @@ class Movie extends BaseClass
 						$cols[] = 'mv_loading=:load';
 						$vals[':load'] = $v;
 						$updt['loadingic'] = $v;
+						break;
+                    case 'encrypt':
+						$cols[] = 'mv_encrypted=:encr';
+						$vals[':encr'] = $v;
+						$updt['encrypt'] = $v;
 						break;
 					case 'bigsize':
 						$cols[] = 'mv_screenbig=:bg';
@@ -1182,6 +1199,7 @@ class Movie extends BaseClass
                                         $json['key'] = '';
                                         $json['fallback'] = '';
                                         $json['identify'] = false;
+                                        $json['encrypted'] = false;
                                         $json['vsgroups'] = [ ];
                                         if (!isset($json['start'])) $json['start'] = '';
                                         if (!isset($json['acstart'])) $json['acstart'] = '';
@@ -1242,6 +1260,7 @@ class Movie extends BaseClass
                                             ':mv_created' => $json['created'], 
                                             ':mv_updated' => $json['updated'], 
                                             ':mv_loading' => $json['loadingic'], 
+                                            ':mv_encrypted' => (isset($json['encrypted']) ? ($json['encrypted'] ? '1' : '0') : '0'), 
                                             ':mv_highlight' => $json['highlight']
                                         ])) {
                                             // error saving movie
@@ -3382,6 +3401,108 @@ class Movie extends BaseClass
                 ]);
                 file_put_contents('../movie/'.$movie.'.movie/contraptions.json', $data);
                 return (0);
+            }
+        } else {
+            return (1);
+        }
+    }
+    
+    /**
+     * Re-published all movie files.
+     * @param   string  $user   request user
+     * @param   string  $movie  the movie id
+     * @param   string  $newest   use the newest scene versions?
+     * @return  int error code
+     * 0 => movie re-published
+     * 1 => not enough permissions
+     * 2 => movie not found
+     */
+    public function republish($user, $movie, $newest, $decrypt = false) {
+        $ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id AND (mv_user=:user OR mv_collaborators LIKE :col)', [
+            ':id' => $movie, 
+            ':user' => $user, 
+            ':col' => '%' . trim($user) . '%', 
+        ]);
+        if (count($ck) > 0) {
+            // load movie
+            if ($this->loadMovie($movie)) {
+                // movie descriptor
+                $this->publish($decrypt);
+                
+                // scenes
+                $sc = new Scene;
+                $ck = $this->queryAll('SELECT sc_id FROM scenes WHERE sc_movie=:mv AND sc_published=:pub', [
+                    ':mv' => $movie, 
+                    ':pub' => '1', 
+                ]);
+                if (($newest === true) || ($newest == 'true') || ($newest == '1')) {
+                    $version = null;
+                } else {
+                    $version = -1;
+                }
+                foreach ($ck as $v) {
+                    if ($sc->loadScene(null, $movie, $v['sc_id'], $version)) {
+                        $sc->publish($decrypt);
+                    }
+                }
+                
+                // collections
+                $cl = new Collection;
+                $ck = $this->queryAll('SELECT cl_uid FROM collections WHERE cl_movie=:mv', [
+                    ':mv' => $movie, 
+                ]);
+                foreach ($ck as $v) {
+                    if ($cl->loadCollection($v['cl_uid'])) {
+                        $cl->publish($decrypt);
+                    }
+                }
+                
+                // other files
+                $ck = $this->queryAll('SELECT mv_contraptions, mv_strings FROM movies WHERE mv_id=:mv', [':mv' => $movie]);
+                $writeback = false;
+                if (is_null($ck[0]['mv_strings']) || ($ck[0]['mv_strings'] == '')) {
+                    $writeback = true;
+                    if (is_file('../movie/'.$movie.'.movie/strings.json')) {
+                        $txt = file_get_contents('../movie/'.$movie.'.movie/strings.json');
+                    } else {
+                        $txt = '{"default":{"sample":"sample text"}}';
+                    }
+                } else {
+                    $txt = gzdecode(base64_decode($ck[0]['mv_strings']));
+                }
+                if ($this->info['encrypted'] && !$decrypt) {
+                    file_put_contents(('../movie/'.$movie.'.movie/strings.json'), $this->encryptTBFile($this->info['id'], $txt));
+                } else {
+                    file_put_contents(('../movie/'.$movie.'.movie/strings.json'), $txt);
+                }
+                if ($writeback) $this->execute('UPDATE movies SET mv_strings=:st WHERE mv_id=:mv', [
+                    ':st' => base64_encode(gzencode($txt)), 
+                    ':mv' => $movie, 
+                ]);
+                $writeback = false;
+                if (is_null($ck[0]['mv_contraptions']) || ($ck[0]['mv_contraptions'] == '')) {
+                    $writeback = true;
+                    if (is_file('../movie/'.$movie.'.movie/contraptions.json')) {
+                        $txt = file_get_contents('../movie/'.$movie.'.movie/contraptions.json');
+                    } else {
+                        $txt = json_encode([]);
+                    }
+                } else {
+                    $txt = gzdecode(base64_decode($ck[0]['mv_contraptions']));
+                }
+                if ($this->info['encrypted'] && !$decrypt) {
+                    file_put_contents(('../movie/'.$movie.'.movie/contraptions.json'), $this->encryptTBFile($this->info['id'], $txt));
+                } else {
+                    file_put_contents(('../movie/'.$movie.'.movie/contraptions.json'), $txt);
+                }
+                if ($writeback) $this->execute('UPDATE movies SET mv_contraptions=:ct WHERE mv_id=:mv', [
+                    ':ct' => base64_encode(gzencode($txt)), 
+                    ':mv' => $movie, 
+                ]);
+                
+                return (0);
+            } else {
+                return (2);
             }
         } else {
             return (1);

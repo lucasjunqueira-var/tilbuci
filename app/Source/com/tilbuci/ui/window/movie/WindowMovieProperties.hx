@@ -473,8 +473,13 @@ class WindowMovieProperties extends PopupWindow {
                 { text: Global.ln.get('window-movieprop-accessno'), value: false }, 
                 { text: Global.ln.get('window-movieprop-accessyes'), value: true }, 
             ], sl: null }, 
+            { tp: 'Label', id: 'encrypt', tx: Global.ln.get('window-movieprop-encrypted'), vr: Label.VARIANT_DETAIL }, 
+            { tp: 'Select', id: 'encrypt', vl: [
+                { text: Global.ln.get('window-movieprop-accessno'), value: false }, 
+                { text: Global.ln.get('window-movieprop-accessyes'), value: true }, 
+            ], sl: null }, 
             { tp: 'Label', id: 'group', tx: Global.ln.get('window-movieprop-accessgroup'), vr: Label.VARIANT_DETAIL }, 
-            { tp: 'List', id: 'group', vl: [ ], sl: [ ], ht: 245 }, 
+            { tp: 'List', id: 'group', vl: [ ], sl: [ ], ht: 190 }, 
             { tp: 'Label', id: 'fallback', tx: Global.ln.get('window-movieprop-accessfallback'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'Select', id: 'fallback', vl: [ ], sl: [ ] }, 
             { tp: 'Spacer', id: 'access', ht: 12, ln: false }, 
@@ -522,7 +527,7 @@ class WindowMovieProperties extends PopupWindow {
         this.ui.tareas['movieabout'].text = GlobalPlayer.mdata.description;
         var secretkey:String = '';
         if (GlobalPlayer.mdata.key != '') {
-            secretkey = StringStatic.decrypt(GlobalPlayer.mdata.key, 'skey', GlobalPlayer.secret);
+            secretkey = StringStatic.decryptKey(GlobalPlayer.mdata.key, 'skey', GlobalPlayer.secret);
         }
         this.ui.inputs['moviekey'].text = secretkey;
         if (GlobalPlayer.mdata.favicon == '') {
@@ -1406,10 +1411,12 @@ class WindowMovieProperties extends PopupWindow {
     private function onAccess(evt:TriggerEvent):Void {
         var secretkey:String = '';
         if (this.ui.inputs['moviekey'].text != '') {
-            secretkey = StringStatic.encrypt(this.ui.inputs['moviekey'].text, 'skey', GlobalPlayer.secret);
+            secretkey = StringStatic.encryptKey(this.ui.inputs['moviekey'].text, 'skey', GlobalPlayer.secret);
         }
         var identify:String = '0';
         if (this.ui.selects['login'].selectedItem.value == true) identify = '1';
+        var encrypt:String = '0';
+        if (this.ui.selects['encrypt'].selectedItem.value == true) encrypt = '1';
         var vsgroups:Array<String> = [ ];
         for (n in this.ui.lists['group'].selectedItems) vsgroups.push(n.value);
         var data:String = StringStatic.jsonStringify({
@@ -1417,6 +1424,7 @@ class WindowMovieProperties extends PopupWindow {
             identify: identify, 
             fallback: this.ui.selects['fallback'].selectedItem.value, 
             vsgroups: vsgroups.join(','), 
+            encrypt: encrypt, 
         });
         Global.ws.send(
             'Movie/Update', 
@@ -1530,6 +1538,7 @@ class WindowMovieProperties extends PopupWindow {
     private function onAccessList(ok:Bool, ld:DataLoader):Void {
         this.ui.setSelectValue('fallback', '');
         this.ui.setSelectValue('login', false);
+        this.ui.setSelectValue('encrypt', false);
         this.ui.setListValues('group', [ ]);
         this.ui.setSelectOptions('fallback', [ { text: Global.ln.get('window-movieprop-accessnone') , value: '' } ]);
         if (ok) {
@@ -1555,6 +1564,7 @@ class WindowMovieProperties extends PopupWindow {
                 }
                 this.ui.setListMultiValue('group', GlobalPlayer.mdata.vsgroups);
                 this.ui.setSelectValue('login', GlobalPlayer.mdata.identify);
+                this.ui.setSelectValue('encrypt', GlobalPlayer.mdata.encrypted);
             }
         }
     }

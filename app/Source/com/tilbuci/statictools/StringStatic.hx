@@ -7,6 +7,7 @@
  package com.tilbuci.statictools;
 
 /** HAXE **/
+import haxe.macro.Expr.Catch;
 import haxe.crypto.Aes;
 import haxe.io.Bytes;
 import haxe.crypto.mode.Mode;
@@ -109,13 +110,13 @@ class StringStatic
     }
 
     /**
-        Encrypts a scring.
+        Encrypts a movie key.
         @param  txt the string to encrypt
         @param  key the encryption key
         @param  secret  the system "secret"
         @return the encrypted string in HEX form
     **/
-    public static function encrypt(txt:String, key:String, secret:Bytes):String {
+    public static function encryptKey(txt:String, key:String, secret:Bytes):String {
         var bytestxt:Bytes = Bytes.ofString(txt);
         var byteskey:Bytes = Bytes.ofString(key);
         var aes:Aes = new Aes(byteskey, secret);
@@ -123,17 +124,40 @@ class StringStatic
     }
 
     /**
-        Decrypts a string.
+        Decrypts a movie key.
         @param  txt the encrypted string (HEX form)
         @param  key the encryption key
-        @param  secret  tye system "secret"
         @return the decrypted string
     **/
-    public static function decrypt(txt:String, key:String, secret:Bytes):String {
+    public static function decryptKey(txt:String, key:String, secret:Bytes):String {
         var bytestxt:Bytes = Bytes.ofHex(txt);
         var byteskey:Bytes = Bytes.ofString(key);
         var aes:Aes = new Aes(byteskey, secret);
         return (aes.decrypt(Mode.CTR, bytestxt, Padding.NoPadding).toString());
+    }
+
+    /**
+        Decrypts a loaded string.
+        @param  txt the encrypted string (HEX form)
+        @param  key the encryption key
+        @return the decrypted string
+    **/
+    public static function decrypt(txt:String, key:String):String {
+        txt = txt.substr(0, (txt.length - 10)) + txt.substr(-9);
+        txt = txt.substr(2);
+        try {
+            var combined = Base64.decode(txt);
+            var iv = combined.sub(0, 16);
+            var ciphertext = combined.sub(16, combined.length - 16);
+            var keyBytes = Bytes.ofString(key);
+            var aes = new Aes();
+            aes.init(keyBytes, iv);
+            var decrypted = aes.decrypt(Mode.CBC, ciphertext, Padding.PKCS7);
+            txt = decrypted.toString();
+        } catch (e) {
+            txt = '';
+        }
+        return (txt);
     }
 
     /**
