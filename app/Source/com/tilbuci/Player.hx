@@ -513,7 +513,7 @@ class Player extends Sprite {
                 }
             }
             // movie start actions
-            if (GlobalPlayer.mode != Player.MODE_EDITOR) if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);
+            //if (GlobalPlayer.mode != Player.MODE_EDITOR) if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);
             // warn plugins
             var plgs:Array<String> = [ ];
             if (true) for (p in GlobalPlayer.plugins) {
@@ -545,9 +545,6 @@ class Player extends Sprite {
     private function onScene(ok:Bool):Void {
         if ((GlobalPlayer.mode == Player.MODE_PLAYER) && !ok && this._firstScene) {
             this.halt('noscene');
-        } else {
-            this._firstMovie = false;
-            this._firstScene = false;
         }
 
         // hide mouse over
@@ -590,6 +587,11 @@ class Player extends Sprite {
         // display scene
         GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[0], 0);
 
+        // first scene? run movie start actions
+        if (this._firstScene) {
+            if (GlobalPlayer.mode != Player.MODE_EDITOR) if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);
+        }
+
         // scene start actions
         if ((GlobalPlayer.movie.scene.acstart != '') && (GlobalPlayer.mode != Player.MODE_EDITOR)) GlobalPlayer.parser.run(GlobalPlayer.movie.scene.acstart);
 
@@ -613,6 +615,10 @@ class Player extends Sprite {
             'id' => GlobalPlayer.movie.scId, 
             'title' => GlobalPlayer.movie.scene.title
         ]));
+
+        // not the first scene anymore...
+        this._firstMovie = false;
+        this._firstScene = false;
     }
 
     /**

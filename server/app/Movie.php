@@ -19,7 +19,7 @@ class Movie extends BaseClass
 	/**
      * TilBuci expected version
      */
-    private $version = 12;
+    private $version = 13;
     
 	/**
 	 * current movie information
@@ -1021,9 +1021,9 @@ class Movie extends BaseClass
                     
                     // re-publish scenes?
                     $pub = false;
-                    if (($ck[0]['mv_identify'] == '1') || (!is_null($ck[0]['mv_vsgroups']) && ($ck[0]['mv_vsgroups'] != ''))) {
+                    if (($ck[0]['mv_encrypted'] == '1') || ($ck[0]['mv_identify'] == '1') || (!is_null($ck[0]['mv_vsgroups']) && ($ck[0]['mv_vsgroups'] != ''))) {
                         $pub = true;
-                        $this->publishScenes($movie);
+                        $this->republish($user, $movie, 'true', true);
                     }
                     
                     @unlink('../../export/'.$movie.'.zip');
@@ -1046,7 +1046,11 @@ class Movie extends BaseClass
                     
                     // remove scenes?
                     if ($pub) {
-                        $this->removePublished($movie);
+                        if (($ck[0]['mv_identify'] == '1') || (!is_null($ck[0]['mv_vsgroups']) && ($ck[0]['mv_vsgroups'] != ''))) {
+                            $this->removePublished($movie);
+                        } else {
+                            $this->republish($user, $movie, 'true');
+                        }
                     }
                     
                     return ($movie.'.zip');
@@ -1187,6 +1191,11 @@ class Movie extends BaseClass
                                         @unlink('../../export/' . $movie . '.zip');
                                         return (6);
                                     } else {
+                                        // extra files
+                                        $strings = '';
+                                        if (is_file('../movie/'.$movie.'.movie/strings.json')) $strings = file_get_contents('../movie/'.$movie.'.movie/strings.json');
+                                        $contraptions = '';
+                                        if (is_file('../movie/'.$movie.'.movie/contraptions.json')) $contraptions = file_get_contents('../movie/'.$movie.'.movie/contraptions.json');
                                         // adjust json values
                                         $json['id'] = $movie;
                                         if (!isset($json['author'])) $json['author'] = $user;
@@ -1227,7 +1236,7 @@ class Movie extends BaseClass
                                             $json['plugins'] = $plg;
                                         }
                                         file_put_contents('../movie/'.$movie.'.movie/movie.json', json_encode($json));
-                                        if (!$this->execute('INSERT INTO movies (mv_id, mv_user, mv_collaborators, mv_author, mv_title, mv_about, mv_copyright, mv_copyleft, mv_tags, mv_favicon, mv_image, mv_key, mv_start, mv_acstart, mv_screenbig, mv_screensmall, mv_screentype, mv_screenbg, mv_interval, mv_origin, mv_animation, mv_fonts, mv_style, mv_actions, mv_theme, mv_texts, mv_numbers, mv_flags, mv_plugins, mv_created, mv_updated, mv_loading, mv_highlight) VALUES (:mv_id, :mv_user, :mv_collaborators, :mv_author, :mv_title, :mv_about, :mv_copyright, :mv_copyleft, :mv_tags, :mv_favicon, :mv_image, :mv_key, :mv_start, :mv_acstart, :mv_screenbig, :mv_screensmall, :mv_screentype, :mv_screenbg, :mv_interval, :mv_origin, :mv_animation, :mv_fonts, :mv_style, :mv_actions, :mv_theme, :mv_texts, :mv_numbers, :mv_flags, :mv_plugins, :mv_created, :mv_updated, :mv_loading, :mv_highlight)', [
+                                        if (!$this->execute('INSERT INTO movies (mv_id, mv_user, mv_collaborators, mv_author, mv_title, mv_about, mv_copyright, mv_copyleft, mv_tags, mv_favicon, mv_image, mv_key, mv_start, mv_acstart, mv_screenbig, mv_screensmall, mv_screentype, mv_screenbg, mv_interval, mv_origin, mv_animation, mv_fonts, mv_style, mv_actions, mv_theme, mv_texts, mv_numbers, mv_flags, mv_plugins, mv_created, mv_updated, mv_loading, mv_encrypted, mv_highlight, mv_contraptions, mv_strings) VALUES (:mv_id, :mv_user, :mv_collaborators, :mv_author, :mv_title, :mv_about, :mv_copyright, :mv_copyleft, :mv_tags, :mv_favicon, :mv_image, :mv_key, :mv_start, :mv_acstart, :mv_screenbig, :mv_screensmall, :mv_screentype, :mv_screenbg, :mv_interval, :mv_origin, :mv_animation, :mv_fonts, :mv_style, :mv_actions, :mv_theme, :mv_texts, :mv_numbers, :mv_flags, :mv_plugins, :mv_created, :mv_updated, :mv_loading, :mv_encrypted, :mv_highlight, :mv_contraptions, :mv_strings)', [
                                             ':mv_id' => $json['id'], 
                                             ':mv_user' => $user, 
                                             ':mv_collaborators' => '', 
@@ -1261,7 +1270,9 @@ class Movie extends BaseClass
                                             ':mv_updated' => $json['updated'], 
                                             ':mv_loading' => $json['loadingic'], 
                                             ':mv_encrypted' => (isset($json['encrypted']) ? ($json['encrypted'] ? '1' : '0') : '0'), 
-                                            ':mv_highlight' => $json['highlight']
+                                            ':mv_highlight' => $json['highlight'], 
+                                            ':mv_contraptions' => $contraptions == '' ? '' : base64_encode(gzencode($contraptions)), 
+                                            ':mv_strings' => $strings == '' ? '' : base64_encode(gzencode($strings)), 
                                         ])) {
                                             // error saving movie
                                             $dir = '../movie/'.$movie.'.movie/';

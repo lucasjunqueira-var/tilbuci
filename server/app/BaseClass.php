@@ -75,7 +75,8 @@ class BaseClass
      */
     public function encryptTBFile($movie, $content) {
         $iv = openssl_random_pseudo_bytes(16);
-        $encrypted = openssl_encrypt($content, 'AES-256-CBC', mb_strtolower(md5($movie)), OPENSSL_RAW_DATA, $iv);
+        $key = mb_strtolower(md5($movie . substr($movie, 2)));
+        $encrypted = openssl_encrypt($content, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
         $combined = $iv . $encrypted;
         $txt = 'TB' . base64_encode($combined);
         $txt = substr($txt, 0, (strlen($txt) - 9)) . 'b' . substr($txt, -9);

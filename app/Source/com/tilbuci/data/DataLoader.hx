@@ -55,6 +55,11 @@ class DataLoader extends EventDispatcher {
     **/
     public static inline var MODEBINMAP:Int = 6;
 
+    /**
+        custom decrypt method
+    **/
+    public static var customDecrypt:Dynamic = null;
+
 
     /**
         the loader object
@@ -256,8 +261,10 @@ class DataLoader extends EventDispatcher {
         @return the loaded text (decrypted if encrypted)
     **/
     private function finalText(loaded:String):String {
-        if ((loaded.substr(0, 2) == 'TB') && (loaded.substr(-10, 1) == 'b')) {
-            return (StringStatic.decrypt(loaded, StringStatic.md5(GlobalPlayer.loadingMovie).toLowerCase()));
+        if (DataLoader.customDecrypt != null) {
+            return (DataLoader.customDecrypt(loaded));
+        } else if ((loaded.substr(0, 2) == 'TB') && (loaded.substr(-10, 1) == 'b')) {
+            return (StringStatic.decrypt(loaded, StringStatic.md5(GlobalPlayer.loadingMovie + GlobalPlayer.loadingMovie.substr(2)).toLowerCase()));
         } else {
             return (loaded);
         }

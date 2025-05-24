@@ -80,7 +80,7 @@ class BackgroundContraption extends Sprite {
             if (Reflect.hasField(data, 'portrait')) {
                 this.portrait = Reflect.field(data, 'portrait');
                 if (this.portrait != '') {
-                    this._portrait = new PictureImage();
+                    this._portrait = new PictureImage(this.onPicLoad);
                     this._portrait.visible = true;
                 }
             } else {
@@ -89,7 +89,7 @@ class BackgroundContraption extends Sprite {
             if (Reflect.hasField(data, 'landscape')) {
                 this.landscape = Reflect.field(data, 'landscape');
                 if (this.landscape != '') {
-                    this._landscape = new PictureImage();
+                    this._landscape = new PictureImage(this.onPicLoad);
                     this._landscape.visible = true;
                 }
             } else {
@@ -106,6 +106,26 @@ class BackgroundContraption extends Sprite {
             }
         } else {
             return (false);
+        }
+    }
+
+    private function onPicLoad(ok:Bool):Void {
+        if (GlobalPlayer.area.pOrientation == MovieArea.HORIENTATION) {
+            if (this._landscape != null) {
+                this._landscape.width = GlobalPlayer.mdata.screen.big;
+                this._landscape.height = GlobalPlayer.mdata.screen.small;
+            } else {
+                this._portrait.width = GlobalPlayer.mdata.screen.big;
+                this._portrait.height = GlobalPlayer.mdata.screen.small;
+            }
+        } else {
+            if (this._portrait != null) {
+                this._portrait.width = GlobalPlayer.mdata.screen.small;
+                this._portrait.height = GlobalPlayer.mdata.screen.big;
+            } else {
+                this._landscape.width = GlobalPlayer.mdata.screen.small;
+                this._landscape.height = GlobalPlayer.mdata.screen.big;
+            }
         }
     }
 

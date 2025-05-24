@@ -96,6 +96,10 @@ class Main extends Application
 			}
 		}
 
+		if (Reflect.hasField(this.loaderInfo.parameters, 'decrypt')) {
+			DataLoader.customDecrypt = Reflect.field(this.loaderInfo.parameters, 'decrypt');
+		}
+
 		#if !haxeJSON 
 			// show halt message
 			var popup:Panel = new Panel();

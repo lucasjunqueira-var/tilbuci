@@ -148,6 +148,10 @@ class WindowContrInterf extends PopupWindow {
             { tp: 'TInput', id: 'formelac', tx: '', vr: '' },  
             { tp: 'Label', id: 'formelposition', tx: Global.ln.get('window-contrinterf-formelposition'), vr: '' },
             { tp: 'Custom', cont: this.ui.hcontainers['formelpos'] }, 
+            { tp: 'Label', id: 'formelrotation', tx: Global.ln.get('window-contrinterf-formelrotation'), vr: '' },
+            { tp: 'Numeric', id: 'formelrotation', mn: 0, mx: 359, vl: 0, st: 1 }, 
+            { tp: 'Label', id: 'formelalpha', tx: Global.ln.get('window-contrinterf-formelalpha'), vr: '' },
+            { tp: 'Numeric', id: 'formelalpha', mn: 0, mx: 100, vl: 100, st: 1 }, 
             { tp: 'Spacer', id: 'formel', ht: 10, ln: false }, 
             { tp: 'Button', id: 'formelbt', tx: Global.ln.get('window-contrinterf-setbutton'), ac: setElement },
         ]);
@@ -214,6 +218,8 @@ class WindowContrInterf extends PopupWindow {
                 x: 0, 
                 y: 0, 
                 options: '', 
+                rot: 0, 
+                alpha: 100
             }
         });
         list.push({
@@ -225,6 +231,8 @@ class WindowContrInterf extends PopupWindow {
                 x: 0, 
                 y: 0, 
                 options: '', 
+                rot: 0, 
+                alpha: 100
             }
         });
         list.push({
@@ -236,6 +244,8 @@ class WindowContrInterf extends PopupWindow {
                 x: 0, 
                 y: 0, 
                 options: '', 
+                rot: 0, 
+                alpha: 100
             }
         });
         this.ui.setListValues('elements', list);
@@ -394,6 +404,8 @@ class WindowContrInterf extends PopupWindow {
                 action: '', 
                 x: 0, 
                 y: 0, 
+                rot: 0, 
+                alpha: 100, 
                 options: '', 
             }
         });
@@ -465,10 +477,21 @@ class WindowContrInterf extends PopupWindow {
                     this.ui.numerics['formelposy'].value = this.ui.lists['elements'].selectedItem.value.y;
                     this.ui.labels['btset'].width = this.ui.labels['formelac'].width = this.ui.inputs['formelac'].width = 450;
                     this.ui.labels['formelposition'].width = this.ui.buttons['formelbt'].width = 450;
+                    this.ui.labels['formelrotation'].width = this.ui.labels['formelalpha'].width = this.ui.numerics['formelrotation'].width = this.ui.numerics['formelalpha'].width = 450;
                     this.ui.inputs['formel'].text = this.ui.lists['elements'].selectedItem.value.file;
                     this.ui.inputs['formelac'].text = this.ui.lists['elements'].selectedItem.value.action;
                     this.ui.numerics['formelposx'].value = this.ui.lists['elements'].selectedItem.value.x;
                     this.ui.numerics['formelposy'].value = this.ui.lists['elements'].selectedItem.value.y;
+                    if (this.ui.lists['elements'].selectedItem.value.rot == null) {
+                        this.ui.numerics['formelrotation'].value = 0;
+                    } else {
+                        this.ui.numerics['formelrotation'].value = this.ui.lists['elements'].selectedItem.value.rot;
+                    }
+                    if (this.ui.lists['elements'].selectedItem.value.alpha == null) {
+                        this.ui.numerics['formelalpha'].value = 100;
+                    } else {
+                        this.ui.numerics['formelalpha'].value = this.ui.lists['elements'].selectedItem.value.alpha;
+                    }
             }
         }
     }
@@ -541,6 +564,8 @@ class WindowContrInterf extends PopupWindow {
                     this.ui.lists['elements'].selectedItem.value.action = this.ui.inputs['formelac'].text;
                     this.ui.lists['elements'].selectedItem.value.x = Math.round(this.ui.numerics['formelposx'].value);
                     this.ui.lists['elements'].selectedItem.value.y = Math.round(this.ui.numerics['formelposy'].value);
+                    this.ui.lists['elements'].selectedItem.value.rot = Math.round(this.ui.numerics['formelrotation'].value);
+                    this.ui.lists['elements'].selectedItem.value.alpha = Math.round(this.ui.numerics['formelalpha'].value);
                     this.redrawElementsList();                 
             }
             

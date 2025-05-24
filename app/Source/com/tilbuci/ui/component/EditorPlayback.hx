@@ -149,6 +149,7 @@ class EditorPlayback extends Panel {
         this._top.width = this.width;
         this._bottom.width = this.width;
         this._player = hd;
+        var curkf:Int = GlobalPlayer.area.currentKf;
         this.info = {
             x: this._player.player.x, 
             y: this._player.player.y,
@@ -170,6 +171,11 @@ class EditorPlayback extends Panel {
 
         GlobalPlayer.mode = Player.MODE_EDPLAYERWAIT;
         GlobalPlayer.area.play();
+
+        if (GlobalPlayer.movie.scene.staticsc) {
+            GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[curkf], curkf);
+        }
+
         this.ui.buttons['play'].icon = new Bitmap(Assets.getBitmapData('btPause'));
         this.ui.buttons['play'].icon.width = this.ui.buttons['play'].icon.height = 20;
     }

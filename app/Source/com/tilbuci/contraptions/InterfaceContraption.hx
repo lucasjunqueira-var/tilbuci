@@ -92,6 +92,8 @@ class InterfaceContraption extends Sprite {
                                 pi = new PictureImage();
                                 pi.x = el.x;
                                 pi.y = el.y;
+                                if (el.rot != null) pi.rotation = el.rot;
+                                if (el.alpha != null) pi.alpha = el.alpha / 100;
                                 if (el.action != '') {
                                     pi.extraInfo.push(el.action);
                                     pi.addEventListener(MouseEvent.CLICK, onClick);
@@ -240,5 +242,7 @@ typedef InterfaceElem = {
     var action:String;
     var x:Int;
     var y:Int;
+    var rot:Null<Int>;
+    var alpha:Null<Int>;
     var options:String;
 }
