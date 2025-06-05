@@ -49,6 +49,7 @@ class Media extends BaseClass
 			case 'spritemap':
 			case 'html':
 			case 'video':
+            case 'strings':
 				$dir = '../movie/' . $movie . '.movie/media/' . $type . '/';
 				break;
 			default:
@@ -121,6 +122,7 @@ class Media extends BaseClass
 			case 'spritemap':
 			case 'html':
 			case 'video':
+            case 'strings':
 				$dir = '../movie/' . $movie . '.movie/media/' . $type . '/';
 				break;
 			default:
@@ -185,6 +187,7 @@ class Media extends BaseClass
 			case 'spritemap':
 			case 'html':
 			case 'video':
+            case 'strings':
 				$dir = '../movie/' . $movie . '.movie/media/' . $type . '/';
 				break;
 			default:
@@ -253,6 +256,7 @@ class Media extends BaseClass
 			case 'spritemap':
 			case 'html':
 			case 'video':
+            case 'strings':
 				$dir = '../movie/' . $movie . '.movie/media/' . $type . '/';
 				break;
 			default:
@@ -285,6 +289,13 @@ class Media extends BaseClass
 					if (!is_file($dir . $name)) {
 						return (false);
 					} else {
+                        // remove strings file record?
+                        if ($type == 'strings') {
+                            $this->execute('DELETE FROM strings WHERE st_movie=:mv AND st_file=:fl', [
+                                ':mv' => $movie, 
+                                ':fl' => str_replace(['.json', ' '], '', mb_strtolower($name)), 
+                            ]);
+                        }
 						// delete the file
 						@unlink($dir . $name);
 						if (is_file($dir . $name)) {
@@ -485,7 +496,20 @@ class Media extends BaseClass
 			if (!is_dir($dir)) {
 				return (false);
 			} else {
-				file_put_contents($dir.'strings.json', $strings);
+                $this->execute('UPDATE movies SET mv_strings=:st WHERE mv_id=:id', [
+                    ':st' => base64_encode(gzencode($strings)), 
+                    ':id' => $movie, 
+                ]);
+                $ck = $this->queryAll('SELECT mv_encrypted FROM movies WHERE mv_id=:mv', [':mv' => $movie]);
+                if (count($ck) != 0) {
+                    if ($ck[0]['mv_encrypted'] == '1') {
+                        file_put_contents($dir.'strings.json', $this->encryptTBFile($movie, $strings));
+                    } else {
+                        file_put_contents($dir.'strings.json', $strings);
+                    }
+                } else {
+                    file_put_contents($dir.'strings.json', $strings);
+                }
 				return (true);
 			}
 		} else {
@@ -601,5 +625,38 @@ class Media extends BaseClass
             @unlink('../movie/' . $movie . '.movie/collection/' . $col . '.json');
         }
 	}
-	
+    
+    /**
+     * Saves a strings file.
+     * @param   string  $movie  the movie id
+     * @param   string  $fname  the uploaded file name
+     */
+    public function saveStrings($movie, $fname) {
+        if (is_file('../movie/' . $movie . '.movie/media/strings/' . $fname)) {
+            $name = substr(str_replace(['.json', ' '], '', mb_strtolower($fname)), 0, 128);
+            $content = file_get_contents('../movie/' . $movie . '.movie/media/strings/' . $fname);
+            if ($content !== false) {
+                $this->execute('DELETE FROM strings WHERE st_movie=:mv AND st_file=:fl', [
+                    ':mv' => $movie, 
+                    ':fl' => $name, 
+                ]);
+                $this->execute('INSERT INTO strings (st_movie, st_file, st_content) VALUES (:mv, :fl, :cont)', [
+                    ':mv' => $movie, 
+                    ':fl' => $name, 
+                    ':cont' => base64_encode(gzencode($content)), 
+                ]);
+                @unlink('../movie/' . $movie . '.movie/media/strings/' . $fname);
+                $ck = $this->queryAll('SELECT mv_encrypted FROM movies WHERE mv_id=:mv', [':mv' => $movie]);
+                if (count($ck) == 0) {
+                    file_put_contents(('../movie/' . $movie . '.movie/media/strings/'.$name.'.json'), $content);
+                } else {
+                    if ($ck[0]['mv_encrypted'] == '1') {
+                        file_put_contents(('../movie/' . $movie . '.movie/media/strings/'.$name.'.json'), $this->encryptTBFile($movie, $content));
+                    } else {
+                        file_put_contents(('../movie/' . $movie . '.movie/media/strings/'.$name.'.json'), $content);
+                    }
+                }
+            }
+        }
+    }
 }

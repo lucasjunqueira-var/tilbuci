@@ -7,6 +7,9 @@
  package com.tilbuci;
 
 /** HAXE **/
+import com.tilbuci.ui.window.media.WindowMediaStrings;
+import com.tilbuci.ui.window.narrative.WindowNarrChar;
+import com.tilbuci.ui.menu.MenuNarrative;
 import com.tilbuci.def.AssetData;
 import com.tilbuci.ui.window.contraptions.WindowContrMenu;
 import com.tilbuci.ui.window.contraptions.WindowContrCover;
@@ -402,6 +405,7 @@ class Editor extends Drawer {
         this._menus['left-scene'] = new MenuScene(actionMenuScene);
         this._menus['left-media'] = new MenuMedia(actionMenuMedia);
         this._menus['left-contraptions'] = new MenuContraptions(actionMenuContraptions);
+        this._menus['left-narrative'] = new MenuNarrative(actionMenuNarrative);
         this._menus['left-exchange'] = new MenuExchange(actionMenuExchange);
         this._menus['left-keyframe'] = new MenuKeyframe(actionMenuKeyframe);
 
@@ -465,6 +469,10 @@ class Editor extends Drawer {
                 this.drawer = this._menus['left-contraptions'];
                 this.opened = true;
                 this._menus['left-contraptions'].onShow();
+            case 'narrative':
+                this.drawer = this._menus['left-narrative'];
+                this.opened = true;
+                this._menus['left-narrative'].onShow();
             case 'exchange':
                 this.drawer = this._menus['left-exchange'];
                 this.opened = true;
@@ -624,6 +632,9 @@ class Editor extends Drawer {
             case 'embed':
                 this.opened = false;
                 this.showWindow('mediaembed');
+            case 'strings':
+                this.opened = false;
+                this.showWindow('mediastrings');
             case 'audio':
                 this.opened = false;
                 this.showWindow('mediaaudio');
@@ -673,6 +684,28 @@ class Editor extends Drawer {
             case 'music':
                 this.opened = false;
                 this.showWindow('music');
+            case 'menu-close':
+                this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Narrative menu actions.
+        @param  ac  the action id
+    **/
+    private function actionMenuNarrative(ac:String):Void {
+        switch (ac) {
+            case 'char':
+                this.opened = false;
+                this.showWindow('narrative-char');
+            case 'diag':
+                this.opened = false;
+                this.showWindow('narrative-diag');
+            case 'dtree':
+                this.opened = false;
+                this.showWindow('narrative-dtree');
             case 'menu-close':
                 this.opened = false;
             case 'window-notes':
@@ -946,6 +979,19 @@ class Editor extends Drawer {
                 this._windows['mediaaudio'].action('setmode', [
                     'mode' => 'single', 
                 ]);
+            case 'window-notes':
+                this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Narrative characters information.
+        @param  ac  the action id
+    **/
+    private function actionWindowNarrChar(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
             case 'window-notes':
                 this.showWindow('designnotes');
         }
@@ -1874,6 +1920,7 @@ class Editor extends Drawer {
                 case 'mediaparagraph': this._windows['mediaparagraph'] = new WindowMediaParagraph(actionMedia, 'simple');
                 case 'mediatext': this._windows['mediatext'] = new WindowMediaText(actionMedia, 'simple');
                 case 'mediaembed': this._windows['mediaembed'] = new WindowMediaEmbed(actionMedia);
+                case 'mediastrings': this._windows['mediastrings'] = new WindowMediaStrings(actionMedia);
 
                 case 'assetbase': this._windows['assetbase'] = new WindowAssetBase(actionAsset);
                 case 'collectionbase': this._windows['collectionbase'] = new WindowCollectionBase(actionCollection);
@@ -1893,6 +1940,8 @@ class Editor extends Drawer {
                 case 'music': this._windows['music'] = new WindowContrMusic(actionWindowContrMusic);
                 case 'form': this._windows['form'] = new WindowContrForm(actionWindowContrForm);
                 case 'interfaces': this._windows['interfaces'] = new WindowContrInterf(actionWindowContrInterf);
+
+                case 'narrative-char': this._windows['narrative-char'] = new WindowNarrChar(actionWindowNarrChar);
 
                 case 'visitors': this._windows['visitors'] = new WindowVisitors(actionWindowVisitors, this.build);
                 case 'designnotes': this._windows['designnotes'] = new WindowNotes(actionWindowNotes);

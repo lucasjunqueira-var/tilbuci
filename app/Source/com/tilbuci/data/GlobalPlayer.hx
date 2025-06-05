@@ -7,6 +7,7 @@
  package com.tilbuci.data;
 
 /** HAXE **/
+import com.tilbuci.narrative.Narrative;
 import com.tilbuci.contraptions.Contraptions;
 import openfl.geom.Point;
 import com.tilbuci.ui.PlayerTheme;
@@ -161,6 +162,11 @@ class GlobalPlayer {
         contraptions information
     **/
     public static var contraptions:Contraptions = new Contraptions();
+
+    /**
+        narrative information
+    **/
+    public static var narrative:Narrative = new Narrative();
 
     /**
         current movie ui theme

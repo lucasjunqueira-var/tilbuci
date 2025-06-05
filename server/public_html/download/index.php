@@ -7,6 +7,9 @@
 
  /** TIlBuci file downloader **/
 
+/** CLASS DEFINITIONS **/
+require_once('../../app/Data.php');
+
 // process request
 if (isset($_GET['a'])) {
 	if ((trim($_GET['a']) == 'download') && isset($_GET['file'])) {
@@ -14,13 +17,33 @@ if (isset($_GET['a'])) {
 		$mime = '';
 		$name = '';
 		switch (trim($_GET['file'])) {
+            case 'strings':
+                if (isset($_GET['movie']) && isset($_GET['media'])) {
+                    $data = new Data;
+                    $media = str_replace(['.json', ' '], '', mb_strtolower($_GET['media']));
+                    $ck = $data->queryAll('SELECT st_content FROM strings WHERE st_movie=:mv AND st_file=:fl', [':mv' => $_GET['movie'], ':fl' => $media]);
+                    if (count($ck) > 0) {
+                        file_put_contents(('../../export/'.$_GET['movie'].'-string.json'), gzdecode(base64_decode($ck[0]['st_content'])));
+                        $path = '../../export/'.$_GET['movie'].'-string.json';
+                        if (is_file($path)) {
+                            $name = $media.'.json';
+                            $mime = 'application/json';
+                        }
+                    }
+                }
+                break;
 			case 'strings.json':
 				if (isset($_GET['movie'])) {
-					$path = '../movie/'.trim($_GET['movie']).'.movie/strings.json';
-					if (is_file($path)) {
-						$name = 'strings.json';
-						$mime = 'application/json';
-					}
+                    $data = new Data;
+                    $ck = $data->queryAll('SELECT mv_strings FROM movies WHERE mv_id=:mv', [':mv' => $_GET['movie']]);
+                    if (count($ck) > 0) {
+                        file_put_contents(('../../export/'.$_GET['movie'].'-string.json'), gzdecode(base64_decode($ck[0]['mv_strings'])));
+                        $path = '../../export/'.$_GET['movie'].'-string.json';
+                        if (is_file($path)) {
+                            $name = 'strings.json';
+                            $mime = 'application/json';
+                        }
+                    }
 				}
 				break;
             case 'export':

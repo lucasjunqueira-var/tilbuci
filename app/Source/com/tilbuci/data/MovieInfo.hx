@@ -113,6 +113,7 @@ class MovieInfo {
         this._scId = '';
         this.data.clear();
         this.scene.clear();
+        GlobalPlayer.parser.clearStringFile();
         GlobalPlayer.area.clear();
         for (n in this._cacheScene.keys()) this._cacheScene.remove(n);
         if ((path.substr(0, 4) != 'http') && (path.substr(0, 4) != 'file')) {
@@ -275,6 +276,14 @@ class MovieInfo {
             //this._actions['movie'](this.mvLoaded);
             this._actions['movie'](true);
         }
+    }
+
+    /**
+        Loads a collection information.
+        @param  string  id  the collection id
+    **/
+    public function loadCollection(id:String):Void {
+        this.collections[id] = new CollectionData(this._path + 'collection/' + id + '.json', null);
     }
 
     /**

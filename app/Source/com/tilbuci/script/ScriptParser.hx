@@ -7,6 +7,7 @@
  package com.tilbuci.script;
 
 /** TILBUCI **/
+import com.tilbuci.narrative.CharacterNarrative;
 import com.tilbuci.player.MovieArea;
 import haxe.macro.Expr.Function;
 import com.tilbuci.contraptions.CoverContraption;
@@ -117,6 +118,11 @@ class ScriptParser {
     private var _lastEvent:Map<String, String> = [ ];
 
     /**
+        strings loaded from file
+    **/
+    private var _stringfile:Map<String, String> = [ ];
+
+    /**
         Constructor.
     **/
     public function new() { }
@@ -180,6 +186,8 @@ class ScriptParser {
             while (vg.v.length > 0) vg.v.shift();
             vg = null;
         }
+        this.clearStringFile();
+        this._stringfile = null;
         this.globalAvailable = null;
     }
 
@@ -233,6 +241,7 @@ class ScriptParser {
             }
         }
         this.loadContraptions();
+        this.loadNarrative();
     }
 
     /**
@@ -243,6 +252,36 @@ class ScriptParser {
             new DataLoader(true, (GlobalPlayer.base + 'movie/' + GlobalPlayer.movie.mvId + '.movie/contraptions.json'), 'GET', [ 'rand' => Date.now().getTime() ], DataLoader.MODEJSON, onContraptions);
         } else {
             new DataLoader(true, (GlobalPlayer.base + 'movie/' + GlobalPlayer.movie.mvId + '.movie/contraptions.json'), 'GET', [ ], DataLoader.MODEJSON, onContraptions);
+        }
+    }
+
+    /**
+        Loads current movie narrative.json file.
+    **/
+    public function loadNarrative():Void {
+        if (GlobalPlayer.nocache) {
+            new DataLoader(true, (GlobalPlayer.base + 'movie/' + GlobalPlayer.movie.mvId + '.movie/narrative.json'), 'GET', [ 'rand' => Date.now().getTime() ], DataLoader.MODEJSON, onNarrative);
+        } else {
+            new DataLoader(true, (GlobalPlayer.base + 'movie/' + GlobalPlayer.movie.mvId + '.movie/narrative.json'), 'GET', [ ], DataLoader.MODEJSON, onNarrative);
+        }
+    }
+
+    /**
+        Removes all strigs loaded from file.
+    **/
+    public function clearStringFile():Void {
+        for (k in this._stringfile.keys()) {
+            this._stringfile.remove(k);
+        }
+    }
+
+    /**
+        A strings file was just loaded.
+    **/
+    public function onStringFile(ok:Bool, ld:DataLoader):Void {
+        if (ok) {
+            this.clearStringFile();
+            for (k in ld.map.keys()) this._stringfile[k] = ld.map[k];
         }
     }
 
@@ -313,6 +352,36 @@ class ScriptParser {
                 }
             }
             
+        }
+    }
+
+    /**
+        Narrative.json file loaded.
+        @param  ok  correctly loaded?
+        @param  ld  loader reference
+    **/
+    private function onNarrative(ok:Bool, ld:DataLoader = null):Void {
+        GlobalPlayer.narrative.clear();
+        if (ok) {
+            for (k in Reflect.fields(ld.json)) {
+                if (k == 'chars') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'chars'))) {
+                        var chnar:CharacterNarrative = new CharacterNarrative();
+                        if (chnar.load(Reflect.field(Reflect.field(ld.json, 'chars'), k2))) {
+                            GlobalPlayer.narrative.chars[chnar.id] = chnar;
+                        } else {
+                            chnar.kill();
+                        }
+                    }
+                }
+            }
+
+            // loading media collections
+            for (char in GlobalPlayer.narrative.chars) {
+                if (char.collection != '') {
+                    GlobalPlayer.movie.loadCollection(char.collection);
+                }
+            }
         }
     }
 
@@ -2025,6 +2094,15 @@ class ScriptParser {
                     
                         
                     // string values
+                    case 'string.loadfile':
+                        if (param.length > 0) {
+                            var cache:Map<String, Dynamic> = null;
+                            if (GlobalPlayer.nocache) cache = [ 'rand' => Math.ceil(Math.random()*10000) ];
+                            new DataLoader(true, (GlobalPlayer.path + 'media/strings/' + this.parseString(param[0]) + '.json'), 'GET', cache, DataLoader.MODEMAP, onStringFile);
+                            return (true);
+                        } else {
+                            return (false);
+                        }
                     case 'string.setgroup':
                         if (param.length > 0) {
                             if (this._stringsjson.exists(this.parseString(param[0]))) {
@@ -2814,9 +2892,10 @@ class ScriptParser {
                     case "$_DATE": return(DateTools.format(Date.now(), "%Y-%m-%d"));
                     case "$_TIME": return(DateTools.format(Date.now(), "%H:%M:%S"));
                     default:
-                        // look on stantard variables
-                        if (this._strings.exists(str.substr(1))) {
+                        if (this._strings.exists(str.substr(1))) { // look on stantard variables
                             return (this._strings[str.substr(1)]);
+                        } else if (this._stringfile.exists(str.substr(1))) { // look on loaded string file
+                            return (this._stringfile[str.substr(1)]);
                         } else {
                             return (str);
                         }

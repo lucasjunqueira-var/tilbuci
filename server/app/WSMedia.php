@@ -338,7 +338,26 @@ class WSMedia extends Webservice
 	 */
 	private function lastPiece() {
 		if (isset($_POST['p']) && isset($_POST['t'])) {
-			return ($_POST['p'] >= ($_POST['t'] - 1));
+            if ($_POST['p'] >= ($_POST['t'] - 1)) {
+                $r = json_decode($_POST['r'], true);
+                if (json_last_error() == JSON_ERROR_NONE) {
+                    if (isset($r['type']) && isset($r['movie']) && isset($r['fname'])) {
+                        if ($r['type'] == 'strings') {
+                            $md = new Media;
+                            $md->saveStrings($r['movie'], $r['fname']);
+                            return (true);
+                        } else {
+                            return (true);
+                        }
+                    } else {
+                        return (true);
+                    }
+                } else {
+                    return (true);
+                }
+            } else {
+                return (false);
+            }
 		} else {
 			return (false);
 		}

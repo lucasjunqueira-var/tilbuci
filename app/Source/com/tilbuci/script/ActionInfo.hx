@@ -152,6 +152,9 @@ class ActionInfo {
                     { t: 's', n: Global.ln.get('acinfo-stringtofloat-p1'), v: '' }, 
                     { t: 's', n: Global.ln.get('acinfo-stringtofloat-p2'), v: '' }, 
                 ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-stringsload'), a: 'string.loadfile', p: [
+                    { t: 's', n: Global.ln.get('acinfo-stringsload-p1'), v: '' }, 
+                ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-stringsetgroup'), a: 'string.setgroup', p: [
                     { t: 's', n: Global.ln.get('acinfo-stringsetgroup-p1'), v: '' }, 
                 ], e: [ ] }, 

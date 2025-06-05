@@ -28,6 +28,7 @@ class MenuMedia extends DrawerMenu {
         this.addButton('btVideo', Global.ln.get('menu-media-video'), onVideo);
         this.ui.createSpacer('embed', 5, false, this._holder);
         this.addButton('btEmbed', Global.ln.get('menu-media-embed'), onEmbed);
+        this.addButton('btStrings', Global.ln.get('menu-media-strings'), onStrings);
         this.ui.createSpacer('managecol', 5, false, this._holder);
         this.addButton('btCollections', Global.ln.get('menu-media-collections'), onCollections);
         this.addButton('btCollectionsRm', Global.ln.get('menu-media-collectionsrm'), onCollectionsRm);
@@ -41,9 +42,17 @@ class MenuMedia extends DrawerMenu {
         if (GlobalPlayer.movie.mvId == '') {
             this.ui.buttons['btCollectionsRm'].enabled = false;
             this.ui.buttons['btCollectionsRm'].toolTip = Global.ln.get('tooltip-movie-nomovie');
+            this.ui.buttons['btEmbed'].enabled = false;
+            this.ui.buttons['btEmbed'].toolTip = Global.ln.get('tooltip-movie-nomovie');
+            this.ui.buttons['btStrings'].enabled = false;
+            this.ui.buttons['btStrings'].toolTip = Global.ln.get('tooltip-movie-nomovie');
         } else {
             this.ui.buttons['btCollectionsRm'].enabled = true;
             this.ui.buttons['btCollectionsRm'].toolTip = null;
+            this.ui.buttons['btEmbed'].enabled = true;
+            this.ui.buttons['btEmbed'].toolTip = null;
+            this.ui.buttons['btStrings'].enabled = true;
+            this.ui.buttons['btStrings'].toolTip = null;
         }
         if (GlobalPlayer.movie.scId == '') {
             this.ui.buttons['btCollections'].enabled = false;
@@ -56,7 +65,6 @@ class MenuMedia extends DrawerMenu {
             this.ui.buttons['btSpritemap'].enabled = false;
             //this.ui.buttons['btText'].enabled = false;
             this.ui.buttons['btVideo'].enabled = false;
-            this.ui.buttons['btEmbed'].enabled = false;
             this.ui.buttons['btCollections'].toolTip = Global.ln.get('tooltip-movie-noscene');
             this.ui.buttons['btCollectionsAdd'].toolTip = Global.ln.get('tooltip-movie-noscene');
             this.ui.buttons['btAudio'].toolTip = Global.ln.get('tooltip-movie-noscene');
@@ -67,7 +75,6 @@ class MenuMedia extends DrawerMenu {
             this.ui.buttons['btSpritemap'].toolTip = Global.ln.get('tooltip-movie-noscene');
             //this.ui.buttons['btText'].toolTip = Global.ln.get('tooltip-movie-noscene');
             this.ui.buttons['btVideo'].toolTip = Global.ln.get('tooltip-movie-noscene');
-            this.ui.buttons['btEmbed'].toolTip = Global.ln.get('tooltip-movie-noscene');
         } else {
             this.ui.buttons['btCollections'].enabled = true;
             this.ui.buttons['btCollectionsAdd'].enabled = true;
@@ -79,7 +86,6 @@ class MenuMedia extends DrawerMenu {
             this.ui.buttons['btSpritemap'].enabled = true;
             //this.ui.buttons['btText'].enabled = true;
             this.ui.buttons['btVideo'].enabled = true;
-            this.ui.buttons['btEmbed'].enabled = true;
             this.ui.buttons['btCollections'].toolTip = null;
             this.ui.buttons['btCollectionsAdd'].toolTip = null;
             this.ui.buttons['btAudio'].toolTip = null;
@@ -90,7 +96,6 @@ class MenuMedia extends DrawerMenu {
             this.ui.buttons['btSpritemap'].toolTip = null;
             //this.ui.buttons['btText'].toolTip = null;
             this.ui.buttons['btVideo'].toolTip = null;
-            this.ui.buttons['btEmbed'].toolTip = null;
         }
     }
 
@@ -148,6 +153,13 @@ class MenuMedia extends DrawerMenu {
     **/
     private  function onEmbed(evt:TriggerEvent):Void {
         this._ac('embed');
+    }
+
+    /**
+        Shows the string files content manager.
+    **/
+    private  function onStrings(evt:TriggerEvent):Void {
+        this._ac('strings');
     }
 
     /**

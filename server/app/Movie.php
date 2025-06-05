@@ -94,12 +94,15 @@ class Movie extends BaseClass
 				$this->createDir('../movie/'.$id.'.movie/media/html');
 				$this->createDir('../movie/'.$id.'.movie/media/font');
 				$this->createDir('../movie/'.$id.'.movie/media/spritemap');
+                $this->createDir('../movie/'.$id.'.movie/media/strings');
 				$this->createDir('../movie/'.$id.'.movie/scene');
 				$this->createDir('../movie/'.$id.'.movie/collection');
 			}
 			
 			// additional files
 			file_put_contents('../movie/'.$id.'.movie/strings.json', '{"default":{"sample":"sample text"}}');
+            file_put_contents('../movie/'.$id.'.movie/contraptions.json', '{}');
+            file_put_contents('../movie/'.$id.'.movie/narrative.json', '{}');
 		}
 		if ($ok) {
 			return ($id);
@@ -209,6 +212,7 @@ class Movie extends BaseClass
 			if ($ok && !is_dir('../movie/'.$id.'.movie/media/html')) if (!$this->createDir('../movie/'.$id.'.movie/media/html')) $ok = false;
 			if ($ok && !is_dir('../movie/'.$id.'.movie/media/font')) if (!$this->createDir('../movie/'.$id.'.movie/media/font')) $ok = false;
 			if ($ok && !is_dir('../movie/'.$id.'.movie/media/spritemap')) if (!$this->createDir('../movie/'.$id.'.movie/media/spritemap')) $ok = false;
+            if ($ok && !is_dir('../movie/'.$id.'.movie/media/strings')) if (!$this->createDir('../movie/'.$id.'.movie/media/strings')) $ok = false;
 			if ($ok && !is_dir('../movie/'.$id.'.movie/scene')) if (!$this->createDir('../movie/'.$id.'.movie/scene')) $ok = false;
 			if ($ok && !is_dir('../movie/'.$id.'.movie/collection')) if (!$this->createDir('../movie/'.$id.'.movie/collection')) $ok = false;
 			if ($ok && !is_file('../movie/'.$id.'.movie/strings.json')) file_put_contents('../movie/'.$id.'.movie/strings.json', '{"default":{"sample":"sample text"}}');
@@ -216,15 +220,62 @@ class Movie extends BaseClass
 				// no folders
 				return (false);
 			} else {
+                // strings.json, contraptions.json and narrative.json
+                $ckt = $this->queryAll('SELECT mv_contraptions, mv_strings, mv_narrative FROM movies WHERE mv_id=:mv', [':mv' => $id]);
                 // decrypted file?
                 if ($decrypt) {
                     file_put_contents(('../movie/'.$id.'.movie/movie.json'), json_encode($this->info));
+                    if (count($ckt) > 0) {
+                        if (!is_null($ckt[0]['mv_contraptions']) && ($ckt[0]['mv_contraptions'] != '')) {
+                            file_put_contents(('../movie/'.$id.'.movie/contraptions.json'), gzdecode(base64_decode($ckt[0]['mv_contraptions'])));
+                        }
+                        if (!is_null($ckt[0]['mv_strings']) && ($ckt[0]['mv_strings'] != '')) {
+                            file_put_contents(('../movie/'.$id.'.movie/strings.json'), gzdecode(base64_decode($ckt[0]['mv_strings'])));
+                        }
+                        if (!is_null($ckt[0]['mv_narrative']) && ($ckt[0]['mv_narrative'] != '')) {
+                            file_put_contents(('../movie/'.$id.'.movie/narrative.json'), gzdecode(base64_decode($ckt[0]['mv_narrative'])));
+                        }
+                    }
+                    $ckt = $this->queryAll('SELECT st_file, st_content FROM strings WHERE st_movie=:mv', [':mv' => $id]);
+                    foreach ($ckt as $t) {
+                        file_put_contents(('../movie/'.$id.'.movie/media/strings/' . $t['st_file'] . '.json'), gzdecode(base64_decode($t['st_content'])));
+                    }                  
                 } else {
                     // save movie file
                     if ($this->info['encrypted']) {
                         file_put_contents(('../movie/'.$id.'.movie/movie.json'), $this->encryptTBFile($this->info['id'], json_encode($this->info)));
+                        if (count($ckt) > 0) {
+                            if (!is_null($ckt[0]['mv_contraptions']) && ($ckt[0]['mv_contraptions'] != '')) {
+                                file_put_contents(('../movie/'.$id.'.movie/contraptions.json'), $this->encryptTBFile($this->info['id'], gzdecode(base64_decode($ckt[0]['mv_contraptions']))));
+                            }
+                            if (!is_null($ckt[0]['mv_strings']) && ($ckt[0]['mv_strings'] != '')) {
+                                file_put_contents(('../movie/'.$id.'.movie/strings.json'), $this->encryptTBFile($this->info['id'], gzdecode(base64_decode($ckt[0]['mv_strings']))));
+                            }
+                            if (!is_null($ckt[0]['mv_narrative']) && ($ckt[0]['mv_narrative'] != '')) {
+                                file_put_contents(('../movie/'.$id.'.movie/narrative.json'), $this->encryptTBFile($this->info['id'], gzdecode(base64_decode($ckt[0]['mv_narrative']))));
+                            }
+                        }
+                        $ckt = $this->queryAll('SELECT st_file, st_content FROM strings WHERE st_movie=:mv', [':mv' => $id]);
+                        foreach ($ckt as $t) {
+                            file_put_contents(('../movie/'.$id.'.movie/media/strings/' . $t['st_file'] . '.json'), $this->encryptTBFile($this->info['id'], gzdecode(base64_decode($t['st_content']))));
+                        }
                     } else {
                         file_put_contents(('../movie/'.$id.'.movie/movie.json'), json_encode($this->info));
+                        if (count($ckt) > 0) {
+                            if (!is_null($ckt[0]['mv_contraptions']) && ($ckt[0]['mv_contraptions'] != '')) {
+                                file_put_contents(('../movie/'.$id.'.movie/contraptions.json'), gzdecode(base64_decode($ckt[0]['mv_contraptions'])));
+                            }
+                            if (!is_null($ckt[0]['mv_strings']) && ($ckt[0]['mv_strings'] != '')) {
+                                file_put_contents(('../movie/'.$id.'.movie/strings.json'), gzdecode(base64_decode($ckt[0]['mv_strings'])));
+                            }
+                            if (!is_null($ckt[0]['mv_narrative']) && ($ckt[0]['mv_narrative'] != '')) {
+                                file_put_contents(('../movie/'.$id.'.movie/narrative.json'), gzdecode(base64_decode($ckt[0]['mv_narrative'])));
+                            }
+                        }
+                        $ckt = $this->queryAll('SELECT st_file, st_content FROM strings WHERE st_movie=:mv', [':mv' => $id]);
+                        foreach ($ckt as $t) {
+                            file_put_contents(('../movie/'.$id.'.movie/media/strings/' . $t['st_file'] . '.json'), gzdecode(base64_decode($t['st_content'])));
+                        }
                     }
                 }
 				return (true);
@@ -329,6 +380,7 @@ class Movie extends BaseClass
 			$updt = [ ];
 			$reld = false;
             $publish = null;
+            $rewriteT = false;
 			foreach ($data as $k => $v) {
 				switch ($k) {
 					case 'author':
@@ -428,6 +480,7 @@ class Movie extends BaseClass
 						$cols[] = 'mv_encrypted=:encr';
 						$vals[':encr'] = $v;
 						$updt['encrypt'] = $v;
+                        $rewriteT = true;
 						break;
 					case 'bigsize':
 						$cols[] = 'mv_screenbig=:bg';
@@ -515,6 +568,7 @@ class Movie extends BaseClass
                 }
                 // return
 				if ($this->loadMovie($id) && $this->publish()) {
+                    // return
 					return (['e' => 0, 'list' => $updt, 'reload' => $reld]);	
 				} else {
 					return (['e' => 3, 'list' => [ ], 'reload' => false]);
@@ -1196,6 +1250,8 @@ class Movie extends BaseClass
                                         if (is_file('../movie/'.$movie.'.movie/strings.json')) $strings = file_get_contents('../movie/'.$movie.'.movie/strings.json');
                                         $contraptions = '';
                                         if (is_file('../movie/'.$movie.'.movie/contraptions.json')) $contraptions = file_get_contents('../movie/'.$movie.'.movie/contraptions.json');
+                                        $narrative = '';
+                                        if (is_file('../movie/'.$movie.'.movie/narrative.json')) $narrative = file_get_contents('../movie/'.$movie.'.movie/narrative.json');
                                         // adjust json values
                                         $json['id'] = $movie;
                                         if (!isset($json['author'])) $json['author'] = $user;
@@ -1236,7 +1292,7 @@ class Movie extends BaseClass
                                             $json['plugins'] = $plg;
                                         }
                                         file_put_contents('../movie/'.$movie.'.movie/movie.json', json_encode($json));
-                                        if (!$this->execute('INSERT INTO movies (mv_id, mv_user, mv_collaborators, mv_author, mv_title, mv_about, mv_copyright, mv_copyleft, mv_tags, mv_favicon, mv_image, mv_key, mv_start, mv_acstart, mv_screenbig, mv_screensmall, mv_screentype, mv_screenbg, mv_interval, mv_origin, mv_animation, mv_fonts, mv_style, mv_actions, mv_theme, mv_texts, mv_numbers, mv_flags, mv_plugins, mv_created, mv_updated, mv_loading, mv_encrypted, mv_highlight, mv_contraptions, mv_strings) VALUES (:mv_id, :mv_user, :mv_collaborators, :mv_author, :mv_title, :mv_about, :mv_copyright, :mv_copyleft, :mv_tags, :mv_favicon, :mv_image, :mv_key, :mv_start, :mv_acstart, :mv_screenbig, :mv_screensmall, :mv_screentype, :mv_screenbg, :mv_interval, :mv_origin, :mv_animation, :mv_fonts, :mv_style, :mv_actions, :mv_theme, :mv_texts, :mv_numbers, :mv_flags, :mv_plugins, :mv_created, :mv_updated, :mv_loading, :mv_encrypted, :mv_highlight, :mv_contraptions, :mv_strings)', [
+                                        if (!$this->execute('INSERT INTO movies (mv_id, mv_user, mv_collaborators, mv_author, mv_title, mv_about, mv_copyright, mv_copyleft, mv_tags, mv_favicon, mv_image, mv_key, mv_start, mv_acstart, mv_screenbig, mv_screensmall, mv_screentype, mv_screenbg, mv_interval, mv_origin, mv_animation, mv_fonts, mv_style, mv_actions, mv_theme, mv_texts, mv_numbers, mv_flags, mv_plugins, mv_created, mv_updated, mv_loading, mv_encrypted, mv_highlight, mv_contraptions, mv_strings, mv_narrative) VALUES (:mv_id, :mv_user, :mv_collaborators, :mv_author, :mv_title, :mv_about, :mv_copyright, :mv_copyleft, :mv_tags, :mv_favicon, :mv_image, :mv_key, :mv_start, :mv_acstart, :mv_screenbig, :mv_screensmall, :mv_screentype, :mv_screenbg, :mv_interval, :mv_origin, :mv_animation, :mv_fonts, :mv_style, :mv_actions, :mv_theme, :mv_texts, :mv_numbers, :mv_flags, :mv_plugins, :mv_created, :mv_updated, :mv_loading, :mv_encrypted, :mv_highlight, :mv_contraptions, :mv_strings, :mv_narrative)', [
                                             ':mv_id' => $json['id'], 
                                             ':mv_user' => $user, 
                                             ':mv_collaborators' => '', 
@@ -1273,6 +1329,7 @@ class Movie extends BaseClass
                                             ':mv_highlight' => $json['highlight'], 
                                             ':mv_contraptions' => $contraptions == '' ? '' : base64_encode(gzencode($contraptions)), 
                                             ':mv_strings' => $strings == '' ? '' : base64_encode(gzencode($strings)), 
+                                            ':mv_narrative' => $narrative == '' ? '' : base64_encode(gzencode($narrative)), 
                                         ])) {
                                             // error saving movie
                                             $dir = '../movie/'.$movie.'.movie/';
@@ -1456,9 +1513,31 @@ class Movie extends BaseClass
                                             if (!is_dir('../movie/'.$movie.'.movie/media/html')) !$this->createDir('../movie/'.$movie.'.movie/media/html');
                                             if (!is_dir('../movie/'.$movie.'.movie/media/font')) !$this->createDir('../movie/'.$movie.'.movie/media/font');
                                             if (!is_dir('../movie/'.$movie.'.movie/media/spritemap')) !$this->createDir('../movie/'.$movie.'.movie/media/spritemap');
+                                            if (!is_dir('../movie/'.$movie.'.movie/media/strings')) !$this->createDir('../movie/'.$movie.'.movie/media/strings');
+                                            
+                                            // string files
+                                            if ($handle = opendir('../movie/'.$movie.'.movie/media/strings')) {
+                                                while (false !== ($file = readdir($handle))) {
+                                                    if (($file != '.') && ($file != '..')) {
+                                                        $name = str_replace('.json', '', $file);
+                                                        $content = file_get_contents('../movie/'.$movie.'.movie/media/strings/'.$file);
+                                                        if ($content !== false) {
+                                                            $this->execute('DELETE FROM strings WHERE st_movie=:mv AND st_file=:fl', [
+                                                                ':mv' => $movie, 
+                                                                ':fl' => $name, 
+                                                            ]);
+                                                            $this->execute('INSERT INTO strings (st_movie, st_file, st_content) VALUES (:mv, :fl, :ct)', [
+                                                                ':mv' => $movie, 
+                                                                ':fl' => $name, 
+                                                                ':ct' => base64_encode(gzencode($content)), 
+                                                            ]);
+                                                        }
+                                                    }
+                                                }
+                                            }
                                             
                                             // additional files
-                                            $stringsjson = '';
+                                            /*$stringsjson = '';
                                             if (is_file('../movie/'.$movie.'.movie/strings.json')) $stringsjson = file_get_contents('../movie/'.$movie.'.movie/strings.json');
                                             $contraptions = '';
                                             if (is_file('../movie/'.$movie.'.movie/contraptions.json')) $contraptions = file_get_contents('../movie/'.$movie.'.movie/contraptions.json');
@@ -1468,7 +1547,7 @@ class Movie extends BaseClass
                                                 ':cont' => $contraptions, 
                                                 ':str' => $stringsjson, 
                                                 ':id' => $movie,
-                                            ]);
+                                            ]);*/
                                             
                                             // movie imported
                                             @unlink('../../export/' . $movie . '.zip');
@@ -1914,6 +1993,7 @@ class Movie extends BaseClass
                             // offline movie files
                             if (is_file('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/strings.json')) $offline[] = $url . 'movie/'.$movie.'.movie/strings.json';
                             if (is_file('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/contraptions.json')) $offline[] = $url . 'movie/'.$movie.'.movie/contraptions.json';
+                            if (is_file('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/narrative.json')) $offline[] = $url . 'movie/'.$movie.'.movie/narrative.json';
                             // check offline scenes
                             $collections = [ ];
                             $cks = $this->queryAll('SELECT sc_id, sc_collections FROM scenes WHERE sc_movie=:mv AND sc_published=:pub', [ ':mv' => $movie, ':pub' => '1' ]);
@@ -1943,6 +2023,13 @@ class Movie extends BaseClass
                                             }
                                         }
                                     }
+                                }
+                            }
+                            // check offline string files
+                            if (is_dir('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/strings/')) {
+                                $embedlist = $this->listDirFiles('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/strings');
+                                foreach ($embedlist as $el) {
+                                    $offline[] = str_replace('../../export/pwa-'.$movie.'/', $url, $el);
                                 }
                             }
                             // check offline embed files
@@ -2208,415 +2295,6 @@ class Movie extends BaseClass
 			return (false);
 		}
 	}
-    
-    /**
-	 * Exports a movie as a desktop application (Linux systems).
-	 * @param	string	$user	the requesting user
-	 * @param	string	$movie	the movie id
-     * @param	string	$os    the desktop system
-     * @param	string	$window    the window mode
-     * @param	int   $width  window original width
-     * @param	int   $height window original height
-	 * @return	string|bool the path to the exported file or false on error
-	 *
-	public function exportDeskLinux($user, $movie, $os, $window, $width, $height) {
-		// check user: movie owner?
-		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [
-				':id' => $movie, 
-				':user' => $user, 
-			]);
-			if (count($ck) > 0) {
-                if (is_dir('../movie/'.$movie.'.movie') && is_file('../../export/desktop/'.$os.'.zip')) {
-                    set_time_limit(0);
-                    $appfolder = $movie;
-                    $this->removeFileDir('../../export/'.$os.'-'.$movie.'.zip');
-                    $this->removeFileDir('../../export/'.$os.'-'.$movie);
-                    $this->createDir('../../export/'.$os.'-'.$movie);
-                    $this->createDir('../../export/'.$os.'-'.$movie);
-                    @copy(('../../export/desktop/'.$os.'.zip'), ('../../export/'.$os.'-'.$movie.'.zip'));
-                    $this->copyDir('../../export/site', ('../../export/'.$os.'-'.$movie));
-                    if (is_dir('../../export/'.$os.'-'.$movie)) {
-                        if ($this->loadMovie($movie)) {
-                            set_time_limit(0);
-                            
-                            // re-publish scenes?
-                            $pub = false;
-                            if (($ck[0]['mv_identify'] == '1') || (!is_null($ck[0]['mv_vsgroups']) && ($ck[0]['mv_vsgroups'] != ''))) {
-                                $pub = true;
-                                $this->publishScenes($movie);
-                            }
-                            
-                            // fonts
-                            $fonts = [ ];
-                            $ck = $this->queryAll('SELECT * FROM fonts');
-                            foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/'.$os.'-'.$movie.'/assets/' . $v['fn_file']));
-                            }
-                            $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
-                            if (count($ck) > 0) {
-                                if ($ck[0]['mv_fonts'] != '') {
-                                    $json = json_decode(gzdecode(base64_decode($ck[0]['mv_fonts'])), true);
-                                    if (json_last_error() == JSON_ERROR_NONE) {
-                                        foreach ($json as $k => $v) {
-                                            if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/'.$os.'-'.$movie.'/assets/' . $v['file']));
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            // plugins
-                            $plhead = [ ];
-                            $plend = [ ];
-                            $ck = $this->queryAll('SELECT pc_id, pc_file FROM pluginconfig WHERE pc_active=:ac AND pc_index=:in', [
-                                ':ac' => '1', 
-                                ':in' => '1', 
-                            ]);
-                            foreach ($ck as $v) {
-                                if (is_file('../../app/' . $v['pc_file'] . '.php')) {
-                                    require_once('../../app/' . $v['pc_file'] . '.php');
-                                    $pl = new $v['pc_file'];
-                                    $plhead[] = $pl->indexHead();
-                                    $plend[] = $pl->indexEndBody();
-                                }
-                            }
-                            // index text
-                            $index = file_get_contents('../../export/desktop/index.html');
-                            // prepare values
-                            $fonts = implode("\r\n", $fonts);
-                            $plhead = implode("\r\n", $plhead); 
-                            $plend = implode("\r\n", $plend); 
-                            $image = $this->info['image'] == '' ? '' : '<meta property="og:image" content="./movie/'.$movie.'.movie/media/picture/'.$this->info['image'].'" />';
-                            $color = str_replace('0x', '#', $this->info['screen']['bgcolor']);
-                            $ws = '';
-                            if ((strpos($this->conf['path'], 'localhost') === false) && (strpos($this->conf['path'], '127.0.0.1') === false)) {
-                                $ws = $this->slashUrl($this->conf['path']) . 'ws/';
-                            }
-                            // index.html
-                            $index = str_replace([
-                                '[SITEMOVIE]', 
-                                '[SITESCENE]', 
-                                '[SITETITLE]', 
-                                '[SITECOLOR]', 
-                                '[SITEABOUT]', 
-                                '[SITESHAREIMG]',
-                                '[SITEFONTS]', 
-                                '[SITEPLUGINHEAD]', 
-                                '[SITEPLUGINEND]', 
-                                '[SITEWS]'
-                            ], [
-                                $movie, 
-                                '', 
-                                $this->info['title'], 
-                                $color, 
-                                $this->info['description'], 
-                                $image, 
-                                $fonts, 
-                                $plhead, 
-                                $plend, 
-                                $ws
-                            ], $index);
-                            file_put_contents('../../export/'.$os.'-'.$movie.'/index.html', $index);
-                            // runtime
-                            @copy('../../export/runtimes/desktop.js', ('../../export/'.$os.'-'.$movie.'/TilBuci.js'));
-                            // favicon
-                            if ($this->info['favicon'] != '') {
-                                @unlink('../../export/'.$os.'-'.$movie.'/favicon.png');
-                                @copy(('../movie/'.$movie.'.movie/media/picture/'.$this->info['favicon']), ('../../export/'.$os.'-'.$movie.'/favicon.png'));
-                            }
-                            // movie folder
-                            $this->copyDir(('../movie/'.$movie.'.movie'), ('../../export/'.$os.'-'.$movie.'/movie/'.$movie.'.movie'));
-                            $this->info['key'] = '';
-                            $this->info['fallback'] = '';
-                            $this->info['identify'] = false;
-                            $this->info['vsgroups'] = '';
-                            file_put_contents(('../../export/'.$os.'-'.$movie.'/movie/'.$movie.'.movie/movie.json'), json_encode($this->info));
-                            // howler
-                            @copy('../../export/desktop/howler.min.js', ('../../export/'.$os.'-'.$movie.'/howler.min.js'));
-                            // package text
-                            file_put_contents(('../../export/'.$os.'-'.$movie.'/package.json'), json_encode([
-                                'name' => $this->info['title'], 
-                                'version' => time(), 
-                                'main' => 'index.html', 
-                                'window' => [
-                                    'id' => $movie, 
-                                    'title' => $this->info['title'], 
-                                    'icon' => 'favicon.png', 
-                                    'width' => $width, 
-                                    'height' => $height, 
-                                    'position' => 'center', 
-                                    'kiosk' => ($window == 'kiosk'), 
-                                    'resizable' => ($window != 'resize'), 
-                                    'fullscreen' => ($window == 'full'), 
-                                ], 
-                                'icons' => [
-                                    '256' => 'favicon.png'
-                                ]
-                            ]));
-                            // executable and readme
-                            file_put_contents(('../../export/'.$os.'-'.$movie.'/readme'), "This is your Linux application folder. Just run execute './nw' file to open it (if fail, you may need to set run permissions to the file). You must distribute this entire folder.");
-
-                            // save zip
-                            $zip = new \ZipArchive;
-                            $zip->open('../../export/'.$os.'-'.$movie.'.zip');
-                            $files = new \RecursiveIteratorIterator(
-                                new \RecursiveDirectoryIterator('../../export/'.$os.'-'.$movie),
-                                \RecursiveIteratorIterator::LEAVES_ONLY
-                            );
-                            $rootPath = realpath('../../export/'.$os.'-'.$movie);
-                            foreach ($files as $file) {
-                                if (!$file->isDir()) {
-                                    $filePath = $file->getRealPath();
-                                    $relativePath = substr($filePath, strlen($rootPath) + 1);
-                                    $relativePath = str_replace('\\', '/', $relativePath);
-                                    $zip->addFile($filePath, $relativePath);
-                                }
-                            }
-                            $zip->close();
-                            $this->removeFileDir('../../export/'.$os.'-'.$movie);
-                            
-                            // remove scenes?
-                            if ($pub) {
-                                $this->removePublished($movie);
-                            }
-                            
-                            return ($os.'-'.$movie.'.zip');
-                        } else {
-                            return (false);
-                        }
-                    } else {
-                        return (false);
-                    }                    
-                } else {
-                    return (false);
-                }
-			} else {
-                // the current user isn't the movie owner
-				return (false);
-			}
-		} else {
-			return (false);
-		}
-	}
-    
-    /**
-	 * Exports a movie as a desktop application.
-	 * @param	string	$user	the requesting user
-	 * @param	string	$movie	the movie id
-     * @param	string	$os    the desktop system
-     * @param	string	$window    the window mode
-     * @param	int   $width  window original width
-     * @param	int   $height window original height
-	 * @return	string|bool the path to the exported file or false on error
-	 *
-	public function exportDesk($user, $movie, $os, $window, $width, $height) {
-		// check user: movie owner?
-		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [
-				':id' => $movie, 
-				':user' => $user, 
-			]);
-			if (count($ck) > 0) {
-                if (is_dir('../movie/'.$movie.'.movie') && is_file('../../export/desktop/'.$os.'.zip')) {
-                    set_time_limit(0);
-                    if ($os == 'windows') {
-                        $appfolder = '/' . $movie;
-                        $moviefolder = '';
-                    } else {
-                        $appfolder = '';
-                        $moviefolder = '/nwjs.app/Contents/Resources/app.nw';
-                    }
-                    $this->removeFileDir('../../export/'.$os.'-'.$movie.'.zip');
-                    $this->removeFileDir('../../export/'.$os.'-'.$movie);
-                    $this->createDir('../../export/'.$os.'-'.$movie);
-                    $this->createDir('../../export/'.$os.'-'.$movie.$appfolder);
-                    $zipos = new \ZipArchive;
-                    $res = $zipos->open('../../export/desktop/'.$os.'.zip');
-                    if ($res === true) {
-                        $zipos->extractTo('../../export/'.$os.'-'.$movie.$appfolder);
-                        $zipos->close();
-                    }
-                    if ($moviefolder != '') $this->createDir('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder);
-                    $this->copyDir('../../export/site', ('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder));
-                    if (is_dir('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder)) {
-                        if ($this->loadMovie($movie)) {
-                            set_time_limit(0);
-                            
-                            // re-publish scenes?
-                            $pub = false;
-                            if (($ck[0]['mv_identify'] == '1') || (!is_null($ck[0]['mv_vsgroups']) && ($ck[0]['mv_vsgroups'] != ''))) {
-                                $pub = true;
-                                $this->publishScenes($movie);
-                            }
-                            
-                            // fonts
-                            $fonts = [ ];
-                            $ck = $this->queryAll('SELECT * FROM fonts');
-                            foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/assets/' . $v['fn_file']));
-                            }
-                            $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
-                            if (count($ck) > 0) {
-                                if ($ck[0]['mv_fonts'] != '') {
-                                    $json = json_decode(gzdecode(base64_decode($ck[0]['mv_fonts'])), true);
-                                    if (json_last_error() == JSON_ERROR_NONE) {
-                                        foreach ($json as $k => $v) {
-                                            if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/assets/' . $v['file']));
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            // plugins
-                            $plhead = [ ];
-                            $plend = [ ];
-                            $ck = $this->queryAll('SELECT pc_id, pc_file FROM pluginconfig WHERE pc_active=:ac AND pc_index=:in', [
-                                ':ac' => '1', 
-                                ':in' => '1', 
-                            ]);
-                            foreach ($ck as $v) {
-                                if (is_file('../../app/' . $v['pc_file'] . '.php')) {
-                                    require_once('../../app/' . $v['pc_file'] . '.php');
-                                    $pl = new $v['pc_file'];
-                                    $plhead[] = $pl->indexHead();
-                                    $plend[] = $pl->indexEndBody();
-                                }
-                            }
-                            // index text
-                            $index = file_get_contents('../../export/desktop/index.html');
-                            // prepare values
-                            $fonts = implode("\r\n", $fonts);
-                            $plhead = implode("\r\n", $plhead); 
-                            $plend = implode("\r\n", $plend); 
-                            $image = $this->info['image'] == '' ? '' : '<meta property="og:image" content="./movie/'.$movie.'.movie/media/picture/'.$this->info['image'].'" />';
-                            $color = str_replace('0x', '#', $this->info['screen']['bgcolor']);
-                            $ws = '';
-                            if ((strpos($this->conf['path'], 'localhost') === false) && (strpos($this->conf['path'], '127.0.0.1') === false)) {
-                                $ws = $this->slashUrl($this->conf['path']) . 'ws/';
-                            }
-                            // index.html
-                            $index = str_replace([
-                                '[SITEMOVIE]', 
-                                '[SITESCENE]', 
-                                '[SITETITLE]', 
-                                '[SITECOLOR]', 
-                                '[SITEABOUT]', 
-                                '[SITESHAREIMG]',
-                                '[SITEFONTS]', 
-                                '[SITEPLUGINHEAD]', 
-                                '[SITEPLUGINEND]', 
-                                '[SITEWS]'
-                            ], [
-                                $movie, 
-                                '', 
-                                $this->info['title'], 
-                                $color, 
-                                $this->info['description'], 
-                                $image, 
-                                $fonts, 
-                                $plhead, 
-                                $plend, 
-                                $ws
-                            ], $index);
-                            file_put_contents('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/index.html', $index);
-                            // runtime
-                            @copy('../../export/runtimes/desktop.js', ('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/TilBuci.js'));
-                            // favicon
-                            if ($this->info['favicon'] != '') {
-                                @unlink('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/favicon.png');
-                                @copy(('../movie/'.$movie.'.movie/media/picture/'.$this->info['favicon']), ('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/favicon.png'));
-                            }
-                            // movie folder
-                            $this->copyDir(('../movie/'.$movie.'.movie'), ('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/movie/'.$movie.'.movie'));
-                            $this->info['key'] = '';
-                            $this->info['fallback'] = '';
-                            $this->info['identify'] = false;
-                            $this->info['vsgroups'] = '';
-                            file_put_contents(('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/movie/'.$movie.'.movie/movie.json'), json_encode($this->info));
-                            // howler
-                            @copy('../../export/desktop/howler.min.js', ('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/howler.min.js'));
-                            // package text
-                            file_put_contents(('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/package.json'), json_encode([
-                                'name' => $this->info['title'], 
-                                'version' => time(), 
-                                'main' => 'index.html', 
-                                'window' => [
-                                    'id' => $movie, 
-                                    'title' => $this->info['title'], 
-                                    'icon' => 'favicon.png', 
-                                    'width' => $width, 
-                                    'height' => $height, 
-                                    'position' => 'center', 
-                                    'kiosk' => ($window == 'kiosk'), 
-                                    'resizable' => ($window != 'resize'), 
-                                    'fullscreen' => ($window == 'full'), 
-                                ], 
-                                'icons' => [
-                                    '256' => 'favicon.png'
-                                ]
-                            ]));
-                            // executable and readme
-                            if ($os == 'windows') {
-                                @rename(('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/nw.exe'), ('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/'.$movie.'.exe'));
-                                file_put_contents(('../../export/'.$os.'-'.$movie.'/readme.txt'), "The '$movie' folder contains your Windows application. Just run the '$movie.exe' file to open it. You must distribute the entire '$movie' folder.");
-                            } else {
-                                // mac
-                                if (is_file(('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/favicon.png'))) {
-                                    @copy(('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/favicon.png'), ('../../export/'.$os.'-'.$movie.$appfolder.'/nwjs.app/Contents/Resources/app.icns'));
-                                    @copy(('../../export/'.$os.'-'.$movie.$appfolder.$moviefolder.'/favicon.png'), ('../../export/'.$os.'-'.$movie.$appfolder.'/nwjs.app/Contents/Resources/document.icns'));
-                                }
-                                file_put_contents(('../../export/'.$os.'-'.$movie.'/readme.txt'), "This is your macOS application. Just run 'nwjs' to open it. Some systems may require you to allow the execution of downloaded apps. Before distributing, you may change the app name from 'nwjs' to any other you want.");
-                            }
-
-                            // save zip
-                            $zip = new \ZipArchive;
-                            $zip->open('../../export/'.$os.'-'.$movie.'.zip', \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-                            $files = new \RecursiveIteratorIterator(
-                                new \RecursiveDirectoryIterator('../../export/'.$os.'-'.$movie),
-                                \RecursiveIteratorIterator::LEAVES_ONLY
-                            );
-                            $rootPath = realpath('../../export/'.$os.'-'.$movie);
-                            foreach ($files as $file) {
-                                if (!$file->isDir()) {
-                                    $filePath = $file->getRealPath();
-                                    $relativePath = substr($filePath, strlen($rootPath) + 1);
-                                    $relativePath = str_replace('\\', '/', $relativePath);
-                                    $zip->addFile($filePath, $relativePath);
-                                }
-                            }
-                            $zip->close();
-                            $this->removeFileDir('../../export/'.$os.'-'.$movie);
-                            
-                            // remove scenes?
-                            if ($pub) {
-                                $this->removePublished($movie);
-                            }
-                            
-                            return ($os.'-'.$movie.'.zip');
-                        } else {
-                            return (false);
-                        }
-                    } else {
-                        return (false);
-                    }                    
-                } else {
-                    return (false);
-                }
-			} else {
-                // the current user isn't the movie owner
-				return (false);
-			}
-		} else {
-			return (false);
-		}
-	}
-    /**/
     
     /**
 	 * Exports a movie as a desktop application.
@@ -3396,7 +3074,7 @@ class Movie extends BaseClass
      * 2 => corrupted contraption data
      */
     public function saveContraptions($user, $movie, $data) {
-        $ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id AND (mv_user=:user OR mv_collaborators LIKE :col)', [
+        $ck = $this->queryAll('SELECT mv_id, mv_encrypted FROM movies WHERE mv_id=:id AND (mv_user=:user OR mv_collaborators LIKE :col)', [
             ':id' => $movie, 
             ':user' => $user, 
             ':col' => '%' . trim($user) . '%', 
@@ -3410,7 +3088,48 @@ class Movie extends BaseClass
                     ':cont' => base64_encode(gzencode($data)), 
                     ':id' => $movie, 
                 ]);
-                file_put_contents('../movie/'.$movie.'.movie/contraptions.json', $data);
+                if ($ck[0]['mv_encrypted'] == '1') {
+                    file_put_contents(('../movie/'.$movie.'.movie/contraptions.json'), $this->encryptTBFile($movie, $data));
+                } else {
+                    file_put_contents('../movie/'.$movie.'.movie/contraptions.json', $data);
+                }
+                return (0);
+            }
+        } else {
+            return (1);
+        }
+    }
+    
+    /**
+     * Saves the movie narrative settings
+     * @param   string  $user   request user
+     * @param   string  $movie  the movie id
+     * @param   string  $data   the json narrative data
+     * @return  int error code
+     * 0 => narrative saved
+     * 1 => not enough permissions
+     * 2 => corrupted narrative data
+     */
+    public function saveNarrative($user, $movie, $data) {
+        $ck = $this->queryAll('SELECT mv_id, mv_encrypted FROM movies WHERE mv_id=:id AND (mv_user=:user OR mv_collaborators LIKE :col)', [
+            ':id' => $movie, 
+            ':user' => $user, 
+            ':col' => '%' . trim($user) . '%', 
+        ]);
+        if (count($ck) > 0) {
+            $json = json_decode($data);
+            if (json_last_error() != JSON_ERROR_NONE) {
+                return (2);
+            } else {
+                $this->execute('UPDATE movies SET mv_narrative=:nar WHERE mv_id=:id', [
+                    ':nar' => base64_encode(gzencode($data)), 
+                    ':id' => $movie, 
+                ]);
+                if ($ck[0]['mv_encrypted'] == '1') {
+                    file_put_contents(('../movie/'.$movie.'.movie/narrative.json'), $this->encryptTBFile($movie, $data));
+                } else {
+                    file_put_contents('../movie/'.$movie.'.movie/narrative.json', $data);
+                }
                 return (0);
             }
         } else {
@@ -3469,7 +3188,8 @@ class Movie extends BaseClass
                 }
                 
                 // other files
-                $ck = $this->queryAll('SELECT mv_contraptions, mv_strings FROM movies WHERE mv_id=:mv', [':mv' => $movie]);
+                /*
+                $ck = $this->queryAll('SELECT mv_contraptions, mv_strings, mv_narrative FROM movies WHERE mv_id=:mv', [':mv' => $movie]);
                 $writeback = false;
                 if (is_null($ck[0]['mv_strings']) || ($ck[0]['mv_strings'] == '')) {
                     $writeback = true;
@@ -3510,7 +3230,27 @@ class Movie extends BaseClass
                     ':ct' => base64_encode(gzencode($txt)), 
                     ':mv' => $movie, 
                 ]);
-                
+                $writeback = false;
+                if (is_null($ck[0]['mv_narrative']) || ($ck[0]['mv_narrative'] == '')) {
+                    $writeback = true;
+                    if (is_file('../movie/'.$movie.'.movie/narrative.json')) {
+                        $txt = file_get_contents('../movie/'.$movie.'.movie/narrative.json');
+                    } else {
+                        $txt = json_encode([]);
+                    }
+                } else {
+                    $txt = gzdecode(base64_decode($ck[0]['mv_narrative']));
+                }
+                if ($this->info['encrypted'] && !$decrypt) {
+                    file_put_contents(('../movie/'.$movie.'.movie/narrative.json'), $this->encryptTBFile($this->info['id'], $txt));
+                } else {
+                    file_put_contents(('../movie/'.$movie.'.movie/narrative.json'), $txt);
+                }
+                if ($writeback) $this->execute('UPDATE movies SET mv_narrative=:ct WHERE mv_id=:mv', [
+                    ':ct' => base64_encode(gzencode($txt)), 
+                    ':mv' => $movie, 
+                ]);
+                */
                 return (0);
             } else {
                 return (2);

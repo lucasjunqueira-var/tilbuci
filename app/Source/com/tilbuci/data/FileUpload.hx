@@ -250,6 +250,9 @@ class FileUpload extends EventDispatcher {
             case 'embed':
                 ext = '.zip';
                 title = Global.ln.get('uploader-embedname');
+            case 'strings':
+                ext = '.json';
+                title = Global.ln.get('uploader-stringsname');
         }
         if (ext != '') {
             this._ac = ac;

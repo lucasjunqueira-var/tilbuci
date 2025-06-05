@@ -121,6 +121,9 @@ class WSMovie extends Webservice
                 case 'Movie/SaveContraptions':
 					$this->saveContraptions();
 					break;
+                case 'Movie/SaveNarrative':
+					$this->saveNarrative();
+					break;
                 case 'Movie/Republish':
 					$this->republish();
 					break;
@@ -569,6 +572,17 @@ class WSMovie extends Webservice
 		if ($this->requiredFields(['movie', 'data'])) {
 			$mv = new Movie;
             $this->returnRequest([ 'e' => $mv->saveContraptions($this->user, $this->req['movie'], $this->req['data']) ]);
+		}
+	}
+    
+    /**
+	 * Saves the movie narrative settings.
+	 */
+	private function saveNarrative() {
+		// required fields received?
+		if ($this->requiredFields(['movie', 'data'])) {
+			$mv = new Movie;
+            $this->returnRequest([ 'e' => $mv->saveNarrative($this->user, $this->req['movie'], $this->req['data']) ]);
 		}
 	}
     
