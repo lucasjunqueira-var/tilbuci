@@ -428,6 +428,7 @@ class Media extends BaseClass
 			if ($v['NUMASSETS'] > 0) {
                 $item = [
                     'uid' => $v['cl_uid'], 
+                    'id' => $v['cl_id'], 
                     'title' => $v['cl_title'],
                     'assets' => [ ], 
                 ];

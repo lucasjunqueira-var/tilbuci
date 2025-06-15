@@ -9,6 +9,7 @@
 /** HAXE **/
 import com.tilbuci.ui.window.media.WindowMediaStrings;
 import com.tilbuci.ui.window.narrative.WindowNarrChar;
+import com.tilbuci.ui.window.narrative.WindowDiagChar;
 import com.tilbuci.ui.menu.MenuNarrative;
 import com.tilbuci.def.AssetData;
 import com.tilbuci.ui.window.contraptions.WindowContrMenu;
@@ -998,6 +999,28 @@ class Editor extends Drawer {
     }
 
     /**
+        Narrative dialogues information.
+        @param  ac  the action id
+    **/
+    private function actionWindowDiagChar(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'audio':
+                Global.temp['Media/Single'] = [
+                    'type' => 'audio', 
+                    'call' => 'audiodialogue'
+                ];
+                this.showWindow('mediaaudio');
+                this._windows['mediaaudio'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'menu-close':
+                this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
+        }
+    }
+
+    /**
         Movie window actions.
         @param  ac  the action id
     **/
@@ -1573,6 +1596,12 @@ class Editor extends Drawer {
                                 'type' => data['type'], 
                                 'name' => data['file'], 
                             ]);
+                        case 'audiodialogue':
+                            this._windows['narrative-diag'].action('audio', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
                         case 'formbackground':
                             this._windows['form'].action('formbackground', [
                                 'file' => data['path'] + data['file'], 
@@ -1942,6 +1971,7 @@ class Editor extends Drawer {
                 case 'interfaces': this._windows['interfaces'] = new WindowContrInterf(actionWindowContrInterf);
 
                 case 'narrative-char': this._windows['narrative-char'] = new WindowNarrChar(actionWindowNarrChar);
+                case 'narrative-diag': this._windows['narrative-diag'] = new WindowDiagChar(actionWindowDiagChar);
 
                 case 'visitors': this._windows['visitors'] = new WindowVisitors(actionWindowVisitors, this.build);
                 case 'designnotes': this._windows['designnotes'] = new WindowNotes(actionWindowNotes);

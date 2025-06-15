@@ -69,7 +69,7 @@ class WindowMediaBase extends PopupWindow {
     **/
     public function new(ac:Dynamic, title:String, type:String, mode:String) {
         // creating window
-        super(ac, title, 1000, 650, false, true, true);
+        super(ac, title, 1000, 690, false, true, true);
         this._type = type;
         this._mode = mode;
         this._preview = new MediaPreview(type, 460, 460);

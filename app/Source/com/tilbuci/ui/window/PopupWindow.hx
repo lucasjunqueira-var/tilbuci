@@ -7,6 +7,8 @@
  package com.tilbuci.ui.window;
 
 /** OPENFL **/
+import feathers.layout.VerticalAlign;
+import feathers.layout.AutoSizeMode;
 import feathers.layout.HorizontalLayout;
 import feathers.controls.LayoutGroup;
 import feathers.core.FeathersControl;
@@ -108,7 +110,7 @@ class PopupWindow extends Panel {
         super();
         this.ui = new InterfaceFactory(this._padding);
         this.backgroundSkin = new BackgroundSkin(0x383838);
-        this.layout = new AnchorLayout();
+        this.layout = new AnchorLayout();        
         this.setPadding(0);
         this._ac = ac;
         if (wd > 0) {
@@ -185,6 +187,12 @@ class PopupWindow extends Panel {
     }
 
     /**
+        Window action to run on display.
+    **/
+    public function acStart():Void {
+    }
+
+    /**
         Creates the window interface.
     **/
     public function startInterface(evt:Event = null):Void {
@@ -258,13 +266,6 @@ class PopupWindow extends Panel {
         Window custom actions (to override).
     **/
     public function action(ac:String, data:Map<String, Dynamic> = null):Void {
-
-    }
-
-    /**
-        Window action to run on display (meant to override).
-    **/
-    public function acStart():Void {
 
     }
 

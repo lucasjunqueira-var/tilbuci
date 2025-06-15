@@ -27,7 +27,7 @@ class WindowMediaEmbed extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-mdembed-title'), 1000, 420, false, true, true);
+        super(ac, Global.ln.get('window-mdembed-title'), 1000, 430, false, true, true);
     }
 
     /**
@@ -44,7 +44,7 @@ class WindowMediaEmbed extends PopupWindow {
             this.ui.forge('right', [
                 { tp: 'Label', id: 'add', tx: Global.ln.get('window-mdembed-add'), vr: '' }, 
                 { tp: 'Label', id: 'addabout', tx: Global.ln.get('window-mdembed-addabout'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'Spacer', id: 'addabout', ht: 172, ln: false }, 
+                { tp: 'Spacer', id: 'addabout', ht: 152, ln: false }, 
                 { tp: 'Label', id: 'addname', tx: Global.ln.get('window-mdembed-addname'), vr: Label.VARIANT_DETAIL }, 
                 { tp: 'TInput', id: 'addname', vl: '', vr: '' }, 
                 { tp: 'Button', id: 'addselect', tx: Global.ln.get('window-mdembed-addselect'), ac: this.onSelectZip },

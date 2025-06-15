@@ -37,7 +37,7 @@ class WindowMovieSequences extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-movieseq-title'), 800, 620, false, true, true);
+        super(ac, Global.ln.get('window-movieseq-title'), 800, 650, false, true, true);
     }
 
     /**

@@ -37,7 +37,7 @@ class WindowSetup extends PopupWindow {
     public function new(ac:Dynamic, build:BuildInfo) {
 
         // creating window
-        super(ac, Global.ln.get('window-setup-title'), 900, 550, true, true, true);
+        super(ac, Global.ln.get('window-setup-title'), 900, 630, true, true, true);
 
         // user account (only on multiple user mode)
         if (!Global.singleUser) {

@@ -36,7 +36,7 @@ class WindowNarrChar extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-narrchar-title'), 1000, 510, false, true, true);
+        super(ac, Global.ln.get('window-narrchar-title'), 1000, 530, false, true, true);
     }
 
     /**
@@ -67,7 +67,7 @@ class WindowNarrChar extends PopupWindow {
             this.ui.forge('bottom', [
                 { tp: 'Button', id: 'save', tx: Global.ln.get('window-narrchar-save'), ac: saveNarr },
             ])
-            , 410));
+            , 420));
             this.ui.listDbClick('registered', this.loadNarr);
             super.startInterface();
     }
@@ -104,9 +104,6 @@ class WindowNarrChar extends PopupWindow {
                         value: i.id
                     });
                 }
-
-trace ('options', list);
-
                 this.ui.setSelectOptions('collection', list);
             } else {
                 this.ui.createWarning(Global.ln.get('window-narrchar-title'), Global.ln.get('window-narrchar-nolist'), 300, 180, this.stage);

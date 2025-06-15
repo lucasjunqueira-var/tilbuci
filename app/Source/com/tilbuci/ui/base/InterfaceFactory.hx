@@ -25,6 +25,7 @@ import feathers.data.ArrayCollection;
 import openfl.display.Stage;
 
 /** FEATHERS UI **/
+import feathers.utils.DeviceUtil;
 import feathers.core.FeathersControl;
 import feathers.controls.Label;
 import feathers.controls.TextInput;
@@ -891,5 +892,19 @@ class InterfaceFactory {
         for (item in this.lists) if ((item.parent != null) && (item.parent.parent != null)) item.width = item.parent.parent.width - (4 * this._padding);
         for (item in this.buttons) if ((item.parent != null) && (item.parent.parent != null) && (item.autoResize)) item.width = item.parent.parent.width - (4 * this._padding);
         for (item in this.spacers) if ((item.parent != null) && (item.parent.parent != null)) item.scaleX = (item.parent.parent.width - (4 * this._padding)) / 10;
+    }
+
+    /**
+        Picks a value according to the likely platform.
+        @param  desktop value for desktop systems
+        @param  mobile  value for mobile systems
+        @return the avlue according to the most likely platform
+    **/
+    public static function pickValue(desktop:Int, mobile:Int):Int {
+        if (DeviceUtil.isMobile()) {
+            return (mobile);
+        } else {
+            return (desktop);
+        }
     }
 }

@@ -71,7 +71,7 @@ class WindowCollections extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-collection-title'), 1000, 650, false, true, true);
+        super(ac, Global.ln.get('window-collection-title'), 1000, 690, false, true, true);
     }
 
     /**

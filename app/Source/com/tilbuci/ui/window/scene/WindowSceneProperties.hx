@@ -58,7 +58,7 @@ class WindowSceneProperties extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-sceneprop-windowtitle'), 1000, 590, true, true, true);
+        super(ac, Global.ln.get('window-sceneprop-windowtitle'), 1000, 640, true, true, true);
     }
 
     /**

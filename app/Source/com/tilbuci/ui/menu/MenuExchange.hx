@@ -19,7 +19,7 @@ class MenuExchange extends DrawerMenu {
         super(ac, Global.ln.get('menu-exhange-title'));
         this.addButton('btExport', Global.ln.get('menu-exchange-export'), onExport);
         this.addButton('btWebsite', Global.ln.get('menu-exchange-site'), onWebsite);
-        this.addButton('btWebsite', Global.ln.get('menu-exchange-iframe'), onIframe);
+        this.addButton('btIframe', Global.ln.get('menu-exchange-iframe'), onIframe);
         this.addButton('btPwa', Global.ln.get('menu-exchange-pwa'), onPwa);
         this.addButton('btPublish', Global.ln.get('menu-exchange-publish'), onPublish);
         this.addButton('btDesktop', Global.ln.get('menu-exchange-desktop'), onDesktop);
@@ -47,7 +47,7 @@ class MenuExchange extends DrawerMenu {
             this.ui.buttons['btDesktop'].enabled = true;
             this.ui.buttons['btCordova'].enabled = true;
             this.ui.buttons['btExport'].toolTip = null;
-            this.ui.buttons['btWebsite'].toolTip = null;
+            this.ui.buttons['btIframe'].toolTip = null;
             this.ui.buttons['btPwa'].toolTip = null;
             this.ui.buttons['btPublish'].toolTip = null;
             this.ui.buttons['btDesktop'].toolTip = null;
@@ -60,7 +60,7 @@ class MenuExchange extends DrawerMenu {
             this.ui.buttons['btDesktop'].enabled = false;
             this.ui.buttons['btCordova'].enabled = false;
             this.ui.buttons['btExport'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
-            this.ui.buttons['btWebsite'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
+            this.ui.buttons['btIframe'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
             this.ui.buttons['btPwa'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
             this.ui.buttons['btPublish'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
             this.ui.buttons['btDesktop'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');

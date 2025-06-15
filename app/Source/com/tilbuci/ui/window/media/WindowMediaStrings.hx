@@ -44,7 +44,7 @@ class WindowMediaStrings extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-mdstrings-title'), 1000, 530, false, true, true);
+        super(ac, Global.ln.get('window-mdstrings-title'), 1000, 550, false, true, true);
         this._type = 'strings';
     }
 

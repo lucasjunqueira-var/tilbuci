@@ -7,7 +7,9 @@
  package com.tilbuci.script;
 
 /** TILBUCI **/
+import com.tilbuci.narrative.DialogueFolderNarrative;
 import com.tilbuci.narrative.CharacterNarrative;
+import com.tilbuci.narrative.DialogueNarrative;
 import com.tilbuci.player.MovieArea;
 import haxe.macro.Expr.Function;
 import com.tilbuci.contraptions.CoverContraption;
@@ -371,6 +373,15 @@ class ScriptParser {
                             GlobalPlayer.narrative.chars[chnar.id] = chnar;
                         } else {
                             chnar.kill();
+                        }
+                    }
+                } else if (k == 'dialogues') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'dialogues'))) {
+                        var dnar:DialogueFolderNarrative = new DialogueFolderNarrative();
+                        if (dnar.load(Reflect.field(Reflect.field(ld.json, 'dialogues'), k2))) {
+                            GlobalPlayer.narrative.dialogues[dnar.id] = dnar;
+                        } else {
+                            dnar.kill();
                         }
                     }
                 }

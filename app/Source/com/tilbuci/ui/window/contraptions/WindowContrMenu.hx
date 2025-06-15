@@ -36,7 +36,7 @@ class WindowContrMenu extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-contrmenu-title'), 1000, 510, false, true, true);
+        super(ac, Global.ln.get('window-contrmenu-title'), 1000, 590, false, true, true);
     }
 
     /**
@@ -89,7 +89,7 @@ class WindowContrMenu extends PopupWindow {
             this.ui.forge('bottom', [
                 { tp: 'Button', id: 'save', tx: Global.ln.get('window-contrmenu-save'), ac: saveMenu },
             ])
-            , 410));
+            , 450));
             this.ui.listDbClick('registered', this.loadMenu);
             super.startInterface();
     }

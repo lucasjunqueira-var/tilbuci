@@ -21,6 +21,9 @@ class Narrative {
     // characters
     public var chars:Map<String, CharacterNarrative> = [ ];
 
+    // dialogues
+    public var dialogues:Map<String, DialogueFolderNarrative> = [ ];
+
     public function new() {
 
     }
@@ -37,6 +40,10 @@ class Narrative {
         data['chars'] = new Array<Dynamic>();
         for (k in this.chars) {
             data['chars'].push(k.toObject());
+        }
+        data['dialogues'] = new Array<Dynamic>();
+        for (k in this.dialogues) {
+            data['dialogues'].push(k.toObject());
         }
         return(StringStatic.jsonStringify(data));
     }

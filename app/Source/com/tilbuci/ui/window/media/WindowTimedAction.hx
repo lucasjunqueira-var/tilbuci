@@ -44,14 +44,14 @@ class WindowTimedAction extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-timedac-title'), 1450, 640, false, true, true);
+        super(ac, Global.ln.get('window-timedac-title'), 1300, 690, false, true, true);
     }
 
     /**
         Drawing the interface.
     **/
     override public function startInterface(evt:Event = null):Void {
-        this._acarea = new ActionArea(682, 520);
+        this._acarea = new ActionArea(610, 520);
         this.addForm('columns', this.ui.createColumnHolder('columns',
             this.ui.forge('left', [
                 { tp: 'Label', id: 'registered', tx: Global.ln.get('window-timedac-registered'), vr: '' }, 
@@ -119,9 +119,6 @@ class WindowTimedAction extends PopupWindow {
             }
         }
         GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._instance.getInstName()].timedAc = timedAc;
-
-trace (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._instance.getInstName()].toObject());
-
         this._instance = null;
         PopUpManager.removePopUp(this);
     }

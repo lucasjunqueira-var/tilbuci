@@ -37,7 +37,7 @@ class WindowMovieRepublish extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-republish-title'), 800, 180, false, true, true);
+        super(ac, Global.ln.get('window-republish-title'), 800, 200, false, true, true);
     }
 
     /**

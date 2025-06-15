@@ -30,7 +30,7 @@ class WindowExchangeWebsite extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-exchsite-title'), 800, 420, false, true, true);
+        super(ac, Global.ln.get('window-exchsite-title'), 800, 460, false, true, true);
     }
 
     /**

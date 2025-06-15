@@ -45,7 +45,7 @@ class WindowContrInterf extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-contrinterf-title'), 1000, 710, false, true, true);
+        super(ac, Global.ln.get('window-contrinterf-title'), 1000, 740, false, true, true);
     }
 
     /**
@@ -182,7 +182,7 @@ class WindowContrInterf extends PopupWindow {
             this.ui.forge('bottom', [
                 { tp: 'Button', id: 'save', tx: Global.ln.get('window-contrinterf-save'), ac: saveContr },
             ])
-            , 610));
+            , 620));
             this.ui.listDbClick('registered', this.loadContr);
             super.startInterface();
     }

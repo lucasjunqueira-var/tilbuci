@@ -30,7 +30,7 @@ class WindowExchangeIframe extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-exchiframe-title'), 800, 280, false, true, true);
+        super(ac, Global.ln.get('window-exchiframe-title'), 800, 300, false, true, true);
     }
 
     /**

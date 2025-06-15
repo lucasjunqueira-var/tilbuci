@@ -32,7 +32,7 @@ class WindowExchangeDesktop extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-exchdesk-title'), 1000, 640, false, true, true);
+        super(ac, Global.ln.get('window-exchdesk-title'), 1000, 710, false, true, true);
     }
 
     /**

@@ -29,7 +29,7 @@ class WindowMovieUsers extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-movieusers-title'), 700, 370, true, true, true);
+        super(ac, Global.ln.get('window-movieusers-title'), 700, 420, true, true, true);
     }
 
     /**
