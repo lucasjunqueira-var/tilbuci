@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.movie;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import com.tilbuci.ui.component.IDButton;
 import com.tilbuci.ui.base.HInterfaceContainer;
 import openfl.events.Event;
@@ -37,7 +38,7 @@ class WindowMovieRepublish extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-republish-title'), 800, 200, false, true, true);
+        super(ac, Global.ln.get('window-republish-title'), 800, InterfaceFactory.pickValue(180, 200), false, true, true);
     }
 
     /**

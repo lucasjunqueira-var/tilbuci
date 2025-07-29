@@ -210,6 +210,18 @@ class Contraptions {
         }
     }
 
+    public function changeDisplay()
+    {
+        if (this._backgroundOverlay.visible && (this._backgroundOverlay.numChildren > 0)) {
+            var bcg:BackgroundContraption = cast(this._backgroundOverlay.getChildAt(0));
+            bcg.getCover();
+        }
+        if (this._coverOverlay.visible && (this._coverOverlay.numChildren > 0)) {
+            var cov:CoverContraption = cast(this._coverOverlay.getChildAt(0));
+            cov.getCover();
+        }
+    }
+
     public function removeContraptions(all:Bool = false):Void {
         this.menuHide();
         this.hideForm();

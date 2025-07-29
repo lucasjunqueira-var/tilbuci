@@ -140,8 +140,8 @@ class EditorPlayback extends Panel {
         GlobalPlayer.area.maskArea(true);
         GlobalPlayer.area.pause();
         GlobalPlayer.movie.data.applySets(true);
-        if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);
-        if (GlobalPlayer.movie.scene.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.scene.acstart);
+        /*if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);
+        if (GlobalPlayer.movie.scene.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.scene.acstart);*/
         GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf], GlobalPlayer.area.currentKf);
         this.width = st.stageWidth;
         this.height = st.stageHeight;
@@ -170,6 +170,8 @@ class EditorPlayback extends Panel {
         PopUpManager.addPopUp(this, st);
 
         GlobalPlayer.mode = Player.MODE_EDPLAYERWAIT;
+        if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);
+        if (GlobalPlayer.movie.scene.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.scene.acstart);
         GlobalPlayer.area.play();
 
         if (GlobalPlayer.movie.scene.staticsc) {
@@ -258,6 +260,7 @@ class EditorPlayback extends Panel {
     **/
     private function onClose(evt:TriggerEvent):Void {
         GlobalPlayer.contraptions.removeContraptions(true);
+        GlobalPlayer.area.removeInputInterfaces();
         GlobalPlayer.mode = Player.MODE_EDITOR;
         GlobalPlayer.area.maskArea(false);
         GlobalPlayer.area.pause();

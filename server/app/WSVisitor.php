@@ -142,7 +142,7 @@ class WSVisitor extends Webservice
 				':us' => $this->user, 
 				':nm' => $this->req['name'], 
 				':vl' => base64_encode(gzencode($this->req['values'])), 
-			]);
+			], 'INSERT INTO visitordata (vd_id, vd_movie, vd_user, vd_name, vd_value) VALUES (:id, :mv, :us, :nm, :vl) ON CONFLICT(vd_id) DO UPDATE SET vd_value = excluded.vd_value');
 			$this->returnRequest([ 'e' => 0 ]);
 		}
 	}
@@ -193,7 +193,7 @@ class WSVisitor extends Webservice
 				':sc' => $this->req['scene'], 
 				':ab' => $this->req['about'], 
 				':vl' => base64_encode(gzencode($this->req['values'])), 
-			]);
+			], 'INSERT INTO visitorstate (vs_id, vs_movie, vs_user, vs_quick, vs_scene, vs_about, vs_value) VALUES ( :id, :mv, :us, :qc, :sc, :ab, :vl) ON CONFLICT(vs_id) DO UPDATE SET vs_scene = excluded.vs_scene, vs_about = excluded.vs_about, vs_value = excluded.vs_value');
 			// remove old states?
 			if (!$this->req['quick']) {
 				$ck = $this->data->queryAll('SELECT vs_id FROM visitorstate WHERE vs_movie=:mv AND vs_user=:us AND vs_quick=:qc ORDER BY vs_created DESC LIMIT 10 OFFSET 10', [
@@ -547,7 +547,7 @@ class WSVisitor extends Webservice
                 }
                 $this->data->execute('INSERT IGNORE INTO cors (cr_domain) VALUES (:dom)', [
                     ':dom' => $domain, 
-                ]);
+                ], 'INSERT OR IGNORE INTO cors (cr_domain) VALUES (:dom)');
                 $this->returnRequest([ 'e' => 0 ]);
             } else {
                 $this->returnRequest([ 'e' => 1 ]);

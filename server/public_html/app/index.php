@@ -30,6 +30,7 @@ $scene = '';
 $nocache = '';
 $cssmovie = '';
 $render = '';
+$userlogin = '';
 if (isset($_SESSION['md']) && (trim($_SESSION['md']) == 'editor')) {
 	$mode = 'editor';
 	unset($_SESSION['md']);
@@ -70,6 +71,16 @@ if (isset($_SESSION['rd'])) {
 } else if (isset($_GET['rd'])) {
 	if ($_GET['rd'] == 'dom') $render = '-dom';
 }
+if (isset($_SESSION['us']) && isset($_SESSION['uk'])) {
+    $userlogin = ', "us": "'.trim($_SESSION['us']).'", "uk": "'.trim($_SESSION['uk']).'"';
+	unset($_SESSION['us']);
+	unset($_SESSION['uk']);
+} else if (isset($_POST['us']) && isset($_POST['uk'])) {
+	$userlogin = ', "us": "'.trim($_POST['us']).'", "uk": "'.trim($_POST['uk']).'"';
+} else if (isset($_GET['us']) && isset($_GET['uk'])) {
+	$userlogin = ', "us": "'.trim($_GET['us']).'", "uk": "'.trim($_GET['uk']).'"';
+}
+
 
 // sharing and render information
 $favicon = './favicon.png';
@@ -182,7 +193,7 @@ if ($render == '') {
 		<noscript>This webpage makes extensive use of JavaScript. Please enable JavaScript in your web browser to view this page.</noscript>
 		<div id="openfl-content"></div>
 		<script type="text/javascript">
-			lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "mode" : "<?= $mode ?>", "movie": "<?= $movie ?>", "scene": "<?= $scene ?>"/*, "decrypt": customDecrypt*/ } });
+			lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "mode" : "<?= $mode ?>", "movie": "<?= $movie ?>", "scene": "<?= $scene ?>" <?= $userlogin ?>} });
 		</script>
 		<?php
 			// end body plugin area

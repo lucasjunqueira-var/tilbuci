@@ -170,6 +170,10 @@ class WSFile extends Webservice
 								$this->data->execute('UPDATE movies SET mv_fonts=:ft WHERE mv_id=:mv', [
 									':ft' => base64_encode(gzencode(json_encode($fonts))), 
 									':mv' => $this->req['movie'], 
+								], 'UPDATE movies SET mv_fonts=:ft, mv_updated=:time WHERE mv_id=:mv', [
+									':ft' => base64_encode(gzencode(json_encode($fonts))), 
+									':time' => date('Y-m-d H:i:s'), 
+									':mv' => $this->req['movie'], 
 								]);
 								$mv = new Movie($this->req['movie']);
 								$mv->publish();

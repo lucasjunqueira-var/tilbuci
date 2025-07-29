@@ -141,6 +141,7 @@ class Scene extends BaseClass
 		if (count($ck) > 0) {
 			// basic scene information
 			$ackeyframes = [ ];
+			if (is_null($ck[0]['sc_ackeyframes'])) $ck[0]['sc_ackeyframes'] = '';
 			$ackftemp = explode(',', $ck[0]['sc_ackeyframes']);
 			foreach ($ackftemp as $akf) {
 				if ($akf == '') {
@@ -150,6 +151,7 @@ class Scene extends BaseClass
 				}
 			}
             $this->uid = $ck[0]['sc_uid'];
+			if (is_null($ck[0]['sc_collections'])) $ck[0]['sc_collections'] = '';
 			$this->info = [
 				'title' => $ck[0]['sc_title'], 
 				'id' => $id, 
@@ -324,7 +326,7 @@ class Scene extends BaseClass
                     ':scene' => $id, 
                     ':user' => $user, 
                     ':when' => date('Y-m-d H:i:s'), 
-                ]);
+                ], 'INSERT INTO scenelock (sl_id, sl_movie, sl_scene, sl_user, sl_when) VALUES (:id, :movie, :scene, :user, :when) ON CONFLICT(sl_id) DO UPDATE SET sl_user = excluded.sl_user, sl_when = excluded.sl_when');
             }
 		}
 		return ($this->loaded);
@@ -382,7 +384,7 @@ class Scene extends BaseClass
 		$ck = $this->queryAll('SELECT * FROM (SELECT t1.sc_id, t1.sc_movie, (SELECT t2.sc_title FROM scenes t2 WHERE t2.sc_movie=:t2mv AND t2.sc_id=t1.sc_id ORDER BY t2.sc_uid DESC LIMIT 1) as sc_title FROM scenes t1 WHERE t1.sc_movie=:t1mv ORDER BY t1.sc_title ASC) tbs LEFT JOIN scenelock lck ON (tbs.sc_id=lck.sl_scene AND tbs.sc_movie=lck.sl_movie) GROUP BY tbs.sc_id, lck.sl_id ORDER BY tbs.sc_title ASC', [
 			':t2mv' => $movie, 
 			':t1mv' => $movie, 
-		]);
+		], 'SELECT * FROM (SELECT t1.sc_id, t1.sc_movie, (SELECT t2.sc_title FROM scenes t2 WHERE t2.sc_movie = :t2mv AND t2.sc_id = t1.sc_id ORDER BY t2.sc_uid DESC LIMIT 1) AS sc_title FROM scenes t1 WHERE t1.sc_movie = :t1mv ORDER BY t1.sc_title ASC) tbs LEFT JOIN scenelock lck ON tbs.sc_id = lck.sl_scene AND tbs.sc_movie = lck.sl_movie GROUP BY tbs.sc_id, lck.sl_id ORDER BY tbs.sc_title ASC');
 		foreach ($ck as $v) $ret[] = [
 			'id' => $v['sc_id'], 
 			'title' => $v['sc_title'], 
@@ -470,7 +472,7 @@ class Scene extends BaseClass
 							':title' => $v['name'], 
 							':transition' => $v['transition'], 
 							':time' => $v['time'], 
-						]);
+						], 'INSERT INTO collections (cl_uid, cl_id, cl_movie, cl_title, cl_transition, cl_time) VALUES (:uid, :id, :movie, :title, :transition, :time) ON CONFLICT(cl_uid) DO UPDATE SET cl_title = excluded.cl_title, cl_transition = excluded.cl_transition, cl_time = excluded.cl_time');
 						// remove previous assets
 						$this->execute('DELETE FROM assets WHERE at_collection=:col', [
 							':col' => ($movie . $k), 
@@ -685,7 +687,7 @@ class Scene extends BaseClass
                         ':scene' => $id, 
                         ':user' => $user, 
                         ':when' => date('Y-m-d H:i:s'), 
-                    ]);
+                    ], 'INSERT INTO scenelock (sl_id, sl_movie, sl_scene, sl_user, sl_when) VALUES (:id, :movie, :scene, :user, :when) ON CONFLICT(sl_id) DO UPDATE SET sl_user = excluded.sl_user, sl_when = excluded.sl_when');
                     
 					// finish
 					return (0);

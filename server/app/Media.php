@@ -318,10 +318,6 @@ class Media extends BaseClass
 	 */
 	public function createCollection($movie, $id, $name) {
 		// check id
-		/*$id = substr($this->cleanString($id), 0, 32);
-		if ($id == '') {
-			$id = md5(time().rand(10000, 99999));
-		}*/
 		$id = md5(time().rand(10000, 99999));
 		$check = true;
 		while ($check) {
@@ -383,6 +379,7 @@ class Media extends BaseClass
         $used = [ ];
         $ck = $this->queryAll('SELECT sc_id, sc_collections FROM scenes WHERE sc_movie=:mv AND sc_published=:pub', [ ':mv' => $movie, ':pub' => '1' ]);
         foreach ($ck as $v) {
+			if (is_null($v['sc_collections'])) $v['sc_collections'] = '';
             $exp = explode(',', $v['sc_collections']);
             foreach ($exp as $col) {
                 if (trim($col) != '') {
@@ -391,6 +388,7 @@ class Media extends BaseClass
             }
             $ckult = $this->queryAll('SELECT sc_collections FROM scenes WHERE sc_movie=:mv AND sc_id=:id ORDER BY sc_uid DESC LIMIT 1', [ ':mv' => $movie, ':id' => $v['sc_id'] ]);
             if (count($ckult) > 0) {
+				if (is_null($ckult[0]['sc_collections'])) $ckult[0]['sc_collections'] = '';
                 $exp = explode(',', $ckult[0]['sc_collections']);
                 foreach ($exp as $col) {
                     if (trim($col) != '') {
@@ -433,9 +431,11 @@ class Media extends BaseClass
                     'assets' => [ ], 
                 ];
                 $cka = $this->queryAll('SELECT at_id, at_name, at_type, at_file1, at_file2, at_file3, at_file4, at_file5 FROM assets WHERE at_collection=:col AND FIND_IN_SET(at_type, :types) ORDER BY at_order ASC', [
-                   ':col' => $v['cl_uid'], 
+					':col' => $v['cl_uid'], 
                     ':types' => 'audio,html,picture,spritemap,video', 
-                ]);
+                ], "SELECT at_id, at_name, at_type, at_file1, at_file2, at_file3, at_file4, at_file5 FROM assets WHERE at_collection = :col AND at_type IN ('audio','html','picture','spritemap','video') ORDER BY at_order ASC", [
+					':col' => $v['cl_uid'], 
+				]);
                 $astok = false;
                 foreach($cka as $va) {
                     $item['assets'][$va['at_id']] = [
@@ -499,6 +499,10 @@ class Media extends BaseClass
 			} else {
                 $this->execute('UPDATE movies SET mv_strings=:st WHERE mv_id=:id', [
                     ':st' => base64_encode(gzencode($strings)), 
+                    ':id' => $movie, 
+                ], 'UPDATE movies SET mv_strings=:st, mv_updated=:time WHERE mv_id=:id', [
+                    ':st' => base64_encode(gzencode($strings)), 
+					':time' => date('Y-m-d H:i:s'), 
                     ':id' => $movie, 
                 ]);
                 $ck = $this->queryAll('SELECT mv_encrypted FROM movies WHERE mv_id=:mv', [':mv' => $movie]);

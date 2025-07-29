@@ -7,6 +7,8 @@
  package com.tilbuci.ui.window.movie;
 
 /** HAXE **/
+import com.tilbuci.ui.base.InterfaceFactory;
+import com.tilbuci.ui.component.Intercating.Interacting;
 import feathers.controls.LayoutGroup;
 import com.tilbuci.display.PictureImage;
 import openfl.utils.ByteArray;
@@ -81,7 +83,7 @@ class WindowMovieProperties extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-movieprop-title'), 1200, 620, true, true, true);
+        super(ac, Global.ln.get('window-movieprop-title'), 1200, InterfaceFactory.pickValue(570, 620), true, true, true);
     }
 
     /**

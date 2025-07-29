@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.media;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import feathers.core.FeathersControl;
 import feathers.utils.Scroller;
 import com.tilbuci.ui.base.HInterfaceContainer;
@@ -44,7 +45,7 @@ class WindowMediaStrings extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-mdstrings-title'), 1000, 550, false, true, true);
+        super(ac, Global.ln.get('window-mdstrings-title'), 1000, InterfaceFactory.pickValue(535, 565), false, true, true);
         this._type = 'strings';
     }
 

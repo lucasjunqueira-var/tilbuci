@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.contraptions;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.contraptions.BackgroundContraption;
 import openfl.Assets;
@@ -36,7 +37,7 @@ class WindowContrBackground extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-contrbg-title'), 1000, 540, false, true, true);
+        super(ac, Global.ln.get('window-contrbg-title'), 1000, InterfaceFactory.pickValue(525, 540), false, true, true);
     }
 
     /**

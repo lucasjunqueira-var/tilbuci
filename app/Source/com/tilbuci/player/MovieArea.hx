@@ -1055,6 +1055,9 @@ class MovieArea extends Sprite {
         this._bgarea.graphics.drawRect(0, 0, this._player.rWidth, this._player.rHeight);
         this._bgarea.graphics.endFill();
 
+        // warn contraptions
+        GlobalPlayer.contraptions.changeDisplay();
+
         // placing the movie area
         this.place();
     }
@@ -1305,6 +1308,16 @@ class MovieArea extends Sprite {
     }
 
     /**
+        Removes all input interfaces form display.
+    **/
+    public function removeInputInterfaces():Void {
+        this.removeAllInputs();
+        this.removeAllTareas();
+        this.removeAllNumerics();
+        this.removeAllToggles();
+    }
+
+    /**
         Adds a text input.
         @param  name    the input name
         @param  px  x position
@@ -1366,6 +1379,62 @@ class MovieArea extends Sprite {
     **/
     public function setInputPassword(name:String, pass:Bool):Void {
         this._player.setInputPassword(name, pass);
+    }
+
+    /**
+        Adds a text area.
+        @param  name    the input name
+        @param  px  x position
+        @param  py  y position
+        @param  width   input width
+        @param  height   input height
+    **/
+    public function addTarea(name:String, px:Float, py:Float, width:Float, height:Float):Void {
+        this._player.addTarea(name, px, py, width, height);
+    }
+
+    /**
+        Places an existing text area.
+        @param  name    the input name
+        @param  px  x position
+        @param  py  y position
+        @param  width   input width
+        @param  height   input height
+    **/
+    public function placeTarea(name:String, px:Float, py:Float, width:Float, height:Float):Void {
+        this._player.placeTarea(name, px, py, width, height);
+    }
+
+    /**
+        Removes a text area.
+        @param  name    the input name
+    **/
+    public function removeTarea(name:String):Void {
+        this._player.removeTarea(name);
+    }
+
+    /**
+        Removes all text areas.
+    **/
+    public function removeAllTareas():Void {
+        this._player.removeAllTareas();
+    }
+
+    /**
+        Gets a text area current value.
+        @param  name    the input name
+    **/
+    public function getTareaText(name):String {
+        return (this._player.getTareaText(name));
+    }
+
+    /**
+        Sets a text area value.
+        @param  name    the input name
+        @param  value   the new text
+    **/
+    public function setTareaText(name:String, value:String):Void {
+        this._player.setTareaText(name, value);
     }
 
     /**

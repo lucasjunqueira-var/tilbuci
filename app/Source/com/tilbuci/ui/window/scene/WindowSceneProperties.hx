@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.scene;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import com.tilbuci.display.PictureImage;
 import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.ui.base.InterfaceContainer;
@@ -58,7 +59,7 @@ class WindowSceneProperties extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-sceneprop-windowtitle'), 1000, 640, true, true, true);
+        super(ac, Global.ln.get('window-sceneprop-windowtitle'), 1000, InterfaceFactory.pickValue(590, 660), true, true, true);
     }
 
     /**

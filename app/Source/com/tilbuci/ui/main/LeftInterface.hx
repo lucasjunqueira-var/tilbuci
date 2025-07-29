@@ -90,7 +90,7 @@ class LeftInterface extends VDividedBox {
         this._bottomArea.layout = laybot;
         this._bottomArea.backgroundSkin = new BackgroundSkin();
         this._bottomArea.setPadding(10);
-        this._bottomArea.height = this._bottomArea.maxHeight = this._bottomArea.minHeight = 120;
+        this._bottomArea.height = this._bottomArea.maxHeight = this._bottomArea.minHeight = 160;
         this.addChild(this._bottomArea);
 
         // create buttons
@@ -99,10 +99,12 @@ class LeftInterface extends VDividedBox {
         this.createButton('btKeyframe', Global.ln.get('leftbar-keyframe'), 'btKeyframe', this.btKeyframe, this._topArea);
         this.createButton('btMedia', Global.ln.get('leftbar-media'), 'btMedia', this.btMedia, this._topArea);
         this.createButton('btContraptions', Global.ln.get('leftbar-contraptions'), 'btContraptions', this.btContraption, this._topArea);
-        this.createButton('btNarrative', Global.ln.get('leftbar-narrative'), 'btNarrative', this.btNarrative, this._topArea);
+        //this.createButton('btNarrative', Global.ln.get('leftbar-narrative'), 'btNarrative', this.btNarrative, this._topArea);
         this.createButton('btExchange', Global.ln.get('leftbar-exchange'), 'btExchange', this.btExchange, this._topArea);
         this.createButton('btVisitors', Global.ln.get('leftbar-visitors'), 'btVisitors', this.btVisitors, this._topArea);
         this.createButton('btSetup', Global.ln.get('leftbar-setup'), 'btSetup', this.btSetup, this._topArea);
+
+        this.createButton('btWorkspace', Global.ln.get('leftbar-workspace'), 'btWorkspace', this.btWorkspace, this._bottomArea);
         this.createButton('btFullscreen', Global.ln.get('leftbar-fullscreen'), 'btFullscreen', this.btFullscreen, this._bottomArea);
         this.createButton('btToggle', Global.ln.get('leftbar-toggle'), 'btToggle', this.btToggle, this._bottomArea);
     }
@@ -239,9 +241,10 @@ class LeftInterface extends VDividedBox {
             this.ui.buttons['btKeyframe'].text = Global.ln.get('leftbar-keyframe');
             this.ui.buttons['btMedia'].text = Global.ln.get('leftbar-media');
             this.ui.buttons['btContraptions'].text = Global.ln.get('leftbar-contraptions');
-            this.ui.buttons['btNarrative'].text = Global.ln.get('leftbar-narrative');
+            //this.ui.buttons['btNarrative'].text = Global.ln.get('leftbar-narrative');
             this.ui.buttons['btSetup'].text = Global.ln.get('leftbar-setup');
             this.ui.buttons['btFullscreen'].text = Global.ln.get('leftbar-fullscreen');
+            this.ui.buttons['btWorkspace'].text = Global.ln.get('leftbar-workspace');
             this.ui.buttons['btToggle'].text = Global.ln.get('leftbar-toggle');
             this.ui.buttons['btExchange'].text = Global.ln.get('leftbar-exchange');
             this.ui.buttons['btVisitors'].text = Global.ln.get('leftbar-visitors');
@@ -251,7 +254,7 @@ class LeftInterface extends VDividedBox {
     }
 
     /**
-        Shows the interface on fullscreen?
+        Show the interface on fullscreen?
     **/
     private function btFullscreen(evt:TriggerEvent):Void {
         if (this.stage.displayState == StageDisplayState.NORMAL) {
@@ -259,6 +262,13 @@ class LeftInterface extends VDividedBox {
         } else {
             this.stage.displayState = StageDisplayState.NORMAL;
         }
+    }
+
+    /**
+        Add a workspace?
+    **/
+    private function btWorkspace(evt:TriggerEvent):Void {
+        Global.ws.openWorkspace();
     }
 
 

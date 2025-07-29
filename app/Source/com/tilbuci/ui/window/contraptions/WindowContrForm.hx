@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.contraptions;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import com.tilbuci.ui.base.InterfaceContainer;
 import com.tilbuci.contraptions.FormContraption;
 import com.tilbuci.statictools.StringStatic;
@@ -38,7 +39,7 @@ class WindowContrForm extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-contrform-title'), 1000, 740, false, true, true);
+        super(ac, Global.ln.get('window-contrform-title'), 1000, InterfaceFactory.pickValue(715, 740), false, true, true);
     }
 
     /**

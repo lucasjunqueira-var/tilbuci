@@ -42,8 +42,10 @@ class Narrative {
             data['chars'].push(k.toObject());
         }
         data['dialogues'] = new Array<Dynamic>();
+        data['diagcontent'] = new Array<Dynamic>();
         for (k in this.dialogues) {
-            data['dialogues'].push(k.toObject());
+            data['dialogues'].push(k.idObject());
+            if (k.numDiags() > 0) data['diagcontent'].push(k.toObject());
         }
         return(StringStatic.jsonStringify(data));
     }

@@ -7,6 +7,7 @@
  package com.tilbuci.ui.component;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import com.tilbuci.ui.component.BlockArea.BlockAction;
 import com.tilbuci.script.ActionInfo.ActionInfoAc;
 import com.tilbuci.statictools.StringStatic;
@@ -51,7 +52,7 @@ class WindowBlockEdit extends PopupWindow {
     **/
     public function new(ac:Dynamic = null) {
         // creating window
-        super(ac, '', 1100, 580, false, true);
+        super(ac, '', 1100, InterfaceFactory.pickValue(570, 580), false, true);
 
         // select data
         this._mvOrigins = [

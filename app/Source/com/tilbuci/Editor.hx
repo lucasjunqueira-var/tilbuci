@@ -290,7 +290,12 @@ class Editor extends Drawer {
             if (Global.ln.ok) {
                 // language load ok, preparing webservices
                 Global.ws = new Webservice(Global.econfig.ws);
-                Global.ws.send('System/GetConfig', [ ], this.onSysConfig);
+                var params:Map<String, Dynamic> = [ ];
+                if ((Main.us != '') && (Main.uk != '')) {
+                    params['us'] = Main.us;
+                    params['uk'] = Main.uk;
+                }
+                Global.ws.send('System/GetConfig', params, this.onSysConfig);
             } else {
                 // default language must be loaded to continue
                 this.halt('language');
@@ -328,12 +333,14 @@ class Editor extends Drawer {
                 // initialize the interface
                 this.startInterface();
 
-                // single user?
-                if (ld.map['singleUser']) {
+                // login
+                if ((ld.map['autouser'] != '') && (ld.map['autokey'] != '')) { // automatic?
+                    Global.userLevel = ld.map['autolevel'];
+                    Global.ws.setUser(ld.map['autouser'], ld.map['autokey'], ld.map['autolevel']);
+                } else if (ld.map['singleUser']) { // single user?
                     Global.userLevel = 0;
                     Global.ws.setUser('single', ld.map['userKey'], 0);
-                } else {
-                    // ask for user login
+                } else { // ask for user login
                     this.showWindow('login');
                 }
 

@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import com.tilbuci.data.GlobalPlayer;
 import openfl.text.TextField;
 import openfl.Assets;
@@ -46,7 +47,7 @@ class WindowVisitors extends PopupWindow {
     public function new(ac:Dynamic, build:BuildInfo) {
 
         // creating window
-        super(ac, Global.ln.get('window-visitors-title'), 1000, 660, true, true, true);
+        super(ac, Global.ln.get('window-visitors-title'), 1000, InterfaceFactory.pickValue(580, 660), true, true, true);
 
         // visitors list
         this.ui.createHContainer('listfilter');

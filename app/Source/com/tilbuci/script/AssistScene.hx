@@ -7,6 +7,7 @@
  package com.tilbuci.script;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import feathers.controls.Label;
 import openfl.events.Event;
 import openfl.Assets;
@@ -35,7 +36,7 @@ class AssistScene extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-acscene-title'), 500, 640, false);
+        super(ac, Global.ln.get('window-acscene-title'), 500, InterfaceFactory.pickValue(630, 690), false);
         this._idbuttons['btCopyMovieLoad'] = new IDButton('copymovieload', onCopyMovieLoad, Global.ln.get('window-acmovie-copyload'), Assets.getBitmapData('btCopy'));
         this._idbuttons['btShowMovieLoad'] = new IDButton('showmovieload', onShowMovieLoad, Global.ln.get('window-acvariable-show'));
         this._idbuttons['btCopyId'] = new IDButton('copyid', onCopyId, Global.ln.get('window-acscene-copyid'), Assets.getBitmapData('btCopy'));

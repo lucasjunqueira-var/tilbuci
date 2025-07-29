@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.media;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import feathers.layout.AnchorLayout;
 import com.tilbuci.display.ShapeImage;
 import com.tilbuci.statictools.StringStatic;
@@ -71,7 +72,7 @@ class WindowCollections extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-collection-title'), 1000, 690, false, true, true);
+        super(ac, Global.ln.get('window-collection-title'), 1000, InterfaceFactory.pickValue(660, 700), false, true, true);
     }
 
     /**

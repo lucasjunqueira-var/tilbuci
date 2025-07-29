@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.scene;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import com.tilbuci.data.GlobalPlayer;
 import openfl.events.Event;
 import openfl.display.Stage;
@@ -29,7 +30,7 @@ class WindowSceneNew extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-scenenew-title'), 800, 170, false, true, true);
+        super(ac, Global.ln.get('window-scenenew-title'), 800, InterfaceFactory.pickValue(170, 190), false, true, true);
     }
 
     /**

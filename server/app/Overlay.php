@@ -21,7 +21,8 @@ class Overlay extends Plugin
 	public function __construct()
 	{
 		parent::__construct('overlay', 'Overlay', '1', '1');
-		$this->execute("CREATE TABLE IF NOT EXISTS overlay_plugin (op_key VARCHAR(32) NOT NULL, op_url VARCHAR(2048) NOT NULL, op_request LONGTEXT NOT NULL, op_return LONGTEXT NOT NULL, op_closed TINYINT NOT NULL DEFAULT '0', op_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, op_updated DATETIME on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (op_key), INDEX (op_created), INDEX (op_updated)) ENGINE = InnoDB");
+		$this->execute("CREATE TABLE IF NOT EXISTS overlay_plugin (op_key VARCHAR(32) NOT NULL, op_url VARCHAR(2048) NOT NULL, op_request LONGTEXT NOT NULL, op_return LONGTEXT NOT NULL, op_closed TINYINT NOT NULL DEFAULT '0', op_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, op_updated DATETIME on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (op_key), INDEX (op_created), INDEX (op_updated)) ENGINE = InnoDB", [ ], 
+		"CREATE TABLE IF NOT EXISTS overlay_plugin (op_key TEXT NOT NULL PRIMARY KEY, op_url TEXT NOT NULL, op_request TEXT NOT NULL, op_return TEXT NOT NULL, op_closed INTEGER NOT NULL DEFAULT 0, op_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, op_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP); CREATE INDEX idx_overlay_created ON overlay_plugin (op_created); CREATE INDEX idx_overlay_updated ON overlay_plugin (op_updated);");
 		$this->execute('DELETE FROM overlay_plugin WHERE op_created<:limit', [
 			':limit' => date('Y-m-d H:i:s', strtotime('-2days')), 
 		]);
@@ -69,7 +70,7 @@ class Overlay extends Plugin
 			':url' => $url, 
 			':req' => $data, 
 			':ret' => '', 
-		]);
+		], 'INSERT OR IGNORE INTO overlay_plugin (op_key, op_url, op_request, op_return) VALUES (:key, :url, :req, :ret)');
 		return ($key);
 	}
 	
@@ -124,6 +125,10 @@ class Overlay extends Plugin
 				} else {
 					$this->execute('UPDATE overlay_plugin SET op_return=:ret WHERE op_key=:key', [
 						':ret' => json_encode($json), 
+						':key' => $key
+					], 'UPDATE overlay_plugin SET op_return=:ret, op_updated=:time WHERE op_key=:key', [
+						':ret' => json_encode($json), 
+						':time' => date('Y-m-d H:i:s'), 
 						':key' => $key
 					]);
 					return (true);

@@ -40,13 +40,24 @@ class BaseClass
 	public function __construct() {
 		global $gconf;
 		$this->conf = $gconf;
-		try {
-			$this->db = new PDO('mysql:host=' . $this->conf['databaseServ'] . (($this->conf['databasePort'] != '') ? (':' . $this->conf['databasePort']) : '') . ';dbname=' . $this->conf['databaseName'] . ';charset=utf8', $this->conf['databaseUser'], ($this->conf['databasePass'] == '' ? '' : base64_decode($this->conf['databasePass'])));
-			$this->error = 0;
-		} catch(Exception $e) {
-			$this->db = null;
-			$this->error = -6;
+		if ($this->conf['databaseServ'] == 'sqlite') {
+			try {    
+				$this->db = new PDO('sqlite:../movie/tilbuci.sqlite');
+				$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			} catch (Exception $e) {
+				$this->db = null;
+				$this->error = -6;
+			}
+		} else {
+			try {
+				$this->db = new PDO('mysql:host=' . $this->conf['databaseServ'] . (($this->conf['databasePort'] != '') ? (':' . $this->conf['databasePort']) : '') . ';dbname=' . $this->conf['databaseName'] . ';charset=utf8', $this->conf['databaseUser'], ($this->conf['databasePass'] == '' ? '' : base64_decode($this->conf['databasePass'])));
+				$this->error = 0;
+			} catch(Exception $e) {
+				$this->db = null;
+				$this->error = -6;
+			}
 		}
+		
 	}
 	
 	/**
@@ -149,13 +160,21 @@ class BaseClass
 	 * Queries the database for results.
 	 * @param string $query the sql query
 	 * @param array $values the values to replace on query
+	 * @param string $querylite the sql query for sqlite (empty string to use the same)
+	 * @param array $valueslite values for sqlite query (null to use the same)
 	 * @return array the results as associative array
 	 */
-	public function queryAll($query, $values = [ ]) {
+	public function queryAll($query, $values = [ ], $querylite = '', $valueslite = null) {
 		// connected?
 		if (is_null($this->db)) {
 			return([]);
 		} else {
+			// sqlite?
+			if ($this->conf['databaseServ'] == 'sqlite') {
+				if ($querylite != '') $query = $querylite;
+				if (!is_null($valueslite)) $values = $valueslite;
+			}
+			// run query
 			$sth = $this->db->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
 			$sth->execute($values);
 			return($sth->fetchAll());
@@ -166,14 +185,22 @@ class BaseClass
 	 * Executes a query on database.
 	 * @param string $query the sql query
 	 * @param array $values the values to replace on query
+	 * @param string $querylite the sql query for sqlite (empty string to use the same)
+	 * @param array $valueslite values for sqlite query (null to use the same)
 	 * @return bool was the query executed?
 	 */
-	public function execute($query, $values = [ ])
+	public function execute($query, $values = [ ], $querylite = '', $valueslite = null)
 	{
 		// connected?
 		if (is_null($this->db)) {
 			return(false);
 		} else {
+			// sqlite?
+			if ($this->conf['databaseServ'] == 'sqlite') {
+				if ($querylite != '') $query = $querylite;
+				if (!is_null($valueslite)) $values = $valueslite;
+			}
+			// run query
 			$sth = $this->db->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
 			return($sth->execute($values));
 		}
@@ -183,9 +210,16 @@ class BaseClass
 	 * Gets the prepared statement for debug.
 	 * @param string $query the sql query
 	 * @param array $values the values to replace on query
+	 * @param string $querylite the sql query for sqlite (empty string to use the same)
+	 * @param array $valueslite values for sqlite query (null to use the same)
 	 * @return	string	the prepared query
 	 */
-	public function debugSql($query, $values = [ ]) {
+	public function debugSql($query, $values = [ ], $querylite = '', $valueslite = null) {
+		// sqlite?
+		if ($this->conf['databaseServ'] == 'sqlite') {
+			if ($querylite != '') $query = $querylite;
+			if (!is_null($valueslite)) $values = $valueslite;
+		}
 		foreach ($values as $k => $v) {
 			$query = str_replace($k.' ', "'" . $v . "' ", $query);
 			$query = str_replace($k.',', "'" . $v . "',", $query);

@@ -61,15 +61,26 @@ class WSSystem extends Webservice
 	 * Gets the system configuration.
 	 */
 	private function getSystemConfig() {
-		// single user? get the access key
 		$er = 0;
-		if ($this->conf['singleUser']) {
-			$er = $this->data->checkUser('single', '');
-			if ($er == 0) {
-				$key = $this->data->user['key'];
+		$key = '';
+		// automatic login?
+		$autouser = $autokey = '';
+		$autolevel = 0;
+		if (isset($this->req['us']) && isset($this->req['uk'])) {
+			$autokey = $this->data->checkAutoUser($this->req['us'], $this->req['uk']);
+			if ($autokey != '') {
+				$autouser = $this->req['us'];
+				$autolevel = $this->data->user['level'];
 			}
-		} else {
-			$key = '';
+		}
+		// single user? get the access key
+		if ($autouser == '') {
+			if ($this->conf['singleUser']) {
+				$er = $this->data->checkUser('single', '');
+				if ($er == 0) {
+					$key = $this->data->user['key'];
+				}
+			}
 		}
 		// email configuration
 		$mailer = new Mailer;
@@ -84,6 +95,9 @@ class WSSystem extends Webservice
 			'userKey' => $key, 
 			'validEmail' => $mailer->hasValidSender(), 
 			'fonts' => $fonts, 
+			'autouser' => $autouser, 
+			'autokey' => $autokey, 
+			'autolevel' => $autolevel,
 		]);
 	}
 	

@@ -1546,6 +1546,23 @@ class ScriptParser {
                                 return (false);
                             }
                         }
+                    case 'input.addtarea':
+                        if (GlobalPlayer.mode == Player.MODE_EDITOR) {
+                            return (true);
+                        } else {
+                            if (param.length == 5) {
+                                GlobalPlayer.area.addTarea(
+                                    this.parseString(param[0]), 
+                                    this.parseInt(param[1]), 
+                                    this.parseInt(param[2]), 
+                                    this.parseInt(param[3]), 
+                                    this.parseInt(param[4])
+                                );
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        }
                     case 'input.addnumeric':
                         if (GlobalPlayer.mode == Player.MODE_EDITOR) {
                             return (true);
@@ -1563,6 +1580,75 @@ class ScriptParser {
                                 return (false);
                             }
                         }
+
+                    case 'input.place':
+                        if (param.length > 3) {
+                            GlobalPlayer.area.placeInput(
+                                this.parseString(param[0]), 
+                                this.parseInt(param[1]), 
+                                this.parseInt(param[2]), 
+                                this.parseInt(param[3])
+                            );
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'input.remove':
+                        if (param.length > 0) {
+                            GlobalPlayer.area.removeInput(this.parseString(param[0]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'input.removeall':
+                        GlobalPlayer.area.removeAllInputs();
+                        return (true);
+                    case 'input.settext':
+                        if (param.length > 1) {
+                            GlobalPlayer.area.setInputText(this.parseString(param[0]), this.parseString(param[1]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'input.setpassword':
+                        if (param.length > 1) {
+                            GlobalPlayer.area.setInputPassword(this.parseString(param[0]), this.parseBool(param[1]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+
+                    case 'input.placetarea':
+                        if (param.length > 4) {
+                            GlobalPlayer.area.placeTarea(
+                                this.parseString(param[0]), 
+                                this.parseInt(param[1]), 
+                                this.parseInt(param[2]), 
+                                this.parseInt(param[3]), 
+                                this.parseInt(param[4])
+                            );
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'input.removetarea':
+                        if (param.length > 0) {
+                            GlobalPlayer.area.removeTarea(this.parseString(param[0]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'input.removealltareas':
+                        GlobalPlayer.area.removeAllTareas();
+                        return (true);
+                    case 'input.settextarea':
+                        if (param.length > 1) {
+                            GlobalPlayer.area.setTareaText(this.parseString(param[0]), this.parseString(param[1]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+
                     case 'input.placenumeric':
                         if (param.length > 3) {
                             GlobalPlayer.area.placeNumeric(
@@ -2835,6 +2921,13 @@ class ScriptParser {
                 var arstr:Array<String> = str.split(':');
                 if (arstr.length == 2) {
                     return (GlobalPlayer.area.getInputText(arstr[1]));
+                } else {
+                    return (str);
+                }
+            } else if (str.substr(0, 7) == "$_TAREA") {
+                var arstr:Array<String> = str.split(':');
+                if (arstr.length == 2) {
+                    return (GlobalPlayer.area.getTareaText(arstr[1]));
                 } else {
                     return (str);
                 }

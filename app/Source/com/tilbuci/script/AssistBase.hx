@@ -7,6 +7,7 @@
  package com.tilbuci.script;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import feathers.controls.Label;
 import com.tilbuci.ui.base.HInterfaceContainer;
 import openfl.events.Event;
@@ -42,7 +43,7 @@ class AssistBase extends PopupWindow {
     **/
     public function new(ac:Dynamic, title:String, about:String) {
         // creating window
-        super(ac, title, 800, 700, false);
+        super(ac, title, 800, InterfaceFactory.pickValue(700, 710), false);
         this._idbuttons['btCopy'] = new IDButton('btCopy', onCopy, Global.ln.get('window-acvariable-create'), Assets.getBitmapData('btCopy'));
         this._idbuttons['btShow'] = new IDButton('btShow', onShow, Global.ln.get('window-acvariable-show'));
         this._idbuttons['ggeneral'] = new IDButton('ggeneral', onGeneral, Global.ln.get('window-globals-get'), Assets.getBitmapData('btCopy'));

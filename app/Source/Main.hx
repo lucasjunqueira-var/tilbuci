@@ -63,6 +63,16 @@ class Main extends Application
 	public static var scene:String;
 
 	/**
+		initial user
+	**/
+	public static var us:String;
+
+	/**
+		initial user key
+	**/
+	public static var uk:String;
+
+	/**
 		the TilBuci player
 	**/
 	private var _player:Player;
@@ -98,6 +108,13 @@ class Main extends Application
 
 		if (Reflect.hasField(this.loaderInfo.parameters, 'decrypt')) {
 			DataLoader.customDecrypt = Reflect.field(this.loaderInfo.parameters, 'decrypt');
+		}
+
+		if (Reflect.hasField(this.loaderInfo.parameters, 'us') && Reflect.hasField(this.loaderInfo.parameters, 'uk')) {
+			Main.us = Reflect.field(this.loaderInfo.parameters, 'us');
+			Main.uk = Reflect.field(this.loaderInfo.parameters, 'uk');
+		} else {
+			Main.us = Main.uk = '';
 		}
 
 		#if !haxeJSON 

@@ -188,7 +188,7 @@ class Visitor extends Data
                     $this->execute('INSERT IGNORE INTO visitorsblocked (vb_email, vb_admin) VALUES (:em, :adm)', [
                         ':em' => $ck[0]['vs_email'], 
                         ':adm' => $user,
-                    ]);
+                    ], 'INSERT OR IGNORE INTO visitorsblocked (vb_email, vb_admin) VALUES (:em, :adm)');
                 }
                 return (true);
             } else {
@@ -399,6 +399,11 @@ class Visitor extends Data
             } else {
                 $this->execute('UPDATE visitorgroups SET vg_name=:new WHERE vg_name=:nm and vg_id=:id', [
                     ':new' => $new, 
+                    ':nm' => $name, 
+                    ':id' => $id, 
+                ], 'UPDATE visitorgroups SET vg_name=:new, vg_updated=:time WHERE vg_name=:nm and vg_id=:id', [
+                    ':new' => $new, 
+                    ':time' => date('Y-m-d H:i:s'), 
                     ':nm' => $name, 
                     ':id' => $id, 
                 ]);

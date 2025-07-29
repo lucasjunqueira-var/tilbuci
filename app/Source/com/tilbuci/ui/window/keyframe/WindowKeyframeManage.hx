@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.keyframe;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import openfl.events.Event;
 import openfl.display.Stage;
 
@@ -29,7 +30,7 @@ class WindowKeyframeManage extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-kfmanage-title'), 1000, 530, false, true, true);
+        super(ac, Global.ln.get('window-kfmanage-title'), 1000, InterfaceFactory.pickValue(520, 540), false, true, true);
     }
 
     /**

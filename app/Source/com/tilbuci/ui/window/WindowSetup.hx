@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import com.tilbuci.data.GlobalPlayer;
 import openfl.text.TextField;
 import feathers.controls.TextArea;
@@ -37,7 +38,7 @@ class WindowSetup extends PopupWindow {
     public function new(ac:Dynamic, build:BuildInfo) {
 
         // creating window
-        super(ac, Global.ln.get('window-setup-title'), 900, 630, true, true, true);
+        super(ac, Global.ln.get('window-setup-title'), 900, InterfaceFactory.pickValue(560, 640), true, true, true);
 
         // user account (only on multiple user mode)
         if (!Global.singleUser) {

@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.media;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import com.tilbuci.def.AssetData;
 import feathers.data.ArrayCollection;
 import openfl.Assets;
@@ -45,7 +46,7 @@ class WindowCollectionsAdd extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-collectionadd-title'), 1000, 620, false, true, true);
+        super(ac, Global.ln.get('window-collectionadd-title'), 1000, InterfaceFactory.pickValue(600, 620), false, true, true);
     }
 
     /**

@@ -62,6 +62,11 @@ class Data extends BaseClass
 						':key' => $this->user['key'], 
 						':pass' => '', 
 						':email' => $this->user['email'], 
+					], 'UPDATE users SET us_key=:key, us_passtemp=:pass, us_updated=:time WHERE us_email=:email', [
+						':key' => $this->user['key'], 
+						':pass' => '', 
+						':time' => date('Y-m-d H:i:s'), 
+						':email' => $this->user['email'], 
 					])) {
 						// login completed
 						return (0);
@@ -82,6 +87,12 @@ class Data extends BaseClass
 						':pass' => md5($pass), 
 						':tpass' => '', 
 						':email' => $this->user['email'], 
+					], 'UPDATE users SET us_key=:key, us_pass=:pass, us_passtemp=:tpass, us_updated=:time WHERE us_email=:email', [
+						':key' => $this->user['key'], 
+						':pass' => md5($pass), 
+						':tpass' => '', 
+						':time' => date('Y-m-d H:i:s'), 
+						':email' => $this->user['email'],
 					])) {
 						// login completed
 						return (0);
@@ -98,6 +109,42 @@ class Data extends BaseClass
 			}
 		}
     }
+
+	/**
+	 * Checks for atuomatic login.
+	 * @param string $us user e-mail
+	 * @param string $uk auto login key
+	 * @return string user key or empty string on login failure
+	 */
+	public function checkAutoUser($us, $uk) {
+		// connected?
+        if (is_null($this->db)) {
+			// no db connection
+			return ('');
+		} else {
+			$ck = $this->queryAll('SELECT * FROM users WHERE us_email=:email', [':email'=>$us]);
+			if (count($ck) == 0) {
+				// no user found
+				$this->user = null;
+				return ('');
+			} else {
+				// check auto login key
+				if (md5($ck[0]['us_email'].$ck[0]['us_key']) == $uk) {
+					// auto login ok
+					$this->user = [
+						'email' => $ck[0]['us_email'], 
+						'level' => $ck[0]['us_level'], 
+						'key' => $ck[0]['us_key'], 
+					];
+					return ($ck[0]['us_key']);
+				} else {
+					// wrong auto login key
+					$this->user = null;
+					return ('');
+				}
+			}
+		}
+	}
 	
 	/**
 	 * Recovers an user passord.
@@ -165,6 +212,10 @@ class Data extends BaseClass
 				$this->execute('UPDATE users SET us_passtemp=:pass WHERE us_email=:email', [
 					':pass' => md5($pass), 
 					':email' => $email, 
+				], 'UPDATE users SET us_passtemp=:pass, us_updated=:time WHERE us_email=:email', [
+					':pass' => md5($pass), 
+					':time' => date('Y-m-d H:i:s'), 
+					':email' => $email, 
 				]);
 				return (true);
 			}
@@ -195,6 +246,10 @@ class Data extends BaseClass
                 $this->execute('INSERT IGNORE INTO visitors (vs_email, vs_code) VALUES (:email, :code) ON DUPLICATE KEY UPDATE vs_code=VALUES(vs_code)', [
                     ':email' => $email, 
                     ':code' => $code, 
+                ], 'INSERT INTO visitors (vs_email, vs_code) VALUES (:email, :code) (vs_email) DO UPDATE SET vs_code = excluded.vs_code, vs_last=:time', [
+                    ':email' => $email, 
+                    ':code' => $code, 
+					':time' => date('Y-m-d H:i:s'), 
                 ]);
                 return ($code);
             }
@@ -234,6 +289,10 @@ class Data extends BaseClass
                     $key = md5($this->randSring(16));
                     $this->execute('UPDATE visitors SET vs_key=:key WHERE vs_email=:email', [
                         ':key' => $key, 
+                        ':email' => $email, 
+                    ], 'UPDATE visitors SET vs_key=:key, vs_last=:time WHERE vs_email=:email', [
+                        ':key' => $key, 
+						':time' => date('Y-m-d H:i:s'), 
                         ':email' => $email, 
                     ]);
                     return ($key);
@@ -514,6 +573,10 @@ class Data extends BaseClass
 						$this->execute('UPDATE users SET us_passtemp=:pass WHERE us_email=:em', [
 							':em' => $email, 
 							':pass' => md5($pass), 
+						], 'UPDATE users SET us_passtemp=:pass, us_updated=:time WHERE us_email=:em', [
+							':pass' => md5($pass), 
+							':time' => date('Y-m-d H:i:s'), 
+							':em' => $email, 
 						]);
 						return (0);
 					}
@@ -605,4 +668,37 @@ class Data extends BaseClass
         foreach ($ck as $v) $list[] = mb_strtolower($this->slashUrl($v['cr_domain']));
         return ($list);
     }
+
+	/**
+	 * Start launcher user login.
+	 * @return bool successful login?
+	 */
+	public function launcherLogin() {
+		$key = md5('tilbuci'.time());
+		if ($this->execute('INSERT INTO users (us_email, us_pass, us_passtemp, us_key, us_level, us_updated) VALUES (:em, :pass, :tpass, :key, :lvl, :time) ON CONFLICT(us_email) DO UPDATE SET us_key = excluded.us_key, us_updated = excluded.us_updated', [
+			':em' => 'single', 
+			':pass' => '', 
+			':tpass' => '', 
+			':key' => $key, 
+			':lvl'=> '0',
+			':time' => date('Y-m-d H:i:s'), 
+		])) {
+			return(true);
+		} else {
+			return (false);
+		}
+	}
+
+	/**
+	 * Getting login key for launcher.
+	 * @return string the login key or empty string on error
+	 */
+	public function launcherKey() {
+		$ck = $this->queryAll('SELECT us_key FROM users WHERE us_email=:em', [':em'=>'single']);
+		if (count($ck) == 0) {
+			return ('');
+		} else {
+			return (md5('single'.$ck[0]['us_key']));
+		}
+	}
 }

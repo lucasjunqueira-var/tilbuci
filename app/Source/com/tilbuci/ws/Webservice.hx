@@ -132,6 +132,20 @@ class Webservice extends EventDispatcher {
     }
 
     /**
+        Opens a new workspace.
+    **/
+    public function openWorkspace():Void {
+        var urlwork:String = StringTools.replace(this._url, '/ws', '/editor');
+        var variables:URLVariables = new URLVariables();
+        Reflect.setField(variables, 'us', this._user);
+        Reflect.setField(variables, 'uk', StringStatic.md5(this._user+this._key));
+        var request:URLRequest = new URLRequest(urlwork);
+        request.data = variables;
+        request.method = 'GET';
+        Lib.getURL(request);
+    }
+
+    /**
         Releases resources used by the object.
     **/
     public function kill():Void {

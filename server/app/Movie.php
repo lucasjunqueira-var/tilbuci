@@ -19,7 +19,7 @@ class Movie extends BaseClass
 	/**
      * TilBuci expected version
      */
-    private $version = 13;
+    private $version = 14;
     
 	/**
 	 * current movie information
@@ -95,6 +95,7 @@ class Movie extends BaseClass
 				$this->createDir('../movie/'.$id.'.movie/media/font');
 				$this->createDir('../movie/'.$id.'.movie/media/spritemap');
                 $this->createDir('../movie/'.$id.'.movie/media/strings');
+                $this->createDir('../movie/'.$id.'.movie/media/dialogues');
 				$this->createDir('../movie/'.$id.'.movie/scene');
 				$this->createDir('../movie/'.$id.'.movie/collection');
 			}
@@ -130,13 +131,13 @@ class Movie extends BaseClass
 				'copyleft' => $ck[0]['mv_copyleft'], 
 				'title' => $ck[0]['mv_title'], 
 				'description' => $ck[0]['mv_about'], 
-				'tags' => ($ck[0]['mv_tags'] == '' ? [ ] : explode(',', $ck[0]['mv_tags'])),
+				'tags' => ((is_null($ck[0]['mv_tags']) || ($ck[0]['mv_tags'] == '')) ? [ ] : explode(',', $ck[0]['mv_tags'])),
 				'favicon' => $ck[0]['mv_favicon'], 
 				'image' => $ck[0]['mv_image'], 
 				'key' => $ck[0]['mv_key'], 
                 'fallback' => $ck[0]['mv_fallback'], 
                 'identify' => $ck[0]['mv_identify'] == '1' ? true : false, 
-                'vsgroups' => ($ck[0]['mv_vsgroups'] == '' ? [ ] : explode(',', $ck[0]['mv_vsgroups'])),
+                'vsgroups' => ((is_null($ck[0]['mv_vsgroups']) || ($ck[0]['mv_vsgroups'] == '')) ? [ ] : explode(',', $ck[0]['mv_vsgroups'])),
 				'start' => $ck[0]['mv_start'], 
 				'acstart' => (is_null($ck[0]['mv_acstart']) || $ck[0]['mv_acstart'] == '') ? '' : gzdecode(base64_decode($ck[0]['mv_acstart'])), 
 				'screen' => [
@@ -164,7 +165,7 @@ class Movie extends BaseClass
 				'plugins' => [ ], 
 			];
 			// active plugins
-			$pl = $ck[0]['mv_plugins'] == '' ? [ ] : explode(',', $ck[0]['mv_plugins']);
+			$pl = (is_null($ck[0]['mv_plugins']) || ($ck[0]['mv_plugins'] == '')) ? [ ] : explode(',', $ck[0]['mv_plugins']);
 			foreach ($pl as $plid) {
 				$this->info['plugins'][$plid] = [
 					'active' => true, 
@@ -213,6 +214,7 @@ class Movie extends BaseClass
 			if ($ok && !is_dir('../movie/'.$id.'.movie/media/font')) if (!$this->createDir('../movie/'.$id.'.movie/media/font')) $ok = false;
 			if ($ok && !is_dir('../movie/'.$id.'.movie/media/spritemap')) if (!$this->createDir('../movie/'.$id.'.movie/media/spritemap')) $ok = false;
             if ($ok && !is_dir('../movie/'.$id.'.movie/media/strings')) if (!$this->createDir('../movie/'.$id.'.movie/media/strings')) $ok = false;
+            if ($ok && !is_dir('../movie/'.$id.'.movie/media/dialogues')) if (!$this->createDir('../movie/'.$id.'.movie/media/dialogues')) $ok = false;
 			if ($ok && !is_dir('../movie/'.$id.'.movie/scene')) if (!$this->createDir('../movie/'.$id.'.movie/scene')) $ok = false;
 			if ($ok && !is_dir('../movie/'.$id.'.movie/collection')) if (!$this->createDir('../movie/'.$id.'.movie/collection')) $ok = false;
 			if ($ok && !is_file('../movie/'.$id.'.movie/strings.json')) file_put_contents('../movie/'.$id.'.movie/strings.json', '{"default":{"sample":"sample text"}}');
@@ -339,6 +341,9 @@ class Movie extends BaseClass
                 }
                 $this->execute('DELETE FROM keyframes WHERE kf_scene=:sc', [':sc'=>$v['sc_uid']]);
             }
+            $this->execute('DELETE FROM notes WHERE nt_movie=:mv', [':mv'=>$id]);
+            $this->execute('DELETE FROM scenelock WHERE sl_movie=:mv', [':mv'=>$id]);
+            $this->execute('DELETE FROM strings WHERE st_movie=:mv', [':mv'=>$id]);
             $this->execute('DELETE FROM scenes WHERE sc_movie=:mv', [':mv'=>$id]);
             $this->execute('DELETE FROM movies WHERE mv_id=:id', [':id'=>$id]);
             $this->removeFileDir('../movie/'.$id.'.movie');
@@ -556,8 +561,14 @@ class Movie extends BaseClass
 			if (count($cols) == 0) {
 				return (['e' => 2, 'list' => [ ], 'reload' => false]);
 			} else {
+                $colslite = $cols;
+                $valslite = $vals;
+                $colslite[] = 'mv_updated=:time';
 				$vals[':id'] = $id;
-				$this->execute('UPDATE movies SET ' . implode(', ', $cols) . ' WHERE mv_id=:id', $vals);
+                $valslite[':time'] = date('Y-m-d H:i:s');
+                $valslite[':id'] = $id;
+				$this->execute('UPDATE movies SET ' . implode(', ', $cols) . ' WHERE mv_id=:id', $vals,
+                'UPDATE movies SET ' . implode(', ', $colslite) . ' WHERE mv_id=:id', $valslite);
                 // publish or remove scene files?
                 if (!is_null($publish)) {
                     if ($publish) {
@@ -626,6 +637,7 @@ class Movie extends BaseClass
 			return (['e' => 1, 'list' => [ ]]);
 		} else {
 			$list = [ ];
+            if (is_null($ck[0]['mv_collaborators'])) $ck[0]['mv_collaborators'] = '';
 			if ($ck[0]['mv_collaborators'] != '') $list = explode(',', $ck[0]['mv_collaborators']);
 			return (['e' => 0, 'list' => $list]);
 		}
@@ -647,10 +659,15 @@ class Movie extends BaseClass
 			return (['e' => 1, 'list' => [ ]]);
 		} else {
 			$list = [ ];
+            if (is_null($ck[0]['mv_collaborators'])) $ck[0]['mv_collaborators'] = '';
 			if ($ck[0]['mv_collaborators'] != '') $list = explode(',', $ck[0]['mv_collaborators']);
 			$list[] = trim($email);
 			$this->execute('UPDATE movies SET mv_collaborators=:list WHERE mv_id=:id', [
 				':list' => implode(',', $list), 
+				':id' => $id, 
+			], 'UPDATE movies SET mv_collaborators=:list, mv_updated=:time WHERE mv_id=:id', [
+				':list' => implode(',', $list), 
+                ':time' => date('Y-m-d H:i:s'), 
 				':id' => $id, 
 			]);
 			return (['e' => 0, 'list' => $list]);
@@ -673,11 +690,16 @@ class Movie extends BaseClass
 			return (['e' => 1, 'list' => [ ]]);
 		} else {
 			$list = [ ];
+            if (is_null($ck[0]['mv_collaborators'])) $ck[0]['mv_collaborators'] = '';
 			if ($ck[0]['mv_collaborators'] != '') $list = explode(',', $ck[0]['mv_collaborators']);
 			$newlist = [ ];
 			foreach ($list as $em) if ($em != trim($email)) $newlist[] = $em;
 			$this->execute('UPDATE movies SET mv_collaborators=:list WHERE mv_id=:id', [
 				':list' => implode(',', $newlist), 
+				':id' => $id, 
+			], 'UPDATE movies SET mv_collaborators=:list, mv_updated=:time WHERE mv_id=:id', [
+				':list' => implode(',', $newlist), 
+                ':time' => date('Y-m-d H:i:s'), 
 				':id' => $id, 
 			]);
 			return (['e' => 0, 'list' => $newlist]);
@@ -704,12 +726,18 @@ class Movie extends BaseClass
 				return (['e' => 2]);
 			} else {
 				$list = [ ];
+                if (is_null($ck[0]['mv_collaborators'])) $ck[0]['mv_collaborators'] = '';
 				if ($ck[0]['mv_collaborators'] != '') $list = explode(',', $ck[0]['mv_collaborators']);
 				$newlist = [ $user ];
 				foreach ($list as $em) if ($em != $user) $newlist[] = $em;
 				$this->execute('UPDATE movies SET mv_user=:us, mv_collaborators=:list WHERE mv_id=:id', [
 					':us' => $email, 
 					':list' => implode(',', $newlist), 
+					':id' => $id, 
+				], 'UPDATE movies SET mv_user=:us, mv_collaborators=:list, mv_updated=:time WHERE mv_id=:id', [
+					':us' => $email, 
+					':list' => implode(',', $newlist), 
+                    ':time' => date('Y-m-d H:i:s'), 
 					':id' => $id, 
 				]);
 				return (['e' => 0]);
@@ -755,6 +783,7 @@ class Movie extends BaseClass
 			return (['e' => 1]);
 		} else {
 			// plugin enabled?
+            if (is_null($ck[0]['mv_plugins'])) $ck[0]['mv_plugins'] = '';
 			$current = $ck[0]['mv_plugins'] == '' ? [ ] : explode(',', $ck[0]['mv_plugins']);
 			if ($active) {
 				if (!in_array($plugin, $current)) {
@@ -770,12 +799,22 @@ class Movie extends BaseClass
 			$this->execute('UPDATE movies SET mv_plugins=:pl WHERE mv_id=:id', [
 				':pl' => implode(',', $current), 
 				':id' => $id, 
+			], 'UPDATE movies SET mv_plugins=:pl, mv_updated=:time WHERE mv_id=:id', [
+				':pl' => implode(',', $current), 
+                ':time' => date('Y-m-d H:i:s'), 
+				':id' => $id, 
 			]);
 			// save configuration
 			$plid = $plugin.'_'.$id;
 			$json = json_decode($conf, true);
 			if (json_last_error() != JSON_ERROR_NONE) $json = [ ];
 			$this->execute('INSERT INTO plugins (pl_id, pl_name, pl_movie, pl_scene, pl_config) VALUES (:id, :nm, :mv, :sc, :conf) ON DUPLICATE KEY UPDATE pl_config=VALUES(pl_config)', [
+				':id' => $plid, 
+				':nm' => $plugin, 
+				':mv' => $id, 
+				':sc' => '', 
+				':conf' => base64_encode(gzencode(json_encode($json))), 
+			], 'INSERT INTO plugins (pl_id, pl_name, pl_movie, pl_scene, pl_config) VALUES (:id, :nm, :mv, :sc, :conf) ON CONFLICT(pl_id) DO UPDATE SET pl_config = excluded.pl_config', [
 				':id' => $plid, 
 				':nm' => $plugin, 
 				':mv' => $id, 
@@ -857,6 +896,9 @@ class Movie extends BaseClass
 					$this->execute('INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON DUPLICATE KEY UPDATE cf_value=VALUES(cf_value)', [
 						':key' => 'indexMovie', 
 						':val' => $movie, 
+					], 'INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON CONFLICT(cf_key) DO UPDATE SET cf_value = excluded.cf_value', [
+						':key' => 'indexMovie', 
+						':val' => $movie, 
 					]);
 					// save configuration
 					return ($this->savePlayerConfig($user));
@@ -894,6 +936,9 @@ class Movie extends BaseClass
 				}
 				// set render mode
 				$this->execute('INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON DUPLICATE KEY UPDATE cf_value=VALUES(cf_value)', [
+					':key' => 'renderMode', 
+					':val' => $rd, 
+				], 'INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON CONFLICT(cf_key) DO UPDATE SET cf_value = excluded.cf_value', [
 					':key' => 'renderMode', 
 					':val' => $rd, 
 				]);
@@ -936,7 +981,7 @@ class Movie extends BaseClass
 				$this->execute('INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON DUPLICATE KEY UPDATE cf_value=VALUES(cf_value)', [
 					':key' => 'shareMode', 
 					':val' => $sh, 
-				]);
+				], 'INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON CONFLICT(cf_key) DO UPDATE SET cf_value = excluded.cf_value');
 				// save configuration
 				return ($this->savePlayerConfig($user));
 			} else {
@@ -981,7 +1026,7 @@ class Movie extends BaseClass
 				$this->execute('INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON DUPLICATE KEY UPDATE cf_value=VALUES(cf_value)', [
 					':key' => 'fpsMode', 
 					':val' => $fps, 
-				]);
+				], 'INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON CONFLICT(cf_key) DO UPDATE SET cf_value = excluded.cf_value');
 				// save configuration
 				return ($this->savePlayerConfig($user));
 			} else {
@@ -1514,6 +1559,7 @@ class Movie extends BaseClass
                                             if (!is_dir('../movie/'.$movie.'.movie/media/font')) !$this->createDir('../movie/'.$movie.'.movie/media/font');
                                             if (!is_dir('../movie/'.$movie.'.movie/media/spritemap')) !$this->createDir('../movie/'.$movie.'.movie/media/spritemap');
                                             if (!is_dir('../movie/'.$movie.'.movie/media/strings')) !$this->createDir('../movie/'.$movie.'.movie/media/strings');
+                                            if (!is_dir('../movie/'.$movie.'.movie/media/dialogues')) !$this->createDir('../movie/'.$movie.'.movie/media/dialogues');
                                             
                                             // string files
                                             if ($handle = opendir('../movie/'.$movie.'.movie/media/strings')) {
@@ -1535,19 +1581,6 @@ class Movie extends BaseClass
                                                     }
                                                 }
                                             }
-                                            
-                                            // additional files
-                                            /*$stringsjson = '';
-                                            if (is_file('../movie/'.$movie.'.movie/strings.json')) $stringsjson = file_get_contents('../movie/'.$movie.'.movie/strings.json');
-                                            $contraptions = '';
-                                            if (is_file('../movie/'.$movie.'.movie/contraptions.json')) $contraptions = file_get_contents('../movie/'.$movie.'.movie/contraptions.json');
-                                            if ($contraptions != '') $contraptions = base64_encode(gzencode($contraptions));
-                                            if ($stringsjson != '') $stringsjson = base64_encode(gzencode($stringsjson));
-                                            $this->execute('UPDATE movies SET mv_contraptions=:cont, mv_strings=:str WHERE mv_id=:id', [
-                                                ':cont' => $contraptions, 
-                                                ':str' => $stringsjson, 
-                                                ':id' => $movie,
-                                            ]);*/
                                             
                                             // movie imported
                                             @unlink('../../export/' . $movie . '.zip');
@@ -1715,7 +1748,7 @@ class Movie extends BaseClass
                                 if ($cdomain != '') {
                                     $this->execute('INSERT IGNORE INTO cors (cr_domain) VALUE (:dom)', [
                                        ':dom' => $cdomain, 
-                                    ]);
+                                    ], 'INSERT OR IGNORE INTO cors (cr_domain) VALUES (:dom)');
                                 }
                             }
                             // index.html
@@ -1879,7 +1912,7 @@ class Movie extends BaseClass
                             if ($cdomain != '') {
                                 $this->execute('INSERT IGNORE INTO cors (cr_domain) VALUE (:dom)', [
                                    ':dom' => $cdomain, 
-                                ]);
+                                ], 'INSERT OR IGNORE INTO cors (cr_domain) VALUES (:dom)');
                             }
                             
                             // check url
@@ -1999,6 +2032,7 @@ class Movie extends BaseClass
                             $cks = $this->queryAll('SELECT sc_id, sc_collections FROM scenes WHERE sc_movie=:mv AND sc_published=:pub', [ ':mv' => $movie, ':pub' => '1' ]);
                             foreach ($cks as $vs) {
                                 $offline[] = $url . 'movie/'.$movie.'.movie/scene/' . $vs['sc_id'] . '.json';
+                                if (is_null($vs['sc_collections'])) $vs['sc_collections'] = '';
                                 $cols = explode(',', $vs['sc_collections']);
                                 foreach ($cols as $vc) {
                                     if (($vc != '') && !in_array($vc, $collections)) {
@@ -2013,6 +2047,8 @@ class Movie extends BaseClass
                                 $cka = $this->queryAll('SELECT at_type, at_file1, at_file2, at_file3, at_file4, at_file5 FROM assets WHERE at_collection=:col AND FIND_IN_SET(at_type, :types)', [
                                     ':col' => $movie . $vc, 
                                     ':types' => 'audio,html,picture,spritemap,video', 
+                                ], "SELECT at_type, at_file1, at_file2, at_file3, at_file4, at_file5 FROM assets WHERE at_collection=:col AND at_type IN ('audio','html','picture','spritemap','video')", [
+                                    ':col' => $movie . $vc, 
                                 ]);
                                 foreach ($cka as $va) {
                                     for ($ia=1; $ia<=5; $ia++) {
@@ -2028,6 +2064,13 @@ class Movie extends BaseClass
                             // check offline string files
                             if (is_dir('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/strings/')) {
                                 $embedlist = $this->listDirFiles('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/strings');
+                                foreach ($embedlist as $el) {
+                                    $offline[] = str_replace('../../export/pwa-'.$movie.'/', $url, $el);
+                                }
+                            }
+                            // check offline dialogue files
+                            if (is_dir('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/dialogues/')) {
+                                $embedlist = $this->listDirFiles('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/dialogues');
                                 foreach ($embedlist as $el) {
                                     $offline[] = str_replace('../../export/pwa-'.$movie.'/', $url, $el);
                                 }
@@ -2206,10 +2249,10 @@ class Movie extends BaseClass
                             // add CORS
                             $this->execute('INSERT IGNORE INTO cors (cr_domain) VALUE (:dom)', [
                                ':dom' => 'https://itch.io/', 
-                            ]);
+                            ], 'INSERT OR IGNORE INTO cors (cr_domain) VALUES (:dom)');
                             $this->execute('INSERT IGNORE INTO cors (cr_domain) VALUE (:dom)', [
                                ':dom' => 'https://gamejolt.com/', 
-                            ]);
+                            ], 'INSERT OR IGNORE INTO cors (cr_domain) VALUES (:dom)');
                             $ws = '';
                             if ((strpos($this->conf['path'], 'localhost') === false) && (strpos($this->conf['path'], '127.0.0.1') === false)) {
                                 $ws = $this->slashUrl($this->conf['path']) . 'ws/';
@@ -3008,6 +3051,7 @@ class Movie extends BaseClass
             return (false);
         } else {
             // check authorization
+            if (is_null($ck[0]['mv_collaborators'])) $ck[0]['mv_collaborators'] = '';
             $authorized = $ck[0]['mv_collaborators'] == '' ? [ ] : explode(',', $ck[0]['mv_collaborators']);
             $authorized[] = $ck[0]['mv_user'];
             if (($type == 'guide') && ($ck[0]['mv_user'] != $user)) {
@@ -3087,6 +3131,10 @@ class Movie extends BaseClass
                 $this->execute('UPDATE movies SET mv_contraptions=:cont WHERE mv_id=:id', [
                     ':cont' => base64_encode(gzencode($data)), 
                     ':id' => $movie, 
+                ], 'UPDATE movies SET mv_contraptions=:cont, mv_updated=:time WHERE mv_id=:id', [
+                    ':cont' => base64_encode(gzencode($data)), 
+                    ':time' => date('Y-m-d H:i:s'), 
+                    ':id' => $movie, 
                 ]);
                 if ($ck[0]['mv_encrypted'] == '1') {
                     file_put_contents(('../movie/'.$movie.'.movie/contraptions.json'), $this->encryptTBFile($movie, $data));
@@ -3111,24 +3159,87 @@ class Movie extends BaseClass
      * 2 => corrupted narrative data
      */
     public function saveNarrative($user, $movie, $data) {
-        $ck = $this->queryAll('SELECT mv_id, mv_encrypted FROM movies WHERE mv_id=:id AND (mv_user=:user OR mv_collaborators LIKE :col)', [
+        $ckm = $this->queryAll('SELECT mv_id, mv_encrypted FROM movies WHERE mv_id=:id AND (mv_user=:user OR mv_collaborators LIKE :col)', [
             ':id' => $movie, 
             ':user' => $user, 
             ':col' => '%' . trim($user) . '%', 
         ]);
-        if (count($ck) > 0) {
-            $json = json_decode($data);
+        if (count($ckm) > 0) {
+            $json = json_decode($data, true);
             if (json_last_error() != JSON_ERROR_NONE) {
                 return (2);
             } else {
+                if (isset($json['dialogues']) && isset($json['diagcontent'])) {
+                    if (!is_dir('../movie/'.$movie.'.movie/media/dialogues')) $this->createDir('../movie/'.$movie.'.movie/media/dialogues');
+                    $dids = [ ];
+                    foreach($json['dialogues'] as $k => $v) {
+                        if ($v['code'] == '') {
+                            $this->execute('INSERT INTO dialogues (dg_movie, dg_name) VALUES (:mv, :nm)', [
+                                ':mv' => $movie, 
+                                ':nm' => $v['id'], 
+                            ]);
+                            $json['dialogues'][$k]['code'] = $dids[$v['id']] = $this->insertID();
+                        } else {
+                            $ck = $this->queryAll('SELECT dg_name FROM dialogues WHERE dg_id=:id AND dg_movie=:mv', [
+                                ':id' => $v['code'], 
+                                ':mv' => $movie, 
+                            ]);
+                            if (count($ck) == 0) {
+                                $this->execute('INSERT INTO dialogues (dg_movie, dg_name) VALUES (:mv, :nm)', [
+                                    ':mv' => $movie, 
+                                    ':nm' => $v['id'], 
+                                ]);
+                                $json['dialogues'][$k]['code'] = $dids[$v['id']] = $this->insertID();
+                            } else {
+                                if ($ck[0]['dg_name'] != $v['id']) {
+                                    $this->execute('UPDATE dialogues SET dg_name=:nm WHERE dg_id=:id', [
+                                        ':nm' => $v['id'], 
+                                        ':id' => $v['code'], 
+                                    ]);
+                                }
+                                $dids[$v['id']] = $v['code'];
+                            }
+                        }
+                    }
+                    foreach($json['diagcontent'] as $k => $v) {
+                        if (isset($dids[$v['id']])) {
+                            $v['code'] = $json['diagcontent'][$k]['code'] = $dids[$v['id']];
+                        } else {
+                            $this->execute('INSERT INTO dialogues (dg_movie, dg_name) VALUES (:mv, :nm)', [
+                                ':mv' => $movie, 
+                                ':nm' => $v['id'], 
+                            ]);
+                            $v['code'] = $json['diagcontent'][$k]['code'] = $dids[$v['id']] = $this->insertID();
+                            $json['dialogues'][] = [
+                                'id' => $v['id'], 
+                                'code' => $dids[$v['id']], 
+                            ];
+                        }
+                        $this->execute('UPDATE dialogues SET dg_content=:ct WHERE dg_id=:id', [
+                            ':ct' => base64_encode(gzencode(json_encode($v))), 
+                            ':id' => $json['diagcontent'][$k]['code'], 
+                        ]);
+                        if ($ckm[0]['mv_encrypted'] == '1') {
+                            file_put_contents(('../movie/'.$movie.'.movie/media/dialogues/' . $json['diagcontent'][$k]['code'] . '.json'), $this->encryptTBFile($movie, json_encode($v)));
+                        } else {
+                            file_put_contents(('../movie/'.$movie.'.movie/media/dialogues/' . $json['diagcontent'][$k]['code'] . '.json'), json_encode($v));
+                        }
+                    }
+                    $this->info = $dids;
+                    unset($json['diagcontent']);
+                }
                 $this->execute('UPDATE movies SET mv_narrative=:nar WHERE mv_id=:id', [
-                    ':nar' => base64_encode(gzencode($data)), 
+                    ':nar' => base64_encode(gzencode(json_encode($json))), 
+                    ':id' => $movie, 
+                ], 'UPDATE movies SET mv_narrative=:nar, mv_updated=:time WHERE mv_id=:id', [
+                    ':nar' => base64_encode(gzencode(json_encode($json))), 
+                    ':time' => date('Y-m-d H:i:s'), 
                     ':id' => $movie, 
                 ]);
-                if ($ck[0]['mv_encrypted'] == '1') {
-                    file_put_contents(('../movie/'.$movie.'.movie/narrative.json'), $this->encryptTBFile($movie, $data));
+                if ($ckm[0]['mv_encrypted'] == '1') {
+                    file_put_contents(('../movie/'.$movie.'.movie/narrative.json'), $this->encryptTBFile($movie, json_encode($json)));
                 } else {
-                    file_put_contents('../movie/'.$movie.'.movie/narrative.json', $data);
+                    file_put_contents('../movie/'.$movie.'.movie/narrative.json', json_encode($json));
                 }
                 return (0);
             }
@@ -3186,71 +3297,6 @@ class Movie extends BaseClass
                         $cl->publish($decrypt);
                     }
                 }
-                
-                // other files
-                /*
-                $ck = $this->queryAll('SELECT mv_contraptions, mv_strings, mv_narrative FROM movies WHERE mv_id=:mv', [':mv' => $movie]);
-                $writeback = false;
-                if (is_null($ck[0]['mv_strings']) || ($ck[0]['mv_strings'] == '')) {
-                    $writeback = true;
-                    if (is_file('../movie/'.$movie.'.movie/strings.json')) {
-                        $txt = file_get_contents('../movie/'.$movie.'.movie/strings.json');
-                    } else {
-                        $txt = '{"default":{"sample":"sample text"}}';
-                    }
-                } else {
-                    $txt = gzdecode(base64_decode($ck[0]['mv_strings']));
-                }
-                if ($this->info['encrypted'] && !$decrypt) {
-                    file_put_contents(('../movie/'.$movie.'.movie/strings.json'), $this->encryptTBFile($this->info['id'], $txt));
-                } else {
-                    file_put_contents(('../movie/'.$movie.'.movie/strings.json'), $txt);
-                }
-                if ($writeback) $this->execute('UPDATE movies SET mv_strings=:st WHERE mv_id=:mv', [
-                    ':st' => base64_encode(gzencode($txt)), 
-                    ':mv' => $movie, 
-                ]);
-                $writeback = false;
-                if (is_null($ck[0]['mv_contraptions']) || ($ck[0]['mv_contraptions'] == '')) {
-                    $writeback = true;
-                    if (is_file('../movie/'.$movie.'.movie/contraptions.json')) {
-                        $txt = file_get_contents('../movie/'.$movie.'.movie/contraptions.json');
-                    } else {
-                        $txt = json_encode([]);
-                    }
-                } else {
-                    $txt = gzdecode(base64_decode($ck[0]['mv_contraptions']));
-                }
-                if ($this->info['encrypted'] && !$decrypt) {
-                    file_put_contents(('../movie/'.$movie.'.movie/contraptions.json'), $this->encryptTBFile($this->info['id'], $txt));
-                } else {
-                    file_put_contents(('../movie/'.$movie.'.movie/contraptions.json'), $txt);
-                }
-                if ($writeback) $this->execute('UPDATE movies SET mv_contraptions=:ct WHERE mv_id=:mv', [
-                    ':ct' => base64_encode(gzencode($txt)), 
-                    ':mv' => $movie, 
-                ]);
-                $writeback = false;
-                if (is_null($ck[0]['mv_narrative']) || ($ck[0]['mv_narrative'] == '')) {
-                    $writeback = true;
-                    if (is_file('../movie/'.$movie.'.movie/narrative.json')) {
-                        $txt = file_get_contents('../movie/'.$movie.'.movie/narrative.json');
-                    } else {
-                        $txt = json_encode([]);
-                    }
-                } else {
-                    $txt = gzdecode(base64_decode($ck[0]['mv_narrative']));
-                }
-                if ($this->info['encrypted'] && !$decrypt) {
-                    file_put_contents(('../movie/'.$movie.'.movie/narrative.json'), $this->encryptTBFile($this->info['id'], $txt));
-                } else {
-                    file_put_contents(('../movie/'.$movie.'.movie/narrative.json'), $txt);
-                }
-                if ($writeback) $this->execute('UPDATE movies SET mv_narrative=:ct WHERE mv_id=:mv', [
-                    ':ct' => base64_encode(gzencode($txt)), 
-                    ':mv' => $movie, 
-                ]);
-                */
                 return (0);
             } else {
                 return (2);

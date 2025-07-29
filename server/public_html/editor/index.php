@@ -19,5 +19,10 @@ if (isset($_POST['rd'])) {
 if (isset($_POST['cch']) || isset($_GET['cch'])) {
 	$_SESSION['cch'] = time();
 }
+if (isset($_GET['us']) && isset($_GET['uk'])) {
+	$_SESSION['us'] = trim($_GET['us']);
+	$_SESSION['uk'] = trim($_GET['uk']);
+	$_SESSION['cch'] = time();
+}
 header('Location: ../app/');
 ?>

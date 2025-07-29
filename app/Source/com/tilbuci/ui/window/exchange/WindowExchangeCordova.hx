@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.exchange;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import openfl.Assets;
 import openfl.display.Bitmap;
 import com.tilbuci.statictools.StringStatic;
@@ -34,7 +35,7 @@ class WindowExchangeCordova extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-exchcord-title'), 1100, 740, false, true, true);
+        super(ac, Global.ln.get('window-exchcord-title'), 1100, InterfaceFactory.pickValue(675, 760), false, true, true);
     }
 
     /**

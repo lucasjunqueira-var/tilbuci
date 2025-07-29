@@ -7,6 +7,7 @@
  package com.tilbuci.script;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import openfl.events.Event;
 import openfl.Assets;
 
@@ -36,7 +37,7 @@ class AssistInstance extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-acinstance-title'), 800, 640, false);
+        super(ac, Global.ln.get('window-acinstance-title'), 800, InterfaceFactory.pickValue(630, 690), false);
         this._idbuttons['create'] = new IDButton('create', onCopy, Global.ln.get('window-acinstance-create'), Assets.getBitmapData('btCopy'));
         this._idbuttons['btShow'] = new IDButton('btShow', onShow, Global.ln.get('window-acvariable-show'));
         this._idbuttons['cpasset'] = new IDButton('cpasset', onAsset, Global.ln.get('window-acinstance-cpasset'), Assets.getBitmapData('btCopy'));

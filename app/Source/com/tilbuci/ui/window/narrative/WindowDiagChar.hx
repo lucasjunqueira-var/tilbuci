@@ -500,6 +500,17 @@ class WindowDiagChar extends PopupWindow {
             } else if (ld.map['e'] == 2) {
                 Global.showPopup(Global.ln.get('window-narrdiag-title'), Global.ln.get('window-narrdiag-ersave'), 320, 150, Global.ln.get('default-ok'));
             } else {
+                if (ld.map.exists('ids')) {
+                    var ids:Map<String, String> = [ ];
+                    for (k in Reflect.fields(ld.map['ids'])) {
+                        ids[k] = Reflect.field(ld.map['ids'], k);
+                    }
+                    for (k in GlobalPlayer.narrative.dialogues.keys()) {
+                        if (ids.exists(GlobalPlayer.narrative.dialogues[k].id)) {
+                            GlobalPlayer.narrative.dialogues[k].code = ids[GlobalPlayer.narrative.dialogues[k].id];
+                        }
+                    }
+                }
                 Global.showMsg(Global.ln.get('window-narrdiag-oksave'));
                 PopUpManager.removePopUp(this);
             }

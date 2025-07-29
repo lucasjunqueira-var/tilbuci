@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.media;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import haxe.ds.ArraySort;
 import com.tilbuci.ui.base.InterfaceContainer;
 import com.tilbuci.def.AssetData;
@@ -44,7 +45,7 @@ class WindowTimedAction extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-timedac-title'), 1300, 690, false, true, true);
+        super(ac, Global.ln.get('window-timedac-title'), 1300, InterfaceFactory.pickValue(660, 700), false, true, true);
     }
 
     /**

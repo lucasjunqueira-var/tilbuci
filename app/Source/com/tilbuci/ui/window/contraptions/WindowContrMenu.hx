@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.contraptions;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.contraptions.MenuContraption;
 import openfl.Assets;
@@ -36,7 +37,7 @@ class WindowContrMenu extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-contrmenu-title'), 1000, 590, false, true, true);
+        super(ac, Global.ln.get('window-contrmenu-title'), 1000, InterfaceFactory.pickValue(560, 580), false, true, true);
     }
 
     /**

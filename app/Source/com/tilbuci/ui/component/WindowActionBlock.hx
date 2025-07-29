@@ -1,6 +1,7 @@
 package com.tilbuci.ui.component;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.data.GlobalPlayer;
 import openfl.events.Event;
@@ -28,7 +29,7 @@ class WindowActionBlock extends PopupWindow {
     **/
     public function new(ac:Dynamic = null) {
         // creating window
-        super(ac, Global.ln.get('window-actions-block'), 980, 550, false, true);
+        super(ac, Global.ln.get('window-actions-block'), 980, InterfaceFactory.pickValue(540, 550), false, true);
 
         // create columns
         this.addForm('blocks', this.ui.createColumnHolder('available',

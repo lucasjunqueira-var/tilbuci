@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.media;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import feathers.controls.Label;
 import com.tilbuci.data.GlobalPlayer;
 import openfl.events.Event;
@@ -27,7 +28,7 @@ class WindowMediaEmbed extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-mdembed-title'), 1000, 430, false, true, true);
+        super(ac, Global.ln.get('window-mdembed-title'), 1000, InterfaceFactory.pickValue(415, 440), false, true, true);
     }
 
     /**

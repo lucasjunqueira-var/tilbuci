@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.exchange;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.data.GlobalPlayer;
 import openfl.events.Event;
@@ -32,7 +33,7 @@ class WindowExchangeDesktop extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-exchdesk-title'), 1000, 710, false, true, true);
+        super(ac, Global.ln.get('window-exchdesk-title'), 1000, InterfaceFactory.pickValue(650, 730), false, true, true);
     }
 
     /**

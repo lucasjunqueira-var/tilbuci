@@ -663,6 +663,30 @@ class ActionInfo {
                     { t: 's', n: Global.ln.get('acinfo-inputremove-p1'), v: '' }, 
                 ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-inputremoveall'), a: 'input.removeall', p: [ ], e: [ ] }, 
+
+                { n: Global.ln.get('acinfo-inputaddtarea'), a: 'input.addtarea', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputaddtarea-p1'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputaddtarea-p2'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputaddtarea-p3'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputaddtarea-p4'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputaddtarea-p5'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputplacetarea'), a: 'input.placetarea', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputplacetarea-p1'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputplacetarea-p2'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputplacetarea-p3'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputplacetarea-p4'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-inputplacetarea-p5'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputsettextarea'), a: 'input.settextarea', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputsettextarea-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-inputsettextarea-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputremovetarea'), a: 'input.removetarea', p: [
+                    { t: 's', n: Global.ln.get('acinfo-inputremovetarea-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-inputremovealltareas'), a: 'input.removealltareas', p: [ ], e: [ ] }, 
+
                 { n: Global.ln.get('acinfo-inputaddnumeric'), a: 'input.addnumeric', p: [
                     { t: 's', n: Global.ln.get('acinfo-inputaddnumeric-p1'), v: '' }, 
                     { t: 'i', n: Global.ln.get('acinfo-inputaddnumeric-p2'), v: '' }, 

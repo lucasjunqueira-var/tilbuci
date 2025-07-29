@@ -582,7 +582,8 @@ class WSMovie extends Webservice
 		// required fields received?
 		if ($this->requiredFields(['movie', 'data'])) {
 			$mv = new Movie;
-            $this->returnRequest([ 'e' => $mv->saveNarrative($this->user, $this->req['movie'], $this->req['data']) ]);
+			$error = $mv->saveNarrative($this->user, $this->req['movie'], $this->req['data']);
+            $this->returnRequest([ 'e' => $error, 'ids' => $mv->info ]);
 		}
 	}
     

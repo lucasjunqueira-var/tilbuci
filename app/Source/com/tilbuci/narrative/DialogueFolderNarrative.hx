@@ -19,6 +19,8 @@ class DialogueFolderNarrative extends Sprite {
 
     public var id:String;
 
+    public var code:String = '';
+
     public var diags:Map<String, DialogueNarrative> = [ ];
 
     public function new(data:Dynamic = null) {
@@ -34,6 +36,7 @@ class DialogueFolderNarrative extends Sprite {
         this.ok = false;
         if (Reflect.hasField(data, 'id')) {
             this.id = Reflect.field(data, 'id');
+            if (Reflect.hasField(data, 'code')) this.code = Reflect.field(data, 'code');
             for (k in this.diags.keys()) {
                 this.diags[k].kill();
                 this.diags.remove(k);
@@ -69,11 +72,19 @@ class DialogueFolderNarrative extends Sprite {
         this.diags = null;
     }
 
+    public function idObject():Dynamic {
+        return({
+            id: this.id, 
+            code: this.code, 
+        });
+    }
+
     public function toObject():Dynamic {
         var diagobj:Array<Dynamic> = [ ];
         for (k in this.diags) diagobj.push(k.toObject());
         return({
             id: this.id, 
+            code: this.code, 
             diags: diagobj
         });
     }

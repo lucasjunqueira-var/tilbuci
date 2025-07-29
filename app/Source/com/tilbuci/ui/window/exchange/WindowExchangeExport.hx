@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.exchange;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import com.tilbuci.data.GlobalPlayer;
 import openfl.events.Event;
 import openfl.display.Stage;
@@ -29,7 +30,7 @@ class WindowExchangeExport extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-exchexport-title'), 800, 200, false, true, true);
+        super(ac, Global.ln.get('window-exchexport-title'), 800, InterfaceFactory.pickValue(180, 200), false, true, true);
     }
 
     /**

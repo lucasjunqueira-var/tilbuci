@@ -7,6 +7,7 @@
  package com.tilbuci.ui.window.movie;
 
 /** OPENFL **/
+import com.tilbuci.ui.base.InterfaceFactory;
 import openfl.events.Event;
 import openfl.display.Stage;
 
@@ -29,7 +30,7 @@ class WindowMovieNew extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-movienew-title'), 800, 430, false);
+        super(ac, Global.ln.get('window-movienew-title'), 800, InterfaceFactory.pickValue(430, 475), false);
     }
 
     /**

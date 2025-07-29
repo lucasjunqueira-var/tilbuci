@@ -7,6 +7,7 @@
  package com.tilbuci;
 
 /** HAXE **/
+import feathers.controls.TextArea;
 import com.tilbuci.statictools.StringStatic;
 import openfl.geom.Point;
 import openfl.events.MouseEvent;
@@ -199,6 +200,11 @@ class Player extends Sprite {
         text inputs
     **/
     private var _inputs:Map<String, TextInput> = [ ];
+
+    /**
+        text areas
+    **/
+    private var _tareas:Map<String, TextArea> = [ ];
 
     /**
         numeric inputs
@@ -894,6 +900,24 @@ class Player extends Sprite {
     }
 
     /**
+        Adds a text area.
+        @param  name    the input name
+        @param  px  x position
+        @param  py  y position
+        @param  width   input width
+        @param  height   input height
+    **/
+    public function addTarea(name:String, px:Float, py:Float, width:Float, height:Float):Void {
+        if (this.inputArea != null) {
+            if (!this._tareas.exists(name)) {
+                this._tareas[name] = new TextArea();
+                this.inputArea.addChild(this._tareas[name]);
+            }
+            this.placeTarea(name, px, py, width, height);
+        }   
+    }
+
+    /**
         Places an existing text input.
         @param  name    the input name
         @param  px  x position
@@ -906,6 +930,25 @@ class Player extends Sprite {
                 this._inputs[name].x = px;
                 this._inputs[name].y = py;
                 this._inputs[name].width = width;
+            }
+        }
+    }
+
+    /**
+        Places an existing text area.
+        @param  name    the input name
+        @param  px  x position
+        @param  py  y position
+        @param  width   input width
+        @param  height   input height
+    **/
+    public function placeTarea(name:String, px:Float, py:Float, width:Float, height:Float):Void {
+        if (this.inputArea != null) {
+            if (this._tareas.exists(name)) {
+                this._tareas[name].x = px;
+                this._tareas[name].y = py;
+                this._tareas[name].width = width;
+                this._tareas[name].height = height;
             }
         }
     }
@@ -924,11 +967,33 @@ class Player extends Sprite {
     }
 
     /**
+        Removes a text area.
+        @param  name    the input name
+    **/
+    public function removeTarea(name:String):Void {
+        if (this.inputArea != null) {
+            if (this._tareas.exists(name)) {
+                this.inputArea.removeChild(this._tareas[name]);
+                this._tareas.remove(name);
+            }
+        }
+    }
+
+    /**
         Removes all text inputs.
     **/
     public function removeAllInputs():Void {
         if (this.inputArea != null) {
             for (k in this._inputs.keys()) this.removeInput(k);
+        }
+    }
+
+    /**
+        Removes all text areas.
+    **/
+    public function removeAllTareas():Void {
+        if (this.inputArea != null) {
+            for (k in this._tareas.keys()) this.removeTarea(k);
         }
     }
 
@@ -945,6 +1010,18 @@ class Player extends Sprite {
     }
 
     /**
+        Gets a text area current value.
+        @param  name    the input name
+    **/
+    public function getTareaText(name:String):String {
+        if (this._tareas.exists(name)) {
+            return (this._tareas[name].text);
+        } else {
+            return ('');
+        }
+    }
+
+    /**
         Sets a text input value.
         @param  name    the input name
         @param  value   the new text
@@ -952,6 +1029,17 @@ class Player extends Sprite {
     public function setInputText(name:String, value:String):Void {
         if (this._inputs.exists(name)) {
             this._inputs[name].text = value;
+        }
+    }
+
+    /**
+        Sets a text area value.
+        @param  name    the input name
+        @param  value   the new text
+    **/
+    public function setTareaText(name:String, value:String):Void {
+        if (this._tareas.exists(name)) {
+            this._tareas[name].text = value;
         }
     }
 
