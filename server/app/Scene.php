@@ -516,15 +516,15 @@ class Scene extends BaseClass
 								$ckoi = $this->queryAll('SELECT in_id FROM instances WHERE in_keyframe=:kf', [':kf'=>$kfo['kf_id']]);
 								foreach ($ckoi as $inso) {
 									// remove instance descriptions
-									$this->execute('DELETE FROM instancedesc WHERE id_instance=:id LIMIT 2', [':id'=>$inso['in_id']]);
+									$this->execute('DELETE FROM instancedesc WHERE id_instance=:id LIMIT 2', [':id'=>$inso['in_id']], 'DELETE FROM instancedesc WHERE id_instance=:id');
 									// remove the instance
-									$this->execute('DELETE FROM instances WHERE in_id=:id LIMIT 1', [':id'=>$inso['in_id']]);
+									$this->execute('DELETE FROM instances WHERE in_id=:id LIMIT 1', [':id'=>$inso['in_id']], 'DELETE FROM instances WHERE in_id=:id');
 								}
 								// remove the keyframe
-								$this->execute('DELETE FROM keyframes WHERE kf_id=:id LIMIT 1', [':id'=>$kfo['kf_id']]);
+								$this->execute('DELETE FROM keyframes WHERE kf_id=:id LIMIT 1', [':id'=>$kfo['kf_id']], 'DELETE FROM keyframes WHERE kf_id=:id');
 							}
 							// remove the scene
-							$this->execute('DELETE FROM scenes WHERE sc_uid=:id LIMIT 1', [':id'=>$v['sc_uid']]);
+							$this->execute('DELETE FROM scenes WHERE sc_uid=:id LIMIT 1', [':id'=>$v['sc_uid']], 'DELETE FROM scenes WHERE sc_uid=:id');
 						}
 					}
 					
@@ -739,12 +739,12 @@ class Scene extends BaseClass
 				foreach ($ckok as $kfo) {
 					$ckoi = $this->queryAll('SELECT in_id FROM instances WHERE in_keyframe=:kf', [':kf'=>$kfo['kf_id']]);
 					foreach ($ckoi as $inso) {
-						$this->execute('DELETE FROM instancedesc WHERE id_instance=:id LIMIT 2', [':id'=>$inso['in_id']]);
-						$this->execute('DELETE FROM instances WHERE in_id=:id LIMIT 1', [':id'=>$inso['in_id']]);
+						$this->execute('DELETE FROM instancedesc WHERE id_instance=:id LIMIT 2', [':id'=>$inso['in_id']], 'DELETE FROM instancedesc WHERE id_instance=:id');
+						$this->execute('DELETE FROM instances WHERE in_id=:id LIMIT 1', [':id'=>$inso['in_id']], 'DELETE FROM instances WHERE in_id=:id');
 					}
-					$this->execute('DELETE FROM keyframes WHERE kf_id=:id LIMIT 1', [':id'=>$kfo['kf_id']]);
+					$this->execute('DELETE FROM keyframes WHERE kf_id=:id LIMIT 1', [':id'=>$kfo['kf_id']], 'DELETE FROM keyframes WHERE kf_id=:id');
 				}
-				$this->execute('DELETE FROM scenes WHERE sc_uid=:id LIMIT 1', [':id'=>$v['sc_uid']]);
+				$this->execute('DELETE FROM scenes WHERE sc_uid=:id LIMIT 1', [':id'=>$v['sc_uid']], 'DELETE FROM scenes WHERE sc_uid=:id');
 			}
 			@unlink('../movie/'.$movie.'.movie/scene/' . $id . '.json');
 			return (true);

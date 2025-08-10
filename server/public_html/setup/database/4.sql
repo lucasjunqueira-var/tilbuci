@@ -1,0 +1,2 @@
+CREATE TABLE IF NOT EXISTS `menus` (`mn_id` int(11) NOT NULL AUTO_INCREMENT, `mn_movie` varchar(64) NOT NULL, `mn_name` varchar(64) NOT NULL, `mn_button` varchar(1024) NOT NULL, `mn_over` varchar(1024) NOT NULL, `mn_background` varchar(1024) NOT NULL, `mn_courtain` varchar(16) NOT NULL, `mn_x` int(11) NOT NULL DEFAULT -1, `mn_y` int(11) NOT NULL DEFAULT -1, PRIMARY KEY (`mn_id`), KEY `mn_movie` (`mn_movie`), KEY `mn_name` (`mn_name`)) ENGINE=InnoDB;
+INSERT INTO config (cf_key, cf_value) VALUES ('dbVersion', '5') ON DUPLICATE KEY UPDATE cf_value=VALUES(cf_value);

@@ -212,6 +212,7 @@ class Contraptions {
 
     public function changeDisplay()
     {
+        this.getLayers();
         if (this._backgroundOverlay.visible && (this._backgroundOverlay.numChildren > 0)) {
             var bcg:BackgroundContraption = cast(this._backgroundOverlay.getChildAt(0));
             bcg.getCover();
@@ -274,6 +275,10 @@ class Contraptions {
     public function loadLoadingIc() {
         if (this._loadingOverlay == null) {
             this.getLayers();
+            this._loadingOverlay.visible = false;
+            this._loadingIc = new SpritemapImage(onLoadingIc);
+            this._loadingOverlay.addChild(this._loadingIc);
+        } else if (this._loadingIc == null) {
             this._loadingOverlay.visible = false;
             this._loadingIc = new SpritemapImage(onLoadingIc);
             this._loadingOverlay.addChild(this._loadingIc);

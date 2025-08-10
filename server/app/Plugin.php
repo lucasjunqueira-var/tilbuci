@@ -80,9 +80,10 @@ class Plugin extends Data
 
 	/**
 	 * Content to be add to the head part of the page index.
+	 * @param	string	$mode	editor/player
 	 * @return	string	the content to be placed at head
 	 */
-	public function indexHead() {
+	public function indexHead($mode = '') {
 		return("<!-- head " . $this->id . " -->\r\n");
 	}
 	

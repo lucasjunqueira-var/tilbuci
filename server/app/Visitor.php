@@ -182,7 +182,7 @@ class Visitor extends Data
                     // release
                     $this->execute('DELETE FROM visitorsblocked WHERE vb_email=:em LIMIT 1', [
                         ':em' => $ck[0]['vs_email'], 
-                    ]);
+                    ], 'DELETE FROM visitorsblocked WHERE vb_email=:em');
                 } else {
                     // block
                     $this->execute('INSERT IGNORE INTO visitorsblocked (vb_email, vb_admin) VALUES (:em, :adm)', [

@@ -201,7 +201,7 @@ class WSVisitor extends Webservice
 					':us' => $this->user, 
 					':qc' => '0', 
 				]);
-				foreach ($ck as $v) $this->data->execute('DELETE FROM visitorstate WHERE vs_id=:id LIMIT 1', [ ':id' => $v['vs_id'] ]);
+				foreach ($ck as $v) $this->data->execute('DELETE FROM visitorstate WHERE vs_id=:id LIMIT 1', [ ':id' => $v['vs_id'] ], 'DELETE FROM visitorstate WHERE vs_id=:id');
 			}
 			$this->returnRequest([ 'e' => 0 ]);
 		}
@@ -523,7 +523,7 @@ class WSVisitor extends Webservice
 		if ($this->requiredFields(['domain'])) {
 			$this->data->execute('DELETE FROM cors WHERE cr_domain=:dom LIMIT 1', [
                 ':dom' => $this->req['domain'], 
-            ]);
+            ], 'DELETE FROM cors WHERE cr_domain=:dom');
             $this->returnRequest([ 'e' => 0 ]);
 		}
 	}

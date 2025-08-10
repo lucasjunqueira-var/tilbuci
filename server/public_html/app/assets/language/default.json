@@ -10,10 +10,12 @@
 	"player-noscene": "No scene data found to load.", 
 	
 	"uploader-fontname": "Web font", 
+	"uploader-updatename": "TilBuci update ZIP file", 
 	"uploader-picturename": "Picture files", 
 	"uploader-spritemapname": "PNG picture files", 
 	"uploader-moviename": "Exported movie ZIP file", 
 	"uploader-embedname": "HTML5 embed ZIP file", 
+	"uploader-updatename": "TilBuci ZIP update file", 
 	"uploader-stringsname": "JSON text file", 
 	"uploader-videoname": "Video files", 
 	"uploader-audioname": "Audio files", 
@@ -1366,6 +1368,14 @@
 	"window-setup-font-uploadok": "Your font was uploaded. It is being processs and soon it will be available to use (it will be shown at the fonts list).", 
 	"window-setup-font-noneslected": "Select the font you want to remove.", 
 	"window-setup-font-removecheck": "Are you sure about removing the selected font?", 
+	
+	"window-setup-update-title": "System update", 
+	"window-setup-update-about": "To update your TilBuci installation, check the latest version at the tool's website, download the ZIP file, and upload it here. After downloading, a window will open with update instructions.", 
+	"window-setup-update-check": "Check out the latest TilBuci release", 
+	"window-setup-update-upload": "Select update ZIP file", 
+	"window-setup-update-invalid": "Please select a valid TilBuci update file.", 
+	"window-setup-update-uploader": "Error processing update file. Please try again.", 
+	"window-setup-update-uploadok": "The update file upload was successful. Check the information to complete the update in the tab/window that opened.", 
 	
 	"window-visitors-title": "Content visitors",
 	"window-visitors-noaccess": "Only system administratos can access the visitors information.", 

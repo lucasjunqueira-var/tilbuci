@@ -14,6 +14,8 @@ import feathers.controls.TextArea;
 import openfl.Assets;
 import openfl.display.Bitmap;
 import openfl.text.TextFieldAutoSize;
+import openfl.Lib;
+import openfl.net.URLRequest;
 
 /** FEATHERS UI **/
 import feathers.controls.Label;
@@ -166,6 +168,16 @@ class WindowSetup extends PopupWindow {
                 { tp: 'Button', id: 'font-upload', tx: Global.ln.get('window-setup-font-upload'), ac: this.onFontUpload }
             ]));
             this.ui.inputs['font-file'].enabled = false;
+
+            // update
+            this.addForm(Global.ln.get('window-setup-update-title'), this.ui.forge('form-update', [
+                { tp: 'Label', id: 'update-about', tx: Global.ln.get('window-setup-update-about'), vr: '' }, 
+                { tp: 'Spacer', id: 'update-about', ht: 20, ln: false }, 
+                { tp: 'Button', id: 'update-check', tx: Global.ln.get('window-setup-update-check'), ac: this.onRelase }, 
+                { tp: 'Spacer', id: 'update-check', ht: 20, ln: false }, 
+                { tp: 'Button', id: 'update-upload', tx: Global.ln.get('window-setup-update-upload'), ac: this.onSelectUpdate }
+            ]));
+            this.ui.labels['update-about'].wordWrap = true;
         }
 
         // about form
@@ -261,6 +273,13 @@ class WindowSetup extends PopupWindow {
     }
 
     /**
+        Selecting an update file.
+    **/
+    private function onSelectUpdate(evt:TriggerEvent):Void {
+        Global.up.browseForMedia(onUpdateFile, 'update');
+    }
+
+    /**
         Selecting a font file.
     **/
     private function onFontAdd(evt:TriggerEvent):Void {
@@ -283,6 +302,51 @@ class WindowSetup extends PopupWindow {
             }
         } else {
             this.ui.inputs['font-file'].text = this.ui.inputs['font-name'].text = '';
+        }
+    }
+
+    /**
+        The update file was uploaded.
+        @param  ok  file correctly selected?
+    **/
+    private function onUpdateFile(ok:Bool):Void {
+        if (ok) {
+            if ((Global.up.selectedName.substr(0, 7) != 'TilBuci') || (Global.up.selectedName.substr(-3) != 'zip')) {
+                this.ui.createWarning(Global.ln.get('window-setup-update-title'), Global.ln.get('window-setup-update-invalid'), 300, 150, this.stage);
+            } else {
+                Global.up.uploadMedia(onUpdateReturn, [
+                    'type' => 'update', 
+                    'path' => '', 
+                    'movie' => ''
+                ]);
+            }
+        }
+    }
+
+    /**
+        Update upload return.
+    **/
+    private function onUpdateReturn(ok:Bool, data:Map<String, Dynamic> = null):Void {
+        if (ok) {
+            Global.ws.send('System/Update', [ ], onZipReturn);
+        } else {
+            this.ui.createWarning(Global.ln.get('window-setup-update-title'), Global.ln.get('window-setup-update-uploader'), 300, 180, this.stage);
+        }
+    }
+
+    /**
+       Zip import return.
+    **/
+    private function onZipReturn(ok:Bool, ld:DataLoader):Void {
+        if (!ok) {
+            this.ui.createWarning(Global.ln.get('window-setup-update-title'), Global.ln.get('window-setup-update-uploader'), 300, 180, this.stage);
+        } else if (ld.map['e'] == 0) {
+            var req:URLRequest = new URLRequest(Global.econfig.player + 'setup.php');
+            req.method = 'GET';
+            Lib.getURL(req);
+            this.ui.createWarning(Global.ln.get('window-setup-update-title'), Global.ln.get('window-setup-update-uploadok'), 300, 180, this.stage);
+        } else {
+            this.ui.createWarning(Global.ln.get('window-setup-update-title'), Global.ln.get('window-setup-update-uploader'), 300, 180, this.stage);
         }
     }
 
@@ -602,10 +666,6 @@ class WindowSetup extends PopupWindow {
         @param  ld  loader information
     **/
     private function onCreateReturn(ok:Bool, ld:DataLoader):Void {
-
-trace ('crea', ok);
-trace ('map', ld.map);
-
         if (!ok) {
             this.ui.createWarning(Global.ln.get('window-setup-users-new'), Global.ln.get('window-setup-users-newerror'), 400, 150, this.stage);
         } else if (ld.map['e'] == 1) {
@@ -822,6 +882,15 @@ trace ('map', ld.map);
         }
         this.ui.setSelectOptions('movie-index', list);
         this.ui.setSelectValue('movie-index', current);
+    }
+
+    /**
+        Open TilBuci latest release page.
+    **/
+    private function onRelase(evt:TriggerEvent):Void {
+        var req:URLRequest = new URLRequest('https://tilbuci.com.br/site/latest-version/');
+        req.method = 'GET';
+        Lib.getURL(req);
     }
     
 }

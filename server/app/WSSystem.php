@@ -48,6 +48,9 @@ class WSSystem extends Webservice
 				case 'System/VisitorCode':
 					$this->checkVisitorCode();
 					break;
+				case 'System/Update':
+					$this->checkUpdate();
+					break;
 				default:
 					$this->returnRequest([ 'e' => -9 ]);
 					break;
@@ -186,6 +189,29 @@ class WSSystem extends Webservice
 					'key' => $key, 
                     'groups' => $this->data->getVisitorGroups($this->req['email']), 
 				]);
+			}
+		}
+	}
+
+	/**
+	 * Checks a system update.
+	 */
+	private function checkUpdate() {
+		if ($this->requiredFields([ ])) {
+			if (is_file('../../export/update.zip')) {
+				set_time_limit(0);
+				$zip = new \ZipArchive;
+                $res = $zip->open('../../export/update.zip');
+                if ($res === true) {
+					$zip->extractTo('../');
+					@unlink('../../export/update.zip');
+					$this->returnRequest([ 'e' => 0 ]);
+				} else {
+					@unlink('../../export/update.zip');
+					$this->returnRequest([ 'e' => 2 ]);
+				}
+			} else {
+				$this->returnRequest([ 'e' => 1 ]);
 			}
 		}
 	}

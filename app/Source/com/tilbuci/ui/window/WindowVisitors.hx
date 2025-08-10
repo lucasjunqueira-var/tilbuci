@@ -219,6 +219,9 @@ class WindowVisitors extends PopupWindow {
         this.ui.setSelectValue('clearwhen', '-1year');
         this.ui.setListSelectValue('corsallowed', null);
         this.ui.setListValues('corsallowed', [ ]);
+
+trace ('call listvisitor');
+
         Global.ws.send('Visitor/List', [
             'filter' => this.ui.inputs['listfilter'].text
         ], onListVisitorReturn);
@@ -230,11 +233,12 @@ class WindowVisitors extends PopupWindow {
     private function onListVisitorReturn(ok:Bool, ld:DataLoader):Void {
         if (ok) {
             if (ld.map['e'] == 0) {
+                var list:Array<Dynamic>;
                 var vislist:Array<VisitorItem> = cast ld.map['list'];
                 if (vislist.length == 0) {
                     Global.showMsg(Global.ln.get('window-visitors-listempty'));
                 } else {
-                    var list:Array<Dynamic> = [ ];
+                    list = [ ];
                     for (vs in vislist) {
                         if (vs.blocked) {
                             list.push({
@@ -252,6 +256,7 @@ class WindowVisitors extends PopupWindow {
                         }
                     }
                     this.ui.setListValues('list', list);
+                }
                     var groups:Array<VisitorGroups> = cast ld.map['groups'];
                     list = [ ];
                     if (groups != null) {
@@ -285,7 +290,7 @@ class WindowVisitors extends PopupWindow {
                         }
                     }
                     this.ui.setListValues('corsallowed', list);
-                }
+                
             } else {
                 this.ui.createWarning(Global.ln.get('window-visitors-title'), Global.ln.get('window-visitors-listerror'), 300, 180, this.stage);    
             }

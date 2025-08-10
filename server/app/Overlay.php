@@ -32,8 +32,8 @@ class Overlay extends Plugin
 	 * Content to be add to the head part of the page index.
 	 * @return	string	the content to be placed at head
 	 */
-	public function indexHead() {
-		$text = parent::indexHead();
+	public function indexHead($mode = '') {
+		$text = parent::indexHead($mode);
 		if (isset($this->config['overlay'])) {
 			$text .= '<style>#overlay_area { position: absolute; left: 0; top: 0; display: none; background-color: #000000; padding: 0 30px 30px 30px; width: 100%; height: 100%; box-sizing: content-box; } #overlay_header { width: 100%; box-sizing: content-box; height: 30px; margin: 5px 0; } #overlay_title { color: #FFFFFF; font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif"; font-size: 20px; font-weight: bold; } #overlay_close { color: #FFFFFF; font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif"; font-size: 20px; font-weight: bold; cursor: pointer; text-align: right; position: absolute; top: 5px; right: 100px; min-width: 100px; } #overlay_frame { display: none; } </style>';
 		}

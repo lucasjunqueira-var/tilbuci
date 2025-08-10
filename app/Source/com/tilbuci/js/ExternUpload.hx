@@ -25,13 +25,7 @@ extern class ExternUpload {
         @param  s   request signature
         @param  url webservice url
     **/
-    static function /*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- */
-
-TBU_upload(a:String, r:String, u:String, s:String, url:String):Void;
+    static function TBU_upload(a:String, r:String, u:String, s:String, url:String):Void;
 
     /**
         Cancels the current upload process.

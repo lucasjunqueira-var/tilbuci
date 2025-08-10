@@ -523,7 +523,7 @@ class Data extends BaseClass
 						return (5);
 					} else {
 						// remove user
-						$this->execute('DELETE FROM users WHERE us_email=:em LIMIT 1', [':em' => $email]);
+						$this->execute('DELETE FROM users WHERE us_email=:em LIMIT 1', [':em' => $email], 'DELETE FROM users WHERE us_email=:em');
 						return (0);
 					}
 				}

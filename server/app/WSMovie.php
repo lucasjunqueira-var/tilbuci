@@ -171,6 +171,7 @@ class WSMovie extends Webservice
 	 */
 	private function listMovies() {
 		$mv = new Movie;
+		$mv->maintenance(); // run maintenance tasks?
 		$list = $mv->listMovies($this->user, isset($this->req['owner']) && (trim($this->req['owner']) == 'true'));
 		$this->returnRequest([ 'e' => 0, 'list' => $list ]);
 	}

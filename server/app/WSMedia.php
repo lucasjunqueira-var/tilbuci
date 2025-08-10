@@ -292,6 +292,8 @@ class WSMedia extends Webservice
 		// path to the file
         if ($this->req['type'] == 'movie') {
             $path = '../../export/' . $this->req['movie'] . '.zip';
+		} else if ($this->req['type'] == 'update') {
+            $path = '../../export/update.zip';
         } else if ($this->req['type'] == 'embed') {
             if (!is_dir('../../embed/')) {
                 $this->data->createDir('../../embed/');

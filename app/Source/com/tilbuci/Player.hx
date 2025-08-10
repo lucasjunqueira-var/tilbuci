@@ -593,6 +593,9 @@ class Player extends Sprite {
         // display scene
         GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[0], 0);
 
+        // warn about scene load
+        // trace(GlobalPlayer.movie.scene.title + ' scene loaded.');
+
         // first scene? run movie start actions
         if (this._firstScene) {
             if (GlobalPlayer.mode != Player.MODE_EDITOR) if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);

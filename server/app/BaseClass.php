@@ -332,6 +332,7 @@ class BaseClass
         if (is_file($path)) {
             return(@unlink($path));
         } else if (is_dir($path)) {
+			chmod($path, 0777);
             $dir = opendir($path);
             while(($file = readdir($dir))) {
                 if (($file != '.') && ($file != '..')) {
@@ -342,6 +343,7 @@ class BaseClass
                     }
                 }
             }
+			closedir($dir);
             return (@rmdir($path));
         } else {
             return (true);
