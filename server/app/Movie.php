@@ -385,7 +385,6 @@ class Movie extends BaseClass
 			$updt = [ ];
 			$reld = false;
             $publish = null;
-            $rewriteT = false;
 			foreach ($data as $k => $v) {
 				switch ($k) {
 					case 'author':
@@ -485,7 +484,7 @@ class Movie extends BaseClass
 						$cols[] = 'mv_encrypted=:encr';
 						$vals[':encr'] = $v;
 						$updt['encrypt'] = $v;
-                        $rewriteT = true;
+                        $publish = true;
 						break;
 					case 'bigsize':
 						$cols[] = 'mv_screenbig=:bg';
@@ -573,6 +572,7 @@ class Movie extends BaseClass
                 if (!is_null($publish)) {
                     if ($publish) {
                         $this->publishScenes($id);
+                        $this->publishCollections($id);
                     } else {
                         $this->removePublished($id);
                     }
@@ -589,7 +589,7 @@ class Movie extends BaseClass
 	}
     
     /**
-     * Re-publicsh all scene json files from a movie.
+     * Re-publish all scene json files from a movie.
      * @param   string  $movie  the movie id
      */
     public function publishScenes($movie) {
@@ -606,6 +606,24 @@ class Movie extends BaseClass
             }
         }
     }
+
+    /**
+     * Re-publish all collection json files from a movie.
+     * @param   string  $movie  the movie id
+     */
+    public function publishCollections($movie) {
+        if (is_dir('../movie/'.$movie.'.movie/collection/')) {
+            $cl = new Collection;
+            $ck = $this->queryAll('SELECT cl_uid FROM collections WHERE cl_movie=:mv', [
+                ':mv' => $movie, 
+            ]);
+            foreach ($ck as $v) {
+                if ($cl->loadCollection($v['cl_uid'])) {
+                    $cl->publish();
+                }
+            }
+        }
+    }         
     
     /**
      * Removes all scene json files from a movie folder.
@@ -1634,6 +1652,7 @@ class Movie extends BaseClass
                             if (($ck[0]['mv_identify'] == '1') || (!is_null($ck[0]['mv_vsgroups']) && ($ck[0]['mv_vsgroups'] != ''))) {
                                 $pub = true;
                                 $this->publishScenes($movie);
+                                $this->publishCollections($movie);
                             }
                             
                             // fonts
@@ -1904,6 +1923,7 @@ class Movie extends BaseClass
                             if (($ck[0]['mv_identify'] == '1') || (!is_null($ck[0]['mv_vsgroups']) && ($ck[0]['mv_vsgroups'] != ''))) {
                                 $pub = true;
                                 $this->publishScenes($movie);
+                                $this->publishCollections($movie);
                             }
                             
                             // add CORS
@@ -2212,6 +2232,7 @@ class Movie extends BaseClass
                             if (($ck[0]['mv_identify'] == '1') || (!is_null($ck[0]['mv_vsgroups']) && ($ck[0]['mv_vsgroups'] != ''))) {
                                 $pub = true;
                                 $this->publishScenes($movie);
+                                $this->publishCollections($movie);
                             }
                             
                             // fonts
@@ -2443,6 +2464,7 @@ class Movie extends BaseClass
                     if (($ck[0]['mv_identify'] == '1') || (!is_null($ck[0]['mv_vsgroups']) && ($ck[0]['mv_vsgroups'] != ''))) {
                         $pub = true;
                         $this->publishScenes($movie);
+                        $this->publishCollections($movie);
                     }
                             
                     // fonts
@@ -2628,6 +2650,7 @@ class Movie extends BaseClass
                             if (($ck[0]['mv_identify'] == '1') || (!is_null($ck[0]['mv_vsgroups']) && ($ck[0]['mv_vsgroups'] != ''))) {
                                 $pub = true;
                                 $this->publishScenes($movie);
+                                $this->publishCollections($movie);
                             }
                             
                             // fonts
@@ -3338,7 +3361,7 @@ class Movie extends BaseClass
 	 */
 	public function maintenance() {
 		$rand = rand(1, 100);
-		if ($rand  <= 40) { // 40% chance of running a maintenance script
+		if (true) { // 40% chance of running a maintenance script
 			$rand = rand(0, 1);
 			switch ($rand) { // choose the script to run
 				case 0:

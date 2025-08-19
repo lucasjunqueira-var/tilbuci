@@ -1,1 +1,0 @@
-INSERT INTO config (cf_key, cf_value) VALUES ('dbVersion', '4') ON DUPLICATE KEY UPDATE cf_value=VALUES(cf_value);

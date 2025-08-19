@@ -121,7 +121,6 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 				intHeader($page);
 				?>
 				<div id="title">TilBuci Launcher <small>version <?= $version ?></small></div>
-				<?php /*<div class="button" onclick="api.openbrowser('http://localhost:51804/editor/?us=single&uk=<?= $key ?>&cch=true')"> */?>
 				<div class="button" onclick="api.openwindow('http://localhost:51804/editor/?us=single&uk=<?= $key ?>&cch=true')">
 					<h1>Open TilBuci</h1>
 					Start a new TilBuci workspace.

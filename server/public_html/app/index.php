@@ -162,7 +162,7 @@ if ($render == '') {
 	<?php
 		// head plugin area
 		foreach($plugins as $pl) {
-			echo("\r\n" . $pl->indexHead() . "\r\n\r\n");
+			echo("\r\n" . $pl->indexHead($mode) . "\r\n\r\n");
 		}
 	?>
     <?php if ($nocache == '') { ?>
