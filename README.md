@@ -6,43 +6,50 @@ TilBuci is a free, open source tool to create interactive content. From a visual
 
 Use a drag-and-drop interface to bring your ideas to life.
 
-![drag-and-drop](https://tilbuci.com.br/site/wp-content/uploads/2024/09/home01-1024x576.jpg)
+![01](https://github.com/user-attachments/assets/17c1592d-b672-476b-9838-d03f87b8f1d4)
+
 
 ## Multiple screen support
 
 Support both horizontal and vertical screens in the same movie. The software even automatically switches between versions according to browser resizing.
 
-![multiple screen](https://tilbuci.com.br/site/wp-content/uploads/2024/09/home02-1024x576.jpg)
+![02](https://github.com/user-attachments/assets/ae8b1300-a808-4872-aa20-4c9475f08cb4)
+
 
 ## Rich media support
 
 Use pictures, audios, videos, html and many more media types in your creations. You can even embed your own HTML5 projects made with other tools seamlessly into the content.
 
-![media](https://tilbuci.com.br/site/wp-content/uploads/2024/09/home03-1024x576.jpg)
+![03](https://github.com/user-attachments/assets/bf8b17e8-25f0-416e-8b87-cf6bf8f06e17)
+
 
 ## Simple interaction setting methods
 
 Use the action block editor to easily add interaction to your creations. Expert users may also access the code editor directly. If you want to learn more about creating interactions in TilBuci, check out the Scripting Actions manual: https://tilbuci.com.br/files/TilBuci-ScriptingActions.pdf
 
-![interaction](https://tilbuci.com.br/site/wp-content/uploads/2024/09/home04-1024x576.jpg)
+![04](https://github.com/user-attachments/assets/e46da91d-7ce2-4e28-b120-9a3f35d398aa)
+
 
 ## Server-side processing
 
 Exchange data between your creation and custom server scripts to even fancier creations. Also, you can count on cloud data saving and event recording for your content visitors right out of the box.
 
-![server-side](https://tilbuci.com.br/site/wp-content/uploads/2024/09/home05-1024x576.jpg)
+![05](https://github.com/user-attachments/assets/fd50a3ca-bee7-4cc3-ba00-e46de517150c)
+
 
 ## Work as a team
 
 Develop your ideas by yourself or work with your teammates with defined roles. You can even use the built-in design notes funcionality to keep track of the creation.
 
-![teamwork](https://tilbuci.com.br/site/wp-content/uploads/2024/09/collaborator-1024x576.png)
+![06](https://github.com/user-attachments/assets/0482a21c-5f69-4434-b29c-d5efa9a335bd)
+
 
 ## Manage content access
 
-Discover who is visiting your creations with various statistics possibilities while restricting content access to your target groups.
+Discover who is visiting your creations with various statistics possibilities while restricting content access to your target groups. Other forms of access control are password protection or even content encryption.
 
-![access](https://tilbuci.com.br/site/wp-content/uploads/2024/09/visitor-1024x576.png)
+![07](https://github.com/user-attachments/assets/bc5c1a92-8816-40fa-8c1f-c37079195233)
+
 
 ## Contraptions
 
@@ -69,9 +76,17 @@ Use the TilBuci own player or export your creation in many formats!
 
 ![exporting](https://tilbuci.com.br/site/wp-content/uploads/2024/09/home06-1024x576.jpg)
 
+
+## Web and desktop software
+
+TilBuci is a web software with several multi-user features for collective creation. However, there are cases where local use by just one person may be necessary. With that in mind, we now have a desktop version, presented as a portable software that can be copied to your computer or even to external drives, without the need for installation. The portable version is available for Windows, Linux, and macOS (x64-based architectures). Note that when performing in this way, TilBuci's server functions, such as visitor identification (login) or cloud data storage, will not be available, but creations made in the desktop version can be easily exported and imported to a server installation in the usual way.
+
+<img width="1919" height="1079" alt="02" src="https://github.com/user-attachments/assets/91e5ff09-16d0-48f9-a7ce-0579fd109414" />
+
+
 ## Javascript disclaimer
 
-TilBuci is provided in the form of a Javascript archive. Even though the non-minified version is distributed together with the compressed one, it should not be considered the source code of this project: use the code in this repository as the source. It is written in Haxe and then converted to Javascript.
+TilBuci is provided in the form of a Javascript archive. Even though the non-minified version is distributed together with the compressed one, it should not be considered the preferred format of this project: use the code in this repository as the source. It is written in Haxe and then converted to Javascript.
 
 The base software does not make any requests to domains other than the one where it is installed, not even to TilBuci's own website, as can be seen in the source code. Plugins can be used to meet the need for connections to other domains. Whenever a new movie is loaded by TilBuci, information about which plugins are currently active is traced in the browser console. This way, visitors can confirm whether the content they are viewing is made only with the base software or if a plugin is used.
 
