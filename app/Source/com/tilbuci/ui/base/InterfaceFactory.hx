@@ -320,7 +320,7 @@ class InterfaceFactory {
         @param  holder  the element parent (null for none)
         @return the text input element
     **/
-    public function createTInput(id:String, txt:String = '', variant:String = '', holder:FeathersControl = null, autoR:Bool = true):IDTextInput {
+    public function createTInput(id:String, txt:String = '', variant:String = '', holder:FeathersControl = null, autoR:Bool = true, onchange:Dynamic = null):IDTextInput {
         var tx:IDTextInput = new IDTextInput();
         tx.text = txt;
         tx.autoResize = autoR;
@@ -328,6 +328,7 @@ class InterfaceFactory {
         if (holder != null) holder.addChild(tx);
         this.inputs[id] = tx;
         this.lastInput = tx;
+        if (onchange != null) tx.addEventListener(Event.CHANGE, onchange);
         return (tx);
     }
 

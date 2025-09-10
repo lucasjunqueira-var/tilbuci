@@ -7,6 +7,7 @@
  package com.tilbuci.narrative;
 
 /** OPENFL **/
+import com.tilbuci.data.DataLoader;
 import com.tilbuci.player.MovieArea;
 import openfl.events.MouseEvent;
 import com.tilbuci.display.PictureImage;
@@ -21,7 +22,11 @@ class DialogueFolderNarrative extends Sprite {
 
     public var code:String = '';
 
+    public var loaded:Bool = false;
+
     public var diags:Map<String, DialogueNarrative> = [ ];
+
+    private var _callback:Dynamic;
 
     public function new(data:Dynamic = null) {
         super();
@@ -57,6 +62,43 @@ class DialogueFolderNarrative extends Sprite {
         }
     }
 
+    public function clear():Void {
+        if (this.ok) {
+            for (k in this.diags.keys()) {
+                this.diags[k].kill();
+                this.diags.remove(k);
+            }
+            this.diags = [ ];
+        }
+    }
+
+    public function loadContents(callback:Dynamic):Bool {
+        if (this.ok) {
+            GlobalPlayer.narrative.clearDialogues();
+            this._callback = callback;
+            if (GlobalPlayer.nocache) {
+                new DataLoader(true, (GlobalPlayer.base + 'movie/' + GlobalPlayer.movie.mvId + '.movie/media/dialogues/' + this.code + '.json'), 'GET', [ 'rand' => Date.now().getTime() ], DataLoader.MODEJSON, onContents);
+            } else {
+                new DataLoader(true, (GlobalPlayer.base + 'movie/' + GlobalPlayer.movie.mvId + '.movie/media/dialogues/' + this.code + '.json'), 'GET', [ ], DataLoader.MODEJSON, onContents);
+            }
+            return (true);
+        } else {
+            return (false);
+        }
+    }
+
+    private function onContents(ok:Bool, ld:DataLoader = null):Void {
+        if (ok) {
+            if (this.load(ld.json)) {
+                this._callback(true);
+            } else {
+                this._callback(false);
+            }
+        } else {
+            this._callback(false);
+        }
+    }
+
     public function numDiags():Int {
         return(Lambda.count(this.diags));
     }
@@ -70,12 +112,14 @@ class DialogueFolderNarrative extends Sprite {
             this.diags.remove(k);
         }
         this.diags = null;
+        this._callback = null;
     }
 
     public function idObject():Dynamic {
         return({
             id: this.id, 
             code: this.code, 
+            loaded: this.loaded, 
         });
     }
 
@@ -85,6 +129,7 @@ class DialogueFolderNarrative extends Sprite {
         return({
             id: this.id, 
             code: this.code, 
+            loaded: this.loaded, 
             diags: diagobj
         });
     }

@@ -690,6 +690,27 @@ class InstanceImage extends Sprite {
     }
 
     /**
+        Loads an asset from the a colletcion.
+        @param  col the collection name
+        @param  ast the asset name
+        @return was the asset found?
+    **/
+    public function loadCollectionAsset(col:String, ast:String):Bool {
+        if (GlobalPlayer.movie.collections.exists(col)) {
+            if (GlobalPlayer.movie.collections[col].assets.exists(ast)) {
+                this._imCurrent.stopTimer();
+                this._changeAsset = 'set';
+                this._imOther.loadAsset(GlobalPlayer.movie.collections[col].assets[ast]);
+                return (true);
+            } else {
+                return (false);
+            }
+        } else {
+            return (false);
+        }
+    }
+
+    /**
         Plays/pauses the image.
     **/
     public function playPause():Void {

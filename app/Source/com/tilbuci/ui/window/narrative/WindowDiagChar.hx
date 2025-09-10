@@ -38,6 +38,10 @@ class WindowDiagChar extends PopupWindow {
 
     private var _lines:Array<Dynamic> = [ ];
 
+    private var _haschange:Bool = false;
+    private var _folderchange:Dynamic = null;
+    private var _diagchange:Dynamic = null;
+
     /**
         Constructor.
         @param  ac  the menu action mehtod
@@ -70,13 +74,13 @@ class WindowDiagChar extends PopupWindow {
         // output instances
         this.ui.createHContainer('insttext');
         this.ui.createLabel('insttext', Global.ln.get('window-narrdiag-insttext'), 'detail',this.ui.hcontainers['insttext']);
-        this.ui.createTInput('insttext', '', '', this.ui.hcontainers['insttext'], false);
+        this.ui.createTInput('insttext', '', '', this.ui.hcontainers['insttext'], false, setChange);
         this.ui.createHContainer('instname');
         this.ui.createLabel('instname', Global.ln.get('window-narrdiag-instname'), 'detail',this.ui.hcontainers['instname']);
-        this.ui.createTInput('instname', '', '', this.ui.hcontainers['instname'], false);
+        this.ui.createTInput('instname', '', '', this.ui.hcontainers['instname'], false, setChange);
         this.ui.createHContainer('instexpr');
         this.ui.createLabel('instexpr', Global.ln.get('window-narrdiag-instexpr'), 'detail',this.ui.hcontainers['instexpr']);
-        this.ui.createTInput('instexpr', '', '', this.ui.hcontainers['instexpr'], false);
+        this.ui.createTInput('instexpr', '', '', this.ui.hcontainers['instexpr'], false, setChange);
         this.ui.createContainer('output');
         this.ui.createLabel('output', Global.ln.get('window-narrdiag-outinstances'), 'detail', this.ui.containers['output']);
         this.ui.containers['output'].addChild(this.ui.hcontainers['insttext']);
@@ -86,13 +90,13 @@ class WindowDiagChar extends PopupWindow {
         // navigation instances
         this.ui.createHContainer('navprev');
         this.ui.createLabel('navprev', Global.ln.get('window-narrdiag-navprev'), 'detail',this.ui.hcontainers['navprev']);
-        this.ui.createTInput('navprev', '', '', this.ui.hcontainers['navprev'], false);
+        this.ui.createTInput('navprev', '', '', this.ui.hcontainers['navprev'], false, setChange);
         this.ui.createHContainer('navnext');
         this.ui.createLabel('navnext', Global.ln.get('window-narrdiag-navnext'), 'detail',this.ui.hcontainers['navnext']);
-        this.ui.createTInput('navnext', '', '', this.ui.hcontainers['navnext'], false);
+        this.ui.createTInput('navnext', '', '', this.ui.hcontainers['navnext'], false, setChange);
         this.ui.createHContainer('navend');
         this.ui.createLabel('navend', Global.ln.get('window-narrdiag-navend'), 'detail',this.ui.hcontainers['navend']);
-        this.ui.createTInput('navend', '', '', this.ui.hcontainers['navend'], false);
+        this.ui.createTInput('navend', '', '', this.ui.hcontainers['navend'], false, setChange);
         this.ui.createContainer('navigation');
         this.ui.createLabel('navigation', Global.ln.get('window-narrdiag-navinstances'), 'detail', this.ui.containers['navigation']);
         this.ui.containers['navigation'].addChild(this.ui.hcontainers['navprev']);
@@ -307,8 +311,35 @@ class WindowDiagChar extends PopupWindow {
         this.ui.containers['rightcol'].visible = false;
     }
 
+    private function confirmFolderChange(save:Bool):Void {
+        this._haschange = false;
+        if (save) {
+            this.saveDiag(null);
+        }
+        this.onFolderChangeOk();
+    }
+
     private function onFolderChange(evt:Event):Void {
         if (this.ui.lists['folders'].selectedItem != null) {
+            if (this._haschange) {
+                Global.showPopup(Global.ln.get('window-narrdiag-title'), Global.ln.get('window-narrdiag-haschange'), 320, 210, Global.ln.get('window-narrdiag-haschangekeep'), confirmFolderChange, 'confirm', Global.ln.get('window-narrdiag-haschangediscard'));
+            } else {
+                this.onFolderChangeOk(evt);
+            }
+        }
+    }
+
+    private function onFolderChangeOk(evt:Event = null):Void {
+        if (!this._list[this.ui.lists['folders'].selectedItem.value].loaded) {
+            this._list[this.ui.lists['folders'].selectedItem.value].loadContents(onDiagContent);
+        } else {
+            this.onDiagContent(true);
+        }
+    }
+
+    private function onDiagContent(ok:Bool):Void {
+        if (ok) {
+            this._list[this.ui.lists['folders'].selectedItem.value].loaded = true;
             var list:Array<Dynamic> = [ ];
             for (k in this._list[this.ui.lists['folders'].selectedItem.value].diags.keys()) {
                 list.push({
@@ -317,10 +348,28 @@ class WindowDiagChar extends PopupWindow {
                 });
             }
             this.ui.setListValues('fdialogs', list);
+        } else {
+            Global.showPopup(Global.ln.get('window-narrdiag-title'), Global.ln.get('window-narrdiag-erloadfolder'), 320, 150, Global.ln.get('default-ok'));
         }
     }
 
+    private function confirmDiagChange(save:Bool):Void {
+        this._haschange = false;
+        if (save) {
+            this.saveDiag(null);
+        }
+        this.onDiagChangeOk();
+    }
+
     private function onDiagChange(evt:Event):Void {
+        if (this._haschange) {
+            Global.showPopup(Global.ln.get('window-narrdiag-title'), Global.ln.get('window-narrdiag-haschange'), 320, 210, Global.ln.get('window-narrdiag-haschangekeep'), confirmDiagChange, 'confirm', Global.ln.get('window-narrdiag-haschangediscard'));
+        } else {
+            this.onDiagChangeOk(evt);
+        }
+    }
+
+    private function onDiagChangeOk(evt:Event = null):Void {
         if (this.ui.lists['fdialogs'].selectedItem != null) {
             var diag:DialogueNarrative = this._list[this.ui.lists['folders'].selectedItem.value].diags[this.ui.lists['fdialogs'].selectedItem.value];
             this.ui.inputs['insttext'].text = diag.insttext;
@@ -342,6 +391,10 @@ class WindowDiagChar extends PopupWindow {
             this.ui.setSelectValue('collection', '');
             this.ui.setSelectValue('asset', '');
             this.ui.containers['rightcol'].visible = true;
+
+            this._haschange = false;
+            this._folderchange = this.ui.lists['folders'].selectedItem.value;
+            this._diagchange = this.ui.lists['fdialogs'].selectedItem.value;
         }
     }
 
@@ -364,6 +417,7 @@ class WindowDiagChar extends PopupWindow {
             this._list[StringTools.trim(this.ui.inputs['folderbtname'].text)] = new DialogueFolderNarrative({
                 id: StringTools.trim(this.ui.inputs['folderbtname'].text)
             });
+            this._list[StringTools.trim(this.ui.inputs['folderbtname'].text)].loaded = true;
             this.clear();
         }
     }
@@ -418,6 +472,7 @@ class WindowDiagChar extends PopupWindow {
                 id: StringTools.trim(this.ui.inputs['fdialogsname'].text)
             });
             this.clear(this.ui.lists['folders'].selectedItem.value);
+            this._haschange = false;
         }
     }
 
@@ -442,6 +497,7 @@ class WindowDiagChar extends PopupWindow {
             }
             this._list[this.ui.lists['folders'].selectedItem.value].diags = list;
             this.clear(this.ui.lists['folders'].selectedItem.value);
+            this._haschange = false;
         }
     }
 
@@ -456,13 +512,15 @@ class WindowDiagChar extends PopupWindow {
             this._list[this.ui.lists['folders'].selectedItem.value].diags[this.ui.lists['fdialogs'].selectedItem.value].kill();
             this._list[this.ui.lists['folders'].selectedItem.value].diags.remove(this.ui.lists['fdialogs'].selectedItem.value);
             this.clear(this.ui.lists['folders'].selectedItem.value);
+            this._haschange = false;
         }
     }
 
     private function saveDiag(evt:Event):Void {
-        if (this.ui.lists['folders'].selectedItem != null) {
-            if (this.ui.lists['fdialogs'].selectedItem != null) {
-                var diag:DialogueNarrative = this._list[this.ui.lists['folders'].selectedItem.value].diags[this.ui.lists['fdialogs'].selectedItem.value];
+        this._haschange = false;
+        if (this._folderchange != null) {
+            if (this._diagchange != null) {
+                var diag:DialogueNarrative = this._list[this._folderchange].diags[this._diagchange];
                 diag.navprev = this.ui.inputs['navprev'].text;
                 diag.navnext = this.ui.inputs['navnext'].text;
                 diag.navend = this.ui.inputs['navend'].text;
@@ -477,7 +535,23 @@ class WindowDiagChar extends PopupWindow {
         }
     }
 
+    private function confirmNarrChange(save:Bool):Void {
+        this._haschange = false;
+        if (save) {
+            this.saveDiag(null);
+        }
+        this.saveNarrOk();
+    }
+
     private function saveNarr(evt:Event):Void {
+        if (this._haschange) {
+            Global.showPopup(Global.ln.get('window-narrdiag-title'), Global.ln.get('window-narrdiag-haschange'), 320, 210, Global.ln.get('window-narrdiag-haschangekeep'), confirmNarrChange, 'confirm', Global.ln.get('window-narrdiag-haschangediscard'));
+        } else {
+            this.saveNarrOk(evt);
+        }
+    }
+
+    private function saveNarrOk(evt:Event = null):Void {
         for (nar in GlobalPlayer.narrative.dialogues.keys()) {
             GlobalPlayer.narrative.dialogues[nar].kill();
             GlobalPlayer.narrative.dialogues.remove(nar);
@@ -512,6 +586,9 @@ class WindowDiagChar extends PopupWindow {
                     }
                 }
                 Global.showMsg(Global.ln.get('window-narrdiag-oksave'));
+                for (k in GlobalPlayer.narrative.dialogues.keys()) {
+                    GlobalPlayer.narrative.dialogues[k].loaded = false;
+                }
                 PopUpManager.removePopUp(this);
             }
         } else {
@@ -528,6 +605,7 @@ class WindowDiagChar extends PopupWindow {
                 this._lines[this.ui.lists['lines'].selectedIndex] = temp;
                 this.ui.setListValues('lines', this._lines);
                 this.ui.lists['lines'].selectedIndex = newindex;
+                this.setChange();
             }
         }
     }
@@ -541,6 +619,7 @@ class WindowDiagChar extends PopupWindow {
                 this._lines[this.ui.lists['lines'].selectedIndex] = temp;
                 this.ui.setListValues('lines', this._lines);
                 this.ui.lists['lines'].selectedIndex = newindex;
+                this.setChange();
             }
         }
     }
@@ -568,6 +647,7 @@ class WindowDiagChar extends PopupWindow {
             this.ui.setListSelectValue('lines', null);
             this.ui.inputs['text'].text = '';
             this.ui.inputs['audio'].text = '';
+            this.setChange();
         }
     }
 
@@ -586,6 +666,7 @@ class WindowDiagChar extends PopupWindow {
             this.ui.setListSelectValue('lines', null);
             this.ui.inputs['text'].text = '';
             this.ui.inputs['audio'].text = '';
+            this.setChange();
         }
     }
 
@@ -600,6 +681,7 @@ class WindowDiagChar extends PopupWindow {
             this.ui.setListSelectValue('lines', null);
             this.ui.inputs['text'].text = '';
             this.ui.inputs['audio'].text = '';
+            this.setChange();
         }
     }
 
@@ -621,6 +703,12 @@ class WindowDiagChar extends PopupWindow {
             this.ui.setSelectValue('character', this.ui.lists['lines'].selectedItem.value.character);
             this.ui.setSelectValue('asset', this.ui.lists['lines'].selectedItem.value.asset);
         }
+    }
+
+    private function setChange(evt:Dynamic = null):Void {
+        this._haschange = true;
+        this._folderchange = this.ui.lists['folders'].selectedItem.value;
+        this._diagchange = this.ui.lists['fdialogs'].selectedItem.value;
     }
 
 }

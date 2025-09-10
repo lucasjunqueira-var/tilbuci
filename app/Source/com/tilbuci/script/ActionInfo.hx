@@ -128,7 +128,7 @@ class ActionInfo {
             [
                 { n: Global.ln.get('acinfo-stringset'), a: 'string.set', p: [
                     { t: 's', n: Global.ln.get('acinfo-stringset-p1'), v: '' }, 
-                    { t: 's', n: Global.ln.get('acinfo-stringset-p2'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-stringset-p2'), v: '' }, 
                 ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-stringconcat'), a: 'string.concat', p: [
                     { t: 's', n: Global.ln.get('acinfo-stringconcat-p1'), v: '' }, 
@@ -154,7 +154,7 @@ class ActionInfo {
                 ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-stringsload'), a: 'string.loadfile', p: [
                     { t: 's', n: Global.ln.get('acinfo-stringsload-p1'), v: '' }, 
-                ], e: [ ] }, 
+                ], e: [ 'success', 'error' ] }, 
                 { n: Global.ln.get('acinfo-stringsetgroup'), a: 'string.setgroup', p: [
                     { t: 's', n: Global.ln.get('acinfo-stringsetgroup-p1'), v: '' }, 
                 ], e: [ ] }, 
@@ -910,6 +910,24 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-interfpause'), a: 'contraption.interfaceanimpause', p: [
                     { t: 's', n: Global.ln.get('acinfo-interfpause-p1'), v: '' }, 
                 ], e: [ ] }, 
+            ]
+        ));
+
+        // narrative
+        this.groups.push(new ActionInfoGroup(
+            Global.ln.get('window-acbnarrative-title'), 
+            [
+                { n: Global.ln.get('acinfo-diagloadgroup'), a: 'dialogue.loadgroup', p: [
+                    { t: 's', n: Global.ln.get('acinfo-diagloadgroup-p1'), v: '' }, 
+                ], e: [ 'success', 'error' ] }, 
+                { n: Global.ln.get('acinfo-diagstart'), a: 'dialogue.start', p: [
+                    { t: 's', n: Global.ln.get('acinfo-diagstart-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-diagnext'), a: 'dialogue.next', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-diagprevious'), a: 'dialogue.previous', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-diaglast'), a: 'dialogue.last', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-diagfirst'), a: 'dialogue.first', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-diagclose'), a: 'dialogue.close', p: [ ], e: [ ] }, 
             ]
         ));
 

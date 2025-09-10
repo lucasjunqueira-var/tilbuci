@@ -99,7 +99,7 @@ class LeftInterface extends VDividedBox {
         this.createButton('btKeyframe', Global.ln.get('leftbar-keyframe'), 'btKeyframe', this.btKeyframe, this._topArea);
         this.createButton('btMedia', Global.ln.get('leftbar-media'), 'btMedia', this.btMedia, this._topArea);
         this.createButton('btContraptions', Global.ln.get('leftbar-contraptions'), 'btContraptions', this.btContraption, this._topArea);
-        //this.createButton('btNarrative', Global.ln.get('leftbar-narrative'), 'btNarrative', this.btNarrative, this._topArea);
+        this.createButton('btNarrative', Global.ln.get('leftbar-narrative'), 'btNarrative', this.btNarrative, this._topArea);
         this.createButton('btExchange', Global.ln.get('leftbar-exchange'), 'btExchange', this.btExchange, this._topArea);
         this.createButton('btVisitors', Global.ln.get('leftbar-visitors'), 'btVisitors', this.btVisitors, this._topArea);
         this.createButton('btSetup', Global.ln.get('leftbar-setup'), 'btSetup', this.btSetup, this._topArea);
@@ -241,7 +241,7 @@ class LeftInterface extends VDividedBox {
             this.ui.buttons['btKeyframe'].text = Global.ln.get('leftbar-keyframe');
             this.ui.buttons['btMedia'].text = Global.ln.get('leftbar-media');
             this.ui.buttons['btContraptions'].text = Global.ln.get('leftbar-contraptions');
-            //this.ui.buttons['btNarrative'].text = Global.ln.get('leftbar-narrative');
+            this.ui.buttons['btNarrative'].text = Global.ln.get('leftbar-narrative');
             this.ui.buttons['btSetup'].text = Global.ln.get('leftbar-setup');
             this.ui.buttons['btFullscreen'].text = Global.ln.get('leftbar-fullscreen');
             this.ui.buttons['btWorkspace'].text = Global.ln.get('leftbar-workspace');

@@ -6,6 +6,7 @@
 
  package com.tilbuci.narrative;
 
+import com.tilbuci.display.AudioImage;
 import com.tilbuci.player.MovieArea;
 import openfl.events.MouseEvent;
 import com.tilbuci.display.InstanceImage;
@@ -23,15 +24,24 @@ class Narrative {
 
     // dialogues
     public var dialogues:Map<String, DialogueFolderNarrative> = [ ];
+    public var diagSpeech:AudioImage;
 
     public function new() {
-
+        this.diagSpeech = new AudioImage(onSpeechLoad, onSpeechEnd);
     }
 
     public function clear():Void {
         for (k in this.chars.keys()) {
             this.chars[k].kill();
             this.chars.remove(k);
+        }
+    }
+
+    public function clearDialogues():Void {
+        if (GlobalPlayer.mode == Player.MODE_PLAYER) {
+            for(diag in this.dialogues) {
+                diag.clear();
+            }
         }
     }
 
@@ -48,6 +58,14 @@ class Narrative {
             if (k.numDiags() > 0) data['diagcontent'].push(k.toObject());
         }
         return(StringStatic.jsonStringify(data));
+    }
+
+    private function onSpeechLoad(ok:Void):Void {
+        this.diagSpeech.play();
+    }
+
+    private function onSpeechEnd():Void {
+        this.diagSpeech.stop();
     }
 
 }

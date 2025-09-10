@@ -125,6 +125,16 @@ class ScriptParser {
     private var _stringfile:Map<String, String> = [ ];
 
     /**
+        currently loaded dialogue group
+    **/
+    private var _currDiag:String = '';
+
+    /**
+        currently loaded dialogue
+    **/
+    private var _diagInfo:DialogueNarrative;
+
+    /**
         Constructor.
     **/
     public function new() { }
@@ -284,6 +294,21 @@ class ScriptParser {
         if (ok) {
             this.clearStringFile();
             for (k in ld.map.keys()) this._stringfile[k] = ld.map[k];
+            if (this._acOk != null) this.run(this._acOk, true);
+        } else {
+            if (this._acError != null) this.run(this._acError, true);
+        }
+    }
+
+    /**
+        A dialogue group data was loaded.
+    **/
+    public function onDiagGroup(ok:Bool):Void {
+        if (ok) {
+            if (this._acOk != null) this.run(this._acOk, true);
+        } else {
+            this._currDiag = '';
+            if (this._acError != null) this.run(this._acError, true);
         }
     }
 
@@ -1091,6 +1116,80 @@ class ScriptParser {
                     case 'contraption.interfaceanimpause':
                         if (param.length > 0) {
                             return(GlobalPlayer.contraptions.pauseInterface(this.parseString(param[0])));
+                        } else {
+                            return (false);
+                        }
+
+                    // narrative actions
+                    case 'dialogue.loadgroup':
+                        this._currDiag = '';
+                        this._diagInfo = null;
+                        if (param.length > 0) {
+                            this._acOk = this._acError = null;
+                            if (GlobalPlayer.narrative.dialogues.exists(this.parseString(param[0]))) {
+                                this._currDiag = this.parseString(param[0]);
+                                if (Reflect.hasField(inf, 'success')) this._acOk = Reflect.field(inf, 'success');
+                                if (Reflect.hasField(inf, 'error')) this._acError = Reflect.field(inf, 'error');
+                                GlobalPlayer.narrative.dialogues[this.parseString(param[0])].loadContents(onDiagGroup);
+                                return (true);
+                            } else {
+                                if (Reflect.hasField(inf, 'error')) {
+                                    this.run(Reflect.field(inf, 'error'), true);
+                                }
+                                return (false);
+                            }
+                        } else {
+                            if (Reflect.hasField(inf, 'error')) {
+                                this.run(Reflect.field(inf, 'error'), true);
+                            }
+                            return (false);
+                        }
+                    case 'dialogue.start':
+                        this._diagInfo = null;
+                        if ((param.length == 0) || (this._currDiag == '') || (!GlobalPlayer.narrative.dialogues.exists(this._currDiag))) {
+                            return (false);
+                        } else {
+                            if (!GlobalPlayer.narrative.dialogues[this._currDiag].diags.exists(this.parseString(param[0]))) {
+                                return (false);
+                            } else {
+                                this._diagInfo = GlobalPlayer.narrative.dialogues[this._currDiag].diags[this.parseString(param[0])];
+                                this._diagInfo.show(0);
+                                return (true);
+                            }
+                        }
+                    case 'dialogue.next':
+                        if (this._diagInfo != null) {
+                            this._diagInfo.next();
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'dialogue.previous':
+                        if (this._diagInfo != null) {
+                            this._diagInfo.previous();
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'dialogue.last':
+                        if (this._diagInfo != null) {
+                            this._diagInfo.last();
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'dialogue.first':
+                        if (this._diagInfo != null) {
+                            this._diagInfo.first();
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'dialogue.close':
+                        if (this._diagInfo != null) {
+                            this._diagInfo.close();
+                            this._diagInfo = null;
+                            return (true);
                         } else {
                             return (false);
                         }
@@ -2193,11 +2292,17 @@ class ScriptParser {
                     // string values
                     case 'string.loadfile':
                         if (param.length > 0) {
+                            this._acOk = this._acError = null;
+                            if (Reflect.hasField(inf, 'success')) this._acOk = Reflect.field(inf, 'success');
+                            if (Reflect.hasField(inf, 'error')) this._acError = Reflect.field(inf, 'error');
                             var cache:Map<String, Dynamic> = null;
                             if (GlobalPlayer.nocache) cache = [ 'rand' => Math.ceil(Math.random()*10000) ];
                             new DataLoader(true, (GlobalPlayer.path + 'media/strings/' + this.parseString(param[0]) + '.json'), 'GET', cache, DataLoader.MODEMAP, onStringFile);
                             return (true);
                         } else {
+                            if (Reflect.hasField(inf, 'error')) {
+                                this.run(Reflect.field(inf, 'error'), true);
+                            }
                             return (false);
                         }
                     case 'string.setgroup':

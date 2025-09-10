@@ -68,7 +68,7 @@ class AssistVariables extends AssistBase {
             'string.set' => { p: ['s', 's'], s:false, c: false, t: false, i: false, d:false, ic: 'btString' }, 
             'string.setglobal' => { p: ['s', 's'], s:false, c: false, t: false, i: false, d:false, ic: 'btString' }, 
             'string.setgroup' => { p: ['s'], s:false, c: false, t: false, i: false, d:false, ic: 'btString' }, 
-            'string.loadfile' => { p: ['s'], s:false, c: false, t: false, i: false, d:false, ic: 'btString' }, 
+            'string.loadfile' => { p: ['s'], s:false, c: false, t: false, i: false, d:true, ic: 'btString' }, 
             'string.tofloat' => { p: ['s', 's'], s:false, c: false, t: false, i: false, d:false, ic: 'btString' },
             'string.toint' => { p: ['s', 's'], s:false, c: false, t: false, i: false, d:false, ic: 'btString' }, 
 

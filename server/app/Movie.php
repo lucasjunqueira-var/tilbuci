@@ -3229,6 +3229,20 @@ class Movie extends BaseClass
                                 ':nm' => $v['id'], 
                             ]);
                             $json['dialogues'][$k]['code'] = $dids[$v['id']] = $this->insertID();
+                            $kfound = -1;
+                            foreach($json['diagcontent'] as $kc => $vc) {
+                                if ($vc['id'] == $v['id']) $kfound = $kc;
+                            }
+                            if ($kfound == -1) {
+                                $json['diagcontent'][] = [
+                                    'id' => $v['id'], 
+                                    'code' => $json['dialogues'][$k]['code'], 
+                                    'loaded' => false, 
+                                    'diags' => [ ], 
+                                ];
+                            } else {
+                                $json['diagcontent'][$kfound]['code'] = $json['dialogues'][$k]['code'];
+                            }
                         } else {
                             $ck = $this->queryAll('SELECT dg_name FROM dialogues WHERE dg_id=:id AND dg_movie=:mv', [
                                 ':id' => $v['code'], 
@@ -3240,6 +3254,20 @@ class Movie extends BaseClass
                                     ':nm' => $v['id'], 
                                 ]);
                                 $json['dialogues'][$k]['code'] = $dids[$v['id']] = $this->insertID();
+                                $kfound = -1;
+                                foreach($json['diagcontent'] as $kc => $vc) {
+                                    if ($vc['id'] == $v['id']) $kfound = $kc;
+                                }
+                                if ($kfound == -1) {
+                                    $json['diagcontent'][] = [
+                                        'id' => $v['id'], 
+                                        'code' => $json['dialogues'][$k]['code'], 
+                                        'loaded' => false, 
+                                        'diags' => [ ], 
+                                    ];
+                                } else {
+                                    $json['diagcontent'][$kfound]['code'] = $json['dialogues'][$k]['code'];
+                                }
                             } else {
                                 if ($ck[0]['dg_name'] != $v['id']) {
                                     $this->execute('UPDATE dialogues SET dg_name=:nm WHERE dg_id=:id', [

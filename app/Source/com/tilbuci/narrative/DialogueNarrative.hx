@@ -31,7 +31,12 @@ class DialogueNarrative extends Sprite {
 
     public var instexpr:String = '';
 
+    public var current:Int = 0;
+
     public var lines:Array<DialogueLineNarrative> = [ ];
+
+    private var _lastcol:String = '';
+    private var _lastast:String = '';
 
     public function new(data:Dynamic = null) {
         super();
@@ -101,5 +106,106 @@ class DialogueNarrative extends Sprite {
 
     public function numLines():Int {
         return (this.lines.length);
+    }
+
+    public function next():Void {
+        this.current++;
+        if (this.current >= this.lines.length) this.current = this.lines.length - 1;
+        this.show(this.current);
+    }
+
+    public function previous():Void {
+        this.current--;
+        if (this.current < 0) this.current = 0;
+        this.show(this.current);
+    }
+
+    public function last():Void {
+        this.current = this.lines.length - 1;
+        this.show(this.current);
+    }
+
+    public function first():Void {
+        this.current = 0;
+        this.show(this.current);
+    }
+
+    public function show(line:Int = -1):Void {
+        if (line >= 0) this.current = line;
+        if (this.current >= this.lines.length) this.current = 0;
+        // line text
+        if ((this.insttext != null) && (this.insttext != '')) GlobalPlayer.area.setText(this.insttext, this.lines[this.current].text);
+        // previous button
+        if ((this.navprev != null) && (this.navprev != '')) {
+            if (this.current == 0) {
+                GlobalPlayer.area.setVisible(this.navprev, false);
+            } else {
+                GlobalPlayer.area.setVisible(this.navprev, true);
+            }
+        }
+        // next button
+        if ((this.navnext != null) && (this.navnext != '')) {
+            if (this.current >= (this.lines.length - 1)) {
+                GlobalPlayer.area.setVisible(this.navnext, false);
+            } else {
+                GlobalPlayer.area.setVisible(this.navnext, true);
+            }
+        }
+        // end button
+        if ((this.navend != null) && (this.navend != '')) {
+            if (this.current >= (this.lines.length - 1)) {
+                GlobalPlayer.area.setVisible(this.navend, true);
+            } else {
+                GlobalPlayer.area.setVisible(this.navend, false);
+            }
+        }
+        // character name
+        if ((this.instname != null) && (this.instname != '')) {
+            if (this.lines[this.current].character == '') {
+                GlobalPlayer.area.setText(this.instname, '');
+            } else {
+                if (GlobalPlayer.narrative.chars.exists(this.lines[this.current].character)) {
+                    GlobalPlayer.area.setText(this.instname, GlobalPlayer.narrative.chars[this.lines[this.current].character].chname);
+                } else {
+                    GlobalPlayer.area.setText(this.instname, '');
+                }
+            }
+        }
+        // character expression
+        if ((this.instexpr != null) && (this.instexpr != '')) {
+            if (this.lines[this.current].asset == '') {
+                GlobalPlayer.area.setVisible(this.instexpr, false);
+            } else {
+                if (GlobalPlayer.narrative.chars.exists(this.lines[this.current].character)) {
+                    if (GlobalPlayer.movie.collections.exists(GlobalPlayer.narrative.chars[this.lines[this.current].character].collection)) {
+                        if ((this._lastcol != GlobalPlayer.narrative.chars[this.lines[this.current].character].collection) && (this._lastast != this.lines[this.current].asset)) {
+                            GlobalPlayer.area.loadCollectionAsset(this.instexpr, GlobalPlayer.narrative.chars[this.lines[this.current].character].collection, this.lines[this.current].asset);
+                        }
+                        this._lastcol = GlobalPlayer.narrative.chars[this.lines[this.current].character].collection;
+                        this._lastast = this.lines[this.current].asset;
+                        GlobalPlayer.area.setVisible(this.instexpr, true);
+                    } else {
+                        GlobalPlayer.area.setVisible(this.instexpr, false);
+                    }
+                } else {
+                    GlobalPlayer.area.setVisible(this.instexpr, false);
+                }
+            }
+        }
+        // speech
+        if (this.lines[this.current].audio == '') {
+            GlobalPlayer.narrative.diagSpeech.stop();
+        } else {
+            GlobalPlayer.narrative.diagSpeech.load(this.lines[this.current].audio);
+        }
+    }
+
+    public function close():Void {
+        if ((this.navprev != null) && (this.navprev != '')) GlobalPlayer.area.releaseProperty(this.navprev, 'visible');
+        if ((this.navnext != null) && (this.navnext != '')) GlobalPlayer.area.releaseProperty(this.navnext, 'visible');
+        if ((this.navend != null) && (this.navend != '')) GlobalPlayer.area.releaseProperty(this.navend, 'visible');
+        if ((this.instexpr != null) && (this.instexpr != '')) GlobalPlayer.area.releaseProperty(this.instexpr, 'visible');
+        GlobalPlayer.narrative.diagSpeech.stop();
+        this._lastast = this._lastcol = '';
     }
 }

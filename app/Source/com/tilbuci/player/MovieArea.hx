@@ -793,6 +793,22 @@ class MovieArea extends Sprite {
     }
 
     /**
+        Sets an instance visibility.
+        @param  inst    the instance name
+        @param  vis should the instance be visible?
+        @return was the instace found?
+    **/
+    public function setVisible(inst:String, vis:Bool):Bool {
+        if (this._instances.exists(inst)) {
+            this._instances[inst].visible = vis;
+            this.setProperty(inst, 'visible', vis, vis);
+            return (true);
+        } else {
+            return (false);
+        }
+    }
+
+    /**
         Fixes a property value of an instance.
         @param  inst    the instance name
         @param  prop    the property name
@@ -878,6 +894,21 @@ class MovieArea extends Sprite {
     public function loadAsset(inst:String, name:String):Bool {
         if (this._instances.exists(inst)) {
             return (this._instances[inst].loadAsset(name));
+        } else {
+            return (false);
+        }
+    }
+
+    /**
+        Loads an asset from a collection into an instance.
+        @param  inst    the instance name
+        @param  col     the collection name
+        @param  ast     the asset name
+        @return were the instance and asset found?
+    **/
+    public function loadCollectionAsset(inst:String, col:String, ast:String):Bool {
+        if (this._instances.exists(inst)) {
+            return (this._instances[inst].loadCollectionAsset(col, ast));
         } else {
             return (false);
         }
