@@ -161,6 +161,27 @@ class StringStatic
     }
 
     /**
+        Encrypts a string.
+        @param  txt the string to encrypt.
+        @param  key the encryption key
+        @return the encrypted string
+    **/
+    public static function encrypt(txt:String, key:String):String {
+        var aes = new Aes();
+        var keyBytes = Bytes.ofString(key);
+        var iv = Bytes.ofString(StringStatic.random().substr(0, 16));
+        aes.init(keyBytes, iv);
+        var txtbytes = Bytes.ofString(txt);
+        var combined = Bytes.alloc(iv.length + txtbytes.length);
+        combined.blit(0, iv, 0, iv.length);
+        combined.blit(iv.length, txtbytes, 0, txtbytes.length);
+        var encrypted = aes.encrypt(Mode.CBC, combined, Padding.PKCS7);
+        txt = Base64.encode(encrypted);
+        txt = 'TB' + txt.substr(0, (txt.length - 9)) + 'b' + txt.substr(-9);
+        return (txt);
+    }
+
+    /**
         Convert color components (red, gree, blue) to hex notation (0x000000).
         @param  red the red component
         @param  green   the green component

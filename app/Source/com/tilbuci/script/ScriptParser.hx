@@ -301,6 +301,38 @@ class ScriptParser {
     }
 
     /**
+        A variables list file was loaded.
+    **/
+    public function onVariablesFile(ok:Bool, text:String):Void {
+        if (ok) {
+            text = StringStatic.decrypt(text, StringStatic.md5(GlobalPlayer.movie.mvId + GlobalPlayer.movie.mvId.substr(2)).toLowerCase());
+            var json = StringStatic.jsonParse(text);
+            if (json == false) {
+                if (this._acError != null) this.run(this._acError, true);
+            } else {
+                for (k in Reflect.fields(json)) {
+                    var vinfo:StateVars = cast Reflect.field(json, k);
+                    if (vinfo != null) {
+                        switch (vinfo.t) {
+                            case 's':
+                                this._strings[vinfo.n] = vinfo.v;
+                            case 'i':
+                                this._ints[vinfo.n] = vinfo.v;
+                            case 'f':
+                                this._floats[vinfo.n] = vinfo.v;
+                            case 'b':
+                                this._bools[vinfo.n] = vinfo.v;
+                        }
+                    }
+                }
+                if (this._acOk != null) this.run(this._acOk, true);
+            }
+        } else {
+            if (this._acError != null) this.run(this._acError, true);
+        }
+    }
+
+    /**
         A dialogue group data was loaded.
     **/
     public function onDiagGroup(ok:Bool):Void {
@@ -990,6 +1022,107 @@ class ScriptParser {
                                 }
                             }
                         } else {
+                            return (false);
+                        }
+
+                    // runtime actions
+                    case 'runtime.quit':
+                        #if runtimedesktop
+                            return (GlobalPlayer.appQuit());
+                        #else
+                            return (false);
+                        #end
+                    case 'runtime.install':
+                        #if runtimepwa
+                            return (GlobalPlayer.pwaInstall());
+                        #else
+                            return (false);
+                        #end
+                    case 'runtime.ifbrowser':
+                        var ifbrowserthen:Dynamic = null;
+                        var ifbrowserelse:Dynamic = null;
+                        if (Reflect.hasField(inf, 'then')) ifbrowserthen = Reflect.field(inf, 'then');
+                        if (Reflect.hasField(inf, 'else')) ifbrowserelse = Reflect.field(inf, 'else');
+                        #if runtimewebsite
+                            if (ifbrowserthen != null) return (this.run(ifbrowserthen, true));
+                                else return (true);
+                        #elseif runtimepwa
+                            if (ifbrowserthen != null) return (this.run(ifbrowserthen, true));
+                                else return (true);
+                        #elseif runtimedesktop
+                            if (ifbrowserelse != null) return (this.run(ifbrowserelse, true));
+                                else return (true);
+                        #elseif runtimemobile
+                            if (ifbrowserelse != null) return (this.run(ifbrowserelse, true));
+                                else return (true);
+                        #elseif runtimepublish
+                            if (ifbrowserthen != null) return (this.run(ifbrowserthen, true));
+                                else return (true);
+                        #elseif tilbuciplayer
+                            if (ifbrowserthen != null) return (this.run(ifbrowserthen, true));
+                                else return (true);
+                        #else
+                            if (ifbrowserthen != null) return (this.run(ifbrowserthen, true));
+                                else return (true);
+                        #end
+                    case 'runtime.savedata':
+                        if (param.length > 0) {
+                            // preparing data
+                            var data:Array<StateVars> = [ ];
+                            for (k in this._strings.keys()) {
+                                data.push({
+                                    n: k, 
+                                    t: 's', 
+                                    v: this._strings[k]
+                                });
+                            }
+                            for (k in this._ints.keys()) {
+                                data.push({
+                                    n: k, 
+                                    t: 'i', 
+                                    v: this._ints[k]
+                                });
+                            }
+                            for (k in this._floats.keys()) {
+                                data.push({
+                                    n: k, 
+                                    t: 'f', 
+                                    v: this._floats[k]
+                                });
+                            }
+                            for (k in this._bools.keys()) {
+                                data.push({
+                                    n: k, 
+                                    t: 'b', 
+                                    v: this._bools[k]
+                                });
+                            }
+                            // saving
+                            var encdata:String = StringStatic.encrypt(StringStatic.jsonStringify(data), StringStatic.md5(GlobalPlayer.movie.mvId + GlobalPlayer.movie.mvId.substr(2)).toLowerCase());                            
+                            return (GlobalPlayer.saveFile((this.parseString(param[0]) + '.' + GlobalPlayer.movie.mvId), encdata));
+                        } else {
+                            return (false);
+                        }
+                    case 'runtime.loaddata':
+                        this._acOk = this._acError = null;
+                        if (Reflect.hasField(inf, 'success')) this._acOk = Reflect.field(inf, 'success');
+                        if (Reflect.hasField(inf, 'error')) this._acError = Reflect.field(inf, 'error');
+                        if (param.length > 0) {
+                            return (GlobalPlayer.loadFile((this.parseString(param[0]) + '.' + GlobalPlayer.movie.mvId), GlobalPlayer.movie.mvId, this.onVariablesFile));
+                        } else {
+                            if (this._acError != null) this.run(this._acError, true);
+                            return (false);
+                        }
+                    case 'runtime.ifdataexist':
+                        if (param.length > 0) {
+                            if (GlobalPlayer.existsFile(this.parseString(param[0]) + '.' + GlobalPlayer.movie.mvId)) {
+                                if (Reflect.hasField(inf, 'then')) this.run(Reflect.field(inf, 'then'), true);
+                            } else {
+                                if (Reflect.hasField(inf, 'else')) this.run(Reflect.field(inf, 'else'), true);
+                            }
+                            return (true);
+                        } else {
+                            if (Reflect.hasField(inf, 'else')) this.run(Reflect.field(inf, 'else'), true);
                             return (false);
                         }
 

@@ -25,6 +25,7 @@ import com.tilbuci.script.AssistScene;
 import com.tilbuci.script.AssistInstance;
 import com.tilbuci.script.AssistDataInput;
 import com.tilbuci.script.AssistPlus;
+import com.tilbuci.script.AssistRuntime;
 import com.tilbuci.script.AssistPlugin;
 import com.tilbuci.script.AssistContraptions;
 import com.tilbuci.script.AssistNarrative;
@@ -1968,6 +1969,7 @@ class Editor extends Drawer {
                 case 'assistantinstance': this._windows['assistantinstance'] = new AssistInstance(actionAssistant);
                 case 'assistantdata': this._windows['assistantdata'] = new AssistDataInput(actionAssistant);
                 case 'assistantplus': this._windows['assistantplus'] = new AssistPlus(actionAssistant);
+                case 'assistantruntime': this._windows['assistantruntime'] = new AssistRuntime(actionAssistant);
                 case 'assistantplugin': this._windows['assistantplugin'] = new AssistPlugin(actionAssistant);
                 case 'assistantcontraptions': this._windows['assistantcontraptions'] = new AssistContraptions(actionAssistant);
                 case 'assistantnarrative': this._windows['assistantnarrative'] = new AssistNarrative(actionAssistant);

@@ -54,6 +54,40 @@ extern class ExternBrowser {
     **/
     static function TBB_installedPwa():Bool;
 
+    /**
+        Saves a text file from browser.
+        @param  name    the file name
+        @param  content the file content
+    **/
+    static function TBB_saveFile(name:String, content:String):Bool;
+
+    /**
+        Saves a text file from electron runtime.
+        @param  name    the file name
+        @param  content the file content
+    **/
+    static function TBB_saveFileElectron(name:String, content:String):Void;
+
+    /**
+        Loads a text file from browser.
+        @param  ext     the file extension
+        @param  callback    method to call on file load
+    **/
+    static function TBB_loadFile(ext:String, callback:Dynamic):Void;
+
+    /**
+        Loads a text file from electron runtime.
+        @param  ext     the file name
+        @param  callback    method to call on file load
+    **/
+    static function TBB_loadFileElectron(name:String, callback:Dynamic):Void;
+
+    /**
+        Checks if a file exists in user folder on electron runtime.
+        @param  name    the file name
+    **/
+    static function TBB_existsFileElectron(name:String):Bool;
+
 }
 
 #end

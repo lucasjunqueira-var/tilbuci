@@ -556,6 +556,9 @@
 	"window-narrative-title": "Narrative actions", 
 	"window-narrative-list": "Avaliable narrative actions", 
 	
+	"window-runtime-title": "Runtime actions", 
+	"window-runtime-list": "Avaliable runtime actions", 
+	
 	"window-acinstance-title": "Instance actions", 
 	"window-acinstance-current": "Current keyframe instances", 
 	"window-acinstance-property": "Property", 
@@ -1507,6 +1510,17 @@
 	"acinfo-diaglast": "show the last dialogue text line", 
 	"acinfo-diagfirst": "show the first dialogue text line", 
 	"acinfo-diagclose": "closes the current dialogue", 
+	
+	"window-acbruntime-title": "Runtime", 
+	"acinfo-runinstall": "install as an application", 
+	"acinfo-runquit": "close runtime", 
+	"acinfo-runbrowser": "running content from a browser?", 
+	"acinfo-runsavedata": "save all variables values",
+	"acinfo-runsavedata-p1": "save file name",
+	"acinfo-runloaddata": "load variable values",
+	"acinfo-runloaddata-p1": "variables file name",
+	"acinfo-runifdataexist": "does a variables data file exist?", 
+	"acinfo-runifdataexist-p1": "variables file name",
 	
 	"window-acbcontraptions-title": "Contraptions", 
 	"acinfo-showmenu": "show menu", 

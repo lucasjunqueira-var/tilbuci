@@ -76,6 +76,7 @@ class ActionArea extends ScrollContainer {
         this._idbuttons['variables'] = new IDButton('variables', onVariables, null, Assets.getBitmapData('btVariables'));
         this._idbuttons['data'] = new IDButton('data', onData, null, Assets.getBitmapData('btData'));
         this._idbuttons['plus'] = new IDButton('plus', onPlus, null, Assets.getBitmapData('btPlus'));
+        this._idbuttons['runtime'] = new IDButton('plus', onRuntime, null, Assets.getBitmapData('btSetup'));
         this._idbuttons['contraptions'] = new IDButton('contraptions', onContraptions, null, Assets.getBitmapData('btContraptions'));
         this._idbuttons['narrative'] = new IDButton('narrative', onNarrative, null, Assets.getBitmapData('btNarrative'));
         this._idbuttons['plugin'] = new IDButton('plugin', onPlugin, null, Assets.getBitmapData('btPlugin'));
@@ -87,6 +88,7 @@ class ActionArea extends ScrollContainer {
         this._buttons.addChild(this._idbuttons['variables']);
         this._buttons.addChild(this._idbuttons['data']);
         this._buttons.addChild(this._idbuttons['plus']);
+        this._buttons.addChild(this._idbuttons['runtime']);
         this._buttons.addChild(this._idbuttons['contraptions']);
         this._buttons.addChild(this._idbuttons['narrative']);
         this._buttons.addChild(this._idbuttons['plugin']);
@@ -222,6 +224,13 @@ class ActionArea extends ScrollContainer {
     **/
     private function onPlus(evt:TriggerEvent = null):Void {
         Global.showWindow('assistantplus');
+    }
+
+    /**
+        Opens the runtimes actions assistant.
+    **/
+    private function onRuntime(evt:TriggerEvent = null):Void {
+        Global.showWindow('assistantruntime');
     }
 
     /**

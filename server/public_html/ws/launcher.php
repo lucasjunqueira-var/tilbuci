@@ -199,30 +199,42 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 			break;
 
 		case 'update': // update system
+			intHeader($page);
 			?>
-				<p>update</p>
-				<p onclick="window.location='http://localhost:51804/ws/launcher.php?pg=home'">back</p>
+				<div id="title">Updating TilBuci</div>
+				<p>To update your TilBuci version, first download the latest release. Then, open a new workspace, access the "setup" menu on the left side, and select the "system update" tab. Upload the downloaded ZIP file and follow the instructions in the window that opens.</p>
+				<div class="button" onclick="api.openbrowser('https://tilbuci.com.br/site/latest-version/')">
+					<h1>Latest release</h1>
+					Check out the TilBuci latest version.
+				</div>
+				<br />
+				<div class="button" onclick="window.location='http://localhost:51804/ws/launcher.php?pg=home'">
+					<h1>Back</h1>
+				</div>
 			<?php
+			intFooter($page);
 			break;
 
 		case 'about': // about the launcher
 			intHeader($page);
 			?>
 				<div id="title">About TilBuci</div>
-				<p>TilBuci is a free, open-source tool focused on creating interactive content. It is licensed under the MPL-2.0. The software runs as a web tool with features for collective creation. This launcher simplifies use for individual production, avoiding the need for installations. It is available for Linux, Windows and macOS systems.</p>
+				<p>TilBuci is a free, open-source tool licensed under the MPL-2.0. It runs as a web tool with features for collective creation. This launcher simplifies use for individual production. For this launcher, the Electron and the static-php-cli projects were used.</p>
 				<div class="button" onclick="api.openbrowser('https://tilbuci.com.br/')">
 					<h1>TilBuci website</h1>
-					Access the software website.
 				</div>
 				<div class="button" onclick="api.openbrowser('https://github.com/lucasjunqueira-var/tilbuci')">
 					<h1>Code repository</h1>
-					Check out the tool's source code.
 				</div>
 				<div class="button" onclick="api.openbrowser('https://www.mozilla.org/en-US/MPL/2.0/')">
 					<h1>License (MPL-2.0)</h1>
-					Check out TilBuci's license.
 				</div>
-				<br />
+				<div class="button" onclick="api.openbrowser('https://www.electronjs.org/')">
+					<h1>Electron</h1>
+				</div>
+				<div class="button" onclick="api.openbrowser('https://github.com/crazywhalecc/static-php-cli')">
+					<h1>static-php-cli project</h1>
+				</div>
 				<div class="button" onclick="window.location='http://localhost:51804/ws/launcher.php?pg=home'">
 					<h1>Back</h1>
 				</div>
@@ -235,5 +247,3 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 			break;
 	}
 }
-
-

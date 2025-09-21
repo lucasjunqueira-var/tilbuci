@@ -295,4 +295,92 @@ class GlobalPlayer {
         #end
     }
 
+    /**
+        Saves a text file.
+        @param  name    the file name
+        @param  content the file content
+        @return was the file saved?
+    **/
+    public static function saveFile(name:String, content:String):Bool {
+        var ok:Bool = false;
+        #if runtimedesktop
+            try {
+                ExternBrowser.TBB_saveFileElectron(name, content);
+                ok = true;
+            } catch (e) { 
+                ok = false;
+            }
+        #elseif runtimemobile
+            try {
+                ExternBrowser.TBB_saveFile(name, content);
+                ok = true;
+            } catch (e) { 
+                ok = false;
+            }
+        #else
+            try {
+                ExternBrowser.TBB_saveFile(name, content);
+                ok = true;
+            } catch (e) { 
+                ok = false;
+            }
+        #end
+        return (ok);
+    }
+
+    /**
+        Checks if a file exists at the user folder.
+        @param  name    the file name
+        @return does the file exist and can be readed?
+    **/
+    public static function existsFile(name:String):Bool {
+        var ok:Bool = false;
+        #if runtimedesktop
+            try {
+                ok = ExternBrowser.TBB_existsFileElectron(name);
+            } catch (e) { 
+                ok = false;
+            }
+        #elseif runtimemobile
+            
+        #else
+            
+        #end
+        return (ok);
+    }
+
+    /**
+        Loads a text file.
+        @param  name        the file name
+        @param  ext         the file extension
+        @param  callback    method to call on file load
+        @return was the load process started?
+    **/
+    public static function loadFile(name:String, ext:String, callback:Dynamic):Bool {
+        var ok:Bool = false;
+        #if runtimedesktop
+            try {
+                ExternBrowser.TBB_loadFileElectron(name, callback);
+                ok = true;
+            } catch (e) { 
+                ok = false;
+            }
+        #elseif runtimemobile
+            try {
+                ExternBrowser.TBB_loadFile(ext, callback);
+                ok = true;
+            } catch (e) { 
+                ok = false;
+            }
+        #else
+            try {
+                ExternBrowser.TBB_loadFile(ext, callback);
+                ok = true;
+            } catch (e) { 
+                ok = false;
+            }
+        #end
+        return (ok);
+    }
+
 }

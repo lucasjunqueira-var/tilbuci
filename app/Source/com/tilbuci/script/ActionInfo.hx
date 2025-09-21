@@ -766,8 +766,8 @@ class ActionInfo {
                 ], e: [ ] },  
                 { n: Global.ln.get('acinfo-systemifhorizontal'), a: 'system.ifhorizontal', p: [ ], e: [ 'then', 'else' ] }, 
                 { n: Global.ln.get('acinfo-systemifvertical'), a: 'system.ifvertical', p: [ ], e: [ 'then', 'else' ] }, 
-                { n: Global.ln.get('acinfo-systemquit'), a: 'system.quit', p: [ ], e: [ ] },  
-                { n: Global.ln.get('acinfo-systempwainstall'), a: 'system.pwainstall', p: [ ], e: [ ] },  
+                //{ n: Global.ln.get('acinfo-systemquit'), a: 'system.quit', p: [ ], e: [ ] },  
+                //{ n: Global.ln.get('acinfo-systempwainstall'), a: 'system.pwainstall', p: [ ], e: [ ] },  
                 { n: Global.ln.get('acinfo-systemifwebsite'), a: 'system.ifwebsite', p: [ ], e: [ 'then', 'else' ] }, 
                 { n: Global.ln.get('acinfo-systemifpwa'), a: 'system.ifpwa', p: [ ], e: [ 'then', 'else' ] }, 
                 { n: Global.ln.get('acinfo-systemifpwainstalled'), a: 'system.ifpwainstalled', p: [ ], e: [ 'then', 'else' ] }, 
@@ -928,6 +928,25 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-diaglast'), a: 'dialogue.last', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-diagfirst'), a: 'dialogue.first', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-diagclose'), a: 'dialogue.close', p: [ ], e: [ ] }, 
+            ]
+        ));
+
+        // runtime
+        this.groups.push(new ActionInfoGroup(
+            Global.ln.get('window-acbruntime-title'), 
+            [
+                { n: Global.ln.get('acinfo-runinstall'), a: 'runtime.install', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-runquit'), a: 'runtime.quit', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-runsavedata'), a: 'runtime.savedata', p: [
+                    { t: 's', n: Global.ln.get('acinfo-runsavedata-p1'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-runloaddata'), a: 'runtime.loaddata', p: [
+                    { t: 's', n: Global.ln.get('acinfo-runloaddata-p1'), v: '' }, 
+                ], e: [ 'success', 'error' ] },
+                { n: Global.ln.get('acinfo-runifdataexist'), a: 'runtime.ifdataexist', p: [
+                    { t: 's', n: Global.ln.get('acinfo-runifdataexist-p1'), v: '' }, 
+                ], e: [ 'then', 'else' ] }, 
+                { n: Global.ln.get('acinfo-runbrowser'), a: 'runtime.ifbrowser', p: [ ], e: [ 'then', 'else' ] }, 
             ]
         ));
 
