@@ -7,12 +7,12 @@
 
 /**
  TilBuci setup script
- Lucas Junqueira, August 2025
+ Lucas Junqueira, September 2025
  **/
 
 // version info
 $version = [
-    'num' => 14, 
+    'num' => 15, 
 ];
 
 // database access

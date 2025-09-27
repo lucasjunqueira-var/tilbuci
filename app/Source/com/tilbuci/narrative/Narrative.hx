@@ -35,6 +35,10 @@ class Narrative {
             this.chars[k].kill();
             this.chars.remove(k);
         }
+        for (k in this.dialogues.keys()) {
+            this.dialogues[k].kill();
+            this.dialogues.remove(k);
+        }
     }
 
     public function clearDialogues():Void {

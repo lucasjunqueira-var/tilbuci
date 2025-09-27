@@ -41,6 +41,7 @@ class MenuExchange extends DrawerMenu {
         }
         if ((GlobalPlayer.movie.mvId != '') && (Global.mvOwner)) {
             this.ui.buttons['btExport'].enabled = true;
+            this.ui.buttons['btIframe'].enabled = true;
             this.ui.buttons['btWebsite'].enabled = true;
             this.ui.buttons['btPwa'].enabled = true;
             this.ui.buttons['btPublish'].enabled = true;
@@ -54,6 +55,7 @@ class MenuExchange extends DrawerMenu {
             this.ui.buttons['btCordova'].toolTip = null;
         } else {
             this.ui.buttons['btExport'].enabled = false;
+            this.ui.buttons['btIframe'].enabled = false;
             this.ui.buttons['btWebsite'].enabled = false;
             this.ui.buttons['btPwa'].enabled = false;
             this.ui.buttons['btPublish'].enabled = false;

@@ -12,9 +12,6 @@
  * Sets the browser address bar content.
  */
 function TBB_setAddress(url, title) {
-
-console.log('setaddress ' + url);
-
     window.history.pushState({
         "html": url, 
         "pageTitle": title
@@ -74,11 +71,83 @@ function TBB_isIos() {
     }
 }
 
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- */
+/**
+    Saves a text file from browser.
+    @param  name    the file name
+    @param  content the file content
+**/
+function TBB_saveFile(name, content) {
+    const blob = new Blob([content], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = name;
+    link.click();
+    URL.revokeObjectURL(link.href);
+}
+
+/**
+    Saves a text file from electron runtime.
+    @param  name    the file name
+    @param  content the file content
+**/
+function TBB_saveFileElectron(name, content) {
+    window.electronAPI.saveFile(name, content);
+}
+
+/**
+    Loads a text file from browser.
+    @param  ext     the file extension
+    @param  callback    method to call on file load
+**/
+function TBB_loadFile(ext, callback) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.' + ext;
+    input.style.display = 'none';
+    input.addEventListener('change', function () {
+        if (input.files.length === 0) {
+            callback(false, '');
+        } else {
+            const arquivo = input.files[0];
+            if (!arquivo) {
+                callback(false, '');
+            }
+            const leitor = new FileReader();
+            leitor.onload = function (e) {
+                callback(true, e.target.result);
+            };
+            leitor.readAsText(arquivo, 'UTF-8');
+        }
+    });
+    document.body.appendChild(input);
+    input.click();
+    document.body.removeChild(input);
+}
+
+/**
+    Loads a text file from electron runtime.
+    @param  name     the file name
+    @param  callback    method to call on file load
+**/
+function TBB_loadFileElectron(name, callback) {
+    window.electronAPI.readFile(name).then(ret => {
+        if (ret == "") {
+            callback(false, "");
+        } else {
+            callback(true, ret);
+        }
+    });
+}
+
+/**
+    Checks if a file exists in user folder on electron runtime.
+    @param  name    the file name
+**/
+function TBB_existsFileElectron(name) {
+    window.electronAPI.existsFile(name).then(ok => {
+        return (ok);
+    });
+}
 
 /**
  * Tilbuci javascript externs for HTML5 embed content.
@@ -170,12 +239,6 @@ function embed_close() {
 	}
 }
 
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- */
-
 /**
  * Tilbuci javascript externs for overlay plugin.
  */
@@ -228,12 +291,6 @@ function overlay_close() {
         overlay_return();
 	}
 }
-
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- */
 
 /**
  * Tilbuci javascript externs for file upload.

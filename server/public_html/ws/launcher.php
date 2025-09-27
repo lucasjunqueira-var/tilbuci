@@ -1,6 +1,6 @@
 <?php
 // launcher version
-$version = 14;
+$version = 15;
 
 // running from launcher?
 require_once('../../app/Data.php');
