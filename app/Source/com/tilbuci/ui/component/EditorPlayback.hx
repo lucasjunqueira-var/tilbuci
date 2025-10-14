@@ -270,6 +270,7 @@ class EditorPlayback extends Panel {
         GlobalPlayer.area.releaseAllProperties();
         GlobalPlayer.area.hideTarget();
         Mouse.show();
+        GlobalPlayer.cursorVisible = true;
         this._player.player.listenInputRemove();
         this._top.removeChild(this._player.player);
         this._player.addChild(this._player.player);

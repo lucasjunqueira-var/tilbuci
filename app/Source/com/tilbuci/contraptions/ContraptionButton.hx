@@ -80,7 +80,7 @@ class ContraptionButton extends Sprite {
     }
 
     private function onMouseOver(evt:Event):Void {
-        this.filters = [
+        if (GlobalPlayer.cursorVisible) this.filters = [
             new GlowFilter(GlobalPlayer.mdata.highlightInt, 1, 4, 4, 255, 1, true)
         ];
     }

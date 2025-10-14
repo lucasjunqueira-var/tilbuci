@@ -204,6 +204,11 @@ class GlobalPlayer {
     public static var usingTarget:Int = 0;
 
     /**
+        is the mouse cursor visible?
+    **/
+    public static var cursorVisible:Bool = true;
+
+    /**
         can the content trigger actions?
     **/
     public static var canTrigger:Bool = true;

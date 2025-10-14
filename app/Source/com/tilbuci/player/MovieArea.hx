@@ -7,6 +7,7 @@
  package com.tilbuci.player;
 
 /** OPENFL **/
+import haxe.Timer;
 import com.tilbuci.display.InstanceSelect;
 import openfl.events.MouseEvent;
 import com.tilbuci.ui.PlayerInput;
@@ -274,11 +275,25 @@ class MovieArea extends Sprite {
     public function showTarget():Void {
         this._holder.addChild(this._target);
         this._target.show();
+        if (this._target.timer != null) {
+            try {
+                this._target.timer.stop();
+            } catch (e) { }
+            this._target.timer = null;
+        }
+        this._target.timer = new Timer(1000);
+        this._target.timer.run = this.checkTargetOver;
     }
 
     public function hideTarget():Void {
         if (this._target.parent != null) this._holder.removeChild(this._target);
         this._target.hide();
+        if (this._target.timer != null) {
+            try {
+                this._target.timer.stop();
+            } catch (e) { }
+            this._target.timer = null;
+        }
     }
 
     public function toggleTarget():Void {
@@ -291,6 +306,18 @@ class MovieArea extends Sprite {
 
     public function clearTarget():Void {
         this._target.clear();
+    }
+
+    public function setTarget(nm:String):Bool {
+        if (GlobalPlayer.contraptions.targets.exists(nm)) {
+            if (GlobalPlayer.contraptions.targets[nm].ok) {
+                return (this._target.load(nm));
+            } else {
+                return (false);
+            }
+        } else {
+            return (false);
+        }
     }
 
     public function moveTarget(to:String):Void {
@@ -334,6 +361,32 @@ class MovieArea extends Sprite {
                 }
                 if (found != null) found.onClick();
             }
+        }
+    }
+
+    private function checkTargetOver():Void {
+        if (this._target.visible) {
+            var over:String = '';
+            var inst:InstanceImage;
+            for (i in 0...this._scene.numChildren) {
+                inst = cast this._scene.getChildAt(i);
+                if (inst != null) {
+                    if (inst.visible) {
+                        if (this._target.hitTestObject(inst)) {
+                            over = inst.getInstName();
+                        }
+                    }
+                }
+            }
+            if (GlobalPlayer.contraptions.checkMenuOver(this._target)) {
+                over = '_menu_';
+            }
+            if (GlobalPlayer.contraptions.checkInterfaceOver(this._target)) {
+                over = '_interface_';
+            }
+            this._target.setGraphic(over);
+        } else {
+            this.hideTarget();
         }
     }
 

@@ -30,6 +30,9 @@ class Contraptions {
     public var covers:Map<String, CoverContraption> = [ ];
     private var _coverOverlay:Sprite;
 
+    // target contraption
+    public var targets:Map<String, TargetContraption> = [ ];
+
     // background contraption
     public var backgrounds:Map<String, BackgroundContraption> = [ ];
     private var _backgroundOverlay:Sprite;
@@ -118,6 +121,10 @@ class Contraptions {
             this.musics[k].kill();
             this.musics.remove(k);
         }
+        for (k in this.targets.keys()) {
+            this.targets[k].kill();
+            this.targets.remove(k);
+        }
         for (k in this.forms.keys()) {
             this.forms[k].kill();
             this.forms.remove(k);
@@ -153,6 +160,10 @@ class Contraptions {
         data['interf'] = new Array<Dynamic>();
         for (ms in this.interf) {
             data['interf'].push(ms.toObject());
+        }
+        data['targets'] = new Array<Dynamic>();
+        for (ms in this.targets) {
+            data['targets'].push(ms.toObject());
         }
         return(StringStatic.jsonStringify(data));
     }
@@ -218,6 +229,18 @@ class Contraptions {
     public function checkMenuCollision(obj:Sprite):Void {
         if (this._menuCurrent != null) {
             this._menuCurrent.checkCollision(obj);
+        }
+    }
+
+    public function checkMenuOver(obj:Sprite):Bool {
+        if (this._menuCurrent != null) {
+            if (this._menuCurrent.hitTestObject(obj)) {
+                return (true);
+            } else {
+                return (false);
+            }
+        } else {
+            return (false);
         }
     }
 
@@ -588,6 +611,18 @@ class Contraptions {
             return (false);
         }
     }
+
+    public function checkInterfaceOver(obj:Sprite):Bool {
+        if (this._interfaceOverlay.visible) {
+            var ret:Bool = false;
+            for (i in 0...this._interfaceOverlay.numChildren) {
+                if (this._interfaceOverlay.getChildAt(i).hitTestObject(obj)) ret = true;
+            }
+            return (ret);
+        } else {
+            return (false);
+        }
+    } 
 
     public function setInterfaceText(nm:String, tx:String):Bool {
         if (this.interf.exists(nm)) {

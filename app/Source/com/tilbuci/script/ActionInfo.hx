@@ -612,6 +612,10 @@ class ActionInfo {
                     { t: 'i', n: Global.ln.get('acinfo-targetsetposition-p1'), v: '' }, 
                     { t: 'i', n: Global.ln.get('acinfo-targetsetposition-p2'), v: '' }, 
                 ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-targetclear'), a: 'target.clear', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-targetset'), a: 'target.set', p: [
+                    { t: 's', n: Global.ln.get('acinfo-targetset-p1'), v: '' }, 
+                ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-mousehide'), a: 'mouse.hide', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-mouseshow'), a: 'mouse.show', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-inputmessage'), a: 'input.message', p: [

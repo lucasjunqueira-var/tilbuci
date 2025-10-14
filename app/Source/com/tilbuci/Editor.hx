@@ -18,6 +18,7 @@ import com.tilbuci.ui.window.contraptions.WindowContrMusic;
 import com.tilbuci.ui.window.contraptions.WindowContrForm;
 import com.tilbuci.ui.window.contraptions.WindowContrInterf;
 import com.tilbuci.ui.window.contraptions.WindowContrBackground;
+import com.tilbuci.ui.window.contraptions.WindowContrTarget;
 import com.tilbuci.script.ActionInfo;
 import feathers.core.ToolTipManager;
 import com.tilbuci.script.AssistVariables;
@@ -691,6 +692,9 @@ class Editor extends Drawer {
             case 'interfaces':
                 this.opened = false;
                 this.showWindow('interfaces');
+            case 'targets':
+                this.opened = false;
+                this.showWindow('targets');
             case 'music':
                 this.opened = false;
                 this.showWindow('music');
@@ -889,6 +893,73 @@ class Editor extends Drawer {
                 ]);
             case 'window-notes':
                 this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Contraption target actions.
+        @param  ac  the action id
+    **/
+    private function actionWindowContrTarget(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
+            case 'default':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'targetdefault'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'menus':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'targetmenus'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'interf':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'targetinterf'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'inst1':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'targetinst1'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'inst2':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'targetinst2'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'inst3':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'targetinst3'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
         }
     }
 
@@ -1649,6 +1720,42 @@ class Editor extends Drawer {
                                 'frames' => data['frames'], 
                                 'frtime' => data['frtime'], 
                             ]);
+                        case 'targetdefault':
+                            this._windows['targets'].action('default', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'targetmenus':
+                            this._windows['targets'].action('menus', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'targetinterf':
+                            this._windows['targets'].action('interf', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'targetinst1':
+                            this._windows['targets'].action('inst1', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'targetinst2':
+                            this._windows['targets'].action('inst2', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'targetinst3':
+                            this._windows['targets'].action('inst3', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
                     }
                     Global.temp.remove('Media/Single');
                 }
@@ -1980,6 +2087,7 @@ class Editor extends Drawer {
                 case 'music': this._windows['music'] = new WindowContrMusic(actionWindowContrMusic);
                 case 'form': this._windows['form'] = new WindowContrForm(actionWindowContrForm);
                 case 'interfaces': this._windows['interfaces'] = new WindowContrInterf(actionWindowContrInterf);
+                case 'targets': this._windows['targets'] = new WindowContrTarget(actionWindowContrTarget);
 
                 case 'narrative-char': this._windows['narrative-char'] = new WindowNarrChar(actionWindowNarrChar);
                 case 'narrative-diag': this._windows['narrative-diag'] = new WindowDiagChar(actionWindowDiagChar);

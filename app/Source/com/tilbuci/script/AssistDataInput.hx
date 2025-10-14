@@ -47,6 +47,8 @@ class AssistDataInput extends AssistBase {
             'target.hide' => { p: [ ], s:false, c: false, t: false, i: false, d:false, ic: 'icInput' }, 
             'target.toggle' => { p: [ ], s:false, c: false, t: false, i: false, d:false, ic: 'icInput' }, 
             'target.setposition' => { p: [ 'i', 'i' ], s:false, c: false, t: false, i: false, d:false, ic: 'icInput' }, 
+            'target.clear' => { p: [ ], s:false, c: false, t: false, i: false, d:false, ic: 'icInput' }, 
+            'target.set' => { p: [ 's' ], s:false, c: false, t: false, i: false, d:false, ic: 'icInput' }, 
 
             'mouse.hide' => { p: [ ], s:false, c: false, t: false, i: false, d:false, ic: 'icInput' }, 
             'mouse.show' => { p: [ ], s:false, c: false, t: false, i: false, d:false, ic: 'icInput' }, 

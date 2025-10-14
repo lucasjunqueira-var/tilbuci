@@ -19,6 +19,7 @@ import com.tilbuci.contraptions.MusicContraption;
 import com.tilbuci.contraptions.FormContraption;
 import com.tilbuci.contraptions.InterfaceContraption;
 import com.tilbuci.contraptions.BackgroundContraption;
+import com.tilbuci.contraptions.TargetContraption;
 import feathers.core.FocusManager;
 import openfl.ui.Keyboard;
 import com.tilbuci.js.ExternBrowser;
@@ -389,6 +390,15 @@ class ScriptParser {
                             GlobalPlayer.contraptions.musics[ms.id] = ms;
                         } else {
                             ms.kill();
+                        }
+                    }
+                } else if (k == 'targets') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'targets'))) {
+                        var tg:TargetContraption = new TargetContraption();
+                        if (tg.load(Reflect.field(Reflect.field(ld.json, 'targets'), k2))) {
+                            GlobalPlayer.contraptions.targets[tg.id] = tg;
+                        } else {
+                            tg.kill();
                         }
                     }
                 } else if (k == 'forms') {
@@ -1701,11 +1711,23 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
+                    case 'target.clear':
+                        GlobalPlayer.area.clearTarget();
+                        return (true);
+                    case 'target.set':
+                        if (param.length > 0) {
+                            return (GlobalPlayer.area.setTarget(this.parseString(param[0])));
+                        } else {
+                            return (false);
+                        }
                         
                     case 'mouse.hide':
                         Mouse.hide();
+                        GlobalPlayer.cursorVisible = false;
+                        GlobalPlayer.area.noMouseOver();
                         return (true);
                     case 'mouse.show':
+                        GlobalPlayer.cursorVisible = true;
                         Mouse.show();
                         return (true);
 

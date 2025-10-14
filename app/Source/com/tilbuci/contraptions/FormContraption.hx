@@ -298,7 +298,7 @@ class FormContraption extends Sprite {
     }
 
     private function onOkOver(evt:MouseEvent):Void {
-        if (GlobalPlayer.mdata.highlight != '') {
+        if (GlobalPlayer.cursorVisible) if (GlobalPlayer.mdata.highlight != '') {
             this._graphics['btok'].filters = [
                 new GlowFilter(GlobalPlayer.mdata.highlightInt, 1, 4, 4, 255, 1, true)
             ];
@@ -318,7 +318,7 @@ class FormContraption extends Sprite {
     }
 
     private function onCancelOver(evt:MouseEvent):Void {
-        if (GlobalPlayer.mdata.highlight != '') {
+        if (GlobalPlayer.cursorVisible) if (GlobalPlayer.mdata.highlight != '') {
             this._graphics['btcancel'].filters = [
                 new GlowFilter(GlobalPlayer.mdata.highlightInt, 1, 4, 4, 255, 1, true)
             ];

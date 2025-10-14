@@ -240,7 +240,7 @@ class InterfaceContraption extends Sprite {
 
     private function onOver(evt:MouseEvent):Void {
         var img:BaseImage = cast evt.target;
-        if (GlobalPlayer.mdata.highlight != '') {
+        if (GlobalPlayer.cursorVisible) if (GlobalPlayer.mdata.highlight != '') {
             img.filters = [
                 new GlowFilter(GlobalPlayer.mdata.highlightInt, 1, 4, 4, 255, 1, true)
             ];
