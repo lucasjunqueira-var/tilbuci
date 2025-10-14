@@ -33,7 +33,7 @@ class WindowExchangeDesktop extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-exchdesk-title'), 1000, InterfaceFactory.pickValue(650, 730), false, true, true);
+        super(ac, Global.ln.get('window-exchdesk-title'), 1000, InterfaceFactory.pickValue(600, 680), false, true, true);
     }
 
     /**
@@ -43,11 +43,11 @@ class WindowExchangeDesktop extends PopupWindow {
         this.addForm(Global.ln.get('window-exchdesk-title'), this.ui.forge('desk', [
             { tp: 'Label', id: 'about', tx: Global.ln.get('window-exchdesk-about'), vr: '' },  
             { tp: 'Spacer', id: 'about', ht: 10, ln: false }, 
-            { tp: 'Label', id: 'mode', tx: Global.ln.get('window-exchdesk-mode'), vr: Label.VARIANT_DETAIL },  
+            /*{ tp: 'Label', id: 'mode', tx: Global.ln.get('window-exchdesk-mode'), vr: Label.VARIANT_DETAIL },  
             { tp: 'Select', id: 'mode', vl: [
                 { text: Global.ln.get('window-exchdesk-full'), value: 'full' }, 
                 { text: Global.ln.get('window-exchdesk-update'), value: 'update' }, 
-            ], sl: 'full' }, 
+            ], sl: 'full' }, */
             { tp: 'Label', id: 'window', tx: Global.ln.get('window-exchdesk-window'), vr: Label.VARIANT_DETAIL },  
             { tp: 'Select', id: 'window', vl: [
                 { text: Global.ln.get('window-exchdesk-windownormal'), value: 'normal' }, 
@@ -113,7 +113,7 @@ class WindowExchangeDesktop extends PopupWindow {
         } else {
             Global.ws.send('Movie/ExportDesk', [
                 'movie' => GlobalPlayer.movie.mvId, 
-                'mode' => this.ui.selects['mode'].selectedItem.value, 
+                'mode' => 'full', // this.ui.selects['mode'].selectedItem.value, 
                 'window' => this.ui.selects['window'].selectedItem.value, 
                 'width' => Math.round(this.ui.numerics['width'].value), 
                 'height' => Math.round(this.ui.numerics['height'].value), 

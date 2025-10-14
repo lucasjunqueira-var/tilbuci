@@ -452,13 +452,13 @@ class WSMovie extends Webservice
 	}
     
     /**
-	 * Exports a movie as an Apache Cordova project.
+	 * Exports a movie as a Capacitor project.
 	 */
 	private function exportCordova() {
 		// required fields received?
-		if ($this->requiredFields(['movie', 'mode', 'appid', 'appsite', 'appauthor', 'appemail', 'applicense', 'fullscr', 'icon'])) {
+		if ($this->requiredFields(['movie', 'mode', 'appid', 'fullscr', 'icon'])) {
 			$mv = new Movie;
-            $exp = $mv->exportCordova($this->user, $this->req['movie'], $this->req['mode'], $this->req['appid'], $this->req['appsite'], $this->req['appauthor'], $this->req['appemail'], $this->req['applicense'], $this->req['fullscr'], $this->req['icon']);
+            $exp = $mv->exportCordova($this->user, $this->req['movie'], $this->req['mode'], $this->req['appid'], $this->req['fullscr'], $this->req['icon']);
             if ($exp === false) {
                 $this->returnRequest([ 'e' => 1, 'exp' => '' ]);
             } else {

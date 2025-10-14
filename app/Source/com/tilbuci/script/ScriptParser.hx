@@ -7,6 +7,7 @@
  package com.tilbuci.script;
 
 /** TILBUCI **/
+import openfl.ui.Mouse;
 import com.tilbuci.narrative.DialogueFolderNarrative;
 import com.tilbuci.narrative.CharacterNarrative;
 import com.tilbuci.narrative.DialogueNarrative;
@@ -702,21 +703,52 @@ class ScriptParser {
         var found:Bool = false;
         switch (keyCode) {
             case Keyboard.UP:
-                found = this.runInput('keyup');
+                if (GlobalPlayer.usingTarget > 0) {
+                    GlobalPlayer.area.moveTarget('up');
+                    found = true;
+                } else {
+                    found = this.runInput('keyup');
+                }
             case Keyboard.DOWN:
-                found = this.runInput('keydown');
+                if (GlobalPlayer.usingTarget > 0) {
+                    GlobalPlayer.area.moveTarget('down');
+                    found = true;
+                } else {
+                    found = this.runInput('keydown');
+                }
             case Keyboard.LEFT:
-                found = this.runInput('keyleft');
+                if (GlobalPlayer.usingTarget > 0) {
+                    GlobalPlayer.area.moveTarget('left');
+                    found = true;
+                } else {
+                    found = this.runInput('keyleft');
+                    if (!found) found = this.runInput('keyletf'); // bug
+                }
             case Keyboard.RIGHT:
-                found = this.runInput('keyright');
+                if (GlobalPlayer.usingTarget > 0) {
+                    GlobalPlayer.area.moveTarget('right');
+                    found = true;
+                } else {
+                    found = this.runInput('keyright');
+                }
             case Keyboard.PAGE_UP:
                 found = this.runInput('keypup');
             case Keyboard.PAGE_DOWN:
                 found = this.runInput('keypdown');
             case Keyboard.SPACE:
-                found = this.runInput('keyspace');
+                if (GlobalPlayer.usingTarget > 0) {
+                    GlobalPlayer.area.triggerTarget();
+                    found = true;
+                } else {
+                    found = this.runInput('keyspace');
+                }
             case Keyboard.ENTER:
-                found = this.runInput('keyenter');
+                if (GlobalPlayer.usingTarget > 0) {
+                    GlobalPlayer.area.triggerTarget();
+                    found = true;
+                } else {
+                    found = this.runInput('keyenter');
+                }
             case Keyboard.HOME:
                 found = this.runInput('keyhome');
             case Keyboard.END:
@@ -1027,11 +1059,7 @@ class ScriptParser {
 
                     // runtime actions
                     case 'runtime.quit':
-                        #if runtimedesktop
-                            return (GlobalPlayer.appQuit());
-                        #else
-                            return (false);
-                        #end
+                        return (GlobalPlayer.appQuit());
                     case 'runtime.install':
                         #if runtimepwa
                             return (GlobalPlayer.pwaInstall());
@@ -1657,6 +1685,30 @@ class ScriptParser {
                         }
 
                     // input
+                    case 'target.show':
+                        GlobalPlayer.area.showTarget();
+                        return (true);
+                    case 'target.hide':
+                        GlobalPlayer.area.hideTarget();
+                        return (true);
+                    case 'target.toggle':
+                        GlobalPlayer.area.toggleTarget();
+                        return (true);
+                    case 'target.setposition':
+                        if (param.length > 1) {
+                            GlobalPlayer.area.setTargetPos(this.parseInt(param[0]), this.parseInt(param[1]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                        
+                    case 'mouse.hide':
+                        Mouse.hide();
+                        return (true);
+                    case 'mouse.show':
+                        Mouse.show();
+                        return (true);
+
                     case 'input.string':
                         if (param.length > 1) {
                             var acOk:Dynamic = null;

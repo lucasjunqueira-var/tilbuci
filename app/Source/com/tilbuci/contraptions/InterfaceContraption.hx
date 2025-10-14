@@ -120,6 +120,23 @@ class InterfaceContraption extends Sprite {
         }
     }
 
+    public function checkCollision(obj:Sprite):Bool {
+        var ret:Bool = false;
+        for (k in this._graphics) {
+            if (!ret) {
+                if (k.hasEventListener(MouseEvent.CLICK) && (k.extraInfo.length > 0)) {
+                    if (obj.hitTestObject(k)) {
+                        if (GlobalPlayer.mvActions.exists(GlobalPlayer.parser.parseString(k.extraInfo[0]))) {
+                            GlobalPlayer.parser.run(GlobalPlayer.mvActions[GlobalPlayer.parser.parseString(k.extraInfo[0])]);
+                            ret = true;
+                        }
+                    }
+                }
+            }
+        }
+        return (ret);
+    }
+
     public function remove():Void {
         if (this.parent != null) this.parent.removeChild(this);
     }

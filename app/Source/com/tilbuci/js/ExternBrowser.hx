@@ -30,6 +30,11 @@ extern class ExternBrowser {
     static function TBB_appQuit():Void;
 
     /**
+        Quits a mobile application.
+    **/
+    static function TBB_appQuitCapacitor():Void;
+
+    /**
         Shows the entire page on fullscreen.
     **/
     static function TBB_fullscreen():Void;
@@ -69,6 +74,13 @@ extern class ExternBrowser {
     static function TBB_saveFileElectron(name:String, content:String):Void;
 
     /**
+        Saves a text file from capacitor runtime.
+        @param  name    the file name
+        @param  content the file content
+    **/
+    static function TBB_saveFileCapacitor(name:String, content:String):Void;
+
+    /**
         Loads a text file from browser.
         @param  ext     the file extension
         @param  callback    method to call on file load
@@ -83,10 +95,23 @@ extern class ExternBrowser {
     static function TBB_loadFileElectron(name:String, callback:Dynamic):Void;
 
     /**
+        Loads a text file from capacitor runtime.
+        @param  ext     the file name
+        @param  callback    method to call on file load
+    **/
+    static function TBB_loadFileCapacitor(name:String, callback:Dynamic):Void;
+
+    /**
         Checks if a file exists in user folder on electron runtime.
         @param  name    the file name
     **/
     static function TBB_existsFileElectron(name:String):Bool;
+
+    /**
+        Checks if a file exists in user folder on capacitor runtime.
+        @param  name    the file name
+    **/
+    static function TBB_existsFileCapacitor(name:String):Bool;
 
 }
 

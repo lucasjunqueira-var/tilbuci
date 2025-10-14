@@ -1049,7 +1049,7 @@ class InstanceImage extends Sprite {
     /**
         Instance click action.
     **/
-    private function onClick(evt:MouseEvent):Void {
+    public function onClick(evt:MouseEvent = null):Void {
         if (GlobalPlayer.canTrigger) {
             if (GlobalPlayer.mode != Player.MODE_EDITOR) {
                 if (this._data.action != '') {

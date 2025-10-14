@@ -2416,7 +2416,7 @@ class Movie extends BaseClass
                         @copy('../../export/desktop/readmeupdate.txt', '../../export/desktop-'.$movie.'/readme.txt');
                     } else {
                         // readme
-                        @copy('../../export/desktop/readmefull.txt', '../../export/desktop-'.$movie.'/readme.txt');
+                        @copy('../../export/desktop/readme.html', '../../export/desktop-'.$movie.'/readme.html');
 
                         // package
                         $package = file_get_contents('../../export/desktop/package.json');
@@ -2429,7 +2429,7 @@ class Movie extends BaseClass
                             $author, 
                             $description
                         ], $package);
-                        file_put_contents('../../export/desktop-'.$movie.'/'.$movie.'/package.json', $package);
+                        file_put_contents('../../export/desktop-'.$movie.'/'.$movie.'/package.ori', $package);
                     }
 
                     // howler audio fix
@@ -2438,6 +2438,26 @@ class Movie extends BaseClass
                     // other assets
                     @copy('../../export/desktop/btclose.png', '../../export/desktop-'.$movie.'/'.$movie.'/btclose.png');
                     @copy('../../export/desktop/preload.js', '../../export/desktop-'.$movie.'/'.$movie.'/preload.js');
+                    @copy('../../export/desktop/adjust-forge.mjs', '../../export/desktop-'.$movie.'/'.$movie.'/adjust-forge.mjs');
+
+                    // linux scripts
+                    @copy('../../export/desktop/linux-testapp.sh', '../../export/desktop-'.$movie.'/'.$movie.'/linux-testapp.sh');
+                    @copy('../../export/desktop/linux-createapp.sh', '../../export/desktop-'.$movie.'/'.$movie.'/linux-createapp.sh');
+                    @copy('../../export/desktop/linux-setup.sh', '../../export/desktop-'.$movie.'/'.$movie.'/linux-setup.sh');
+
+                    // windows scripts
+                    @copy('../../export/desktop/windows-testapp.cmd', '../../export/desktop-'.$movie.'/'.$movie.'/windows-testapp.cmd');
+                    @copy('../../export/desktop/windows-createapp.cmd', '../../export/desktop-'.$movie.'/'.$movie.'/windows-createapp.cmd');
+                    @copy('../../export/desktop/windows-createinstaller.cmd', '../../export/desktop-'.$movie.'/'.$movie.'/windows-createinstaller.cmd');
+                    @copy('../../export/desktop/windows-setup.cmd', '../../export/desktop-'.$movie.'/'.$movie.'/windows-setup.cmd');
+
+                    // macos scripts
+                    @copy('../../export/desktop/macos-testapp.sh', '../../export/desktop-'.$movie.'/'.$movie.'/macos-testapp.sh');
+                    @copy('../../export/desktop/macos-createapp.sh', '../../export/desktop-'.$movie.'/'.$movie.'/macos-createapp.sh');
+                    @copy('../../export/desktop/macos-createinstaller.sh', '../../export/desktop-'.$movie.'/'.$movie.'/macos-createinstaller.sh');
+                    @copy('../../export/desktop/macos-setup.sh', '../../export/desktop-'.$movie.'/'.$movie.'/macos-setup.sh');
+                    
+                    // other files
                     $this->copyDir(('../../export/desktop/assets'), ('../../export/desktop-'.$movie.'/'.$movie.'/assets'));
                     $this->copyDir(('../../export/desktop/lib'), ('../../export/desktop-'.$movie.'/'.$movie.'/lib'));
                     $this->copyDir(('../../export/desktop/manifest'), ('../../export/desktop-'.$movie.'/'.$movie.'/manifest'));
@@ -2602,6 +2622,232 @@ class Movie extends BaseClass
 			return (false);
 		}
 	}
+
+    /**
+	 * Exports a movie as a capacitor project.
+	 * @param	string	$user	the requesting user
+	 * @param	string	$movie	the movie id
+     * @param	string	$mode  exporte mode (complete or update)
+     * @param	string	$appid application id
+     * @param	string	$fullscr    display mode
+     * @param	string	$icon    app icon file
+	 * @return	string|bool the path to the exported file or false on error
+	 */
+	public function exportCordova($user, $movie, $mode, $appid, $fullscr, $icon) {
+		// check user: movie owner?
+		if (!is_null($this->db)) {
+			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [
+				':id' => $movie, 
+				':user' => $user, 
+			]);
+			if (count($ck) > 0) {
+                if (is_dir('../movie/'.$movie.'.movie')) {
+                    set_time_limit(0);
+                    $this->removeFileDir('../../export/mobile-'.$movie.'.zip');
+                    $this->removeFileDir('../../export/mobile-'.$movie);
+                    $this->createDir('../../export/mobile-'.$movie.'/'.$movie);
+                    $this->createDir('../../export/mobile-'.$movie.'/'.$movie.'/www', true);
+                    $this->createDir('../../export/mobile-'.$movie.'/'.$movie.'/assets', true);
+                    $this->copyDir('../../export/site', ('../../export/mobile-'.$movie.'/'.$movie.'/www'));
+                    if (is_dir('../../export/mobile-'.$movie.'/'.$movie.'/www')) {
+                        if ($this->loadMovie($movie)) {                            
+                            // re-publish scenes?
+                            $pub = false;
+                            if (($ck[0]['mv_identify'] == '1') || (!is_null($ck[0]['mv_vsgroups']) && ($ck[0]['mv_vsgroups'] != ''))) {
+                                $pub = true;
+                                $this->publishScenes($movie);
+                                $this->publishCollections($movie);
+                            }
+                            // fonts
+                            $fonts = [ ];
+                            $embedft = [ ];
+                            $ck = $this->queryAll('SELECT * FROM fonts');
+                            foreach ($ck as $v) {
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assets/' . $v['fn_file']));
+                            }
+                            $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
+                            if (count($ck) > 0) {
+                                if ($ck[0]['mv_fonts'] != '') {
+                                    $json = json_decode(gzdecode(base64_decode($ck[0]['mv_fonts'])), true);
+                                    if (json_last_error() == JSON_ERROR_NONE) {
+                                        foreach ($json as $k => $v) {
+                                            if (isset($v['name']) && isset($v['file'])) {
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assets/' . $v['file']));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            // plugins
+                            $plhead = [ ];
+                            $plend = [ ];
+                            $ck = $this->queryAll('SELECT pc_id, pc_file FROM pluginconfig WHERE pc_active=:ac AND pc_index=:in', [
+                                ':ac' => '1', 
+                                ':in' => '1', 
+                            ]);
+                            foreach ($ck as $v) {
+                                if (is_file('../../app/' . $v['pc_file'] . '.php')) {
+                                    require_once('../../app/' . $v['pc_file'] . '.php');
+                                    $pl = new $v['pc_file'];
+                                    $plhead[] = $pl->indexHead();
+                                    $plend[] = $pl->indexEndBody();
+                                }
+                            }
+                            // index text
+                            $index = file_get_contents('../../export/mobile/index.html');
+                            // prepare values
+                            $fonts = implode("\r\n", $fonts);
+                            $plhead = implode("\r\n", $plhead); 
+                            $plend = implode("\r\n", $plend); 
+                            $image = $this->info['image'] == '' ? '' : '<meta property="og:image" content="./movie/'.$movie.'.movie/media/picture/'.$this->info['image'].'" />';
+                            $color = str_replace('0x', '#', $this->info['screen']['bgcolor']);
+                            $ws = '';
+                            if ((strpos($this->conf['path'], 'localhost') === false) && (strpos($this->conf['path'], '127.0.0.1') === false)) {
+                                $ws = $this->slashUrl($this->conf['path']) . 'ws/';
+                            }
+                            // index.html
+                            $index = str_replace([
+                                '[SITEMOVIE]', 
+                                '[SITESCENE]', 
+                                '[SITETITLE]', 
+                                '[SITECOLOR]', 
+                                '[SITEABOUT]', 
+                                '[SITESHAREIMG]',
+                                '[SITEFONTS]', 
+                                '[SITEPLUGINHEAD]', 
+                                '[SITEPLUGINEND]', 
+                                '[SITEWS]', 
+                                '[PARAMEXTRA]'
+                            ], [
+                                $movie, 
+                                '', 
+                                $this->info['title'], 
+                                $color, 
+                                $this->info['description'], 
+                                $image, 
+                                $fonts, 
+                                $plhead, 
+                                $plend, 
+                                $ws, 
+                                ', "fonts": [' . implode(', ', $embedft) . ']'
+                            ], $index);
+                            file_put_contents('../../export/mobile-'.$movie.'/'.$movie.'/www/index.html', $index);
+                            // runtime
+                            @copy('../../export/runtimes/mobile.js', ('../../export/mobile-'.$movie.'/'.$movie.'/www/TilBuci.js'));
+                            // app icon
+                            if ($this->info['favicon'] != '') {
+                                @unlink('../../export/mobile-'.$movie.'/'.$movie.'/www/favicon.png');
+                                @copy(('../movie/'.$movie.'.movie/media/picture/'.$this->info['favicon']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/favicon.png'));
+                                @unlink('../../export/mobile-'.$movie.'/'.$movie.'/assets/icon-only.png');
+                                @copy(('../movie/'.$movie.'.movie/media/picture/'.$this->info['favicon']), ('../../export/mobile-'.$movie.'/'.$movie.'/assets/icon-only.png'));
+                                @unlink('../../export/mobile-'.$movie.'/'.$movie.'/assets/icon-foreground.png');
+                                @copy(('../movie/'.$movie.'.movie/media/picture/'.$this->info['favicon']), ('../../export/mobile-'.$movie.'/'.$movie.'/assets/icon-foreground.png'));
+                                @unlink('../../export/mobile-'.$movie.'/'.$movie.'/assets/icon-background.png');
+                                @copy(('../movie/'.$movie.'.movie/media/picture/'.$this->info['favicon']), ('../../export/mobile-'.$movie.'/'.$movie.'/assets/icon-background.png'));
+                            }
+                            // movie folder
+                            $this->copyDir(('../movie/'.$movie.'.movie'), ('../../export/mobile-'.$movie.'/'.$movie.'/www/movie/'.$movie.'.movie'));
+                            $this->info['key'] = '';
+                            $this->info['fallback'] = '';
+                            $this->info['identify'] = false;
+                            $this->info['vsgroups'] = '';
+                            file_put_contents(('../../export/mobile-'.$movie.'/'.$movie.'/www/movie/'.$movie.'.movie/movie.json'), json_encode($this->info));
+                            // readme and config files
+                            if ($mode == 'update') {
+                                @copy('../../export/mobile/readme-update.txt', ('../../export/mobile-'.$movie.'/readme.txt'));
+                            } else {
+                                $txt = file_get_contents('../../export/mobile/readme.html');
+                                $txt = str_replace('[APPID]', $movie, $txt);
+                                file_put_contents(('../../export/mobile-'.$movie.'/readme.html'), $txt);
+                                $txt = file_get_contents('../../export/mobile/capacitor.config.json');
+                                $txt = str_replace([
+                                    '[APPID]', 
+                                    '[APPNAME]'
+                                ], [
+                                    $appid, 
+                                    $this->info['title'], 
+                                ], $txt);
+                                file_put_contents(('../../export/mobile-'.$movie.'/'.$movie.'/capacitor.config.json'), $txt);
+                                file_put_contents(('../../export/mobile-'.$movie.'/'.$movie.'/package.ori'), json_encode([
+                                    'name' => $this->info['title'], 
+                                    'main' => 'main.js', 
+                                    'author' => '', 
+                                    'license' => '', 
+                                    'version' => time(),
+                                ]));
+                                $txt = file_get_contents('../../export/mobile/capacitor.js');
+                                if (($fullscr == 'full') || ($fullscr == 'kiosk')) {
+                                    $txt = str_replace('[STATUSBAR]', 'try { await StatusBar.hide(); } catch (error) { }', $txt);
+                                } else {
+                                    $txt = str_replace('[STATUSBAR]', '', $txt);
+                                }
+                                if ($fullscr == 'kiosk') {
+                                    $txt = str_replace('[NAVIGATIONBAR]', 'try { await NavigationBar.hide(); } catch (error) { }', $txt);
+                                } else {
+                                    $txt = str_replace('[NAVIGATIONBAR]', '', $txt);
+                                }
+                                file_put_contents(('../../export/mobile-'.$movie.'/'.$movie.'/www/capacitor.js'), $txt);
+
+                                // windows script files
+                                @copy('../../export/mobile/windows-setup.cmd', ('../../export/mobile-'.$movie.'/'.$movie.'/windows-setup.cmd'));
+                                @copy('../../export/mobile/windows-android.cmd', ('../../export/mobile-'.$movie.'/'.$movie.'/windows-android.cmd'));
+
+                                // linux script files
+                                @copy('../../export/mobile/linux-setup.sh', ('../../export/mobile-'.$movie.'/'.$movie.'/linux-setup.sh'));
+                                @copy('../../export/mobile/linux-android.sh', ('../../export/mobile-'.$movie.'/'.$movie.'/linux-android.sh'));
+
+                                // macos script files
+                                @copy('../../export/mobile/macos-setup.sh', ('../../export/mobile-'.$movie.'/'.$movie.'/macos-setup.sh'));
+                                @copy('../../export/mobile/macos-android.sh', ('../../export/mobile-'.$movie.'/'.$movie.'/macos-android.sh'));
+                                @copy('../../export/mobile/macos-ios.sh', ('../../export/mobile-'.$movie.'/'.$movie.'/macos-ios.sh'));
+                            }
+                        
+                            // save zip
+                            $zip = new \ZipArchive;
+                            $zip->open('../../export/mobile-'.$movie.'.zip', \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+                            $files = new \RecursiveIteratorIterator(
+                                new \RecursiveDirectoryIterator('../../export/mobile-'.$movie),
+                                \RecursiveIteratorIterator::LEAVES_ONLY
+                            );
+                            $rootPath = realpath('../../export/mobile-'.$movie);
+                            foreach ($files as $file) {
+                                if (!$file->isDir()) {
+                                    $filePath = $file->getRealPath();
+                                    $relativePath = substr($filePath, strlen($rootPath) + 1);
+                                    $relativePath = str_replace('\\', '/', $relativePath);
+                                    $zip->addFile($filePath, $relativePath);
+                                }
+                            }
+                            $zip->close();
+                            $this->removeFileDir('../../export/mobile-'.$movie);
+                            
+                            // remove scenes?
+                            if ($pub) {
+                                $this->removePublished($movie);
+                            }
+                            
+                            return ('mobile-'.$movie.'.zip');
+                        } else {
+                            return (false);
+                        }
+                    } else {
+                        return (false);
+                    }                    
+                } else {
+                    return (false);
+                }
+			} else {
+                // the current user isn't the movie owner
+				return (false);
+			}
+		} else {
+			return (false);
+		}
+	}
     
     /**
 	 * Exports a movie as an Apache Cordova project.
@@ -2617,7 +2863,7 @@ class Movie extends BaseClass
      * @param	string	$icon    app icon file
 	 * @return	string|bool the path to the exported file or false on error
 	 */
-	public function exportCordova($user, $movie, $mode, $appid, $appsite, $appauthor, $appemail, $applicense, $fullscr, $icon) {
+	public function exportCordovaOld($user, $movie, $mode, $appid, $appsite, $appauthor, $appemail, $applicense, $fullscr, $icon) {
 		// check user: movie owner?
 		if (!is_null($this->db)) {
 			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [

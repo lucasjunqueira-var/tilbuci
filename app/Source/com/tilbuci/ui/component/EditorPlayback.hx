@@ -7,6 +7,7 @@
  package com.tilbuci.ui.component;
 
 /** OPENFL **/
+import openfl.ui.Mouse;
 import feathers.layout.AnchorLayout;
 import haxe.Timer;
 import com.tilbuci.data.GlobalPlayer;
@@ -180,6 +181,8 @@ class EditorPlayback extends Panel {
 
         this.ui.buttons['play'].icon = new Bitmap(Assets.getBitmapData('btPause'));
         this.ui.buttons['play'].icon.width = this.ui.buttons['play'].icon.height = 20;
+
+        this._player.player.listenInput();
     }
 
     /**
@@ -265,6 +268,9 @@ class EditorPlayback extends Panel {
         GlobalPlayer.area.maskArea(false);
         GlobalPlayer.area.pause();
         GlobalPlayer.area.releaseAllProperties();
+        GlobalPlayer.area.hideTarget();
+        Mouse.show();
+        this._player.player.listenInputRemove();
         this._top.removeChild(this._player.player);
         this._player.addChild(this._player.player);
         Global.displayType = this.info.orientation;

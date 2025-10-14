@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. -->
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>[SITETITLE]</title>
+	<meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="msapplication-tap-highlight" content="no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="[SITECOLOR]">
+	<meta name="color-scheme" content="[SITECOLOR]">
+	<link rel="shortcut icon" type="image/png" href="./favicon.png">
+	<meta property="og:title" content="[SITETITLE]" />
+	[SITESHAREIMG]
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="[SITEABOUT]" />
+	[SITEPLUGINHEAD]
+	<script type="text/javascript" src="./TilBuci.js"></script>
+	<script>
+		window.addEventListener ("touchmove", function (event) { event.preventDefault (); }, { capture: false, passive: false });
+		if (typeof window.devicePixelRatio != 'undefined' && window.devicePixelRatio > 2) {
+			var meta = document.getElementById ("viewport");
+			meta.setAttribute ('content', 'width=device-width, initial-scale=' + (2 / window.devicePixelRatio) + ', user-scalable=no');
+		}
+	</script>
+	<style>
+		[SITEFONTS]
+		html,body { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #666666; }
+        #TilBuciArea { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: #000000; }
+		#openfl-content { background: #000000; width: 100%; height: 100%; }
+        #embed_area { position: absolute; left: 0; top: 0; display: none; padding: 0; width: 100%; height: 100%; box-sizing: content-box; margin: 0; border: none; overflow: hidden; background-color: transparent; }
+        #embed_frame { display: none; padding: 0; box-sizing: content-box; margin: 0; border: none; width: 100%; height: 100%; background-color: transparent; }
+	</style>
+</head>
+<body>
+    <div id="TilBuciArea">
+        <noscript>This webpage makes extensive use of JavaScript. Please enable JavaScript in your web browser to view this page.</noscript>
+        <div id="openfl-content"></div>
+        <script type="text/javascript">
+            lime.embed ("Website", "openfl-content", 0, 0, { parameters: { "movie": "[SITEMOVIE]", "scene": "[SITESCENE]", "ws": "[SITEWS]" [PARAMEXTRA] } });
+        </script>
+        [SITEPLUGINEND]
+        <div id="embed_area"><iframe id="embed_frame" width="0" height="0" src="" frameborder="0"></iframe></div>
+    </div>
+	<script type="module" src="./capacitor.js"></script>
+</body>
+</html>

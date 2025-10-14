@@ -23,6 +23,8 @@ class Contraptions {
     private var _menusOverlay:Sprite;
     private var _menuAction:Dynamic;
     private var _menuVariable:String;
+    private var _menuCurrent:MenuContraption = null;
+    public var usingMenu:Bool = false;
 
     // cover contraption
     public var covers:Map<String, CoverContraption> = [ ];
@@ -158,55 +160,64 @@ class Contraptions {
     public function menuShow(name:String, options:Array<String>, variable:String, actions:Dynamic, pos:String, px:Int, py:Int):Bool {
         this.menuHide();
         if (this.menus.exists(name)) {
-            var mn:MenuContraption = this.menus[name];
-            if (mn.ok) {
+            this._menuCurrent = this.menus[name];
+            if (this._menuCurrent.ok) {
                 this._menusOverlay.graphics.clear();
-                if (mn.bgalpha > 0) {
-                    this._menusOverlay.graphics.beginFill(Std.parseInt(StringTools.replace('#', '0x', mn.bgcolor)), mn.bgalpha);
+                if (this._menuCurrent.bgalpha > 0) {
+                    this._menusOverlay.graphics.beginFill(Std.parseInt(StringTools.replace('#', '0x', this._menuCurrent.bgcolor)), this._menuCurrent.bgalpha);
                     this._menusOverlay.graphics.drawRect(0, 0, GlobalPlayer.area.aWidth, GlobalPlayer.area.aHeight);
                     this._menusOverlay.graphics.endFill();
                 }
-                this._menusOverlay.addChild(mn.create(options, this.onMenuSelect));
+                this._menusOverlay.addChild(this._menuCurrent.create(options, this.onMenuSelect));
                 switch (pos) {
                     case 'top':
-                        mn.x = ((GlobalPlayer.area.aWidth - mn.width) / 2);
-                        mn.y = py;
+                        this._menuCurrent.x = ((GlobalPlayer.area.aWidth - this._menuCurrent.width) / 2);
+                        this._menuCurrent.y = py;
                     case 'topleft':
-                        mn.x = px;
-                        mn.y = py;
+                        this._menuCurrent.x = px;
+                        this._menuCurrent.y = py;
                     case 'topright':
-                        mn.x = GlobalPlayer.area.aWidth - mn.width - px;
-                        mn.y = py;
+                        this._menuCurrent.x = GlobalPlayer.area.aWidth - this._menuCurrent.width - px;
+                        this._menuCurrent.y = py;
                     case 'centerleft':
-                        mn.x = px;
-                        mn.y = ((GlobalPlayer.area.aHeight - mn.height) / 2);
+                        this._menuCurrent.x = px;
+                        this._menuCurrent.y = ((GlobalPlayer.area.aHeight - this._menuCurrent.height) / 2);
                     case 'centerright':
-                        mn.x = GlobalPlayer.area.aWidth - mn.width - px;
-                        mn.y = ((GlobalPlayer.area.aHeight - mn.height) / 2);
+                        this._menuCurrent.x = GlobalPlayer.area.aWidth - this._menuCurrent.width - px;
+                        this._menuCurrent.y = ((GlobalPlayer.area.aHeight - this._menuCurrent.height) / 2);
                     case 'bottom':
-                        mn.x = ((GlobalPlayer.area.aWidth - mn.width) / 2);
-                        mn.y = GlobalPlayer.area.aHeight - mn.height - py;
+                        this._menuCurrent.x = ((GlobalPlayer.area.aWidth - this._menuCurrent.width) / 2);
+                        this._menuCurrent.y = GlobalPlayer.area.aHeight - this._menuCurrent.height - py;
                     case 'bottomleft':
-                        mn.x = px;
-                        mn.y = GlobalPlayer.area.aHeight - mn.height - py;
+                        this._menuCurrent.x = px;
+                        this._menuCurrent.y = GlobalPlayer.area.aHeight - this._menuCurrent.height - py;
                     case 'bottomright':
-                        mn.x = GlobalPlayer.area.aWidth - mn.width - px;
-                        mn.y = GlobalPlayer.area.aHeight - mn.height - py;
+                        this._menuCurrent.x = GlobalPlayer.area.aWidth - this._menuCurrent.width - px;
+                        this._menuCurrent.y = GlobalPlayer.area.aHeight - this._menuCurrent.height - py;
                     case 'absolute':
-                        mn.x = px;
-                        mn.y = py;
+                        this._menuCurrent.x = px;
+                        this._menuCurrent.y = py;
                     default: // center
-                        mn.x = (GlobalPlayer.area.aWidth - mn.width) / 2;
-                        mn.y = (GlobalPlayer.area.aHeight - mn.height) / 2;
+                        this._menuCurrent.x = (GlobalPlayer.area.aWidth - this._menuCurrent.width) / 2;
+                        this._menuCurrent.y = (GlobalPlayer.area.aHeight - this._menuCurrent.height) / 2;
                 }
                 this._menuAction = actions;
                 this._menuVariable = variable;
+                this.usingMenu = true;
                 return (true);
             } else {
+                this._menuCurrent = null;
                 return (false);
             }
         } else {
+            this._menuCurrent = null;
             return (false);
+        }
+    }
+
+    public function checkMenuCollision(obj:Sprite):Void {
+        if (this._menuCurrent != null) {
+            this._menuCurrent.checkCollision(obj);
         }
     }
 
@@ -265,6 +276,8 @@ class Contraptions {
         for (mn in this.menus) mn.remove();
         this.getLayers();
         this._menusOverlay.graphics.clear();
+        this._menuCurrent = null;
+        this.usingMenu = false;
     }
 
     private function onMenuSelect(val:String):Void {
@@ -554,6 +567,23 @@ class Contraptions {
             this._interfaceOverlay.addChild(this.interf[nm]);
             this._interfaceOverlay.visible = true;
             return (true);
+        } else {
+            return (false);
+        }
+    }
+
+    public function checkInterfaceCollision(obj:Sprite):Bool {
+        if (this._interfaceOverlay.visible) {
+            var ret:Bool = false;
+            for (i in 0...this._interfaceOverlay.numChildren) {
+                if (!ret) {
+                    var intf:InterfaceContraption = cast this._interfaceOverlay.getChildAt(i);
+                    if (intf != null) {
+                        ret = intf.checkCollision(obj);
+                    }
+                }
+            }
+            return (ret);
         } else {
             return (false);
         }

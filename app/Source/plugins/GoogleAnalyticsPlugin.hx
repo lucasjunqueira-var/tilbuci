@@ -81,14 +81,20 @@ class GoogleAnalyticsPlugin extends Plugin {
     **/
     private function acEvent(param:Array<String>):Bool {
         if (param.length >= 2) {
-            ExternGoogleAnalytics.gtag('event', this._access.parser.parseString(param[0]), {
-                'movie_name': GlobalPlayer.mdata.title, 
-                'scene_name': GlobalPlayer.movie.scene.title,  
-                'movie_id': GlobalPlayer.movie.mvId, 
-                'scene_id': GlobalPlayer.movie.scId, 
-                'about': this._access.parser.parseString(param[1]), 
-            });
-            return (true);
+            var ok:Bool = false;
+            try {
+                ExternGoogleAnalytics.gtag('event', this._access.parser.parseString(param[0]), {
+                    'movie_name': GlobalPlayer.mdata.title, 
+                    'scene_name': GlobalPlayer.movie.scene.title,  
+                    'movie_id': GlobalPlayer.movie.mvId, 
+                    'scene_id': GlobalPlayer.movie.scId, 
+                    'about': this._access.parser.parseString(param[1]), 
+                });
+                ok = true;
+            } catch (e) {
+                ok = false;
+            }
+            return (ok);
         } else {
             return (false);
         }
@@ -137,15 +143,17 @@ class GoogleAnalyticsPlugin extends Plugin {
     private function onMovieLoad(evt:PluginEvent):Void {
         if ((GlobalPlayer.mode == Player.MODE_PLAYER) && this.config.exists('measurementid')) {
             this._firstsent = true;
-            ExternGoogleAnalytics.gtag('set', 'campaign', {
-                'id': GlobalPlayer.movie.mvId, 
-                'name': GlobalPlayer.mdata.title, 
-                'source': GlobalPlayer.base
-            });
-            ExternGoogleAnalytics.gtag('event', 'movie.load', {
-                'movie_id': GlobalPlayer.movie.mvId, 
-                'movie_name': GlobalPlayer.mdata.title
-            });
+            try {
+                ExternGoogleAnalytics.gtag('set', 'campaign', {
+                    'id': GlobalPlayer.movie.mvId, 
+                    'name': GlobalPlayer.mdata.title, 
+                    'source': GlobalPlayer.base
+                });
+                ExternGoogleAnalytics.gtag('event', 'movie.load', {
+                    'movie_id': GlobalPlayer.movie.mvId, 
+                    'movie_name': GlobalPlayer.mdata.title
+                });
+            } catch (e) { }
         }
     }
 
@@ -155,12 +163,14 @@ class GoogleAnalyticsPlugin extends Plugin {
     private function onSceneLoad(evt:PluginEvent):Void {
         if (!this._firstsent) this.onMovieLoad(null);
         if ((GlobalPlayer.mode == Player.MODE_PLAYER) && this.config.exists('measurementid')) {
-            ExternGoogleAnalytics.gtag('event', 'scene.load', {
-                'scene_id': GlobalPlayer.movie.scId, 
-                'scene_name': GlobalPlayer.movie.scene.title, 
-                'movie_id': GlobalPlayer.movie.mvId, 
-                'movie_name': GlobalPlayer.mdata.title
-            });
+            try {
+                ExternGoogleAnalytics.gtag('event', 'scene.load', {
+                    'scene_id': GlobalPlayer.movie.scId, 
+                    'scene_name': GlobalPlayer.movie.scene.title, 
+                    'movie_id': GlobalPlayer.movie.mvId, 
+                    'movie_name': GlobalPlayer.mdata.title
+                });
+            } catch (e) { }
         }
     }
 }

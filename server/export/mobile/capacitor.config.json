@@ -1,0 +1,6 @@
+{
+  "appId": "[APPID]",
+  "appName": "[APPNAME]",
+  "webDir": "www", 
+  "bundledWebRuntime": false
+}

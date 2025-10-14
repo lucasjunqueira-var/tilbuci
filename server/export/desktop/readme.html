@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+    body, html {
+        background-color: #000000;
+        color: #FFFFFF;
+        font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", Verdana, "sans-serif";
+        font-size: 20px;
+        margin: 0 10px;
+        padding: 0;
+    }
+    a {
+        color: #FFC56E;
+    }
+    h1 {
+        font-size: 26px;
+        color: #ff9900;
+        margin-top: 30px;
+    }
+    h2 {
+        font-size: 22px;
+        margin-top: 25px;
+    }
+</style>
+<title>TilBuci desktop APP project</title>
+</head>
+<body>
+    <h1>TilBuci desktop app project</h1>
+    <p>This is your <a href="https://www.electronjs.org/" target="_blank">Electron</a> project. It can be used to create Windows, Linux and macOS apps for both x64 and ARM platforms on all systems - just follow the procedure below in the system where you want to create your app for. If you have already generated apps from your movie using Elactron, just copy the new files, overriding the previous ones. Avoid saving your Electron project on a folder with spaces of special characters on path/name.</p>
+    
+	<h1>Preparing your system</h1>
+	<p>Before creating mobile apps for the first time, you need to prepare your system for this task. You only need to follow this stes once: install the latest version of Node.js — to do this, go to <a href="https://nodejs.org/" target="_blank">nodejs.org</a> and follow the recommended installation procedure for your operating system.</p>
+	<p>Remember: this step should only be performed the first time you create an app. It can be ignored for future ones.</p>
+	
+    <h1>Setting up your app</h1>
+    <p>With your system ready, you'll need to configure your new app. To do this, simply run the setup script according to your system ("windows-setup.cmd", "linux-setup.sh"* or "macos-setup.sh"*). This script may take some time to complete. You only need to run it once per app you want to create.<br />
+	<small>*<em>If you are creating Linux or macOS apps, you may need to enable the execution of these scripts files before runing them (usually by calling "chmod +x script-name.sh" on your terminal).</em></small></p>
+    
+    <h1>Testing your app</h1>
+    <p>To test your app, simply run the script according to your system "windows-testapp.cmd", "linux-testapp.sh" or "macos-testapp.sh"). After a preparation process that may take some time, the app will open, displaying your creation.</p>
+    
+    <h1>Creating the app</h1>
+    <p>After testing, it's time to create your app's executable. To do this, run the script "windows-createapp.cmd", "linux-createapp.sh" or "macos-createapp.sh"). This process may take a while, and when finished, the folder where your app was saved will open - notice that both x64 (on macOS, "Intel") and ARM (on macOS, "Silicon") versions of the app are created. All files within these folders are necessary if you plan to distribute your creation this way.</p>
+    
+    <h1>Making an installer (Windows and macOS only)</h1>
+	<p>If you prefer to distribute your creation as an installer, run the script "windows-createinstaller.cmd" or "macos-createinstaller.sh". When the process is complete, which can take a while, the folder containing your installer will open (it's inside "make", for both x64 and ARM platforms). To distribute, simply forward the "setup" file — the other files found in this folder are not necessary.</p>
+	<p>There are several software packaging formats available for Linux ("deb", "rpm", "Flatpack" and so on), not all of which are compatible with all distributions. For this reason, an installer creation script is not provided for this system — some technical knowledge may be required to create the install package in the chosen format.</p>
+	
+	<h1>Where to go from here</h1>
+    <p>These instructions cover the basics of building desktop apps from content created in TilBuci, but the Electron platform has many other features. To learn more, visit the documentation at <a href="https://www.electronjs.org/docs/latest/" target="_blank">www.electronjs.org/docs/latest/</a>.</p>
+</body>
+</html>

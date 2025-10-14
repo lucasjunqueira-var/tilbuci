@@ -65,6 +65,7 @@
 	<assets id="icShare" path="assets/icons/icShare.png"/>
 	<assets id="icGoogle" path="assets/icons/icGoogle.png"/>
 	<assets id="icContraption" path="assets/icons/icContraption.png"/>
+	<assets id="icNarrative" path="assets/icons/icNarrative.png"/>
 	<assets id="icServer" path="assets/icons/icServer.png"/>
 	<assets id="btPlus" path="assets/icons/btPlus.png"/>
 	<assets id="btPlugin" path="assets/icons/btPlugin.png"/>
@@ -88,6 +89,7 @@
 	<assets id="btDown" path="assets/icons/btDown.png"/>
 	<assets id="btKeyframe" path="assets/icons/btKeyframe.png"/>
 	<assets id="btFullscreen" path="assets/icons/btFullscreen.png"/>
+	<assets id="btWorkspace" path="assets/icons/btWorkspace.png"/>
 	<assets id="btScreen" path="assets/icons/btScreen.png"/>
 	<assets id="btOpenfile" path="assets/icons/btOpenfile.png"/>
 	<assets id="btCopy" path="assets/icons/btCopy.png"/>
@@ -105,6 +107,7 @@
 	<assets id="btExchange" path="assets/icons/btExchange.png"/>
 	<assets id="btVisitors" path="assets/icons/btVisitors.png"/>
 	<assets id="btContraptions" path="assets/icons/btContraptions.png"/>
+	<assets id="btNarrative" path="assets/icons/btNarrative.png"/>
 	<assets id="iconMove" path="assets/icons/iconMove.png"/>
 	<assets id="iconResizeH" path="assets/icons/iconResizeH.png"/>
 	<assets id="iconResizeV" path="assets/icons/iconResizeV.png"/>
@@ -124,4 +127,5 @@
 	<assets id="btCompress" path="assets/icons/btCompress.png"/>	
 	<assets id="btNotes" path="assets/icons/btNotes.png"/>
 	<assets id="btLock" path="assets/icons/btLock.png"/>
+	<assets id="icTarget" path="assets/icons/icTarget.png"/>
 </project>

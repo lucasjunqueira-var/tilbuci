@@ -71,6 +71,19 @@ class MenuContraption extends Sprite {
         return (this);
     }
 
+    public function checkCollision(obj:Sprite):Void {
+        if (this.ok) {
+            for (k in this._buttons) {
+                var bt:ContraptionButton = cast k;
+                if (bt != null) {
+                    if (obj.hitTestObject(bt)) {
+                        this._ac(bt.value);
+                    }
+                }
+            }
+        }
+    }
+
     public function remove():Void {
         this.removeChildren();
         this._ac = null;

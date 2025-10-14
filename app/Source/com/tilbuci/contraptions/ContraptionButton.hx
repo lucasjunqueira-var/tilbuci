@@ -23,14 +23,14 @@ class ContraptionButton extends Sprite {
 
     private var _text:TextField;
 
-    private var _value:String;
+    public var value:String;
 
     private var _ac:Dynamic;
 
     public function new(val:String, action:Dynamic, image:String, text:String, font:String, ftsize:Int, ftcolor:Int) {
         super();
 
-        this._value = val;
+        this.value = val;
         this._ac = action;
 
         if ((GlobalPlayer.mdata.highlightInt != null) && !GlobalPlayer.isMobile()) {
@@ -66,7 +66,7 @@ class ContraptionButton extends Sprite {
         this._img.kill();
         this._img = null;
         this._text = null;
-        this._value = null;
+        this.value = null;
         this._ac = null;
     }
 
@@ -91,7 +91,7 @@ class ContraptionButton extends Sprite {
 
     private function onClick(evt:Event):Void {
         this.filters = [ ];
-        this._ac(this._value);
+        this._ac(this.value);
     }
 
 }

@@ -198,6 +198,14 @@ class GlobalPlayer {
     **/
     public static var contentHeight:Float = 0;
 
+    /**
+        target interaction move step
+    **/
+    public static var usingTarget:Int = 0;
+
+    /**
+        can the content trigger actions?
+    **/
     public static var canTrigger:Bool = true;
 
     /**
@@ -246,8 +254,15 @@ class GlobalPlayer {
         #if (js && html5)
             var ok:Bool = false;
             try {
-                ExternBrowser.TBB_appQuit();
-                ok = true;
+                #if runtimedesktop
+                    ExternBrowser.TBB_appQuit();
+                    ok = true;
+                #elseif runtimemobile
+                    ExternBrowser.TBB_appQuitCapacitor();
+                    ok = true;
+                #else
+                    ok = false;
+                #end
             } catch (e) { 
                 ok = false;
             }
@@ -312,7 +327,7 @@ class GlobalPlayer {
             }
         #elseif runtimemobile
             try {
-                ExternBrowser.TBB_saveFile(name, content);
+                ExternBrowser.TBB_saveFileCapacitor(name, content);
                 ok = true;
             } catch (e) { 
                 ok = false;
@@ -342,9 +357,11 @@ class GlobalPlayer {
                 ok = false;
             }
         #elseif runtimemobile
-            
-        #else
-            
+            try {
+                ok = ExternBrowser.TBB_existsFileCapacitor(name);
+            } catch (e) { 
+                ok = false;
+            }    
         #end
         return (ok);
     }
@@ -367,7 +384,7 @@ class GlobalPlayer {
             }
         #elseif runtimemobile
             try {
-                ExternBrowser.TBB_loadFile(ext, callback);
+                ExternBrowser.TBB_loadFileCapacitor(name, callback);
                 ok = true;
             } catch (e) { 
                 ok = false;

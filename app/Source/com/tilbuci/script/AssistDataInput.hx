@@ -42,6 +42,15 @@ class AssistDataInput extends AssistBase {
             'data.savequickstate' => { p: ['s'], s:false, c: false, t: false, i: false, d:true, ic: 'icData' }, 
             'data.savestate' => { p: ['s'], s:false, c: false, t: false, i: false, d:true, ic: 'icData' }, 
             'data.savestatelocal' => { p: [ ], s:false, c: false, t: false, i: false, d:true, ic: 'icData' }, 
+
+            'target.show' => { p: [ ], s:false, c: false, t: false, i: false, d:false, ic: 'icInput' }, 
+            'target.hide' => { p: [ ], s:false, c: false, t: false, i: false, d:false, ic: 'icInput' }, 
+            'target.toggle' => { p: [ ], s:false, c: false, t: false, i: false, d:false, ic: 'icInput' }, 
+            'target.setposition' => { p: [ 'i', 'i' ], s:false, c: false, t: false, i: false, d:false, ic: 'icInput' }, 
+
+            'mouse.hide' => { p: [ ], s:false, c: false, t: false, i: false, d:false, ic: 'icInput' }, 
+            'mouse.show' => { p: [ ], s:false, c: false, t: false, i: false, d:false, ic: 'icInput' }, 
+
             'input.email' => { p: ['s', 's'], s:false, c: false, t: false, i: true, d:false, ic: 'icInput' }, 
             'input.float' => { p: ['s', 's', 'f', 'f', 'f'], s:false, c: false, t: false, i: true, d:false, ic: 'icInput' }, 
             'input.int' => { p: ['s', 's', 'i', 'i', 'i'], s:false, c: false, t: false, i: true, d:false, ic: 'icInput' }, 

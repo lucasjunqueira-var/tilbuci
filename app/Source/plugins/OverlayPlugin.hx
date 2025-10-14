@@ -117,7 +117,9 @@ class OverlayPlugin extends Plugin {
                             url += '&' + k + '=' + StringTools.urlEncode(dmap[k]);
                         }
                     }
-                    ExternOverlay.overlay_place(url, ld.map['title']);
+                    try {
+                        ExternOverlay.overlay_place(url, ld.map['title']);
+                    } catch (e) {  }
                 } else {
                     if (after.onerror != null) this._access.parser.run(after.onerror, true);    
                 }

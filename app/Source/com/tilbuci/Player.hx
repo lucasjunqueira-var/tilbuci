@@ -508,6 +508,9 @@ class Player extends Sprite {
                 }
             }
         } else if (ok) {
+            // remove target interaction
+            GlobalPlayer.area.hideTarget();
+            GlobalPlayer.area.clearTarget();
             // draw movie area
             GlobalPlayer.area.setArea();
             // secret key
@@ -696,6 +699,30 @@ class Player extends Sprite {
         }
     }
 
+    /**
+        Starts input listening on editor.
+    **/
+    public function listenInput():Void {
+        this.stage.addEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
+        this.stage.addEventListener(TouchEvent.TOUCH_END, onTouchEnd);
+        this.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyboard);
+        this.stage.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+        this.stage.addEventListener(MouseEvent.MIDDLE_CLICK, onMouseMiddle);
+        this.stage.addEventListener(MouseEvent.RIGHT_CLICK, onMouseRight);
+    }
+
+    /**
+        Stops input listening on editor.
+    **/
+    public function listenInputRemove():Void {
+        this.stage.removeEventListener(TouchEvent.TOUCH_BEGIN, onTouchBegin);
+        this.stage.removeEventListener(TouchEvent.TOUCH_END, onTouchEnd);
+        this.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyboard);
+        this.stage.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+        this.stage.removeEventListener(MouseEvent.MIDDLE_CLICK, onMouseMiddle);
+        this.stage.removeEventListener(MouseEvent.RIGHT_CLICK, onMouseRight);
+    }
+
     private function onTouchBegin(evt:TouchEvent):Void {
         this._touchStart.x = evt.stageX;
         this._touchStart.y = evt.stageY;
@@ -768,14 +795,14 @@ class Player extends Sprite {
         A key was pressed.
     **/
     private function onKeyboard(evt:KeyboardEvent):Void {
-        if (this.stage.focus is Stage) {
+        // if (this.stage.focus is Stage) {
             var found:Bool = GlobalPlayer.parser.checkKeyboard(evt.keyCode);
             if (!found) {
                 for (p in GlobalPlayer.plugins) {
                     if (p.active && !found) found = p.checkKeyboard(evt.keyCode);
                 }
             }
-        }
+        // }
     }
 
     /**

@@ -214,6 +214,10 @@ class MovieArea extends Sprite {
     **/
     private var _select:InstanceSelect;
 
+    /**
+        interaction target
+    **/
+    private var _target:Target = new Target();
 
     /**
         Creator.
@@ -246,6 +250,9 @@ class MovieArea extends Sprite {
         this._holder.addChild(this._scene);
         this._holder.addChild(this._inputArea);
         this._holder.addChild(this._overlay);
+
+        //this._holder.addChild(this._target);
+
         this.addChild(this._holder);
         this.addChild(this._mask);
         if (GlobalPlayer.mode == Player.MODE_PLAYER) {
@@ -262,6 +269,72 @@ class MovieArea extends Sprite {
         // editor
         this._select = new InstanceSelect();
         this.addChild(this._select);
+    }
+
+    public function showTarget():Void {
+        this._holder.addChild(this._target);
+        this._target.show();
+    }
+
+    public function hideTarget():Void {
+        if (this._target.parent != null) this._holder.removeChild(this._target);
+        this._target.hide();
+    }
+
+    public function toggleTarget():Void {
+        if (this._target.visible) {
+            this.hideTarget();
+        } else {
+            this.showTarget();
+        }
+    }
+
+    public function clearTarget():Void {
+        this._target.clear();
+    }
+
+    public function moveTarget(to:String):Void {
+        switch (to) {
+            case 'up':
+                if (this._target.y > 0) this._target.y -= GlobalPlayer.usingTarget;
+            case 'down':
+                if (this._target.y < GlobalPlayer.area.aHeight) this._target.y += GlobalPlayer.usingTarget;
+            case 'left':
+                if (this._target.x > 0) this._target.x -= GlobalPlayer.usingTarget;
+            case 'right':
+                if (this._target.x < GlobalPlayer.area.aWidth) this._target.x += GlobalPlayer.usingTarget;
+        }
+    }
+
+    public function setTargetPos(x:Float, y:Float):Void {
+        if (!this._target.visible) this.showTarget();
+        this._target.x = x;
+        this._target.y = y;
+    }
+
+    public function triggerTarget():Void {
+        if (GlobalPlayer.contraptions.usingMenu) {
+            // check menu buttons
+            GlobalPlayer.contraptions.checkMenuCollision(this._target);
+        } else {
+            // check interfaces
+            if (!GlobalPlayer.contraptions.checkInterfaceCollision(this._target)) {
+                // check instances
+                var inst:InstanceImage;
+                var found:InstanceImage = null;
+                for (i in 0...this._scene.numChildren) {
+                    inst = cast this._scene.getChildAt(i);
+                    if (inst != null) {
+                        if (inst.visible) {
+                            if (this._target.hitTestObject(inst)) {
+                                found = inst;
+                            }
+                        }
+                    }
+                }
+                if (found != null) found.onClick();
+            }
+        }
     }
 
     /**
@@ -1280,6 +1353,7 @@ class MovieArea extends Sprite {
     **/
     private function place():Void {
         // removing the overlay display
+        this._holder.removeChild(this._target);
         this._holder.removeChild(this._overlay);
         this._holder.removeChild(this._bloverlay);
 
@@ -1331,6 +1405,8 @@ class MovieArea extends Sprite {
         this._holder.addChild(this._scene);
         this._holder.addChild(this._inputArea);
         this._holder.addChild(this._overlay);
+
+        //this._holder.addChild(this._target);
 
         // warn plugins
         for (p in GlobalPlayer.plugins) {

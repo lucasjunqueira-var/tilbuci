@@ -605,6 +605,15 @@ class ActionInfo {
         this.groups.push(new ActionInfoGroup(
             Global.ln.get('window-acbinput-title'), 
             [
+                { n: Global.ln.get('acinfo-targetshow'), a: 'target.show', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-targethide'), a: 'target.hide', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-targettoggle'), a: 'target.toggle', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-targetsetposition'), a: 'target.setposition', p: [
+                    { t: 'i', n: Global.ln.get('acinfo-targetsetposition-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-targetsetposition-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-mousehide'), a: 'mouse.hide', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-mouseshow'), a: 'mouse.show', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-inputmessage'), a: 'input.message', p: [
                     { t: 's', n: Global.ln.get('acinfo-inputmessage-p1'), v: '' }, 
                     { t: 's', n: Global.ln.get('acinfo-inputmessage-p2'), v: '' }, 

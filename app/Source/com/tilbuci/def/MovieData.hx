@@ -263,7 +263,7 @@ class MovieData extends DefBase {
         this.inputs = [
             'keyup' => 'up', 
             'keydown' => 'down', 
-            'keyletf' => 'left', 
+            'keyleft' => 'left', 
             'keyright' => 'right', 
             'keypup' => 'nout', 
             'keypdown' => 'nin', 
