@@ -428,6 +428,7 @@ class WindowMovieProperties extends PopupWindow {
             { text: Global.ln.get('window-movieprop-input-opprevkf'), value: 'prevkf' }, 
             { text: Global.ln.get('window-movieprop-input-opfirstkf'), value: 'firstkf' }, 
             { text: Global.ln.get('window-movieprop-input-oplastkf'), value: 'lastkf' }, 
+            { text: Global.ln.get('window-movieprop-input-optarget'), value: 'target' }
         ];
         var inArea:InterfaceContainer = new InterfaceContainer('v', 0, 0x666666);
         for (k in GlobalPlayer.mdata.inputs.keys()) {
@@ -621,6 +622,9 @@ class WindowMovieProperties extends PopupWindow {
                     this.ui.inputs['input-'+k].text = '';
                 case 'lastkf':
                     this.ui.setSelectValue(('input-'+k), 'lastkf');
+                    this.ui.inputs['input-'+k].text = '';
+                case 'target':
+                    this.ui.setSelectValue(('input-'+k), 'target');
                     this.ui.inputs['input-'+k].text = '';
                 default:
                     this.ui.setSelectValue(('input-'+k), '');
@@ -1369,6 +1373,8 @@ class WindowMovieProperties extends PopupWindow {
                     inputs[k] = 'firstkf';
                 case 'lastkf':
                     inputs[k] = 'lastkf';
+                case 'target':
+                    inputs[k] = 'target';
                 default:
                     inputs[k] = this.ui.inputs[('input-'+k)].text;
             }

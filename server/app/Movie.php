@@ -1958,6 +1958,7 @@ class Movie extends BaseClass
                                 $url . 'manifest.json', 
                                 $url . 'assets/tilbuci/btClose.png', 
                                 $url . 'assets/tilbuci/btOk.png', 
+                                $url . 'assets/tilbuci/icTarget.png', 
                                 $url . 'manifest/default.json', 
                                 $url . 'movie/' . $movie . '.movie/movie.json'
                             ];
@@ -2076,7 +2077,7 @@ class Movie extends BaseClass
                             foreach ($collections as $vc) {
                                 if (is_file('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/collection/' . $vc . '.json')) $offline[] = $url . 'movie/'.$movie.'.movie/collection/' . $vc . '.json';
                                 // offline collection assets
-                                $cka = $this->queryAll('SELECT at_type, at_file1, at_file2, at_file3, at_file4, at_file5 FROM assets WHERE at_collection=:col AND FIND_IN_SET(at_type, :types)', [
+                                /*$cka = $this->queryAll('SELECT at_type, at_file1, at_file2, at_file3, at_file4, at_file5 FROM assets WHERE at_collection=:col AND FIND_IN_SET(at_type, :types)', [
                                     ':col' => $movie . $vc, 
                                     ':types' => 'audio,html,picture,spritemap,video', 
                                 ], "SELECT at_type, at_file1, at_file2, at_file3, at_file4, at_file5 FROM assets WHERE at_collection=:col AND at_type IN ('audio','html','picture','spritemap','video')", [
@@ -2091,26 +2092,12 @@ class Movie extends BaseClass
                                             }
                                         }
                                     }
-                                }
+                                }*/
                             }
-                            // check offline string files
-                            if (is_dir('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/strings/')) {
-                                $embedlist = $this->listDirFiles('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/strings');
-                                foreach ($embedlist as $el) {
-                                    $offline[] = str_replace('../../export/pwa-'.$movie.'/', $url, $el);
-                                }
-                            }
-                            // check offline dialogue files
-                            if (is_dir('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/dialogues/')) {
-                                $embedlist = $this->listDirFiles('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/dialogues');
-                                foreach ($embedlist as $el) {
-                                    $offline[] = str_replace('../../export/pwa-'.$movie.'/', $url, $el);
-                                }
-                            }
-                            // check offline embed files
-                            if (is_dir('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/embed/')) {
-                                $embedlist = $this->listDirFiles('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/embed');
-                                foreach ($embedlist as $el) {
+                            // offline media files
+                            if (is_dir('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/')) {
+                                $mlist = $this->listDirFiles('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media');
+                                foreach ($mlist as $el) {
                                     $offline[] = str_replace('../../export/pwa-'.$movie.'/', $url, $el);
                                 }
                             }

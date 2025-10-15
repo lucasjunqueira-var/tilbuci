@@ -226,9 +226,11 @@ class Contraptions {
         }
     }
 
-    public function checkMenuCollision(obj:Sprite):Void {
+    public function checkMenuCollision(obj:Sprite):Bool {
         if (this._menuCurrent != null) {
-            this._menuCurrent.checkCollision(obj);
+            return (this._menuCurrent.checkCollision(obj));
+        } else {
+            return (false);
         }
     }
 

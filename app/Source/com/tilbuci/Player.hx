@@ -7,6 +7,7 @@
  package com.tilbuci;
 
 /** HAXE **/
+import com.tilbuci.player.Joystick;
 import feathers.controls.TextArea;
 import com.tilbuci.statictools.StringStatic;
 import openfl.geom.Point;
@@ -422,6 +423,8 @@ class Player extends Sprite {
             this.addChild(this._uiArea);
             // initialialize plugins
             this.initializePlugins();
+            // start game controller support
+            var joystick = new Joystick();
             // loading initial movie?
             if (GlobalPlayer.mode == Player.MODE_PLAYER) {
                 this._firstMovie = true;
@@ -453,6 +456,8 @@ class Player extends Sprite {
                         }
                     }
                 }
+                // start game controller support
+                var joystick = new Joystick();
                 GlobalPlayer.ready = true;
                 // creating the display area
                 this._bgarea = new Sprite();

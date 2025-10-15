@@ -18,6 +18,8 @@ class Target extends Sprite {
 
     public var timer:Timer;
 
+    public var lastInstOver:String = '';
+
     private var _bmp:Bitmap;
 
     private var _tgname:String = '';
@@ -73,9 +75,6 @@ class Target extends Sprite {
 
     public function setGraphic(nm:String):Void {
         if ((this._tgname != '') && (nm != this._lastname)) {
-
-trace ('over', nm);
-
             this._lastname = nm;
             if (nm == '') {
                 if (this._custom.lastMedia != GlobalPlayer.contraptions.targets[this._tgname].defaultp) this._custom.load(GlobalPlayer.contraptions.targets[this._tgname].defaultp);
@@ -99,8 +98,8 @@ trace ('over', nm);
         this.x = GlobalPlayer.area.aWidth / 2;
         this.y = GlobalPlayer.area.aHeight / 2;
         this.visible = true;
-        GlobalPlayer.usingTarget = Math.round(GlobalPlayer.area.aWidth / 75);
-        if ((GlobalPlayer.area.aHeight / 50) < GlobalPlayer.usingTarget) GlobalPlayer.usingTarget = Math.round(GlobalPlayer.area.aHeight / 75);
+        GlobalPlayer.usingTarget = Math.round(GlobalPlayer.area.aWidth / 32);
+        if ((GlobalPlayer.area.aHeight / 50) < GlobalPlayer.usingTarget) GlobalPlayer.usingTarget = Math.round(GlobalPlayer.area.aHeight / 32);
     }
 
     public function hide() {

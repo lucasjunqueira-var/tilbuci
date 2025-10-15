@@ -281,8 +281,9 @@ class MovieArea extends Sprite {
             } catch (e) { }
             this._target.timer = null;
         }
-        this._target.timer = new Timer(1000);
+        this._target.timer = new Timer(500);
         this._target.timer.run = this.checkTargetOver;
+        this._target.lastInstOver = '';
     }
 
     public function hideTarget():Void {
@@ -294,6 +295,7 @@ class MovieArea extends Sprite {
             } catch (e) { }
             this._target.timer = null;
         }
+        this._target.lastInstOver = '';
     }
 
     public function toggleTarget():Void {
@@ -340,9 +342,8 @@ class MovieArea extends Sprite {
     }
 
     public function triggerTarget():Void {
-        if (GlobalPlayer.contraptions.usingMenu) {
-            // check menu buttons
-            GlobalPlayer.contraptions.checkMenuCollision(this._target);
+        if (GlobalPlayer.contraptions.usingMenu && GlobalPlayer.contraptions.checkMenuCollision(this._target)) {
+            // running menu action
         } else {
             // check interfaces
             if (!GlobalPlayer.contraptions.checkInterfaceCollision(this._target)) {
@@ -385,6 +386,14 @@ class MovieArea extends Sprite {
                 over = '_interface_';
             }
             this._target.setGraphic(over);
+
+            if ((over != '') && (over != '_menu_') && (over != '_interface_') && (over != this._target.lastInstOver)) {
+                this._target.lastInstOver = over;
+                if (this._instances.exists(over)) {
+                    this._instances[over].onMouseOver(null);
+                }
+            }
+
         } else {
             this.hideTarget();
         }

@@ -707,6 +707,57 @@ class ScriptParser {
     }
 
     /**
+        Runs gamepad-assigned actions.
+    **/
+    public function checkJoystick(code:String):Bool {
+        var found:Bool = false;
+        switch (code) {
+            case 'u':
+                if (GlobalPlayer.usingTarget > 0) {
+                    GlobalPlayer.area.moveTarget('up');
+                    found = true;
+                } else {
+                    found = this.runInput('keyup');
+                }
+            case 'd':
+                if (GlobalPlayer.usingTarget > 0) {
+                    GlobalPlayer.area.moveTarget('down');
+                    found = true;
+                } else {
+                    found = this.runInput('keydown');
+                }
+            case 'l':
+                if (GlobalPlayer.usingTarget > 0) {
+                    GlobalPlayer.area.moveTarget('left');
+                    found = true;
+                } else {
+                    found = this.runInput('keyleft');
+                }
+            case 'r':
+                if (GlobalPlayer.usingTarget > 0) {
+                    GlobalPlayer.area.moveTarget('right');
+                    found = true;
+                } else {
+                    found = this.runInput('keyright');
+                }
+            case '0':
+                if (GlobalPlayer.usingTarget > 0) {
+                    GlobalPlayer.area.triggerTarget();
+                    found = true;
+                } else {
+                    found = this.runInput('keyspace');
+                }
+            case '1':
+                found = this.runInput('keyenter');
+            case '2':
+                found = this.runInput('keypup');
+            case '3':
+                found = this.runInput('keypdown');
+        }
+        return (found);
+    }
+
+    /**
         Runs keyboard-assigned actions.
     **/
     public function checkKeyboard(keyCode:Int):Bool {
@@ -753,12 +804,7 @@ class ScriptParser {
                     found = this.runInput('keyspace');
                 }
             case Keyboard.ENTER:
-                if (GlobalPlayer.usingTarget > 0) {
-                    GlobalPlayer.area.triggerTarget();
-                    found = true;
-                } else {
-                    found = this.runInput('keyenter');
-                }
+                found = this.runInput('keyenter');
             case Keyboard.HOME:
                 found = this.runInput('keyhome');
             case Keyboard.END:
@@ -803,6 +849,7 @@ class ScriptParser {
                 case 'prevkf': this.run('{ "ac": "scene.previouskeyframe", "param": [ "" ] }'); found = true;
                 case 'lastkf': this.run('{ "ac": "scene.loadlastkeyframe", "param": [ "" ] }'); found = true;
                 case 'firstkf': this.run('{ "ac": "scene.loadfirstkeyframe", "param": [ "" ] }'); found = true;
+                case 'target': this.run('{ "ac": "target.toggle", "param": [ "" ] }'); found = true;
                 default: found = this.run('{ "ac": "run", "param": [ "' + GlobalPlayer.mdata.inputs[name] + '" ] }');
             }
         }
