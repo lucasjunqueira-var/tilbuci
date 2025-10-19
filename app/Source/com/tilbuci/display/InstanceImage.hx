@@ -1069,7 +1069,7 @@ class InstanceImage extends Sprite {
         Mouse over instance.
     **/
     public function onMouseOver(evt:MouseEvent):Void {
-        if (!GlobalPlayer.cursorVisible) if ((GlobalPlayer.mode != Player.MODE_EDITOR) && (this._data.action != '') && (GlobalPlayer.mdata.highlightInt != null) && !GlobalPlayer.isMobile()) {
+        if (GlobalPlayer.cursorVisible) if ((GlobalPlayer.mode != Player.MODE_EDITOR) && (this._data.action != '') && (GlobalPlayer.mdata.highlightInt != null) && !GlobalPlayer.isMobile()) {
             this._imCurrent.filters = this._imOther.filters = [
                 new GlowFilter(GlobalPlayer.mdata.highlightInt, 1, 4, 4, 255, 1, true)
             ];

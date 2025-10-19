@@ -219,6 +219,7 @@ class MovieArea extends Sprite {
         interaction target
     **/
     private var _target:Target = new Target();
+    private var _targetTime:Float = 0.0075;
 
     /**
         Creator.
@@ -251,9 +252,6 @@ class MovieArea extends Sprite {
         this._holder.addChild(this._scene);
         this._holder.addChild(this._inputArea);
         this._holder.addChild(this._overlay);
-
-        //this._holder.addChild(this._target);
-
         this.addChild(this._holder);
         this.addChild(this._mask);
         if (GlobalPlayer.mode == Player.MODE_PLAYER) {
@@ -337,8 +335,8 @@ class MovieArea extends Sprite {
 
     public function setTargetPos(x:Float, y:Float):Void {
         if (!this._target.visible) this.showTarget();
-        this._target.x = x;
-        this._target.y = y;
+        this._target.targetX = this._target.x = x;
+        this._target.targetY = this._target.y = y;
     }
 
     public function triggerTarget():Void {
@@ -387,7 +385,7 @@ class MovieArea extends Sprite {
             }
             this._target.setGraphic(over);
 
-            if ((over != '') && (over != '_menu_') && (over != '_interface_') && (over != this._target.lastInstOver)) {
+            if ((over != '_menu_') && (over != '_interface_') && (over != this._target.lastInstOver)) {
                 this._target.lastInstOver = over;
                 if (this._instances.exists(over)) {
                     this._instances[over].onMouseOver(null);

@@ -70,7 +70,7 @@ class Joystick {
                 this._timer.stop();
             } catch (e) { }
         }
-        this._timer = new Timer(75);
+        this._timer = new Timer(32);
         this._timer.run = this.checkInput;
     }
 

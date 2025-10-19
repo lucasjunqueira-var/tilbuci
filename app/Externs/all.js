@@ -95,6 +95,15 @@ function TBB_saveFileElectron(name, content) {
 }
 
 /**
+    Saves a text file from capacitor runtime.
+    @param  name    the file name
+    @param  content the file content
+**/
+function TBB_saveFileCapacitor(name, content) {
+    TBB_Capacitor_Save(name, content);
+}
+
+/**
     Loads a text file from browser.
     @param  ext     the file extension
     @param  callback    method to call on file load
@@ -140,11 +149,36 @@ function TBB_loadFileElectron(name, callback) {
 }
 
 /**
+    Loads a text file from capacitor runtime.
+    @param  name     the file name
+    @param  callback    method to call on file load
+**/
+function TBB_loadFileCapacitor(name, callback) {
+    TBB_Capacitor_Load(name).then(ret => {
+        if (ret == "") {
+            callback(false, "");
+        } else {
+            callback(true, ret);
+        }
+    });
+}
+
+/**
     Checks if a file exists in user folder on electron runtime.
     @param  name    the file name
 **/
 function TBB_existsFileElectron(name) {
     window.electronAPI.existsFile(name).then(ok => {
+        return (ok);
+    });
+}
+
+/**
+    Checks if a file exists in user folder on electron runtime.
+    @param  name    the file name
+**/
+function TBB_existsFileCapacitor(name) {
+    TBB_Capacitor_FileExists(name).then(ok => {
         return (ok);
     });
 }

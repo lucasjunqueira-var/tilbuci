@@ -2412,7 +2412,7 @@ class Movie extends BaseClass
                             '[AUTHOR]', 
                             '[DESCRIPTION]'
                         ], [
-                            $title, 
+                            $movie, 
                             $author, 
                             $description
                         ], $package);
@@ -2755,7 +2755,7 @@ class Movie extends BaseClass
                                     '[APPID]', 
                                     '[APPNAME]'
                                 ], [
-                                    $appid, 
+                                    str_replace([' ', 'tilbuci.', '.'], '', $this->cleanString($appid)), 
                                     $this->info['title'], 
                                 ], $txt);
                                 file_put_contents(('../../export/mobile-'.$movie.'/'.$movie.'/capacitor.config.json'), $txt);

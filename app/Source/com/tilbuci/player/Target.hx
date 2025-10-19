@@ -20,6 +20,9 @@ class Target extends Sprite {
 
     public var lastInstOver:String = '';
 
+    public var targetX:Float = 0;
+    public var targetY:Float = 0;
+
     private var _bmp:Bitmap;
 
     private var _tgname:String = '';
@@ -89,17 +92,19 @@ class Target extends Sprite {
                     if (this._custom.lastMedia != GlobalPlayer.contraptions.targets[this._tgname].inst2) this._custom.load(GlobalPlayer.contraptions.targets[this._tgname].inst2);
                 } else if ((this._inst3len > 0) && (nm.substr(0, this._inst3len) == GlobalPlayer.contraptions.targets[this._tgname].inst3name)) {
                     if (this._custom.lastMedia != GlobalPlayer.contraptions.targets[this._tgname].inst3) this._custom.load(GlobalPlayer.contraptions.targets[this._tgname].inst3);
+                } else {
+                    if (this._custom.lastMedia != GlobalPlayer.contraptions.targets[this._tgname].defaultp) this._custom.load(GlobalPlayer.contraptions.targets[this._tgname].defaultp);
                 }
             }
         }
     }
 
     public function show():Void {
-        this.x = GlobalPlayer.area.aWidth / 2;
-        this.y = GlobalPlayer.area.aHeight / 2;
+        this.targetX = this.x = GlobalPlayer.area.aWidth / 2;
+        this.targetY = this.y = GlobalPlayer.area.aHeight / 2;
         this.visible = true;
-        GlobalPlayer.usingTarget = Math.round(GlobalPlayer.area.aWidth / 32);
-        if ((GlobalPlayer.area.aHeight / 50) < GlobalPlayer.usingTarget) GlobalPlayer.usingTarget = Math.round(GlobalPlayer.area.aHeight / 32);
+        GlobalPlayer.usingTarget = Math.round(GlobalPlayer.area.aWidth / 64);
+        if ((GlobalPlayer.area.aHeight / 64) < GlobalPlayer.usingTarget) GlobalPlayer.usingTarget = Math.round(GlobalPlayer.area.aHeight / 64);
     }
 
     public function hide() {
