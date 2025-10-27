@@ -23,6 +23,7 @@ class MenuScene extends DrawerMenu {
         this.addButton('btNew', Global.ln.get('menu-scene-new'), onNew);
         this.addButton('btOpen', Global.ln.get('menu-scene-open'), onOpen);
         this.addButton('btProperties', Global.ln.get('menu-scene-properties'), onProp);
+        this.addButton('btDflow', Global.ln.get('menu-scene-dflow'), onDflow);
         this.addButton('btSave', Global.ln.get('menu-scene-save'), onSave);
         this.addButton('btSaveAs', Global.ln.get('menu-scene-saveas'), onSaveAs);
         this.addButton('btPublish', Global.ln.get('menu-scene-publish'), onPublish);
@@ -39,6 +40,7 @@ class MenuScene extends DrawerMenu {
             this.ui.buttons['btNew'].enabled = false;
             this.ui.buttons['btOpen'].enabled = false;
             this.ui.buttons['btProperties'].enabled = false;
+            this.ui.buttons['btDflow'].enabled = false;
             this.ui.buttons['btSave'].enabled = false;
             this.ui.buttons['btSaveAs'].enabled = false;
             this.ui.buttons['btPublish'].enabled = false;
@@ -54,12 +56,14 @@ class MenuScene extends DrawerMenu {
             this.ui.buttons['btOpen'].toolTip = null;
             if (GlobalPlayer.movie.scId == '') {
                 this.ui.buttons['btProperties'].enabled = false;
+                this.ui.buttons['btDflow'].enabled = false;
                 this.ui.buttons['btSave'].enabled = false;
                 this.ui.buttons['btSaveAs'].enabled = false;
                 this.ui.buttons['btPublish'].enabled = false;
                 this.ui.buttons['btVersions'].enabled = false;
                 this.ui.buttons['btPlayer'].enabled = false;
                 this.ui.buttons['btProperties'].toolTip = Global.ln.get('tooltip-movie-noscene');
+                this.ui.buttons['btDflow'].toolTip = Global.ln.get('tooltip-movie-noscene');
                 this.ui.buttons['btSave'].toolTip = Global.ln.get('tooltip-movie-noscene');
                 this.ui.buttons['btSaveAs'].toolTip = Global.ln.get('tooltip-movie-noscene');
                 this.ui.buttons['btPublish'].toolTip = Global.ln.get('tooltip-movie-noscene');
@@ -67,12 +71,14 @@ class MenuScene extends DrawerMenu {
                 this.ui.buttons['btPlayer'].toolTip = Global.ln.get('tooltip-movie-noscene');
             } else {
                 this.ui.buttons['btProperties'].enabled = true;
+                this.ui.buttons['btDflow'].enabled = true;
                 this.ui.buttons['btSave'].enabled = true;
                 this.ui.buttons['btSaveAs'].enabled = true;
                 this.ui.buttons['btPublish'].enabled = true;
                 this.ui.buttons['btVersions'].enabled = true;
                 this.ui.buttons['btPlayer'].enabled = true;
                 this.ui.buttons['btProperties'].toolTip = null;
+                this.ui.buttons['btDflow'].toolTip = null;
                 this.ui.buttons['btSave'].toolTip = null;
                 this.ui.buttons['btSaveAs'].toolTip = null;
                 this.ui.buttons['btPublish'].toolTip = null;
@@ -132,10 +138,17 @@ class MenuScene extends DrawerMenu {
     }
 
     /**
-        Shows the properties movie window.
+        Shows the properties window.
     **/
     private  function onProp(evt:TriggerEvent):Void {
         this._ac('prop');
+    }
+
+    /**
+        Shows the decision flow window.
+    **/
+    private  function onDflow(evt:TriggerEvent):Void {
+        this._ac('dflow');
     }
 
     /**

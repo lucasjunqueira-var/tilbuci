@@ -69,6 +69,11 @@ class SceneData extends DefBase {
     **/
     public var navigation:Map<String, String> = [ ];
 
+    /**
+        decision flow
+    **/
+    public var dflow:Array<Array<String>> = [ ];
+
     public function new() {
         super(['title', 'about', 'image', 'navigation', 'collections', 'keyframes', 'loop', 'acstart', 'ackeyframes']);
         this.clear();
@@ -84,6 +89,7 @@ class SceneData extends DefBase {
         this.staticsc = false;
         for (nv in this.navigation.keys()) this.navigation.remove(nv);
         this.navigation = [ 'up' => '', 'down' => '', 'left' => '', 'right' => '', 'nin' => '', 'nout' => '' ];
+        this.dflow = [ [ '', '', ], [ '', '', ], [ '', '', ], [ '', '', ] ];
         this.loop = 0;
         while (this.collections.length > 0) this.collections.shift();
         while (this.keyframes.length > 0) {
@@ -104,6 +110,13 @@ class SceneData extends DefBase {
     **/
     public function load(data:Map<String, Dynamic>):Bool {
         GlobalPlayer.contraptions.removeContraptions();
+
+trace ('load scene data');
+
+        GlobalPlayer.contraptions.usingDflow = false;
+
+
+
         if (this.checkFields(data)) {
             this.title = data['title'];
             this.about = data['about'];
@@ -146,6 +159,15 @@ class SceneData extends DefBase {
             } else {
                 this.staticsc = false;
             }
+            if (data.exists('dflow')) {
+                this.dflow = [ [ '', '', ], [ '', '', ], [ '', '', ], [ '', '', ] ];
+                var ki:Int = 0;
+                for (k in Reflect.fields(data['dflow'])) {
+                    var fl:Array<String> = cast Reflect.field(data['dflow'], k);
+                    if (fl != null) this.dflow[ki] = fl;
+                    ki++;
+                }
+            }
             GlobalPlayer.contraptions.hideLoadingIc();
             return (true);
         } else {
@@ -185,6 +207,7 @@ class SceneData extends DefBase {
                 nin: this.navigation['nin'], 
                 nout: this.navigation['nout']
             }, 
+            dflow: this.dflow, 
             collections: this.collections, 
             loop: this.loop, 
             acstart: this.acstart, 
@@ -215,6 +238,16 @@ class SceneData extends DefBase {
             if (Reflect.hasField(navigation, 'nin')) this.navigation['nin'] = Reflect.field(navigation, 'nin');
             if (Reflect.hasField(navigation, 'nout')) this.navigation['nout'] = Reflect.field(navigation, 'nout');
         }
+        if (Reflect.hasField(obj, 'dflow')) {
+            this.dflow = [ [ '', '', ], [ '', '', ], [ '', '', ], [ '', '', ] ];
+            var dfobj = Reflect.field(obj, 'dflow');
+            var ki:Int = 0;
+            for (k in Reflect.fields(dfobj)) {
+                var fl:Array<String> = cast Reflect.field(dfobj, k);
+                if (fl != null) this.dflow[ki] = fl;
+                ki++;
+            }
+        }
         if (Reflect.hasField(obj, 'keyframes')) {
             while (this.keyframes.length > 0) {
                 var kf:Map<String, InstanceData> = this.keyframes.shift();
@@ -232,6 +265,13 @@ class SceneData extends DefBase {
                 this.keyframes.push(inst);
             }
         }
+    }
+
+    /**
+        Does the scene has decision flow options set?
+    **/
+    public function hasDflow():Bool {
+        return ((this.dflow[0][1] != '') || (this.dflow[1][1] != '') || (this.dflow[2][1] != '') || (this.dflow[3][1] != ''));
     }
 
     /**
@@ -253,6 +293,8 @@ class SceneData extends DefBase {
                 inst.remove(i);
             }
         }
+        while (this.dflow.length > 0) this.dflow.shift();
+        this.dflow = null;
         this.keyframes = null;
         this.acstart = null;
         while (this.ackeyframes.length > 0) this.ackeyframes.shift();

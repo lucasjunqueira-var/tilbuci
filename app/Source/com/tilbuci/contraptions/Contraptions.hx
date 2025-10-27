@@ -26,6 +26,20 @@ class Contraptions {
     private var _menuCurrent:MenuContraption = null;
     public var usingMenu:Bool = false;
 
+    // decision flow contraption
+    public var dflow:Map<String, DflowContraption> = [ ];
+    private var _dflowOverlay:Sprite;
+    private var _dflowCurrent:DflowContraption = null;
+    public var usingDflow:Bool = false;
+
+    // messages contraption
+    public var messages:Map<String, MessagesContraption> = [ ];
+    private var _messagesOverlay:Sprite;
+    private var _messagesAction:Dynamic;
+    private var _messagesVariable:String;
+    private var _messagesCurrent:MessagesContraption = null;
+    public var usingMessages:Bool = false;
+
     // cover contraption
     public var covers:Map<String, CoverContraption> = [ ];
     private var _coverOverlay:Sprite;
@@ -71,6 +85,8 @@ class Contraptions {
         if (this._formsOverlay == null) this._formsOverlay = GlobalPlayer.area.getOverlay('contraptions-forms');
         if (this._menusOverlay == null) this._menusOverlay = GlobalPlayer.area.getOverlay('contraptions-menu');
         if (this._interfaceOverlay == null) this._interfaceOverlay = GlobalPlayer.area.getOverlay('contraptions-interface');
+        if (this._dflowOverlay == null) this._dflowOverlay = GlobalPlayer.area.getOverlay('contraptions-dflow');
+        if (this._messagesOverlay == null) this._messagesOverlay = GlobalPlayer.area.getOverlay('contraptions-messages');
         if (this._loadingOverlay == null) this._loadingOverlay = GlobalPlayer.area.getOverlay('contraptions-loading');
         this._loadingOverlay.mouseEnabled = false;
     }
@@ -92,6 +108,16 @@ class Contraptions {
             this.menus.remove(k);
         }
         this._menusOverlay.graphics.clear();
+        for (k in this.dflow.keys()) {
+            this.dflow[k].kill();
+            this.dflow.remove(k);
+        }
+        this._dflowOverlay.graphics.clear();
+        for (k in this.messages.keys()) {
+            this.messages[k].kill();
+            this.messages.remove(k);
+        }
+        this._messagesOverlay.graphics.clear();
         for (k in this.forms.keys()) {
             this.forms[k].kill();
             this.forms.remove(k);
@@ -108,6 +134,14 @@ class Contraptions {
         for (k in this.menus.keys()) {
             this.menus[k].kill();
             this.menus.remove(k);
+        }
+        for (k in this.dflow.keys()) {
+            this.dflow[k].kill();
+            this.dflow.remove(k);
+        }
+        for (k in this.messages.keys()) {
+            this.messages[k].kill();
+            this.messages.remove(k);
         }
         for (k in this.covers.keys()) {
             this.covers[k].kill();
@@ -148,6 +182,14 @@ class Contraptions {
         data['menus'] = new Array<Dynamic>();
         for (mn in this.menus) {
             data['menus'].push(mn.toObject());
+        }
+        data['dflow'] = new Array<Dynamic>();
+        for (df in this.dflow) {
+            data['dflow'].push(df.toObject());
+        }
+        data['messages'] = new Array<Dynamic>();
+        for (ms in this.messages) {
+            data['messages'].push(ms.toObject());
         }
         data['musics'] = new Array<Dynamic>();
         for (ms in this.musics) {
@@ -246,6 +288,124 @@ class Contraptions {
         }
     }
 
+    public function showingDflow():Bool {
+        return (this._dflowOverlay.numChildren > 0);
+    }
+
+    public function dflowShow(options:Array<Array<String>>):Bool {
+        this.dflowHide();
+        if ((GlobalPlayer.mode != Player.MODE_EDITOR) && this.dflow.exists('dflow')) {
+            this._dflowCurrent = this.dflow['dflow'];
+            if (this._dflowCurrent.ok) {
+                this._dflowOverlay.graphics.clear();
+                this._dflowOverlay.addChild(this._dflowCurrent.create(options));
+                switch (this._dflowCurrent.position) {
+                    case 'top':
+                        this._dflowCurrent.x = ((GlobalPlayer.area.aWidth - this._dflowCurrent.menuSize.x) / 2);
+                        this._dflowCurrent.y = this._dflowCurrent.gap;
+                    case 'topleft':
+                        this._dflowCurrent.x = this._dflowCurrent.gap;
+                        this._dflowCurrent.y = this._dflowCurrent.gap;
+                    case 'topright':
+                        this._dflowCurrent.x = GlobalPlayer.area.aWidth - this._dflowCurrent.menuSize.x - this._dflowCurrent.gap;
+                        this._dflowCurrent.y = this._dflowCurrent.gap;
+                    case 'centerleft':
+                        this._dflowCurrent.x = this._dflowCurrent.gap;
+                        this._dflowCurrent.y = ((GlobalPlayer.area.aHeight - this._dflowCurrent.menuSize.y) / 2);
+                    case 'centerright':
+                        this._dflowCurrent.x = GlobalPlayer.area.aWidth - this._dflowCurrent.menuSize.x - this._dflowCurrent.gap;
+                        this._dflowCurrent.y = ((GlobalPlayer.area.aHeight - this._dflowCurrent.menuSize.y) / 2);
+                    case 'bottom':
+                        this._dflowCurrent.x = ((GlobalPlayer.area.aWidth - this._dflowCurrent.menuSize.x) / 2);
+                        this._dflowCurrent.y = GlobalPlayer.area.aHeight - this._dflowCurrent.menuSize.y - this._dflowCurrent.gap;
+                    case 'bottomleft':
+                        this._dflowCurrent.x = this._dflowCurrent.gap;
+                        this._dflowCurrent.y = GlobalPlayer.area.aHeight - this._dflowCurrent.menuSize.y - this._dflowCurrent.gap;
+                    case 'bottomright':
+                        this._dflowCurrent.x = GlobalPlayer.area.aWidth - this._dflowCurrent.menuSize.x - this._dflowCurrent.gap;
+                        this._dflowCurrent.y = GlobalPlayer.area.aHeight - this._dflowCurrent.menuSize.y - this._dflowCurrent.gap;
+                    default: // center
+                        this._dflowCurrent.x = (GlobalPlayer.area.aWidth - this._dflowCurrent.menuSize.x) / 2;
+                        this._dflowCurrent.y = (GlobalPlayer.area.aHeight - this._dflowCurrent.menuSize.y) / 2;
+                }
+                this.usingDflow = true;
+                return (true);
+            } else {
+                this._dflowCurrent = null;
+                return (false);
+            }
+        } else {
+            this._dflowCurrent = null;
+            return (false);
+        }
+    }
+
+    public function checkDflowCollision(obj:Sprite):Bool {
+        if (this._dflowCurrent != null) {
+            return (this._dflowCurrent.checkCollision(obj));
+        } else {
+            return (false);
+        }
+    }
+
+    public function checkDflowOver(obj:Sprite):Bool {
+        if (this._dflowCurrent != null) {
+            if (this._dflowCurrent.hitTestObject(obj)) {
+                return (true);
+            } else {
+                return (false);
+            }
+        } else {
+            return (false);
+        }
+    }
+
+    public function messagesShow(name:String, msg:String, options:Array<String>, variable:String, actions:Dynamic):Bool {
+        this.messagesHide();
+        if (this.messages.exists(name)) {
+            this._messagesCurrent = this.messages[name];
+            if (this._messagesCurrent.ok) {
+                this._messagesOverlay.graphics.clear();
+                this._messagesOverlay.graphics.beginFill(0, 0.5);
+                this._messagesOverlay.graphics.drawRect(0, 0, GlobalPlayer.area.aWidth, GlobalPlayer.area.aHeight);
+                this._messagesOverlay.graphics.endFill();
+                this._messagesOverlay.addChild(this._messagesCurrent.create(msg, options, this.onMessagesSelect));
+                this._messagesCurrent.x = (GlobalPlayer.area.aWidth - this._messagesCurrent.width) / 2;
+                this._messagesCurrent.y = (GlobalPlayer.area.aHeight - this._messagesCurrent.height) / 2;
+                this._messagesAction = actions;
+                this._messagesVariable = variable;
+                this.usingMessages = true;
+                return (true);
+            } else {
+                this._messagesCurrent = null;
+                return (false);
+            }
+        } else {
+            this._messagesCurrent = null;
+            return (false);
+        }
+    }
+
+    public function checkMessagesCollision(obj:Sprite):Bool {
+        if (this._messagesCurrent != null) {
+            return (this._messagesCurrent.checkCollision(obj));
+        } else {
+            return (false);
+        }
+    }
+
+    public function checkMessagesOver(obj:Sprite):Bool {
+        if (this._messagesCurrent != null) {
+            if (this._messagesCurrent.hitTestObject(obj)) {
+                return (true);
+            } else {
+                return (false);
+            }
+        } else {
+            return (false);
+        }
+    }
+
     public function changeDisplay()
     {
         this.getLayers();
@@ -261,6 +421,8 @@ class Contraptions {
 
     public function removeContraptions(all:Bool = false):Void {
         this.menuHide();
+        this.messagesHide();
+        this.dflowHide();
         this.hideForm();
         this.hideLoadingIc();
         this.removeZoom();
@@ -305,9 +467,32 @@ class Contraptions {
         this.usingMenu = false;
     }
 
+    public function dflowHide():Void {
+        if (this._coverOverlay == null) this._coverOverlay = GlobalPlayer.area.getOverlay('contraptions-cover');
+        for (mn in this.dflow) mn.remove();
+        this.getLayers();
+        this._dflowOverlay.graphics.clear();
+        this._dflowCurrent = null;
+        this.usingDflow = false;
+    }
+
+    public function messagesHide():Void {
+        if (this._coverOverlay == null) this._coverOverlay = GlobalPlayer.area.getOverlay('contraptions-cover');
+        for (mn in this.messages) mn.remove();
+        this.getLayers();
+        this._messagesOverlay.graphics.clear();
+        this._messagesCurrent = null;
+        this.usingMessages = false;
+    }
+
     private function onMenuSelect(val:String):Void {
         GlobalPlayer.parser.setInt(this._menuVariable, val);
         if (this._menuAction != null) GlobalPlayer.parser.run(this._menuAction, true);
+    }
+
+    private function onMessagesSelect(val:String):Void {
+        GlobalPlayer.parser.setInt(this._messagesVariable, val);
+        if (this._messagesAction != null) GlobalPlayer.parser.run(this._messagesAction, true);
     }
 
     public function loadLoadingIc() {

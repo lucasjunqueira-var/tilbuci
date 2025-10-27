@@ -30,6 +30,8 @@ class AssistContraptions extends AssistBase {
         // creating window
         super(ac, Global.ln.get('window-contraptions-title'), Global.ln.get('window-contraptions-list'));
         this.setActions([
+            'contraption.message' => { p: ['s', 's', 's', 's'], c: false, t: false, i: false, d:false, s: true, ic: 'icContraption' }, 
+            'contraption.messagehide' => { p: [ ], c: false, t: false, i: false, d:false, s:false, ic: 'icContraption' },
             'contraption.menu' => { p: ['s', 's', 's', 's', 'i', 'i'], c: false, t: false, i: false, d:false, s: true, ic: 'icContraption' }, 
             'contraption.menuhide' => { p: [ ], c: false, t: false, i: false, d:false, s:false, ic: 'icContraption' },
             'contraption.cover' => { p: ['s'], c: false, t: false, i: false, d:false, s: true, ic: 'icContraption' }, 

@@ -68,10 +68,10 @@ class ActionTimer {
         Timer action run.
     **/
     private function runAction():Void {
-        if (this._action != null) GlobalPlayer.parser.run(this._action, true);
+        if (this._action != null) if (GlobalPlayer.mode != Player.MODE_EDITOR) GlobalPlayer.parser.run(this._action, true);
         this._current++;
         if (this._current >= this._steps) {
-            if (this._acend != null) GlobalPlayer.parser.run(this._acend, true);
+            if (this._acend != null) if (GlobalPlayer.mode != Player.MODE_EDITOR) GlobalPlayer.parser.run(this._acend, true);
             this.clear();
         }
     }

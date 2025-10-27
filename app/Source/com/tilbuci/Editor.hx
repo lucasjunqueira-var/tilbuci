@@ -7,12 +7,15 @@
  package com.tilbuci;
 
 /** HAXE **/
+import com.tilbuci.ui.window.narrative.WindowNarrDflow;
+import com.tilbuci.ui.window.scene.WindowSceneDflow;
 import com.tilbuci.ui.window.media.WindowMediaStrings;
 import com.tilbuci.ui.window.narrative.WindowNarrChar;
 import com.tilbuci.ui.window.narrative.WindowDiagChar;
 import com.tilbuci.ui.menu.MenuNarrative;
 import com.tilbuci.def.AssetData;
 import com.tilbuci.ui.window.contraptions.WindowContrMenu;
+import com.tilbuci.ui.window.contraptions.WindowContrMessages;
 import com.tilbuci.ui.window.contraptions.WindowContrCover;
 import com.tilbuci.ui.window.contraptions.WindowContrMusic;
 import com.tilbuci.ui.window.contraptions.WindowContrForm;
@@ -563,6 +566,9 @@ class Editor extends Drawer {
             case 'prop':
                 this.opened = false;
                 this.showWindow('propscene');
+            case 'dflow':
+                this.opened = false;
+                this.showWindow('dflowscene');
             case 'menu-close':
                 this.opened = false;
             case 'window-notes':
@@ -680,6 +686,9 @@ class Editor extends Drawer {
             case 'menus':
                 this.opened = false;
                 this.showWindow('menus');
+            case 'messages':
+                this.opened = false;
+                this.showWindow('messages');
             case 'cover':
                 this.opened = false;
                 this.showWindow('cover');
@@ -717,9 +726,9 @@ class Editor extends Drawer {
             case 'diag':
                 this.opened = false;
                 this.showWindow('narrative-diag');
-            case 'dtree':
+            case 'dflow':
                 this.opened = false;
-                this.showWindow('narrative-dtree');
+                this.showWindow('narrative-dflow');
             case 'menu-close':
                 this.opened = false;
             case 'window-notes':
@@ -824,6 +833,55 @@ class Editor extends Drawer {
                 Global.temp['Media/Single'] = [
                     'type' => 'picture', 
                     'call' => 'menubrowseimgbt'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'window-notes':
+                this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Contraption messages actions.
+        @param  ac  the action id
+    **/
+    private function actionWindowContrMessages(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+            case 'messagesbrowseimgbg':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'messagesbrowseimgbg'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'messagesbrowseimgbt0':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'messagesbrowseimgbt0'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'messagesbrowseimgbt1':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'messagesbrowseimgbt1'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'messagesbrowseimgbt2':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'messagesbrowseimgbt2'
                 ];
                 this.showWindow('mediapicture');
                 this._windows['mediapicture'].action('setmode', [
@@ -1075,6 +1133,28 @@ class Editor extends Drawer {
                 this.opened = false;
             case 'window-notes':
                 this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Narrative decision flow information.
+        @param  ac  the action id
+    **/
+    private function actionWindowNarrDflow(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
+            case 'dflowbrowseimgbt':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'dflowbrowseimgbt'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
         }
     }
 
@@ -1640,6 +1720,36 @@ class Editor extends Drawer {
                                 'type' => data['type'], 
                                 'name' => data['file'], 
                             ]);
+                        case 'dflowbrowseimgbt':
+                            this._windows['narrative-dflow'].action('dflowbrowseimgbt', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'messagesbrowseimgbg':
+                            this._windows['messages'].action('messagesbrowseimgbg', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'messagesbrowseimgbt0':
+                            this._windows['messages'].action('messagesbrowseimgbt0', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'messagesbrowseimgbt1':
+                            this._windows['messages'].action('messagesbrowseimgbt1', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'messagesbrowseimgbt2':
+                            this._windows['messages'].action('messagesbrowseimgbt2', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
                         case 'browsecordovaicon':
                             this._windows['exchangecord'].action('browsecordovaicon', [
                                 'file' => data['path'] + data['file'], 
@@ -2041,6 +2151,7 @@ class Editor extends Drawer {
                 case 'versionscene': this._windows['versionscene'] = new WindowSceneVersions(actionScene);
                 case 'saveasscene': this._windows['saveasscene'] = new WindowSceneSaveas(actionScene);
                 case 'propscene': this._windows['propscene'] = new WindowSceneProperties(actionScene);
+                case 'dflowscene': this._windows['dflowscene'] = new WindowSceneDflow(actionScene);
 
                 case 'kfmanage': this._windows['kfmanage'] = new WindowKeyframeManage(actionKeyframe);
 
@@ -2082,6 +2193,7 @@ class Editor extends Drawer {
                 case 'assistantnarrative': this._windows['assistantnarrative'] = new AssistNarrative(actionAssistant);
 
                 case 'menus': this._windows['menus'] = new WindowContrMenu(actionWindowContrMenu);
+                case 'messages': this._windows['messages'] = new WindowContrMessages(actionWindowContrMessages);
                 case 'cover': this._windows['cover'] = new WindowContrCover(actionWindowContrCover);
                 case 'background': this._windows['background'] = new WindowContrBackground(actionWindowContrBackground);
                 case 'music': this._windows['music'] = new WindowContrMusic(actionWindowContrMusic);
@@ -2091,6 +2203,7 @@ class Editor extends Drawer {
 
                 case 'narrative-char': this._windows['narrative-char'] = new WindowNarrChar(actionWindowNarrChar);
                 case 'narrative-diag': this._windows['narrative-diag'] = new WindowDiagChar(actionWindowDiagChar);
+                case 'narrative-dflow': this._windows['narrative-dflow'] = new WindowNarrDflow(actionWindowNarrDflow);
 
                 case 'visitors': this._windows['visitors'] = new WindowVisitors(actionWindowVisitors, this.build);
                 case 'designnotes': this._windows['designnotes'] = new WindowNotes(actionWindowNotes);

@@ -49,6 +49,7 @@ class ContraptionButton extends Sprite {
         this._text.wordWrap = false;
         this._text.text = text;
         this._text.visible = false;
+        this._text.selectable = false;
         this.addChild(this._text);
 
         this.mouseChildren = false;

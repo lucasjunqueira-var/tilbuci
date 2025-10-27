@@ -70,7 +70,7 @@ class WindowMediaBase extends PopupWindow {
     **/
     public function new(ac:Dynamic, title:String, type:String, mode:String) {
         // creating window
-        super(ac, title, 1000, InterfaceFactory.pickValue(670, 690), false, true, true);
+        super(ac, title, 1000, InterfaceFactory.pickValue(685, 695), false, true, true);
         this._type = type;
         this._mode = mode;
         this._preview = new MediaPreview(type, 460, 460);
@@ -120,8 +120,9 @@ class WindowMediaBase extends PopupWindow {
                 { tp: 'Custom', cont: nf }, 
                 { tp: 'Button', id: 'btremove', tx: '', ac: this.onRemove }, 
                 { tp: 'Button', id: 'btupload', tx: Global.ln.get('window-media-upload'), ac: this.onUpload }, 
+                { tp: 'Button', id: 'btuploadzip', tx: Global.ln.get('window-media-uploadzip'), ac: this.onUploadZip }, 
             ]),
-            500));
+            505));
             this.ui.setListToIcon('fileslist');
             this.ui.listChange('fileslist', onChange);
             this.ui.listDbClick('fileslist', onDoubleClick);
@@ -508,6 +509,17 @@ class WindowMediaBase extends PopupWindow {
     }
 
     /**
+        Uploads a zip file.
+    **/
+    private function onUploadZip(evt:TriggerEvent):Void {
+        this._preview.onStop(null);
+        Global.up.browseForMedia(onZipFileSelcted, 'zip');
+        this.ui.hcontainers['addtocol'].visible = false;
+        this.ui.hcontainers['colselect'].visible = false;
+        this.ui.spacers['colselect'].alpha = 0;
+    }
+
+    /**
         A new file was selected.
         @param  ok  file correctly selected?
     **/
@@ -517,6 +529,21 @@ class WindowMediaBase extends PopupWindow {
             Global.up.uploadMedia(onUploadReturn, [
                 'movie' => GlobalPlayer.movie.mvId, 
                 'type' => this._type, 
+                'path' => this._path
+            ]);
+        }
+    }
+
+    /**
+        A new file was selected.
+        @param  ok  file correctly selected?
+    **/
+    private function onZipFileSelcted(ok:Bool):Void {
+        this._preview.onStop(null);
+        if (ok) {
+            Global.up.uploadMedia(onUploadReturn, [
+                'movie' => GlobalPlayer.movie.mvId, 
+                'type' => 'zip_' + this._type, 
                 'path' => this._path
             ]);
         }

@@ -342,6 +342,10 @@ class MovieArea extends Sprite {
     public function triggerTarget():Void {
         if (GlobalPlayer.contraptions.usingMenu && GlobalPlayer.contraptions.checkMenuCollision(this._target)) {
             // running menu action
+        } else if (GlobalPlayer.contraptions.usingMessages && GlobalPlayer.contraptions.checkMessagesCollision(this._target)) {
+            // running messages action
+        } else if (GlobalPlayer.contraptions.usingDflow && GlobalPlayer.contraptions.checkDflowCollision(this._target)) {
+            // running decision flow action
         } else {
             // check interfaces
             if (!GlobalPlayer.contraptions.checkInterfaceCollision(this._target)) {
@@ -377,7 +381,7 @@ class MovieArea extends Sprite {
                     }
                 }
             }
-            if (GlobalPlayer.contraptions.checkMenuOver(this._target)) {
+            if (GlobalPlayer.contraptions.checkMenuOver(this._target) || GlobalPlayer.contraptions.checkDflowOver(this._target) || GlobalPlayer.contraptions.checkMessagesOver(this._target)) {
                 over = '_menu_';
             }
             if (GlobalPlayer.contraptions.checkInterfaceOver(this._target)) {
@@ -459,6 +463,17 @@ class MovieArea extends Sprite {
         // callback
         if (GlobalPlayer.callback != null) {
             GlobalPlayer.callback('loadkeyframe', ['kf' => this.currentKf]);
+        }
+
+        // decision flow?
+        if (GlobalPlayer.mode != Player.MODE_EDITOR) {
+            if (this.currentKf == (GlobalPlayer.movie.scene.keyframes.length - 1)) {
+                if (!GlobalPlayer.contraptions.showingDflow()) {
+                    if (GlobalPlayer.movie.scene.hasDflow()) {
+                        GlobalPlayer.contraptions.dflowShow(GlobalPlayer.movie.scene.dflow);
+                    }
+                }
+            }
         }
     }
 

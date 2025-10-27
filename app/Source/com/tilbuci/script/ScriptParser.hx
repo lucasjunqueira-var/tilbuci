@@ -15,6 +15,8 @@ import com.tilbuci.player.MovieArea;
 import haxe.macro.Expr.Function;
 import com.tilbuci.contraptions.CoverContraption;
 import com.tilbuci.contraptions.MenuContraption;
+import com.tilbuci.contraptions.DflowContraption;
+import com.tilbuci.contraptions.MessagesContraption;
 import com.tilbuci.contraptions.MusicContraption;
 import com.tilbuci.contraptions.FormContraption;
 import com.tilbuci.contraptions.InterfaceContraption;
@@ -381,6 +383,24 @@ class ScriptParser {
                             GlobalPlayer.contraptions.menus[mn.id] = mn;
                         } else {
                             mn.kill();
+                        }
+                    }
+                } else if (k == 'messages') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'messages'))) {
+                        var msg:MessagesContraption = new MessagesContraption();
+                        if (msg.load(Reflect.field(Reflect.field(ld.json, 'messages'), k2))) {
+                            GlobalPlayer.contraptions.messages[msg.id] = msg;
+                        } else {
+                            msg.kill();
+                        }
+                    }
+                } else if (k == 'dflow') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'dflow'))) {
+                        var dfl:DflowContraption = new DflowContraption();
+                        if (dfl.load(Reflect.field(Reflect.field(ld.json, 'dflow'), k2))) {
+                            GlobalPlayer.contraptions.dflow[dfl.id] = dfl;
+                        } else {
+                            dfl.kill();
                         }
                     }
                 } else if (k == 'musics') {
@@ -1212,6 +1232,23 @@ class ScriptParser {
                         }
 
                     // contraptions
+                    case 'contraption.message':
+                        if (param.length >= 4) {
+                            var mn:String = this.parseString(param[0]);
+                            if (GlobalPlayer.contraptions.messages.exists(mn)) {
+                                var bts:Array<String> = this.parseString(param[2]).split(';');
+                                var acSelect:Dynamic = null;
+                                if (Reflect.hasField(inf, 'select')) acSelect = Reflect.field(inf, 'select');
+                                return (GlobalPlayer.contraptions.messagesShow(mn, this.parseString(param[1]), bts, this.parseString(param[3]), acSelect));
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.messagehide':
+                        GlobalPlayer.contraptions.messagesHide();
+                        return (true);
                     case 'contraption.menu':
                         if (param.length >= 6) {
                             var mn:String = this.parseString(param[0]);

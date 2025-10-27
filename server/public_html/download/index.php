@@ -8,6 +8,7 @@
  /** TIlBuci file downloader **/
 
 /** CLASS DEFINITIONS **/
+chdir(__DIR__);
 require_once('../../app/Data.php');
 
 // process request

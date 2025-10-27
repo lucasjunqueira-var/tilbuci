@@ -857,6 +857,13 @@ class ActionInfo {
         this.groups.push(new ActionInfoGroup(
             Global.ln.get('window-acbcontraptions-title'), 
             [
+                { n: Global.ln.get('acinfo-showmessage'), a: 'contraption.message', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showmessage-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-showmessage-p2'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-showmessage-p3'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-showmessage-p4'), v: '' }, 
+                ], e: [ 'select' ] }, 
+                { n: Global.ln.get('acinfo-hidemessage'), a: 'contraption.messagehide', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-showmenu'), a: 'contraption.menu', p: [
                     { t: 's', n: Global.ln.get('acinfo-showmenu-p1'), v: '' }, 
                     { t: 's', n: Global.ln.get('acinfo-showmenu-p2'), v: '' }, 

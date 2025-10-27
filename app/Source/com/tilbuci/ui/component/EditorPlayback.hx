@@ -165,7 +165,6 @@ class EditorPlayback extends Panel {
         this._player.removeChild(this._player.player);
         this._top.addChild(this._player.player);
         this.centerPlayer();
-
         this.ui.buttons['screen'].enabled = (GlobalPlayer.mdata.screen.type == 'both');
 
         PopUpManager.addPopUp(this, st);

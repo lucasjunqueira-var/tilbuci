@@ -24,6 +24,7 @@ class MenuContraptions extends DrawerMenu {
         this.addButton('btForms', Global.ln.get('menu-contraptions-forms'), onForms);
         this.addButton('btInterfaces', Global.ln.get('menu-contraptions-interfaces'), onInterfaces);
         this.addButton('btTargets', Global.ln.get('menu-contraptions-targets'), onTargets);
+        this.addButton('btMessages', Global.ln.get('menu-contraptions-messages'), onMessages);
     }
 
     /**
@@ -44,6 +45,8 @@ class MenuContraptions extends DrawerMenu {
             this.ui.buttons['btInterfaces'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
             this.ui.buttons['btTargets'].enabled = false;
             this.ui.buttons['btTargets'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
+            this.ui.buttons['btMessages'].enabled = false;
+            this.ui.buttons['btMessages'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
             this.ui.buttons['btBackground'].enabled = false;
             this.ui.buttons['btBackground'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
         } else {
@@ -59,6 +62,8 @@ class MenuContraptions extends DrawerMenu {
             this.ui.buttons['btInterfaces'].toolTip = null;
             this.ui.buttons['btTargets'].enabled = true;
             this.ui.buttons['btTargets'].toolTip = null;
+            this.ui.buttons['btMessages'].enabled = true;
+            this.ui.buttons['btMessages'].toolTip = null;
             this.ui.buttons['btBackground'].enabled = true;
             this.ui.buttons['btBackground'].toolTip = null;
         }
@@ -111,6 +116,13 @@ class MenuContraptions extends DrawerMenu {
     **/
     private  function onTargets(evt:TriggerEvent):Void {
         this._ac('targets');
+    }
+
+    /**
+        Messages
+    **/
+    private  function onMessages(evt:TriggerEvent):Void {
+        this._ac('messages');
     }
 
     /**

@@ -152,6 +152,19 @@ class Scene extends BaseClass
 			}
             $this->uid = $ck[0]['sc_uid'];
 			if (is_null($ck[0]['sc_collections'])) $ck[0]['sc_collections'] = '';
+			$dflow = [ ];
+			for ($i=1; $i<=4; $i++) {
+				if ($ck[0]['sc_dflow'.$i] == '') {
+					$dflow[] = ['', ''];
+				} else {
+					$df = json_decode($ck[0]['sc_dflow'.$i], true);
+					if (json_last_error() == JSON_ERROR_NONE) {
+						$dflow[] = [$df[0], $df[1]];
+					} else {
+						$dflow[] = ['', ''];
+					}
+				}
+			}
 			$this->info = [
 				'title' => $ck[0]['sc_title'], 
 				'id' => $id, 
@@ -167,6 +180,7 @@ class Scene extends BaseClass
 					'nin' => $ck[0]['sc_nin'], 
 					'nout' => $ck[0]['sc_nout'], 
 				], 
+				'dflow' => $dflow, 
 				'collections' => explode(',', $ck[0]['sc_collections']), 
 				'loop' => (int)$ck[0]['sc_loop'], 
 				'acstart' => ($ck[0]['sc_acstart'] == '' ? '' : gzdecode(base64_decode($ck[0]['sc_acstart']))), 
@@ -392,6 +406,50 @@ class Scene extends BaseClass
 		];
 		return ($ret);
 	}
+
+	/**
+	 * Lists movie scenes with decision flow set.
+	 * @return array scenes list
+	 */
+	public function listDflow($user, $movie) {
+        $this->execute('DELETE FROM scenelock WHERE sl_movie=:mv AND sl_when<=:limit', [
+            ':mv' => $movie, 
+            ':limit' => date('Y-m-d H:i:s', strtotime('-15minutes')), 
+        ]);
+		$ret = [ ];
+		$ck = $this->queryAll('SELECT t1.* FROM scenes t1 INNER JOIN (SELECT *, MAX(sc_uid) AS uidmax FROM scenes WHERE sc_movie=:mv GROUP BY sc_id) t2 ON t1.sc_id = t2.sc_id AND t1.sc_uid = t2.uidmax WHERE (t1.sc_dflow1!=:vz1 OR t1.sc_dflow2!=:vz2 OR t1.sc_dflow3!=:vz3 OR t1.sc_dflow4!=:vz4) ORDER BY t1.sc_title ASC', [
+			':mv' => $movie, 
+			':vz1' => '', 
+			':vz2' => '', 
+			':vz3' => '', 
+			':vz4' => '', 
+		], 'SELECT t1.* FROM scenes t1 INNER JOIN (SELECT sc_id, MAX(sc_uid) AS uidmax FROM scenes WHERE sc_movie=:mv GROUP BY sc_id) t2 ON t1.sc_id = t2.sc_id AND t1.sc_uid = t2.uidmax WHERE (t1.sc_dflow1!=:vz1 OR t1.sc_dflow2!=:vz2 OR t1.sc_dflow3!=:vz3 OR t1.sc_dflow4!=:vz4) ORDER BY t1.sc_title ASC');
+		foreach ($ck as $v) {
+			$df = [ ];
+			for ($i=1; $i<=4; $i++) {
+				$df['o'.$i] = $v['sc_dflow'.$i];
+				if ($df['o'.$i] == '') {
+					$df['o'.$i] = [ '', '' ];
+				} else {
+					$dfjson = json_decode($df['o'.$i]);
+					if (json_last_error() == JSON_ERROR_NONE) {
+						$df['o'.$i] = [ $dfjson[0], $dfjson[1] ];
+					} else {
+						$df['o'.$i] = [ '', '' ];
+					}
+				}
+			}
+			$ret[] = [
+				'id' => $v['sc_id'], 
+				'title' => $v['sc_title'],
+				'df1' => $df['o1'], 
+				'df2' => $df['o2'], 
+				'df3' => $df['o3'], 
+				'df4' => $df['o4'], 
+			];
+		}
+		return ($ret);
+	}
 	
 	/**
 	 * Saves a scene.
@@ -531,7 +589,13 @@ class Scene extends BaseClass
 					// saving scene version
 					$ackeyframes = [ ];
 					foreach ($scene['ackeyframes'] as $ack) $ackeyframes[] = $ack == '' ? '' : base64_encode(gzencode($ack));
-					$this->execute('INSERT INTO scenes (sc_id, sc_movie, sc_title, sc_about, sc_image, sc_up, sc_down, sc_left, sc_right, sc_nin, sc_nout, sc_collections, sc_loop, sc_acstart, sc_ackeyframes, sc_user, sc_static) VALUES (:id, :movie, :title, :about, :image, :up, :down, :left, :right, :nin, :nout, :collections, :loop, :acstart, :ackeyframes, :user, :static)', [
+					$dflow = [ ['', ''], ['', ''], ['', ''], ['', ''] ];
+					if (isset($scene['dflow'])) {
+						for ($i=0; $i<4; $i++) {
+							if (isset($scene['dflow'][$i])) $dflow[$i] = $scene['dflow'][$i];
+						}
+					}
+					$this->execute('INSERT INTO scenes (sc_id, sc_movie, sc_title, sc_about, sc_image, sc_up, sc_down, sc_left, sc_right, sc_nin, sc_nout, sc_collections, sc_loop, sc_acstart, sc_ackeyframes, sc_user, sc_static, sc_dflow1, sc_dflow2, sc_dflow3, sc_dflow4) VALUES (:id, :movie, :title, :about, :image, :up, :down, :left, :right, :nin, :nout, :collections, :loop, :acstart, :ackeyframes, :user, :static, :df1, :df2, :df3, :df4)', [
 						':id' => $id, 
 						':movie' => $movie, 
 						':title' => $scene['title'], 
@@ -549,6 +613,10 @@ class Scene extends BaseClass
 						':ackeyframes' => implode(',', $ackeyframes), 
 						':user' => $user, 
                         ':static' => ($scene['staticsc'] ? '1' : '0'), 
+						':df1' => $dflow[0][0] == '' ? '' : json_encode($dflow[0]), 
+						':df2' => $dflow[1][0] == '' ? '' : json_encode($dflow[1]), 
+						':df3' => $dflow[2][0] == '' ? '' : json_encode($dflow[2]), 
+						':df4' => $dflow[3][0] == '' ? '' : json_encode($dflow[3]), 
 					]);
 					$uid = $this->insertID();
 					

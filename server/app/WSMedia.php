@@ -15,6 +15,18 @@ require_once('Media.php');
  */
 class WSMedia extends Webservice
 {	
+
+	/**
+	 * expected media file extensions
+	 */
+	private $mediaExt = [
+		'picture' => [ 'jpg', 'png', 'jpeg' ], 
+		'audio' => [ 'mp3', 'm4a' ], 
+		'video' => [ 'mp4', 'webm' ], 
+		'html' => [ 'html', 'htm' ], 
+		'spritemap' => [ 'png' ], 
+	];
+
 	/**
 	 * Class constructor.
 	 */
@@ -294,6 +306,8 @@ class WSMedia extends Webservice
             $path = '../../export/' . $this->req['movie'] . '.zip';
 		} else if ($this->req['type'] == 'update') {
             $path = '../../export/update.zip';
+		} else if (substr($this->req['type'], 0, 4) == 'zip_') {
+            $path = '../../export/' . $this->req['type'] . '.zip';
         } else if ($this->req['type'] == 'embed') {
             if (!is_dir('../../embed/')) {
                 $this->data->createDir('../../embed/');
@@ -344,7 +358,36 @@ class WSMedia extends Webservice
                 $r = json_decode($_POST['r'], true);
                 if (json_last_error() == JSON_ERROR_NONE) {
                     if (isset($r['type']) && isset($r['movie']) && isset($r['fname'])) {
-                        if ($r['type'] == 'strings') {
+						if (substr($r['type'], 0, 4) == 'zip_') {
+							// unpack media zip file
+							$truetype = str_replace('zip_', '', $r['type']);
+							if (is_file('../../export/' . $r['type'] . '.zip')) {
+								$zip = new \ZipArchive;
+                    			$res = $zip->open('../../export/' . $r['type'] . '.zip');
+								if ($res === true) {
+									$path = '../movie/' . $r['movie'] . '.movie/media/' . $truetype . '/';
+									for ($i = 0; $i < $zip->numFiles; $i++) {
+										$file = $zip->getNameIndex($i);
+										$ext = explode('.', $file);
+										if (in_array(strtolower($ext[count($ext)-1]), $this->mediaExt[$truetype])) {
+											$zip->extractTo($path, $file);
+										}
+									}
+									$zip->close();
+									@unlink('../../export/' . $r['type'] . '.zip');
+									return (true);
+								} else {
+									// error reading file
+									@unlink('../../export/' . $r['type'] . '.zip');
+									return (true);
+								}
+							} else {
+								// no file received
+								return (true);
+							}
+							
+
+						} else if ($r['type'] == 'strings') {
                             $md = new Media;
                             $md->saveStrings($r['movie'], $r['fname']);
                             return (true);

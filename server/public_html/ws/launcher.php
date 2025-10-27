@@ -1,6 +1,7 @@
 <?php
 // launcher version
 $version = 16;
+chdir(__DIR__);
 
 // running from launcher?
 require_once('../../app/Data.php');

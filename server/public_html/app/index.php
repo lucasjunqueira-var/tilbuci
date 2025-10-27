@@ -6,6 +6,7 @@
  */
 
 // addicional scripts
+chdir(__DIR__);
 require_once('../../app/Data.php');
 $data = new Data;
 

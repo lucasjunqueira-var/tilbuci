@@ -236,7 +236,6 @@ class WindowContrMenu extends PopupWindow {
     }
 
     private function onSaveReturn(ok:Bool, ld:DataLoader):Void {
-        var list:Array<Dynamic> = [ ];
         if (ok) {
             if (ld.map['e'] == 1) {
                 Global.showPopup(Global.ln.get('window-contrmenu-title'), Global.ln.get('window-contrmenu-ersave1'), 320, 150, Global.ln.get('default-ok'));
