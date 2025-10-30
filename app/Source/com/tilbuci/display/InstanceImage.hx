@@ -1084,6 +1084,19 @@ class InstanceImage extends Sprite {
     }
 
     /**
+        Target over instance.
+    **/
+    public function onTargetOver():Void {
+        if (GlobalPlayer.canTrigger) {
+            if (GlobalPlayer.mode != Player.MODE_EDITOR) {
+                if (this._data.actionover != '') {
+                    GlobalPlayer.parser.run(this._data.actionover);
+                }
+            }
+        }
+    }
+
+    /**
         Mouse out instance.
     **/
     public function onMouseOut(evt:MouseEvent = null):Void {

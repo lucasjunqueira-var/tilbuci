@@ -110,13 +110,7 @@ class SceneData extends DefBase {
     **/
     public function load(data:Map<String, Dynamic>):Bool {
         GlobalPlayer.contraptions.removeContraptions();
-
-trace ('load scene data');
-
         GlobalPlayer.contraptions.usingDflow = false;
-
-
-
         if (this.checkFields(data)) {
             this.title = data['title'];
             this.about = data['about'];

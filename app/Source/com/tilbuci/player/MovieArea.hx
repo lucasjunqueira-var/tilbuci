@@ -392,7 +392,7 @@ class MovieArea extends Sprite {
             if ((over != '_menu_') && (over != '_interface_') && (over != this._target.lastInstOver)) {
                 this._target.lastInstOver = over;
                 if (this._instances.exists(over)) {
-                    this._instances[over].onMouseOver(null);
+                    this._instances[over].onTargetOver();
                 }
             }
 
@@ -648,7 +648,9 @@ class MovieArea extends Sprite {
                 this.loadKeyframe(GlobalPlayer.movie.scene.keyframes[this._currentKf], this._currentKf);
             }
         } else {
-            this._playing = false;
+            // keep reloading the current keyframe
+            this.loadKeyframe(GlobalPlayer.movie.scene.keyframes[this._currentKf], this._currentKf);
+            // this._playing = false;
         }
     }
 

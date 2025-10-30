@@ -12,8 +12,9 @@
 
 // version info
 $version = [
-    'num' => 15, 
+    'num' => 17, 
 ];
+chdir(__DIR__);
 
 // database access
 function queryDb($db, $query, $values = [ ]) {
@@ -149,7 +150,8 @@ if (isset($_POST['ac'])) {
                         if (is_file('./setup/part1.zip') || !is_file('./setup/part2.zip')) {
                             // update the database
                             $erupdate = false;
-                            for ($i=1; $i<$version['num']; $i++) {
+							$dbVersion = trim($_POST['current']);
+                            for ($i=$dbVersion; $i<$version['num']; $i++) {
                                 if (!$erupdate && is_file('./setup/database/'.$i.$sqlfl.'.sql')) {
                                     $handle = fopen('./setup/database/'.$i.$sqlfl.'.sql', 'r');
                                     if (!$handle) {
@@ -181,7 +183,10 @@ if (isset($_POST['ac'])) {
                                         @unlink('./setup/part2.zip');
                                         @unlink('./setup/part3.zip');
                                         @unlink('./setup/database/tilbuci.sql');
-                                        for ($i=1; $i<$version['num']; $i++) @unlink('./setup/database/'.$i.'.sql');
+                                        for ($i=1; $i<$version['num']; $i++) {
+											@unlink('./setup/database/'.$i.'.sql');
+											@unlink('./setup/database/'.$i.'-sqlite.sql');
+										}
                                         @rmdir('./setup/database/');
                                         @rmdir('./setup/');
                                         // update complete

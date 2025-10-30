@@ -17,9 +17,8 @@
 	<haxelib name="moonshine-feathersui-text-editor" />
 	<haxelib name="hscript" />
 
-	<!-- alternative renderers -->
-	<!--<define name="canvas" if="html5" />-->
-	<!--<define name="dom" if="html5" />-->
+	<!-- renderer -->
+	<define name="dom" if="html5" />
 
 	<!-- javascript externs -->
 	<dependency path="Externs/browser.js" embed="true" />
@@ -66,6 +65,7 @@
 	<assets id="icGoogle" path="assets/icons/icGoogle.png"/>
 	<assets id="icContraption" path="assets/icons/icContraption.png"/>
 	<assets id="icNarrative" path="assets/icons/icNarrative.png"/>
+	<assets id="btNarrative" path="assets/icons/btNarrative.png"/>
 	<assets id="icServer" path="assets/icons/icServer.png"/>
 	<assets id="btPlus" path="assets/icons/btPlus.png"/>
 	<assets id="btPlugin" path="assets/icons/btPlugin.png"/>
@@ -77,6 +77,7 @@
 	<assets id="btZoom100" path="assets/icons/btZoom100.png"/>
 	<assets id="btMedia" path="assets/icons/btMedia.png"/>
 	<assets id="btFolder" path="assets/icons/btFolder.png"/>
+	<assets id="btExchange" path="assets/icons/btExchange.png"/>
 	<assets id="iconFolder" path="assets/icons/iconFolder.png"/>
 	<assets id="iconUpLevel" path="assets/icons/iconUpLevel.png"/>
 	<assets id="iconPublished" path="assets/icons/iconPublished.png"/>
@@ -104,10 +105,8 @@
 	<assets id="btToTop" path="assets/icons/btToTop.png"/>
 	<assets id="btToDown" path="assets/icons/btToDown.png"/>
 	<assets id="btToMiddle" path="assets/icons/btToMiddle.png"/>
-	<assets id="btExchange" path="assets/icons/btExchange.png"/>
 	<assets id="btVisitors" path="assets/icons/btVisitors.png"/>
 	<assets id="btContraptions" path="assets/icons/btContraptions.png"/>
-	<assets id="btNarrative" path="assets/icons/btNarrative.png"/>
 	<assets id="iconMove" path="assets/icons/iconMove.png"/>
 	<assets id="iconResizeH" path="assets/icons/iconResizeH.png"/>
 	<assets id="iconResizeV" path="assets/icons/iconResizeV.png"/>
