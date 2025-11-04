@@ -276,6 +276,8 @@ class MovieData extends DefBase {
             'swipetop' => 'up', 
             'swipebottom' => 'down', 
             'touchhold' => 'nothing', 
+            'pinchopen' => 'nothing', 
+            'pinchclose' => 'nothing', 
             'mousemiddle' => 'nothing', 
             'mouseright' => 'nothing', 
             'mousewheelup' => 'nothing', 

@@ -379,6 +379,38 @@ class ActionInfo {
         this.groups.push(new ActionInfoGroup(
             Global.ln.get('window-acbinstance-title'), 
             [
+                { n: Global.ln.get('acinfo-instancemorezoom'), a: 'instance.morezoom', p: [
+                    { t: 's', n: Global.ln.get('acinfo-instancemorezoom-p1'), v: 'instances' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-instancemorezoom-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-instancelesszoom'), a: 'instance.lesszoom', p: [
+                    { t: 's', n: Global.ln.get('acinfo-instancelesszoom-p1'), v: 'instances' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-instancelesszoom-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-instanceclearzoom'), a: 'instance.clearzoom', p: [
+                    { t: 's', n: Global.ln.get('acinfo-instanceclearzoom-p1'), v: 'instances' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-instancemoveup'), a: 'instance.moveup', p: [
+                    { t: 's', n: Global.ln.get('acinfo-instancemoveup-p1'), v: 'instances' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-instancemoveup-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-instancemovedown'), a: 'instance.movedown', p: [
+                    { t: 's', n: Global.ln.get('acinfo-instancemovedown-p1'), v: 'instances' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-instancemovedown-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-instancemoveleft'), a: 'instance.moveleft', p: [
+                    { t: 's', n: Global.ln.get('acinfo-instancemoveleft-p1'), v: 'instances' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-instancemoveleft-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-instancemoveright'), a: 'instance.moveright', p: [
+                    { t: 's', n: Global.ln.get('acinfo-instancemoveright-p1'), v: 'instances' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-instancemoveright-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-instanceclearmove'), a: 'instance.clearmove', p: [
+                    { t: 's', n: Global.ln.get('acinfo-instanceclearmove-p1'), v: 'instances' }, 
+                ], e: [ ] }, 
+
+
                 { n: Global.ln.get('acinfo-instancepause'), a: 'instance.pause', p: [
                     { t: 's', n: Global.ln.get('acinfo-instancepause-p1'), v: 'instances' }, 
                 ], e: [ ] }, 

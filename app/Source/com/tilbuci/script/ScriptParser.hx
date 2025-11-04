@@ -7,6 +7,7 @@
  package com.tilbuci.script;
 
 /** TILBUCI **/
+import com.tilbuci.display.InstanceImage;
 import openfl.ui.Mouse;
 import com.tilbuci.narrative.DialogueFolderNarrative;
 import com.tilbuci.narrative.CharacterNarrative;
@@ -1512,6 +1513,122 @@ class ScriptParser {
                         }
 
                     // instance actions
+                    case 'instance.morezoom':
+                        if (param.length > 1) {
+                            var inst:InstanceImage = GlobalPlayer.area.pickInstance(this.parseString(param[0]));
+                            if (inst == null) {
+                                return (false);
+                            } else {
+                                var factor:Float = this.parseFloat(param[1]);
+                                var wd:Float = inst.width * (1 + (factor / 100));
+                                var ht:Float = inst.height * (1 + (factor / 100));
+                                var px:Float = inst.x - ((wd - inst.width) / 2);
+                                var py:Float = inst.y - ((ht - inst.height) / 2);
+                                GlobalPlayer.area.setProperty(inst.getInstName(), 'width', wd, wd);
+                                GlobalPlayer.area.setProperty(inst.getInstName(), 'height', ht, ht);
+                                GlobalPlayer.area.setProperty(inst.getInstName(), 'x', px, px);
+                                GlobalPlayer.area.setProperty(inst.getInstName(), 'y', py, py);
+                                return (true);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'instance.lesszoom':
+                        if (param.length > 1) {
+                            var inst:InstanceImage = GlobalPlayer.area.pickInstance(this.parseString(param[0]));
+                            if (inst == null) {
+                                return (false);
+                            } else {
+                                var factor:Float = this.parseFloat(param[1]);
+                                var wd:Float = inst.width * (1 - (factor / 100));
+                                var ht:Float = inst.height * (1 - (factor / 100));
+                                var px:Float = inst.x - ((wd - inst.width) / 2);
+                                var py:Float = inst.y - ((ht - inst.height) / 2);
+                                GlobalPlayer.area.setProperty(inst.getInstName(), 'width', wd, wd);
+                                GlobalPlayer.area.setProperty(inst.getInstName(), 'height', ht, ht);
+                                GlobalPlayer.area.setProperty(inst.getInstName(), 'x', px, px);
+                                GlobalPlayer.area.setProperty(inst.getInstName(), 'y', py, py);
+                                return (true);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'instance.clearzoom':
+                        if (param.length > 0) {
+                            var inst:InstanceImage = GlobalPlayer.area.pickInstance(this.parseString(param[0]));
+                            if (inst == null) {
+                                return (false);
+                            } else {
+                                GlobalPlayer.area.releaseProperty(inst.getInstName(), 'width');
+                                GlobalPlayer.area.releaseProperty(inst.getInstName(), 'height');
+                                GlobalPlayer.area.releaseProperty(inst.getInstName(), 'x');
+                                GlobalPlayer.area.releaseProperty(inst.getInstName(), 'y');
+                                return (true);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'instance.moveup':
+                        if (param.length > 1) {
+                            var inst:InstanceImage = GlobalPlayer.area.pickInstance(this.parseString(param[0]));
+                            if (inst == null) {
+                                return (false);
+                            } else {
+                                GlobalPlayer.area.setProperty(inst.getInstName(), 'y', (inst.y - this.parseFloat(param[1])), (inst.y - this.parseFloat(param[1])));
+                                return (true);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'instance.movedown':
+                        if (param.length > 1) {
+                            var inst:InstanceImage = GlobalPlayer.area.pickInstance(this.parseString(param[0]));
+                            if (inst == null) {
+                                return (false);
+                            } else {
+                                GlobalPlayer.area.setProperty(inst.getInstName(), 'y', (inst.y + this.parseFloat(param[1])), (inst.y - this.parseFloat(param[1])));
+                                return (true);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'instance.moveleft':
+                        if (param.length > 1) {
+                            var inst:InstanceImage = GlobalPlayer.area.pickInstance(this.parseString(param[0]));
+                            if (inst == null) {
+                                return (false);
+                            } else {
+                                GlobalPlayer.area.setProperty(inst.getInstName(), 'x', (inst.x - this.parseFloat(param[1])), (inst.y - this.parseFloat(param[1])));
+                                return (true);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'instance.moveright':
+                        if (param.length > 1) {
+                            var inst:InstanceImage = GlobalPlayer.area.pickInstance(this.parseString(param[0]));
+                            if (inst == null) {
+                                return (false);
+                            } else {
+                                GlobalPlayer.area.setProperty(inst.getInstName(), 'x', (inst.x + this.parseFloat(param[1])), (inst.y - this.parseFloat(param[1])));
+                                return (true);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'instance.clearmove':
+                        if (param.length > 0) {
+                            var inst:InstanceImage = GlobalPlayer.area.pickInstance(this.parseString(param[0]));
+                            if (inst == null) {
+                                return (false);
+                            } else {
+                                GlobalPlayer.area.releaseProperty(inst.getInstName(), 'x');
+                                GlobalPlayer.area.releaseProperty(inst.getInstName(), 'y');
+                                return (true);
+                            }
+                        } else {
+                            return (false);
+                        }
                     case 'instance.zoom':
                         if (param.length > 0) {
                             return (GlobalPlayer.contraptions.zoomInstance(this.parseString(param[0])));

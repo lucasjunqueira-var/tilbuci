@@ -7,6 +7,8 @@
  package com.tilbuci;
 
 /** HAXE **/
+import openfl.ui.MultitouchInputMode;
+import openfl.ui.Multitouch;
 import com.tilbuci.player.Joystick;
 import feathers.controls.TextArea;
 import com.tilbuci.statictools.StringStatic;
@@ -221,6 +223,16 @@ class Player extends Sprite {
         touch start position
     **/
     private var _touchStart:Point = new Point();
+
+    /**
+        distance between two first touch points
+    **/
+    private var _touchDistance:Float = 0;
+
+    /**
+        last distance between two first touch points check time
+    **/
+    private var _touchDistanceCheck:Float = 0;
 
     /**
         touch start time
@@ -728,60 +740,101 @@ class Player extends Sprite {
         this.stage.removeEventListener(MouseEvent.RIGHT_CLICK, onMouseRight);
     }
 
+    private function onTouchMove(evt:TouchEvent):Void {
+        if (evt.touchPointID == 1) {
+            if ((Date.now().getTime() - this._touchDistanceCheck) >= 250) {
+                var dist:Float = Math.sqrt(Math.pow((evt.stageX - this._touchStart.x), 2) + Math.pow((evt.stageY - this._touchStart.y), 2));
+                if ((dist - this._touchDistance) > 0) {
+                    if (Math.abs(dist - this._touchDistance) > (GlobalPlayer.area.aWidth / 20)) {
+                        GlobalPlayer.parser.runInput('pinchopen');
+                    }
+                } else {
+                    if (Math.abs(dist - this._touchDistance) > (GlobalPlayer.area.aWidth / 20)) {
+                        GlobalPlayer.parser.runInput('pinchclose');
+                    }
+                }
+                this._touchDistanceCheck = Date.now().getTime();
+            }
+        }
+    }
+
     private function onTouchBegin(evt:TouchEvent):Void {
-        this._touchStart.x = evt.stageX;
-        this._touchStart.y = evt.stageY;
-        this._touchStartTime = Date.now().getTime();
+        if (evt.touchPointID == 0) {
+            this._touchStart.x = evt.stageX;
+            this._touchStart.y = evt.stageY;
+            this._touchStartTime = Date.now().getTime();
+        } else if (evt.touchPointID == 1) {
+            this._touchDistance = Math.sqrt(Math.pow((evt.stageX - this._touchStart.x), 2) + Math.pow((evt.stageY - this._touchStart.y), 2));
+            this._touchDistanceCheck = Date.now().getTime();
+            this.stage.addEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
+        }
     }
 
     private function onTouchEnd(evt:TouchEvent):Void {
-        if ((Date.now().getTime() - this._touchStartTime) < 300) {
-            var difx:Float = this._touchStart.x - evt.stageX;
-            var dify:Float = this._touchStart.y - evt.stageY;
-            if (Math.abs(difx) > Math.abs(dify)) {
-                if (Math.abs(difx) > (this.stage.stageWidth / 15)) {
-                    GlobalPlayer.canTrigger = false;
-                    if (difx > 0) {
-                        GlobalPlayer.parser.runInput('swiperight');
-                    } else {
-                        GlobalPlayer.parser.runInput('swipeleft');
+        if (evt.touchPointID == 0) {
+            if ((Date.now().getTime() - this._touchStartTime) < 300) {
+                var difx:Float = this._touchStart.x - evt.stageX;
+                var dify:Float = this._touchStart.y - evt.stageY;
+                if (Math.abs(difx) > Math.abs(dify)) {
+                    if (Math.abs(difx) > (this.stage.stageWidth / 15)) {
+                        GlobalPlayer.canTrigger = false;
+                        if (difx > 0) {
+                            GlobalPlayer.parser.runInput('swiperight');
+                        } else {
+                            GlobalPlayer.parser.runInput('swipeleft');
+                        }
+                        if (this._touchTimer != null) {
+                            try { this._touchTimer.stop(); } catch (e) { }
+                            this._touchTimer = null;
+                        }
+                        this._touchTimer = new Timer(300);
+                        this._touchTimer.run = this.endTouch;
                     }
+                } else {
+                    if (Math.abs(dify) > (this.stage.stageHeight / 15)) {
+                        GlobalPlayer.canTrigger = false;
+                        if (dify > 0) {
+                            GlobalPlayer.parser.runInput('swipebottom');
+                        } else {
+                            GlobalPlayer.parser.runInput('swipetop');
+                        }
+                        if (this._touchTimer != null) {
+                            try { this._touchTimer.stop(); } catch (e) { }
+                            this._touchTimer = null;
+                        }
+                        this._touchTimer = new Timer(300);
+                        this._touchTimer.run = this.endTouch;
+                    }
+                }
+            } else if ((Date.now().getTime() - this._touchStartTime) > 1200) {
+                GlobalPlayer.canTrigger = false;            
+                if (!GlobalPlayer.parser.runInput('touchhold')) {
+                    GlobalPlayer.canTrigger = true;
+                }
+                if (!GlobalPlayer.canTrigger) {
                     if (this._touchTimer != null) {
                         try { this._touchTimer.stop(); } catch (e) { }
                         this._touchTimer = null;
                     }
                     this._touchTimer = new Timer(300);
                     this._touchTimer.run = this.endTouch;
+                }
+            }
+            this._touchStart.x = evt.stageX;
+            this._touchStart.y = evt.stageY;
+        } else if (evt.touchPointID == 1) {
+            // check distance
+            var dist:Float = Math.sqrt(Math.pow((evt.stageX - this._touchStart.x), 2) + Math.pow((evt.stageY - this._touchStart.y), 2));
+            if ((dist - this._touchDistance) > 0) {
+                if (Math.abs(dist - this._touchDistance) > (GlobalPlayer.area.aWidth / 20)) {
+                    GlobalPlayer.parser.runInput('pinchopen');
                 }
             } else {
-                if (Math.abs(dify) > (this.stage.stageHeight / 15)) {
-                    GlobalPlayer.canTrigger = false;
-                    if (dify > 0) {
-                        GlobalPlayer.parser.runInput('swipebottom');
-                    } else {
-                        GlobalPlayer.parser.runInput('swipetop');
-                    }
-                    if (this._touchTimer != null) {
-                        try { this._touchTimer.stop(); } catch (e) { }
-                        this._touchTimer = null;
-                    }
-                    this._touchTimer = new Timer(300);
-                    this._touchTimer.run = this.endTouch;
+                if (Math.abs(dist - this._touchDistance) > (GlobalPlayer.area.aWidth / 20)) {
+                    GlobalPlayer.parser.runInput('pinchclose');
                 }
             }
-        } else if ((Date.now().getTime() - this._touchStartTime) > 1200) {
-            GlobalPlayer.canTrigger = false;            
-            if (!GlobalPlayer.parser.runInput('touchhold')) {
-                GlobalPlayer.canTrigger = true;
-            }
-            if (!GlobalPlayer.canTrigger) {
-                if (this._touchTimer != null) {
-                    try { this._touchTimer.stop(); } catch (e) { }
-                    this._touchTimer = null;
-                }
-                this._touchTimer = new Timer(300);
-                this._touchTimer.run = this.endTouch;
-            }
+            this.stage.removeEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
         }
     }
 
