@@ -7,6 +7,9 @@
  package com.tilbuci.script;
 
 /** TILBUCI **/
+import com.tilbuci.def.TBArray;
+import openfl.geom.Point;
+import openfl.events.MouseEvent;
 import com.tilbuci.display.InstanceImage;
 import openfl.ui.Mouse;
 import com.tilbuci.narrative.DialogueFolderNarrative;
@@ -90,6 +93,12 @@ class ScriptParser {
     private var _bools:Map<String, Bool> = [ ];
 
     /**
+        variable arrays
+    **/
+    private var _arrays:Map<String, TBArray> = [ ];
+    private var _currentArray:String = '';
+
+    /**
         list of available actions
     **/
     public var available:Array<ActionGroup> = [ ];
@@ -110,7 +119,7 @@ class ScriptParser {
     public var hadInteraction:Bool = false;
 
     /**
-        ok/confirm/success actions on hold
+        ok/confirm/success/complete actions on hold
     **/
     private var _acOk:Dynamic;
 
@@ -138,6 +147,11 @@ class ScriptParser {
         currently loaded dialogue
     **/
     private var _diagInfo:DialogueNarrative;
+
+    /**
+        instance being dragged
+    **/
+    public var onDrag:InstanceImage = null;
 
     /**
         Constructor.
@@ -181,10 +195,15 @@ class ScriptParser {
         for (k in this._floats.keys()) this._floats.remove(k);
         for (k in this._ints.keys()) this._ints.remove(k);
         for (k in this._bools.keys()) this._bools.remove(k);
+        for (k in this._arrays.keys()) {
+            this._arrays[k].kill();
+            this._bools.remove(k);
+        }
         this._strings = null;
         this._floats = null;
         this._ints = null;
         this._bools = null;
+        this._arrays = null;
         while (this.available.length > 0) {
             var ag:ActionGroup = this.available.shift();
             while (ag.a.length > 0) {
@@ -219,11 +238,13 @@ class ScriptParser {
             case 'bools': for (k in this._bools.keys()) this._strings.remove(k);
             case 'ints': for (k in this._ints.keys()) this._ints.remove(k);
             case 'floats': for (k in this._floats.keys()) this._floats.remove(k);
+            case 'arrays': for (k in this._arrays.keys()) { this._arrays[k].kill(); this._arrays.remove(k); }
             default:
                 for (k in this._strings.keys()) this._strings.remove(k);
                 for (k in this._floats.keys()) this._floats.remove(k);
                 for (k in this._ints.keys()) this._ints.remove(k);
                 for (k in this._bools.keys()) this._bools.remove(k);
+                for (k in this._arrays.keys()) { this._arrays[k].kill(); this._arrays.remove(k); }
         }
         return (true);
     }
@@ -301,6 +322,29 @@ class ScriptParser {
             for (k in ld.map.keys()) this._stringfile[k] = ld.map[k];
             if (this._acOk != null) this.run(this._acOk, true);
         } else {
+            if (this._acError != null) this.run(this._acError, true);
+        }
+    }
+
+    /**
+        An array file was just loaded.
+    **/
+    public function onArrayFile(ok:Bool, ld:DataLoader):Void {
+        if (ok) {
+            if (this._currentArray != '') {
+                if (!this._arrays.exists(this._currentArray)) this._arrays[this._currentArray] = new TBArray();
+                if (this._arrays[this._currentArray].fromJson(ld.rawtext)) {
+                    this._currentArray = '';
+                    if (this._acOk != null) this.run(this._acOk, true);
+                } else {
+                    this._currentArray = '';
+                    if (this._acError != null) this.run(this._acError, true);
+                }
+            } else {
+                if (this._acError != null) this.run(this._acError, true);
+            }
+        } else {
+            this._currentArray = '';
             if (this._acError != null) this.run(this._acError, true);
         }
     }
@@ -1119,7 +1163,6 @@ class ScriptParser {
                                 return (true);
                             }
                         #end
-
                     case 'system.visitoringroup':
                         if ((param.length > 0) && Reflect.hasField(inf, 'then')) {
                             if (GlobalPlayer.ws.groups.contains(this.parseString(param[0]))) {
@@ -1131,6 +1174,19 @@ class ScriptParser {
                                     return (true);
                                 }
                             }
+                        } else {
+                            return (false);
+                        }
+                    case 'system.calljs':
+                        if (param.length > 0) {
+                            var args:Array<String> = [ ];
+                            if (param.length > 1) args.push(this.parseString(param[1]));
+                            if (param.length > 2) args.push(this.parseString(param[2]));
+                            if (param.length > 3) args.push(this.parseString(param[3]));
+                            if (param.length > 4) args.push(this.parseString(param[4]));
+                            if (param.length > 5) args.push(this.parseString(param[5]));
+                            if (param.length > 6) args.push(this.parseString(param[6]));
+                            return (ExternBrowser.TBB_callJs(this.parseString(param[0]), args));
                         } else {
                             return (false);
                         }
@@ -1231,6 +1287,25 @@ class ScriptParser {
                             if (Reflect.hasField(inf, 'else')) this.run(Reflect.field(inf, 'else'), true);
                             return (false);
                         }
+                    case 'runtime.startkiosk':
+                        #if runtimemobile
+                            return (ExternBrowser.TBB_callJs('TBB_EnterKiosk', [ ]));
+                        #elseif runtimedesktop
+                            ExternBrowser.TBB_kioskStart();
+                            return (true);
+                        #else
+                            return (false);
+                        #end
+                    case 'runtime.endkiosk':
+                        #if runtimemobile
+                            return (ExternBrowser.TBB_callJs('TBB_ExitKiosk', [ ]));
+                        #elseif runtimedesktop
+                            ExternBrowser.TBB_kioskEnd();
+                            return (true);
+                        #else
+                            return (false);
+                        #end
+                        
 
                     // contraptions
                     case 'contraption.message':
@@ -1460,6 +1535,12 @@ class ScriptParser {
                     // scene and keyframe actions
                     case 'scene.load':
                         return(GlobalPlayer.movie.loadScene(this.parseString(param[0])));
+                    case 'scene.historyback':
+                        if (GlobalPlayer.history.length > 0) {
+                            return(GlobalPlayer.movie.loadScene(GlobalPlayer.history.pop()));
+                        } else {
+                            return (false);
+                        }
                     case 'scene.playpause':
                         GlobalPlayer.area.playPause();
                         return(true);
@@ -1598,7 +1679,7 @@ class ScriptParser {
                             if (inst == null) {
                                 return (false);
                             } else {
-                                GlobalPlayer.area.setProperty(inst.getInstName(), 'x', (inst.x - this.parseFloat(param[1])), (inst.y - this.parseFloat(param[1])));
+                                GlobalPlayer.area.setProperty(inst.getInstName(), 'x', (inst.x - this.parseFloat(param[1])), (inst.x - this.parseFloat(param[1])));
                                 return (true);
                             }
                         } else {
@@ -1610,7 +1691,7 @@ class ScriptParser {
                             if (inst == null) {
                                 return (false);
                             } else {
-                                GlobalPlayer.area.setProperty(inst.getInstName(), 'x', (inst.x + this.parseFloat(param[1])), (inst.y - this.parseFloat(param[1])));
+                                GlobalPlayer.area.setProperty(inst.getInstName(), 'x', (inst.x + this.parseFloat(param[1])), (inst.x - this.parseFloat(param[1])));
                                 return (true);
                             }
                         } else {
@@ -1629,6 +1710,64 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
+
+                    case 'instance.startdrag':
+                        if (param.length > 0) {
+                            var inst:InstanceImage = GlobalPlayer.area.pickInstance(this.parseString(param[0]));
+                            if (inst == null) {
+                                return (false);
+                            } else {
+                                this._acOk = null;
+                                if (Reflect.hasField(inf, 'complete')) this._acOk = Reflect.field(inf, 'complete');
+                                this.onDrag = inst;
+                                if (GlobalPlayer.usingTarget != 0) {
+
+                                } else {
+                                    if (!GlobalPlayer.area.hasEventListener(MouseEvent.MOUSE_MOVE)) {
+                                        GlobalPlayer.area.addEventListener(MouseEvent.MOUSE_MOVE, this.onDragMove);
+                                    }
+                                    if (!GlobalPlayer.area.stage.hasEventListener(MouseEvent.MOUSE_UP)) {
+                                        GlobalPlayer.area.stage.addEventListener(MouseEvent.MOUSE_UP, this.onDragMoveStop);
+                                    }
+                                }
+                                return (true);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'instance.stopdrag':
+                        this.onDragMoveStop(null);
+                        return (true);
+
+                    case 'instance.isoverlapping':
+                        if (param.length > 1) {
+                            var inst1:InstanceImage = GlobalPlayer.area.pickInstance(this.parseString(param[0]));
+                            var inst2:InstanceImage = GlobalPlayer.area.pickInstance(this.parseString(param[1]));
+                            if ((inst1 == null) || (inst2 == null)) {
+                                if (Reflect.hasField(inf, 'else')) {
+                                    return (this.run(Reflect.field(inf, 'else'), true));
+                                } else {
+                                    return (true);
+                                }
+                            } else {
+                                if (inst1.hitTestObject(inst2)) {
+                                    if (Reflect.hasField(inf, 'then')) {
+                                        return (this.run(Reflect.field(inf, 'then'), true));
+                                    } else {
+                                        return (true);
+                                    }
+                                } else {
+                                    if (Reflect.hasField(inf, 'else')) {
+                                        return (this.run(Reflect.field(inf, 'else'), true));
+                                    } else {
+                                        return (true);
+                                    }
+                                }
+                            }
+                        } else {
+                            return (false);
+                        }
+
                     case 'instance.zoom':
                         if (param.length > 0) {
                             return (GlobalPlayer.contraptions.zoomInstance(this.parseString(param[0])));
@@ -3328,6 +3467,251 @@ class ScriptParser {
                             return (false);
                         }
 
+                    // array manipulation
+                    case 'array.loadfile':
+                        if (param.length > 0) {
+                            this._acOk = this._acError = null;
+                            if (Reflect.hasField(inf, 'success')) this._acOk = Reflect.field(inf, 'success');
+                            if (Reflect.hasField(inf, 'error')) this._acError = Reflect.field(inf, 'error');
+                            var cache:Map<String, Dynamic> = null;
+                            this._currentArray = this.parseString(param[0]);
+                            if (GlobalPlayer.nocache) cache = [ 'rand' => Math.ceil(Math.random()*10000) ];
+                            new DataLoader(true, (GlobalPlayer.path + 'media/strings/' + this.parseString(param[0]) + '.json'), 'GET', cache, DataLoader.MODETEXT, onArrayFile);
+                            return (true);
+                        } else {
+                            if (Reflect.hasField(inf, 'error')) {
+                                this.run(Reflect.field(inf, 'error'), true);
+                            }
+                            return (false);
+                        }
+                    case 'array.create':
+                        if (param.length > 0) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                return (false);
+                            } else {
+                                this._arrays[this.parseString(param[0])] = new TBArray();
+                                return (true);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.remove':
+                        if (param.length > 0) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._arrays[this.parseString(param[0])].kill();
+                                this._arrays.remove(this.parseString(param[0]));
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.push':
+                        if (param.length > 1) {
+                            this._arrays[this.parseString(param[0])].push(Std.string(param[1]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'array.set':
+                        if (param.length > 2) {
+                            this._arrays[this.parseString(param[0])].set(this.parseInt(param[1]), Std.string(param[2]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'array.clear':
+                        if (param.length > 0) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._arrays[this.parseString(param[0])].clear();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.current':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._strings[this.parseString(param[1])] = this._arrays[this.parseString(param[0])].current();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.next':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._strings[this.parseString(param[1])] = this._arrays[this.parseString(param[0])].next();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.previous':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._strings[this.parseString(param[1])] = this._arrays[this.parseString(param[0])].previous();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.currentint':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._ints[this.parseString(param[1])] = this._arrays[this.parseString(param[0])].currentInt();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.nextint':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._ints[this.parseString(param[1])] = this._arrays[this.parseString(param[0])].nextInt();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.previousint':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._ints[this.parseString(param[1])] = this._arrays[this.parseString(param[0])].previousInt();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+					
+					case 'array.currentfloat':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._floats[this.parseString(param[1])] = this._arrays[this.parseString(param[0])].currentFloat();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.nextfloat':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._floats[this.parseString(param[1])] = this._arrays[this.parseString(param[0])].nextFloat();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.previousfloat':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._floats[this.parseString(param[1])] = this._arrays[this.parseString(param[0])].previousFloat();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+					
+					case 'array.currentbool':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._bools[this.parseString(param[1])] = this._arrays[this.parseString(param[0])].currentBool();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.nextbool':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._bools[this.parseString(param[1])] = this._arrays[this.parseString(param[0])].nextBool();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.previousbool':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._bools[this.parseString(param[1])] = this._arrays[this.parseString(param[0])].previousBool();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.setindex':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._arrays[this.parseString(param[0])].setIndex(this.parseInt(param[1]));
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.getindex':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._ints[this.parseString(param[1])] = this._arrays[this.parseString(param[0])].currentIndex();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.tostring':
+                        if (param.length > 1) {
+                            if (this._arrays.exists(this.parseString(param[0]))) {
+                                this._strings[this.parseString(param[1])] = this._arrays[this.parseString(param[0])].toJson();
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'array.fromstring':
+                        if (param.length > 1) {
+                            if (!this._arrays.exists(this.parseString(param[0]))) {
+                                this._arrays[this.parseString(param[0])] = new TBArray();
+                            }
+                            return (this._arrays[this.parseString(param[0])].fromJson(this._strings[this.parseString(param[1])]));
+                        } else {
+                            return (false);
+                        }
+
+
+
+
                     // plugin actions
                     default:
                         var found:Bool = false;
@@ -3879,6 +4263,28 @@ class ScriptParser {
                 if (this._acError != null) this.run(this._acError, true);
             }
         }
+    }
+
+    public function onDragMove(evt:MouseEvent):Void {
+        if (this.onDrag != null) {
+            var localpt:Point = this.onDrag.parent.globalToLocal(new Point(evt.stageX, evt.stageY));
+            var px:Int = Math.round(localpt.x - (this.onDrag.width/2));
+            var py:Int = Math.round(localpt.y - (this.onDrag.height/2));
+            GlobalPlayer.area.setProperty(this.onDrag.getInstName(), 'x', px, px);
+            GlobalPlayer.area.setProperty(this.onDrag.getInstName(), 'y', py, py);
+        }
+    }
+
+    public function onDragMoveStop(evt:MouseEvent):Void {
+        this.onDrag = null;
+        if (GlobalPlayer.area.hasEventListener(MouseEvent.MOUSE_MOVE)) {
+            GlobalPlayer.area.removeEventListener(MouseEvent.MOUSE_MOVE, this.onDragMove);
+        }
+        if (GlobalPlayer.area.stage.hasEventListener(MouseEvent.MOUSE_UP)) {
+            GlobalPlayer.area.stage.removeEventListener(MouseEvent.MOUSE_UP, this.onDragMoveStop);
+        }
+        if (this._acOk != null) this.run(this._acOk, true);
+        this._acOk = null;
     }
 
     /**

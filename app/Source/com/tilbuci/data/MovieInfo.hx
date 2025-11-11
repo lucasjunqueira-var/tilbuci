@@ -108,6 +108,7 @@ class MovieInfo {
         @param  path    path to the movie folder
     **/
     public function loadMovie(path:String):Void {
+        while (GlobalPlayer.history.length > 0) GlobalPlayer.history.shift();
         GlobalPlayer.loadingMovie = path;
         this._mvId = '';
         this._scId = '';
@@ -332,6 +333,9 @@ class MovieInfo {
     **/
     private function onSceneLoaded(ok:Bool, ld:DataLoader):Void {
         if (ok) {
+            // record history?
+            if (this._scId != '') GlobalPlayer.history.push(this._scId);
+
             // remove previous scene
             GlobalPlayer.movie.scene.clear();
 

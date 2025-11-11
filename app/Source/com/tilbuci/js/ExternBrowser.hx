@@ -30,6 +30,16 @@ extern class ExternBrowser {
     static function TBB_appQuit():Void;
 
     /**
+        Enters kiosk mode on Electron app.
+    **/
+    static function TBB_kioskStart():Void;
+
+    /**
+        Exits kiosk mode on Electron app.
+    **/
+    static function TBB_kioskEnd():Void;
+
+    /**
         Quits a mobile application.
     **/
     static function TBB_appQuitCapacitor():Void;
@@ -112,6 +122,12 @@ extern class ExternBrowser {
         @param  name    the file name
     **/
     static function TBB_existsFileCapacitor(name:String):Bool;
+
+    /**
+        Checks if a file exists in user folder on capacitor runtime.
+        @param  name    the file name
+    **/
+    static function TBB_callJs(name:String, args:Array<String> = null):Bool;
 
 }
 

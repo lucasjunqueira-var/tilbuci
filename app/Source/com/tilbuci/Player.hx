@@ -240,7 +240,12 @@ class Player extends Sprite {
     private var _touchStartTime:Float = 0;
 
     /**
-        tomer to end touch event
+        touch timer to check for hold
+    **/
+    private var _touchHoldTimer:Timer;
+
+    /**
+        timer to end touch event
     **/
     private var _touchTimer:Timer;
 
@@ -767,6 +772,9 @@ class Player extends Sprite {
             this._touchDistance = Math.sqrt(Math.pow((evt.stageX - this._touchStart.x), 2) + Math.pow((evt.stageY - this._touchStart.y), 2));
             this._touchDistanceCheck = Date.now().getTime();
             this.stage.addEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
+            if (GlobalPlayer.parser.onDrag != null) {
+                GlobalPlayer.parser.onDragMoveStop(null);
+            }
         }
     }
 
@@ -834,7 +842,9 @@ class Player extends Sprite {
                     GlobalPlayer.parser.runInput('pinchclose');
                 }
             }
-            this.stage.removeEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
+            if (this.stage.hasEventListener(TouchEvent.TOUCH_MOVE)) {
+                this.stage.removeEventListener(TouchEvent.TOUCH_MOVE, onTouchMove);
+            }
         }
     }
 

@@ -331,6 +331,12 @@ class MovieArea extends Sprite {
             case 'right':
                 if (this._target.x < GlobalPlayer.area.aWidth) this._target.x += GlobalPlayer.usingTarget;
         }
+        if (GlobalPlayer.parser.onDrag != null) {
+            var px:Int = Math.round(this._target.x - (GlobalPlayer.parser.onDrag.width/2));
+            var py:Int = Math.round(this._target.y - (GlobalPlayer.parser.onDrag.height/2));
+            GlobalPlayer.area.setProperty(GlobalPlayer.parser.onDrag.getInstName(), 'x', px, px);
+            GlobalPlayer.area.setProperty(GlobalPlayer.parser.onDrag.getInstName(), 'y', py, py);
+            this._target.alpha = 0;        }
     }
 
     public function setTargetPos(x:Float, y:Float):Void {
@@ -340,7 +346,10 @@ class MovieArea extends Sprite {
     }
 
     public function triggerTarget():Void {
-        if (GlobalPlayer.contraptions.usingMenu && GlobalPlayer.contraptions.checkMenuCollision(this._target)) {
+        if (GlobalPlayer.parser.onDrag != null) {
+            GlobalPlayer.parser.onDragMoveStop(null);
+            this._target.alpha = 1;
+        } else if (GlobalPlayer.contraptions.usingMenu && GlobalPlayer.contraptions.checkMenuCollision(this._target)) {
             // running menu action
         } else if (GlobalPlayer.contraptions.usingMessages && GlobalPlayer.contraptions.checkMessagesCollision(this._target)) {
             // running messages action

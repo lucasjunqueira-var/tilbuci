@@ -36,6 +36,12 @@ IF %ERRORLEVEL% NEQ 0 (
     echo error while installing the assets handler
     exit /b %ERRORLEVEL%
 )
+echo Installing kiosk mode support...
+call npm install @capgo/capacitor-android-kiosk
+IF %ERRORLEVEL% NEQ 0 (
+    echo error while installing the kiosk mode support
+    exit /b %ERRORLEVEL%
+)
 echo Preparing Android environment...
 call npm install @capacitor/android
 IF %ERRORLEVEL% NEQ 0 (

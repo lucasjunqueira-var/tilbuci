@@ -2,8 +2,10 @@ const { app, BrowserWindow, ipcMain } = require('electron/main')
 const path = require('node:path')
 const fs = require('fs')
 
+let win;
+
 const createWindow = () => {
-	const win = new BrowserWindow({
+	win = new BrowserWindow({
 		width: [WIDTH],
 		height: [HEIGHT], 
 		icon: "favicon.png", 
@@ -19,9 +21,6 @@ const createWindow = () => {
 	[RESIZE]
 	win.removeMenu()
 	win.loadFile('index.html')
-	ipcMain.on('quit-app', (event) => {
-		app.quit()
-	})
 }
 
 app.whenReady().then(() => {
@@ -69,4 +68,16 @@ ipcMain.handle('exists-file', async (event, name) => {
   } else {
 	return (false);
   }
+});
+
+ipcMain.handle('quit-app', async (event) => {
+  app.quit()
+});
+
+ipcMain.handle('kiosk-start', async (event) => {
+  win.setKiosk(true)
+});
+
+ipcMain.handle('kiosk-end', async (event) => {
+  win.setKiosk(false)
 });

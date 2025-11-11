@@ -1,7 +1,15 @@
 const { contextBridge, ipcRenderer } = require('electron/renderer')
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  quitApp: () => ipcRenderer.send('quit-app'), 
+  quitApp: async() => {
+    return await ipcRenderer.invoke('quit-app');
+  },
+  kioskEnd: async() => {
+    return await ipcRenderer.invoke('kiosk-end');
+  },  
+  kioskStart: async() => {
+    return await ipcRenderer.invoke('kiosk-start');
+  },  
   saveFile: async(name, content) => {
     return await ipcRenderer.invoke('save-file', name, content);
   }, 

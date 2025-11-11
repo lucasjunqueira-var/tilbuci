@@ -81,6 +81,7 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-sceneload'), a: 'scene.load', p: [
                     { t: 's', n: Global.ln.get('acinfo-sceneload-p1'), v: 'scenes' }
                 ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-scenehistoryback'), a: 'scene.historyback', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-scenenavigate'), a: 'scene.navigate', p: [
                     { t: 's', n: Global.ln.get('acinfo-scenenavigate-p1'), v: 'navigation' }
                 ], e: [ ] }, 
@@ -375,6 +376,98 @@ class ActionInfo {
             ]
         ));
 
+        // array files
+        this.groups.push(new ActionInfoGroup(
+            Global.ln.get('window-acbarray-title'), 
+            [
+                { n: Global.ln.get('acinfo-arrayload'), a: 'array.loadfile', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arrayload-p1'), v: '' }, 
+                ], e: [ 'success', 'error' ] }, 
+                { n: Global.ln.get('acinfo-arraycreate'), a: 'array.create', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraycreate-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arrayremove'), a: 'array.remove', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arrayremove-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraypush'), a: 'array.push', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraypush-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraypush-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arrayset'), a: 'array.set', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arrayset-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-arrayset-p2'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arrayset-p3'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arrayclear'), a: 'array.clear', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arrayclear-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraycurrent'), a: 'array.current', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraycurrent-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraycurrent-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraynext'), a: 'array.next', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraynext-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraynext-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arrayprevious'), a: 'array.previous', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arrayprevious-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arrayprevious-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraycurrentint'), a: 'array.currentint', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraycurrentint-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraycurrentint-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraynextint'), a: 'array.nextint', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraynextint-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraynextint-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraypreviousint'), a: 'array.previousint', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraypreviousint-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraypreviousint-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraycurrentfloat'), a: 'array.currentfloat', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraycurrentfloat-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraycurrentfloat-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraynextfloat'), a: 'array.nextfloat', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraynextfloat-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraynextfloat-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraypreviousfloat'), a: 'array.previousfloat', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraypreviousfloat-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraypreviousfloat-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraycurrentbool'), a: 'array.currentbool', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraycurrentbool-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraycurrentbool-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraynextbool'), a: 'array.nextbool', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraynextbool-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraynextbool-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraypreviousbool'), a: 'array.previousbool', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraypreviousbool-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraypreviousbool-p2'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-arraysetindex'), a: 'array.setindex', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraysetindex-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-arraysetindex-p2'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-arraygetindex'), a: 'array.getindex', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraygetindex-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraygetindex-p2'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-arraytostring'), a: 'array.tostring', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraytostring-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraytostring-p2'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-arrayfromstring'), a: 'array.fromstring', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arrayfromstring-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arrayfromstring-p2'), v: '' }, 
+                ], e: [ ] },
+            ]
+        ));
+
         // instance manipulation
         this.groups.push(new ActionInfoGroup(
             Global.ln.get('window-acbinstance-title'), 
@@ -409,8 +502,15 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-instanceclearmove'), a: 'instance.clearmove', p: [
                     { t: 's', n: Global.ln.get('acinfo-instanceclearmove-p1'), v: 'instances' }, 
                 ], e: [ ] }, 
-
-
+                { n: Global.ln.get('acinfo-instancestartdrag'), a: 'instance.startdrag', p: [
+                    { t: 's', n: Global.ln.get('acinfo-instancestartdrag-p1'), v: 'instances' }, 
+                ], e: [ 'complete' ] }, 
+                { n: Global.ln.get('acinfo-instancestopdrag'), a: 'instance.stopdrag', p: [ ], e: [ ] },
+                
+                { n: Global.ln.get('acinfo-instanceisoverlapping'), a: 'instance.isoverlapping', p: [
+                    { t: 's', n: Global.ln.get('acinfo-instanceisoverlapping-p1'), v: 'instances' }, 
+                    { t: 's', n: Global.ln.get('acinfo-instanceisoverlapping-p2'), v: 'instances' }, 
+                ], e: [ 'then', 'else' ] }, 
                 { n: Global.ln.get('acinfo-instancepause'), a: 'instance.pause', p: [
                     { t: 's', n: Global.ln.get('acinfo-instancepause-p1'), v: 'instances' }, 
                 ], e: [ ] }, 
@@ -830,6 +930,10 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-systemsetkftime'), a: 'system.setkftime', p: [
                     { t: 'i', n: Global.ln.get('acinfo-systemsetkftime-p1'), v: '' }, 
                 ], e: [ ] },  
+                { n: Global.ln.get('acinfo-systemcalljs'), a: 'system.calljs', p: [
+                    { t: 's', n: Global.ln.get('acinfo-systemcalljs-p1'), v: '' }, 
+                ], e: [ ] },
+
                 { n: Global.ln.get('acinfo-cssset'), a: 'css.set', p: [
                     { t: 's', n: Global.ln.get('acinfo-cssset-p1'), v: '' }, 
                 ], e: [ ] },  
@@ -999,6 +1103,8 @@ class ActionInfo {
                     { t: 's', n: Global.ln.get('acinfo-runifdataexist-p1'), v: '' }, 
                 ], e: [ 'then', 'else' ] }, 
                 { n: Global.ln.get('acinfo-runbrowser'), a: 'runtime.ifbrowser', p: [ ], e: [ 'then', 'else' ] }, 
+                { n: Global.ln.get('acinfo-startkiosk'), a: 'runtime.startkiosk', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-endkiosk'), a: 'runtime.endkiosk', p: [ ], e: [ ] }, 
             ]
         ));
 

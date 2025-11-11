@@ -11,32 +11,32 @@ const { Filesystem } = window.Capacitor.Plugins;
 const { App } = window.Capacitor.Plugins;
 
 // quitting app
-const TBB_appQuitCapacitor = async () => {
+/*const TBB_appQuitCapacitor = async () => {
 	App.exitApp();
-}
+}*/
 
 // save text file
-const TBB_Capacitor_Save = async (name, content) => {
+/*const TBB_Capacitor_Save = async (name, content) => {
   await Filesystem.writeFile({
     path: name,
     data: content,
     directory: 'DATA',
     encoding: 'utf8',
   });
-};
+};*/
 
 // load text file
-const TBB_Capacitor_Load = async (name) => {
+/*const TBB_Capacitor_Load = async (name) => {
   const contents = await Filesystem.readFile({
     path: name,
     directory: 'DATA',
     encoding: 'utf8',
   });
   return(contents.data);
-};
+};*/
 
 // check if file exists
-const TBB_Capacitor_FileExists = async (name) => {
+/*const TBB_Capacitor_FileExists = async (name) => {
   try {
     await Filesystem.stat({
       path: name, 
@@ -46,7 +46,7 @@ const TBB_Capacitor_FileExists = async (name) => {
   } catch (error) {
 	  return (false);
   }
-};
+};*/
 
 // startup visual adjust
 document.addEventListener("DOMContentLoaded", async () => {

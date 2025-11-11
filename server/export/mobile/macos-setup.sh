@@ -12,6 +12,8 @@ echo "Installing app plugin..."
 npm install @capacitor/app
 echo "Installing assets handler..."
 npm install @capacitor/assets --save-dev
+echo "Installing kiosk mode support..."
+npm npm install @capgo/capacitor-android-kiosk
 echo "Preparing Android environment..."
 npm install @capacitor/android
 echo "Adding the Android platform..."

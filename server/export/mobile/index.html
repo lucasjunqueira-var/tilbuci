@@ -27,6 +27,60 @@
 			var meta = document.getElementById ("viewport");
 			meta.setAttribute ('content', 'width=device-width, initial-scale=' + (2 / window.devicePixelRatio) + ', user-scalable=no');
 		}
+
+		async function TBB_appQuitCapacitor() {
+			const { App } = window.Capacitor.Plugins;
+			await App.exitApp();
+		}
+
+		async function TBB_Capacitor_Save(name, content) {
+			const { Filesystem } = window.Capacitor.Plugins;
+			await Filesystem.writeFile({
+				path: name,
+				data: content,
+				directory: 'DATA',
+				encoding: 'utf8',
+			});
+		};
+
+		async function TBB_Capacitor_Load(name) {
+			const { Filesystem } = window.Capacitor.Plugins;
+			const contents = await Filesystem.readFile({
+				path: name,
+				directory: 'DATA',
+				encoding: 'utf8',
+			});
+			return(contents.data);
+		};
+
+		async function TBB_Capacitor_FileExists(name) {
+			const { Filesystem } = window.Capacitor.Plugins;
+			try {
+				await Filesystem.stat({
+				path: name, 
+					directory: 'DATA'
+				});
+				return (true);
+			} catch (error) {
+				return (false);
+			}
+		};
+
+		async function TBB_EnterKiosk() {
+			const { CapacitorAndroidKiosk } = window.Capacitor.Plugins;
+			await CapacitorAndroidKiosk.enterKioskMode();
+		}
+
+		async function TBB_ExitKiosk() {
+			const { CapacitorAndroidKiosk } = window.Capacitor.Plugins;
+			await CapacitorAndroidKiosk.exitKioskMode();
+		}
+
+		async function TBB_SetLauncher() {
+			const { CapacitorAndroidKiosk } = window.Capacitor.Plugins;
+			await CapacitorAndroidKiosk.setAsLauncher();
+		}
+
 	</script>
 	<style>
 		[SITEFONTS]

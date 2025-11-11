@@ -294,7 +294,9 @@ class InstanceImage extends Sprite {
         this._set = new ImageSet();
 
         // interaction
-        this.addEventListener(MouseEvent.CLICK, onClick);
+        //this.addEventListener(MouseEvent.CLICK, onClick);
+
+        this.addEventListener(MouseEvent.MOUSE_DOWN, onClick);
         this.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
         this.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
     }
@@ -406,7 +408,9 @@ class InstanceImage extends Sprite {
         Releases resources used by the object.
     **/
     public function kill():Void {
-        this.removeEventListener(MouseEvent.CLICK, onClick);
+        //this.removeEventListener(MouseEvent.CLICK, onClick);
+
+        this.removeEventListener(MouseEvent.MOUSE_DOWN, onClick);
         this.removeEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
         this.removeEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
         this.removeChildren();

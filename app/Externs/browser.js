@@ -51,6 +51,20 @@ function TBB_appQuit() {
 }
 
 /**
+ * Enters kiosk mode on Electron app.
+ */
+function TBB_kioskStart() {
+    window.electronAPI.kioskStart();
+}
+
+/**
+ * Exits kiosk mode on Electron app.
+ */
+function TBB_kioskEnd() {
+    window.electronAPI.kioskEnd();
+}
+
+/**
  * Checks if running from a mobile device.
  */
 function TBB_isMobile() {
@@ -181,4 +195,19 @@ function TBB_existsFileCapacitor(name) {
     TBB_Capacitor_FileExists(name).then(ok => {
         return (ok);
     });
+}
+
+function TBB_callJs(name, args) {
+    if (typeof(window[name]) === 'function') {
+        let callrags = new Array();
+        if (args !== null) {
+            if (Array.isArray(args)) {
+                for (i=0; i<args.length; i++) callrags.push(args[i]);
+            }
+        }
+        window[name].apply(null, callrags);
+        return (true);
+    } else {
+        return (false);
+    }
 }

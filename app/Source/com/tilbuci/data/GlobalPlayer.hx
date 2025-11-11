@@ -214,6 +214,11 @@ class GlobalPlayer {
     public static var canTrigger:Bool = true;
 
     /**
+        scene load history
+    **/
+    public static var history:Array<String> = [ ];
+
+    /**
         Copies a text to the clipboard.
         @param  text    the text to copy
         @return was the text copied?

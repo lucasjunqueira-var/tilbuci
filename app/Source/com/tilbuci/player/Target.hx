@@ -105,11 +105,14 @@ class Target extends Sprite {
         this.visible = true;
         GlobalPlayer.usingTarget = Math.round(GlobalPlayer.area.aWidth / 64);
         if ((GlobalPlayer.area.aHeight / 64) < GlobalPlayer.usingTarget) GlobalPlayer.usingTarget = Math.round(GlobalPlayer.area.aHeight / 64);
+        GlobalPlayer.parser.onDragMoveStop(null);
+        this.alpha = 1;
     }
 
     public function hide() {
         GlobalPlayer.usingTarget = 0;
         this.visible = false;
+        GlobalPlayer.parser.onDragMoveStop(null);
     }
 
     private function onLoad(ok):Void {
