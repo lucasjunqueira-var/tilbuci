@@ -373,12 +373,14 @@ class InterfaceFactory {
         @param  id  the textarea id
         @param  val switch current value
         @param  holder  the element parent (null for none)
+        @param  change  on change listener
         @return the toggle switch
     **/
-    public function createToggle(id:String, val:Bool = false,  holder:FeathersControl = null):ToggleSwitch {
+    public function createToggle(id:String, val:Bool = false,  holder:FeathersControl = null, change:Dynamic = null):ToggleSwitch {
         var tg:ToggleSwitch = new ToggleSwitch();
         tg.selected = val;
         this.toggles[id] = tg;
+        if (change != null) tg.addEventListener(Event.CHANGE, change);
         if (holder != null) holder.addChild(tg);
         return (tg);
     }

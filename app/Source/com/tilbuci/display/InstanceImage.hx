@@ -32,6 +32,11 @@ import com.tilbuci.def.InstanceData;
 class InstanceImage extends Sprite {
 
     /**
+        last click point position referentce
+    **/
+    public var lastClick:Point = new Point();
+
+    /**
         instance name
     **/
     private var _name:String;
@@ -1057,6 +1062,7 @@ class InstanceImage extends Sprite {
         if (GlobalPlayer.canTrigger) {
             if (GlobalPlayer.mode != Player.MODE_EDITOR) {
                 if (this._data.action != '') {
+                    if (evt != null) this.lastClick = this.globalToLocal(new Point(evt.stageX, evt.stageY));
                     GlobalPlayer.parser.run(this._data.action);
                 }
             } else {

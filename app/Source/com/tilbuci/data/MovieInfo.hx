@@ -32,6 +32,11 @@ class MovieInfo {
     public var collections:Map<String, CollectionData> = [ ];
 
     /**
+        avod recording navigation history?
+    **/
+    public var preventHistory:Bool = false;
+
+    /**
         movie folder set path
     **/
     private var _path:String;
@@ -334,7 +339,8 @@ class MovieInfo {
     private function onSceneLoaded(ok:Bool, ld:DataLoader):Void {
         if (ok) {
             // record history?
-            if (this._scId != '') GlobalPlayer.history.push(this._scId);
+            if (!GlobalPlayer.movie.preventHistory && (this._scId != '')) GlobalPlayer.history.push(this._scId);
+            GlobalPlayer.movie.preventHistory = false;
 
             // remove previous scene
             GlobalPlayer.movie.scene.clear();

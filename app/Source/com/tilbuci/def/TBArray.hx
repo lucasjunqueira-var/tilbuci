@@ -27,8 +27,8 @@ class TBArray {
 
     public function current():String {
         if ((this._cursor < 0) && (this._data.length > 0)) this._cursor = 0;
-        if ((this._cursor >= 0) && (this._data.length < this._cursor)) {
-            return (this._data[this._cursor]);
+        if ((this._cursor >= 0) && (this._data.length > this._cursor)) {
+            return (GlobalPlayer.parser.parseString(this._data[this._cursor]));
         } else {
             return ('');
         }
@@ -36,7 +36,7 @@ class TBArray {
 
     public function currentInt():Int {
         if ((this._cursor < 0) && (this._data.length > 0)) this._cursor = 0;
-        if ((this._cursor >= 0) && (this._data.length < this._cursor)) {
+        if ((this._cursor >= 0) && (this._data.length > this._cursor)) {
             return (GlobalPlayer.parser.parseInt(this._data[this._cursor]));
         } else {
             return (0);
@@ -45,7 +45,7 @@ class TBArray {
 
     public function currentFloat():Float {
         if ((this._cursor < 0) && (this._data.length > 0)) this._cursor = 0;
-        if ((this._cursor >= 0) && (this._data.length < this._cursor)) {
+        if ((this._cursor >= 0) && (this._data.length > this._cursor)) {
             return (GlobalPlayer.parser.parseFloat(this._data[this._cursor]));
         } else {
             return (0);
@@ -54,7 +54,7 @@ class TBArray {
 
     public function currentBool():Bool {
         if ((this._cursor < 0) && (this._data.length > 0)) this._cursor = 0;
-        if ((this._cursor >= 0) && (this._data.length < this._cursor)) {
+        if ((this._cursor >= 0) && (this._data.length > this._cursor)) {
             return (GlobalPlayer.parser.parseBool(this._data[this._cursor]));
         } else {
             return (false);
@@ -207,6 +207,38 @@ class TBArray {
         if (index >= 0) {
             while (this._data.length <= index) this._data.push('');
             this._data[index] = val;
+        }
+    }
+
+    public function get(index:Int):String {
+        if ((index >= 0) && (this._data.length > index)) {
+            return(GlobalPlayer.parser.parseString(this._data[index]));
+        } else {
+            return ('');
+        }
+    }
+
+    public function getInt(index:Int):Int {
+        if ((index >= 0) && (this._data.length > index)) {
+            return(GlobalPlayer.parser.parseInt(this._data[index]));
+        } else {
+            return (0);
+        }
+    }
+
+    public function getFloat(index:Int):Float {
+        if ((index >= 0) && (this._data.length > index)) {
+            return(GlobalPlayer.parser.parseFloat(this._data[index]));
+        } else {
+            return (0);
+        }
+    }
+
+    public function getBool(index:Int):Bool {
+        if ((index >= 0) && (this._data.length > index)) {
+            return(GlobalPlayer.parser.parseBool(this._data[index]));
+        } else {
+            return (false);
         }
     }
 

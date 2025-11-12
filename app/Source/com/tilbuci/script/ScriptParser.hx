@@ -334,6 +334,9 @@ class ScriptParser {
             if (this._currentArray != '') {
                 if (!this._arrays.exists(this._currentArray)) this._arrays[this._currentArray] = new TBArray();
                 if (this._arrays[this._currentArray].fromJson(ld.rawtext)) {
+
+trace ('onarrayfile', this._arrays[this._currentArray]);
+
                     this._currentArray = '';
                     if (this._acOk != null) this.run(this._acOk, true);
                 } else {
@@ -1537,6 +1540,7 @@ class ScriptParser {
                         return(GlobalPlayer.movie.loadScene(this.parseString(param[0])));
                     case 'scene.historyback':
                         if (GlobalPlayer.history.length > 0) {
+                            GlobalPlayer.movie.preventHistory = true;
                             return(GlobalPlayer.movie.loadScene(GlobalPlayer.history.pop()));
                         } else {
                             return (false);
@@ -1710,7 +1714,6 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
-
                     case 'instance.startdrag':
                         if (param.length > 0) {
                             var inst:InstanceImage = GlobalPlayer.area.pickInstance(this.parseString(param[0]));
@@ -3521,6 +3524,34 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
+                    case 'array.get':
+                        if (param.length > 2) {
+                            this._strings[this.parseString(param[2])] = this._arrays[this.parseString(param[0])].get(this.parseInt(param[1]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'array.getint':
+                        if (param.length > 2) {
+                            this._ints[this.parseString(param[2])] = this._arrays[this.parseString(param[0])].getInt(this.parseInt(param[1]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'array.getfloat':
+                        if (param.length > 2) {
+                            this._floats[this.parseString(param[2])] = this._arrays[this.parseString(param[0])].getFloat(this.parseInt(param[1]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'array.getbool':
+                        if (param.length > 2) {
+                            this._bools[this.parseString(param[2])] = this._arrays[this.parseString(param[0])].getBool(this.parseInt(param[1]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
                     case 'array.clear':
                         if (param.length > 0) {
                             if (this._arrays.exists(this.parseString(param[0]))) {
@@ -4268,8 +4299,8 @@ class ScriptParser {
     public function onDragMove(evt:MouseEvent):Void {
         if (this.onDrag != null) {
             var localpt:Point = this.onDrag.parent.globalToLocal(new Point(evt.stageX, evt.stageY));
-            var px:Int = Math.round(localpt.x - (this.onDrag.width/2));
-            var py:Int = Math.round(localpt.y - (this.onDrag.height/2));
+            var px:Int = Math.round(localpt.x - this.onDrag.lastClick.x);
+            var py:Int = Math.round(localpt.y - this.onDrag.lastClick.y);
             GlobalPlayer.area.setProperty(this.onDrag.getInstName(), 'x', px, px);
             GlobalPlayer.area.setProperty(this.onDrag.getInstName(), 'y', py, py);
         }

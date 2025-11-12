@@ -332,11 +332,14 @@ class MovieArea extends Sprite {
                 if (this._target.x < GlobalPlayer.area.aWidth) this._target.x += GlobalPlayer.usingTarget;
         }
         if (GlobalPlayer.parser.onDrag != null) {
-            var px:Int = Math.round(this._target.x - (GlobalPlayer.parser.onDrag.width/2));
-            var py:Int = Math.round(this._target.y - (GlobalPlayer.parser.onDrag.height/2));
+            /*var px:Int = Math.round(this._target.x - (GlobalPlayer.parser.onDrag.width/2));
+            var py:Int = Math.round(this._target.y - (GlobalPlayer.parser.onDrag.height/2));*/
+            var px:Int = Math.round(this._target.x - GlobalPlayer.parser.onDrag.lastClick.x);
+            var py:Int = Math.round(this._target.y - GlobalPlayer.parser.onDrag.lastClick.y);
             GlobalPlayer.area.setProperty(GlobalPlayer.parser.onDrag.getInstName(), 'x', px, px);
             GlobalPlayer.area.setProperty(GlobalPlayer.parser.onDrag.getInstName(), 'y', py, py);
-            this._target.alpha = 0;        }
+            this._target.alpha = 0;
+        }
     }
 
     public function setTargetPos(x:Float, y:Float):Void {
@@ -371,7 +374,11 @@ class MovieArea extends Sprite {
                         }
                     }
                 }
-                if (found != null) found.onClick();
+                if (found != null) {
+                    found.lastClick.x = this._target.x - found.x;
+                    found.lastClick.y = this._target.y - found.y;
+                    found.onClick();
+                }
             }
         }
     }

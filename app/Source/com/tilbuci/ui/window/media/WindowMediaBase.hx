@@ -100,6 +100,8 @@ class WindowMediaBase extends PopupWindow {
             this.ui.createHContainer('addtocol');
             this.ui.createButton('addcolast', Global.ln.get('window-media-addcolast'), onAddAsset, this.ui.hcontainers['addtocol']);
             this.ui.createButton('addtocol', Global.ln.get('window-media-addtocol'), onAddToCol, this.ui.hcontainers['addtocol']);
+            this.ui.createToggle('multiple', true, this.ui.hcontainers['addtocol'], onMultiple);
+            this.ui.createLabel('multiple', Global.ln.get('window-media-multiple'), '', this.ui.hcontainers['addtocol']);
             this.ui.hcontainers['addtocol'].setWidth(460);
 
             // create interface
@@ -170,9 +172,12 @@ class WindowMediaBase extends PopupWindow {
 
         this.ui.spacers['colselect'].alpha = 0;
         this.ui.hcontainers['addtocol'].visible = false;
-        this.ui.hcontainers['addtocol'].setWidth(460);
+        this.ui.hcontainers['addtocol'].setWidth(460, [125, 165, 40, 100]);
         this.ui.hcontainers['colselect'].visible = false;
         this.ui.hcontainers['colselect'].setWidth(460, [ 80, 210, 40, 100 ]);
+
+        this.ui.toggles['multiple'].selected = false;
+        this.ui.lists['fileslist'].allowMultipleSelection = false;
 
         var list:Array<Dynamic> = [ ];
         for (k in GlobalPlayer.movie.collections.keys()) {
@@ -182,6 +187,11 @@ class WindowMediaBase extends PopupWindow {
             });
         }
         this.ui.setSelectOptions('addtocol', list);
+    }
+
+    private function onMultiple(evt:Event):Void {
+        this.ui.lists['fileslist'].allowMultipleSelection = this.ui.toggles['multiple'].selected;
+        this.ui.setListSelectValue('fileslist', null);
     }
 
     /**
@@ -242,7 +252,26 @@ class WindowMediaBase extends PopupWindow {
     }
 
     private function onAddToCol(evt:TriggerEvent):Void {
-        if ((this.ui.lists['fileslist'].selectedItem != null) && (this.ui.selects['addtocol'].selectedItem != null)) {
+        if (this.ui.toggles['multiple'].selected && (this.ui.selects['addtocol'].selectedItem != null) && (this.ui.lists['fileslist'].selectedItems.length > 0)) {
+            var addlist:Array<Dynamic> = [ ];
+            for (item in this.ui.lists['fileslist'].selectedItems) {
+                if (item.type == 'f') {
+                    addlist.unshift(item);
+                }
+            }
+            if (addlist.length > 0) {
+                for (item in addlist) {
+                    this._ac('addtocol', [ 'stage' => 'true', 'col' => this.ui.selects['addtocol'].selectedItem.value, 'path' => this._path, 'type' => this._type, 'file' => item.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
+                }
+                if (this.ui.toggles['close'].selected) {
+                    PopUpManager.removePopUp(this);
+                } else {
+                    this.ui.setListSelectValue('fileslist', null);
+                }
+            }
+            while (addlist.length > 0) addlist.shift();
+            addlist = null;
+        } else if ((this.ui.lists['fileslist'].selectedItem != null) && (this.ui.selects['addtocol'].selectedItem != null)) {
             if (this.ui.lists['fileslist'].selectedItem.type == 'f') {
                 this._ac('addtocol', [ 'stage' => 'true', 'col' => this.ui.selects['addtocol'].selectedItem.value, 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
                 if (this.ui.toggles['close'].selected) {
@@ -264,7 +293,26 @@ class WindowMediaBase extends PopupWindow {
     }
 
     private function onAddAsset(evt:TriggerEvent):Void {
-        if ((this.ui.lists['fileslist'].selectedItem != null) && (this.ui.selects['addtocol'].selectedItem != null)) {
+        if (this.ui.toggles['multiple'].selected && (this.ui.selects['addtocol'].selectedItem != null) && (this.ui.lists['fileslist'].selectedItems.length > 0)) {
+            var addlist:Array<Dynamic> = [ ];
+            for (item in this.ui.lists['fileslist'].selectedItems) {
+                if (item.type == 'f') {
+                    addlist.unshift(item);
+                }
+            }
+            if (addlist.length > 0) {
+                for (item in addlist) {
+                    this._ac('addtocol', [ 'stage' => 'false', 'col' => this.ui.selects['addtocol'].selectedItem.value, 'path' => this._path, 'type' => this._type, 'file' => item.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
+                }
+                if (this.ui.toggles['close'].selected) {
+                    PopUpManager.removePopUp(this);
+                } else {
+                    this.ui.setListSelectValue('fileslist', null);
+                }
+            }
+            while (addlist.length > 0) addlist.shift();
+            addlist = null;
+        } else if ((this.ui.lists['fileslist'].selectedItem != null) && (this.ui.selects['addtocol'].selectedItem != null)) {
             if (this.ui.lists['fileslist'].selectedItem.type == 'f') {
                 this._ac('addtocol', [ 'stage' => 'false', 'col' => this.ui.selects['addtocol'].selectedItem.value, 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
                 if (this.ui.toggles['close'].selected) {
@@ -289,45 +337,49 @@ class WindowMediaBase extends PopupWindow {
         Opens the selected item list.
     **/
     private function onOpen(evt:TriggerEvent):Void {
-        this._preview.onStop(null);
-        if (this.ui.lists['fileslist'].selectedItem.type == 'd') {
-            this._path += this.ui.lists['fileslist'].selectedItem.text + '/';
-            this.loadPath();
-        } else if (this.ui.lists['fileslist'].selectedItem.type == 'up') {
-            var par:Array<String> = this._path.split('/');
-            this._path = '';
-            if (par.length > 1) {
-                for (i in 0...(par.length - 2)) {
-                    if (par[i] != '') this._path += par[i] + '/';
+        if (this.ui.toggles['multiple'].selected) {
+            this.ui.createWarning(Global.ln.get('window-media-title'), Global.ln.get('window-media-nomultiple'), 300, 180, this.stage);
+        } else {
+            this._preview.onStop(null);
+            if (this.ui.lists['fileslist'].selectedItem.type == 'd') {
+                this._path += this.ui.lists['fileslist'].selectedItem.text + '/';
+                this.loadPath();
+            } else if (this.ui.lists['fileslist'].selectedItem.type == 'up') {
+                var par:Array<String> = this._path.split('/');
+                this._path = '';
+                if (par.length > 1) {
+                    for (i in 0...(par.length - 2)) {
+                        if (par[i] != '') this._path += par[i] + '/';
+                    }
                 }
-            }
-            this.loadPath();
-        } else if (this.ui.lists['fileslist'].selectedItem.type == 'f') {
-            if (this._mode == 'asset') {
-                // set to asset
-                this._mode = 'simple';
-                this._ac('addasset', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime), 'num' => this._filenum ]);
-                PopUpManager.removePopUp(this);
-            } else if (this._mode == 'assetsingle') {
-                // set to asset
-                this._mode = 'simple';
-                this._ac('assetsingle', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime), 'num' => this._filenum ]);
-                PopUpManager.removePopUp(this);
-            } else if (this._mode == 'newasset') {
-                // set to asset
-                this._mode = 'simple';
-                this._ac('addnewasset', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
-                PopUpManager.removePopUp(this);
-            } else if (this._mode == 'single') {
-                // set to asset
-                this._mode = 'single';
-                this._ac('single', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
-                PopUpManager.removePopUp(this);
+                this.loadPath();
+            } else if (this.ui.lists['fileslist'].selectedItem.type == 'f') {
+                if (this._mode == 'asset') {
+                    // set to asset
+                    this._mode = 'simple';
+                    this._ac('addasset', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime), 'num' => this._filenum ]);
+                    PopUpManager.removePopUp(this);
+                } else if (this._mode == 'assetsingle') {
+                    // set to asset
+                    this._mode = 'simple';
+                    this._ac('assetsingle', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime), 'num' => this._filenum ]);
+                    PopUpManager.removePopUp(this);
+                } else if (this._mode == 'newasset') {
+                    // set to asset
+                    this._mode = 'simple';
+                    this._ac('addnewasset', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
+                    PopUpManager.removePopUp(this);
+                } else if (this._mode == 'single') {
+                    // set to asset
+                    this._mode = 'single';
+                    this._ac('single', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
+                    PopUpManager.removePopUp(this);
 
-            } else {
-                // add to stage
-                this._ac('addstage', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
-                PopUpManager.removePopUp(this);
+                } else {
+                    // add to stage
+                    this._ac('addstage', [ 'path' => this._path, 'type' => this._type, 'file' => this.ui.lists['fileslist'].selectedItem.text, 'frames' => Std.string(this._frames), 'frtime' => Std.string(this._frtime) ]);
+                    PopUpManager.removePopUp(this);
+                }
             }
         }
     }

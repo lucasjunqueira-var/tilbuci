@@ -398,6 +398,26 @@ class ActionInfo {
                     { t: 'i', n: Global.ln.get('acinfo-arrayset-p2'), v: '' }, 
                     { t: 's', n: Global.ln.get('acinfo-arrayset-p3'), v: '' }, 
                 ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arrayget'), a: 'array.get', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arrayget-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-arrayget-p2'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arrayget-p3'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraygetint'), a: 'array.getint', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraygetint-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-arraygetint-p2'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraygetint-p3'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraygetfloat'), a: 'array.getfloat', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraygetfloat-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-arraygetfloat-p2'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraygetfloat-p3'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-arraygetbool'), a: 'array.getbool', p: [
+                    { t: 's', n: Global.ln.get('acinfo-arraygetbool-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-arraygetbool-p2'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-arraygetbool-p3'), v: '' }, 
+                ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-arrayclear'), a: 'array.clear', p: [
                     { t: 's', n: Global.ln.get('acinfo-arrayclear-p1'), v: '' }, 
                 ], e: [ ] }, 
