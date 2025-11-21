@@ -9,6 +9,11 @@
  */
 
 /**
+ * tabs communication channel
+ */
+let tab_channel = null;
+
+/**
  * Sets the browser address bar content.
  */
 function TBB_setAddress(url, title) {
@@ -210,4 +215,16 @@ function TBB_callJs(name, args) {
     } else {
         return (false);
     }
+}
+
+function TBB_startTabsChannel(callback) {
+    tab_channel = new BroadcastChannel('tbb_tabschannel');
+    tab_channel.onmessage = (event) => {
+        callback(event.data.type, event.data.message);
+    };
+}
+
+function TBB_sendTabsMessage(type, message) {
+    if (tab_channel == null) TBB_startTabsChannel();
+    tab_channel.postMessage({ type: type, message: message });
 }

@@ -7,6 +7,7 @@
  package com.tilbuci.player;
 
 /** OPENFL **/
+import com.tilbuci.display.MultiSelect;
 import haxe.Timer;
 import com.tilbuci.display.InstanceSelect;
 import openfl.events.MouseEvent;
@@ -216,6 +217,11 @@ class MovieArea extends Sprite {
     private var _select:InstanceSelect;
 
     /**
+        multiple instance select visual feedback
+    **/
+    private var _multiSelect:MultiSelect;
+
+    /**
         interaction target
     **/
     private var _target:Target = new Target();
@@ -268,6 +274,8 @@ class MovieArea extends Sprite {
         // editor
         this._select = new InstanceSelect();
         this.addChild(this._select);
+        this._multiSelect = new MultiSelect();
+        this.addChild(this._multiSelect);
     }
 
     public function showTarget():Void {
@@ -429,6 +437,7 @@ class MovieArea extends Sprite {
         }
         Actuate.stop(this, { kfPercent: 100 }, false, false);
         this._select.clearInstance();
+        this._multiSelect.clear();
         this._currentKf = num;
         for (i in this._instances.keys()) {
             if (!this._instances[i].keep) {
@@ -499,6 +508,7 @@ class MovieArea extends Sprite {
     **/
     public function imgSelect(nm:String = null):Void {
         this._select.clearInstance();
+        this._multiSelect.clear();
         for (i in this._instances.keys()) {
             if (nm == null) {
                 this._instances[i].selected = false;
@@ -510,6 +520,14 @@ class MovieArea extends Sprite {
                     this._instances[i].selected = false;
                 }
             }
+        }
+    }
+
+    public function imgSelectMultiple(insts:Array<String>):Void {
+        if (insts.length > 1) {
+            this.imgSelect(null);
+            this._multiSelect.clear();
+            for (i in insts) this._multiSelect.add(i);
         }
     }
 
@@ -536,6 +554,62 @@ class MovieArea extends Sprite {
     public function applyText():Void {
         this._select.applyText();
     }
+
+
+    public function setPropertyNum(name:String, prop:String, val:Float):Void {
+        var inst:InstanceImage = this.pickInstance(name);
+        if (inst != null) {
+            var desc:InstanceDesc;
+            if (Global.displayType == 'portrait') {
+                desc = GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][name].vertical;
+            } else {
+                desc = GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][name].horizontal;
+            }
+            switch (prop) {
+                case 'x': desc.x = inst.x = val;
+                case 'y': desc.y = inst.y = val;
+                case 'width': 
+                    desc.width = val;
+                    var newval:Float = val;
+                    if ((inst.transition == 'right') || (inst.transition == 'left')) newval = val * 1;//2;
+                    if ((inst.currentType == 'paragraph') || (inst.currentType == 'html')) {
+                        inst.setTextSize(newval, inst.height);
+                        inst.width = newval;
+                    } else {
+                        inst.width = newval;
+                    }
+                case 'height':
+                    desc.height = val;
+                    var newval:Float = val;
+                    if ((inst.transition == 'top') || (inst.transition == 'bottom')) newval = val * 1;//2;
+                    if ((inst.currentType == 'paragraph') || (inst.currentType == 'html')) {
+                        inst.setTextSize(inst.width, newval);
+                        inst.height = newval;
+                    } else {
+                        inst.height = newval;
+                    }
+                case 'rotation': 
+                    desc.rotation = Math.round(val); inst.rotation = val;
+                case 'alpha':
+                    desc.alpha = inst.alpha = val;
+                case 'coloralpha':
+                    desc.colorAlpha = val;
+                    Actuate.transform(inst, 0.01).color(Std.parseInt(desc.color), desc.colorAlpha);
+                case 'volume':
+                    desc.volume = val;
+                    inst.setSound(val);
+                case 'textsize':
+                    desc.textSize = Math.round(val);
+                case 'textspacing':
+                    desc.textSpacing = val;
+                case 'textleading':
+                    desc.textLeading = Math.round(val);
+            }
+            //this.place();
+        }
+    }
+
+
 
     /**
         Increases current image order.

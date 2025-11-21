@@ -141,6 +141,14 @@ class InstanceData {
     }
 
     /**
+        Gets a JSON-formatted description of the instance.
+        @return JSOn-formatted text
+    **/
+    public function toJson():String {
+        return(StringStatic.jsonStringify(this.toObject()));
+    }
+
+    /**
         Creates a clone of the current object.
     **/
     public function clone():InstanceData {

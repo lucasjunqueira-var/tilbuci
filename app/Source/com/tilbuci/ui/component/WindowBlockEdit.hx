@@ -209,7 +209,13 @@ class WindowBlockEdit extends PopupWindow {
         for (i in 0...8) {
             this.ui.createLabel(('param-' + i), ('#' + (i+1)), Label.VARIANT_DETAIL);
             this.ui.createTInput('param-' + i);
-            this.ui.createSelect(('param-' + i), [ ]);
+
+            this.ui.createHContainer('param-' + i);
+            this.ui.createSelect(('param-' + i), [ ], null, this.ui.hcontainers['param-' + i]);
+            this.ui.createLabel(('paramor-' + i), Global.ln.get('acblock-or'), Label.VARIANT_DETAIL, this.ui.hcontainers['param-' + i]);
+            this.ui.createTInput(('paramor-' + i), '', '', this.ui.hcontainers['param-' + i]);
+            this.ui.hcontainers['param-' + i].setWidth(400, [175, 30, 175]);
+
             this.ui.labels['param-' + i].width = this.ui.inputs['param-' + i].width = this.ui.selects['param-' + i].width = 510;
         }
     }
@@ -237,25 +243,34 @@ class WindowBlockEdit extends PopupWindow {
             if (this._acinfo.p.length > i) {
                 this.ui.labels['param-'+i].text = this._acinfo.p[i].n;
                 this.ui.containers['paramleft'].addChild(this.ui.labels['param-'+i]);
+                this.ui.hcontainers['param-' + i].setWidth(510, [230, 30, 230]);
+                this.ui.inputs['param-' + i].text = '';
+                this.ui.inputs['paramor-' + i].text = '';
                 switch (this._acinfo.p[i].v) {
                     case 'movies':
                         this.ui.setSelectOptions(('param-'+i), Global.acInfo.selMovies);
-                        this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                        //this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                        this.ui.containers['paramleft'].addChild(this.ui.hcontainers['param-'+i]);
                     case 'scenes':
                         this.ui.setSelectOptions(('param-'+i), Global.acInfo.selScenes);
-                        this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                        //this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                        this.ui.containers['paramleft'].addChild(this.ui.hcontainers['param-'+i]);
                     case 'instances':
                         this.ui.setSelectOptions(('param-'+i), instlist);
-                        this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                        //this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                        this.ui.containers['paramleft'].addChild(this.ui.hcontainers['param-'+i]);
                     case 'origins':
                         this.ui.setSelectOptions(('param-'+i), this._mvOrigins);
-                        this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                        //this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                        this.ui.containers['paramleft'].addChild(this.ui.hcontainers['param-'+i]);
                     case 'navigation':
                         this.ui.setSelectOptions(('param-'+i), this._scDirections);
-                        this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                        //this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                        this.ui.containers['paramleft'].addChild(this.ui.hcontainers['param-'+i]);
                     case 'placement':
                         this.ui.setSelectOptions(('param-'+i), this._mnPlacement);
-                        this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                        //this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                        this.ui.containers['paramleft'].addChild(this.ui.hcontainers['param-'+i]);
                     default:
                         this.ui.inputs['param-'+i].text = '';
                         this.ui.containers['paramleft'].addChild(this.ui.inputs['param-'+i]);
@@ -265,7 +280,9 @@ class WindowBlockEdit extends PopupWindow {
                         if (this._acinfo.p[i].v == '') {
                             this.ui.inputs['param-'+i].text = this._blac.param[i];
                         } else {
-                            this.ui.setSelectValue(('param-'+i), this._blac.param[i]);
+                            if (!this.ui.setSelectValue(('param-'+i), this._blac.param[i])) {
+                                this.ui.inputs['paramor-'+i].text = this._blac.param[i];
+                            }
                         }
                     }
                 }
@@ -308,7 +325,11 @@ class WindowBlockEdit extends PopupWindow {
                     if (this._acinfo.p[i].v == '') {
                         vali = this.ui.inputs['param-'+i].text;
                     } else {
-                        vali = this.ui.selects['param-'+i].selectedItem.value;
+                        if (this.ui.inputs['paramor-'+i].text != '') {
+                            vali = this.ui.inputs['paramor-'+i].text;
+                        } else {
+                            vali = this.ui.selects['param-'+i].selectedItem.value;
+                        }
                     }
                     if ((vali == '') && (this._acinfo.p[i].t != 'e')) {
                         ok = false;

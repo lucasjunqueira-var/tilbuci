@@ -7,6 +7,7 @@
  package com.tilbuci.def;
 
 /** HAXE **/
+import com.tilbuci.statictools.StringStatic;
 import haxe.Json;
 
 /** TILBUCI **/
@@ -74,6 +75,29 @@ class CollectionData extends DefBase {
     }
 
     /**
+        Loads collection information from a JSON text.
+        @param  txt the JSON-formatted text describing the collection
+        @return was the collection successfully loaded?
+    **/
+    public function fromJson(txt:String):Bool {
+        var data:Map<String, Dynamic> = StringStatic.jsonAsMap(txt);
+        if (data.exists('name')) {
+            this.ok = true;
+            this.name = data['name'];
+            this.transition = data['transition'];
+            this.time = data['time'];
+            for (c in Reflect.fields(data['assets'])) {
+                this.assets[c] = new AssetData(Reflect.field(data['assets'], c));
+                this.assetOrder.push('');
+            }
+            for (a in this.assets.keys()) this.assetOrder[this.assets[a].order] = a;
+            return (true);
+        } else {
+            return(false);
+        }
+    }
+
+    /**
         Gets a clean representation of current object.
     **/
     public function toObject():Dynamic {
@@ -97,15 +121,6 @@ class CollectionData extends DefBase {
         };
         return (clone);
     }
-
-    /*typedef ColDataClone = {
-        var name:String;
-        var transition:String;
-        var time:Float;
-        var assets:Map<String, AssetData>;
-        var assetOrder:Array<String>;
-    }*/
-
 
     /**
         Releases resopurces used by the object.

@@ -129,6 +129,19 @@ extern class ExternBrowser {
     **/
     static function TBB_callJs(name:String, args:Array<String> = null):Bool;
 
+    /**
+        Starts the browser tabs communication channel.
+        @param  callback    method to call on received message
+    **/
+    static function TBB_startTabsChannel(callback:Dynamic):Void;
+
+    /**
+        Sends a message to other open tabs.
+        @param  type    the message type
+        @param  message the message to send
+    **/
+    static function TBB_sendTabsMessage(type:String, message:String):Void;
+
 }
 
 #end

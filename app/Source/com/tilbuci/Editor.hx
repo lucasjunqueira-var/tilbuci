@@ -7,6 +7,7 @@
  package com.tilbuci;
 
 /** HAXE **/
+import com.tilbuci.js.ExternBrowser;
 import com.tilbuci.ui.window.narrative.WindowNarrDflow;
 import com.tilbuci.ui.window.scene.WindowSceneDflow;
 import com.tilbuci.ui.window.media.WindowMediaStrings;
@@ -353,10 +354,19 @@ class Editor extends Drawer {
                 // preparing uploader
                 Global.up = new FileUpload(this.stage);
 
+                // prepare tabs communication
+                ExternBrowser.TBB_startTabsChannel(this.onChannelMessage);
+
                 // wait for development routines
                 this._devTimer = new Timer(1000);
                 this._devTimer.run = this.devStart;
             }
+        }
+    }
+
+    private function onChannelMessage(type:String, message:String):Void {
+        switch (type) {
+            case 'copy': Global.copy.receiveMessage(message);
         }
     }
 
