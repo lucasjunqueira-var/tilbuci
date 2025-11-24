@@ -1,6 +1,6 @@
 <?php
 // launcher version
-$version = 16;
+$version = 18;
 chdir(__DIR__);
 
 // running from launcher?

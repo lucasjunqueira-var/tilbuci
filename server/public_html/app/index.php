@@ -177,8 +177,6 @@ if ($render == '') {
 			var meta = document.getElementById ("viewport");
 			meta.setAttribute ('content', 'width=device-width, initial-scale=' + (2 / window.devicePixelRatio) + ', user-scalable=no');
 		}
-        
-        function customDecrypt(txt) { console.log(txt); return(txt); }
 	</script>
 	<style>
 		<?= $data->indexFonts($cssmovie) ?>
