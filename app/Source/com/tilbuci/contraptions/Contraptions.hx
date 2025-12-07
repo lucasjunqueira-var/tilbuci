@@ -32,6 +32,12 @@ class Contraptions {
     private var _dflowCurrent:DflowContraption = null;
     public var usingDflow:Bool = false;
 
+    // inventory contraption
+    public var inv:Map<String, InventoryContraption> = [ ];
+    private var _invOverlay:Sprite;
+    private var _invCurrent:InventoryContraption = null;
+    public var usingInv:Bool = false;
+
     // messages contraption
     public var messages:Map<String, MessagesContraption> = [ ];
     private var _messagesOverlay:Sprite;
@@ -86,6 +92,7 @@ class Contraptions {
         if (this._menusOverlay == null) this._menusOverlay = GlobalPlayer.area.getOverlay('contraptions-menu');
         if (this._interfaceOverlay == null) this._interfaceOverlay = GlobalPlayer.area.getOverlay('contraptions-interface');
         if (this._dflowOverlay == null) this._dflowOverlay = GlobalPlayer.area.getOverlay('contraptions-dflow');
+        if (this._invOverlay == null) this._invOverlay = GlobalPlayer.area.getOverlay('contraptions-inventory');
         if (this._messagesOverlay == null) this._messagesOverlay = GlobalPlayer.area.getOverlay('contraptions-messages');
         if (this._loadingOverlay == null) this._loadingOverlay = GlobalPlayer.area.getOverlay('contraptions-loading');
         this._loadingOverlay.mouseEnabled = false;
@@ -113,6 +120,11 @@ class Contraptions {
             this.dflow.remove(k);
         }
         this._dflowOverlay.graphics.clear();
+        for (k in this.inv.keys()) {
+            this.inv[k].kill();
+            this.inv.remove(k);
+        }
+        this._invOverlay.graphics.clear();
         for (k in this.messages.keys()) {
             this.messages[k].kill();
             this.messages.remove(k);
@@ -138,6 +150,10 @@ class Contraptions {
         for (k in this.dflow.keys()) {
             this.dflow[k].kill();
             this.dflow.remove(k);
+        }
+        for (k in this.inv.keys()) {
+            this.inv[k].kill();
+            this.inv.remove(k);
         }
         for (k in this.messages.keys()) {
             this.messages[k].kill();
@@ -186,6 +202,10 @@ class Contraptions {
         data['dflow'] = new Array<Dynamic>();
         for (df in this.dflow) {
             data['dflow'].push(df.toObject());
+        }
+        data['inv'] = new Array<Dynamic>();
+        for (ic in this.inv) {
+            data['inv'].push(ic.toObject());
         }
         data['messages'] = new Array<Dynamic>();
         for (ms in this.messages) {
@@ -292,6 +312,10 @@ class Contraptions {
         return (this._dflowOverlay.numChildren > 0);
     }
 
+    public function showingInventory():Bool {
+        return (this._invOverlay.numChildren > 0);
+    }
+
     public function dflowShow(options:Array<Array<String>>):Bool {
         this.dflowHide();
         if ((GlobalPlayer.mode != Player.MODE_EDITOR) && this.dflow.exists('dflow')) {
@@ -340,9 +364,36 @@ class Contraptions {
         }
     }
 
+    public function inventoryShow(closeac:Dynamic):Bool {
+        this.invHide();
+        if ((GlobalPlayer.mode != Player.MODE_EDITOR) && this.inv.exists('inv')) {
+            this._invCurrent = this.inv['inv'];
+            if (this._invCurrent.ok) {
+                this._invOverlay.addChild(this._invCurrent.create(closeac));
+                this._invCurrent.draw();
+                this.usingInv = true;
+                return (true);
+            } else {
+                this._invCurrent = null;
+                return (false);
+            }
+        } else {
+            this._invCurrent = null;
+            return (false);
+        }
+    }
+
     public function checkDflowCollision(obj:Sprite):Bool {
         if (this._dflowCurrent != null) {
             return (this._dflowCurrent.checkCollision(obj));
+        } else {
+            return (false);
+        }
+    }
+
+    public function checkInvCollision(obj:Sprite):Bool {
+        if (this._invCurrent != null) {
+            return (this._invCurrent.checkCollision(obj));
         } else {
             return (false);
         }
@@ -355,6 +406,14 @@ class Contraptions {
             } else {
                 return (false);
             }
+        } else {
+            return (false);
+        }
+    }
+
+    public function checkInvOver(obj:Sprite):Bool {
+        if (this._invCurrent != null) {
+            return (this._invCurrent.checkOver(obj));
         } else {
             return (false);
         }
@@ -423,6 +482,7 @@ class Contraptions {
         this.menuHide();
         this.messagesHide();
         this.dflowHide();
+        this.invHide();
         this.hideForm();
         this.hideLoadingIc();
         this.removeZoom();
@@ -474,6 +534,16 @@ class Contraptions {
         this._dflowOverlay.graphics.clear();
         this._dflowCurrent = null;
         this.usingDflow = false;
+    }
+
+    public function invHide():Void {
+        if (this._coverOverlay == null) this._coverOverlay = GlobalPlayer.area.getOverlay('contraptions-cover');
+        for (mn in this.inv) mn.remove();
+        this.getLayers();
+        this._invOverlay.graphics.clear();
+        if (this._invCurrent != null) this._invCurrent.invClose();
+        this._invCurrent = null;
+        this.usingInv = false;
     }
 
     public function messagesHide():Void {

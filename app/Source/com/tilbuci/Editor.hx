@@ -9,6 +9,7 @@
 /** HAXE **/
 import com.tilbuci.js.ExternBrowser;
 import com.tilbuci.ui.window.narrative.WindowNarrDflow;
+import com.tilbuci.ui.window.narrative.WindowNarrInv;
 import com.tilbuci.ui.window.scene.WindowSceneDflow;
 import com.tilbuci.ui.window.media.WindowMediaStrings;
 import com.tilbuci.ui.window.narrative.WindowNarrChar;
@@ -739,6 +740,9 @@ class Editor extends Drawer {
             case 'dflow':
                 this.opened = false;
                 this.showWindow('narrative-dflow');
+            case 'inventory':
+                this.opened = false;
+                this.showWindow('narrative-inventory');
             case 'menu-close':
                 this.opened = false;
             case 'window-notes':
@@ -1160,6 +1164,55 @@ class Editor extends Drawer {
                 Global.temp['Media/Single'] = [
                     'type' => 'picture', 
                     'call' => 'dflowbrowseimgbt'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+        }
+    }
+
+    /**
+        Narrative inventory information.
+        @param  ac  the action id
+    **/
+    private function actionWindowNarrInventory(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
+            case 'inventitem':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'inventitem'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'inventclose':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'inventclose'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'inventh':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'inventh'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'inventv':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'inventv'
                 ];
                 this.showWindow('mediapicture');
                 this._windows['mediapicture'].action('setmode', [
@@ -1736,6 +1789,33 @@ class Editor extends Drawer {
                                 'type' => data['type'], 
                                 'name' => data['file'], 
                             ]);
+
+                        case 'inventitem':
+                            this._windows['narrative-inventory'].action('inventitem', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'inventclose':
+                            this._windows['narrative-inventory'].action('inventclose', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'inventh':
+                            this._windows['narrative-inventory'].action('inventh', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'inventv':
+                            this._windows['narrative-inventory'].action('inventv', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+
+
                         case 'messagesbrowseimgbg':
                             this._windows['messages'].action('messagesbrowseimgbg', [
                                 'file' => data['path'] + data['file'], 
@@ -2214,6 +2294,7 @@ class Editor extends Drawer {
                 case 'narrative-char': this._windows['narrative-char'] = new WindowNarrChar(actionWindowNarrChar);
                 case 'narrative-diag': this._windows['narrative-diag'] = new WindowDiagChar(actionWindowDiagChar);
                 case 'narrative-dflow': this._windows['narrative-dflow'] = new WindowNarrDflow(actionWindowNarrDflow);
+                case 'narrative-inventory': this._windows['narrative-inventory'] = new WindowNarrInv(actionWindowNarrInventory);
 
                 case 'visitors': this._windows['visitors'] = new WindowVisitors(actionWindowVisitors, this.build);
                 case 'designnotes': this._windows['designnotes'] = new WindowNotes(actionWindowNotes);

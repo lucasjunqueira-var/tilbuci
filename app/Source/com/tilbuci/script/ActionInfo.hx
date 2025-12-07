@@ -1093,6 +1093,29 @@ class ActionInfo {
         this.groups.push(new ActionInfoGroup(
             Global.ln.get('window-acbnarrative-title'), 
             [
+                { n: Global.ln.get('acinfo-invshow'), a: 'inventory.show', p: [ ], e: [ 'complete' ] }, 
+                { n: Global.ln.get('acinfo-invclose'), a: 'inventory.close', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-invaddkey'), a: 'inventory.addkeyitem', p: [
+                    { t: 's', n: Global.ln.get('acinfo-invaddkey-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-invremkey'), a: 'inventory.removekeyitem', p: [
+                    { t: 's', n: Global.ln.get('acinfo-invremkey-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-invclearkey'), a: 'inventory.clearkeyitems', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-invhaskey'), a: 'inventory.haskeyitem', p: [
+                    { t: 's', n: Global.ln.get('acinfo-invhaskey-p1'), v: '' }, 
+                ], e: [ 'then', 'else' ] },
+                { n: Global.ln.get('acinfo-invaddcons'), a: 'inventory.addconsumable', p: [
+                    { t: 's', n: Global.ln.get('acinfo-invaddcons-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-invaddcons-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-invremcons'), a: 'inventory.removeconsumable', p: [
+                    { t: 's', n: Global.ln.get('acinfo-invremcons-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-invconsume'), a: 'inventory.consumeitem', p: [
+                    { t: 's', n: Global.ln.get('acinfo-invconsume-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-invclearcons'), a: 'inventory.clearconsumables', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-diagloadgroup'), a: 'dialogue.loadgroup', p: [
                     { t: 's', n: Global.ln.get('acinfo-diagloadgroup-p1'), v: '' }, 
                 ], e: [ 'success', 'error' ] }, 

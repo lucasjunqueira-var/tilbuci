@@ -26,6 +26,12 @@ class Narrative {
     public var dialogues:Map<String, DialogueFolderNarrative> = [ ];
     public var diagSpeech:AudioImage;
 
+    // inventory items
+    public var items:Map<String, InvItemNarrative> = [ ];
+    public var keyItems:Array<String> = [ ];
+    public var consItNames:Array<String> = [ ];
+    public var consItAmounts:Array<Int> = [ ];
+
     public function new() {
         this.diagSpeech = new AudioImage(onSpeechLoad, onSpeechEnd);
     }
@@ -39,6 +45,13 @@ class Narrative {
             this.dialogues[k].kill();
             this.dialogues.remove(k);
         }
+        for (k in this.items.keys()) {
+            this.items[k].kill();
+            this.items.remove(k);
+        }
+        while (this.keyItems.length > 0) this.keyItems.shift();
+        while (this.consItNames.length > 0) this.consItNames.shift();
+        while (this.consItAmounts.length > 0) this.consItAmounts.shift();
     }
 
     public function clearDialogues():Void {
@@ -46,6 +59,80 @@ class Narrative {
             for(diag in this.dialogues) {
                 diag.clear();
             }
+        }
+    }
+
+    public function addKeyItem(id:String):Void {
+        if (this.keyItems.length < 4) {
+            if (this.items.exists(id)) {
+                if (!this.keyItems.contains(id)) {
+                    this.keyItems.push(id);
+                }
+            }
+        }
+    }
+
+    public function removeKeyItem(id:String):Void {
+        if (this.items.exists(id)) {
+            var indx:Int = this.keyItems.indexOf(id);
+            if (indx > -1) {
+                this.keyItems.splice(indx, 1);
+            }
+        }
+    }
+
+    public function clearKeyItems():Void {
+        while (this.keyItems.length > 0) this.keyItems.shift();
+    }
+
+    public function hasKeyItem(id:String):Bool {
+        if (this.items.exists(id)) {
+            return (this.keyItems.contains(id));
+        } else {
+            return (false);
+        }
+    }
+
+    public function addConsumableItem(name:String, amount:Int):Void {
+        if (this.consItNames.contains(name)) {
+            var pos:Int = this.consItNames.indexOf(name);
+            this.consItAmounts[pos] += amount;
+        } else if (this.consItNames.length < 8) {
+            this.consItNames.push(name);
+            this.consItAmounts.push(amount);
+        }
+    }
+
+    public function removeConsumableItem(name:String):Void {
+        if (this.consItNames.contains(name)) {
+            var pos:Int = this.consItNames.indexOf(name);
+            this.consItNames.splice(pos, 1);
+            this.consItAmounts.splice(pos, 1);
+        }
+    }
+
+    public function consumeItem(name:String):Void {
+        if (this.consItNames.contains(name)) {
+            var pos:Int = this.consItNames.indexOf(name);
+            this.consItAmounts[pos] -= 1;
+            if (this.consItAmounts[pos]<= 0) {
+                this.consItNames.splice(pos, 1);
+                this.consItAmounts.splice(pos, 1);
+            }
+        }
+    }
+
+    public function clearConsumableItems():Void {
+        while (this.consItNames.length > 0) this.consItNames.shift();
+        while (this.consItAmounts.length > 0) this.consItAmounts.shift();
+    }
+
+    public function consumableAmount(name:String):Int {
+        if (this.consItNames.contains(name)) {
+            var pos:Int = this.consItNames.indexOf(name);
+            return (this.consItAmounts[pos]);
+        } else {
+            return (0);
         }
     }
 
@@ -60,6 +147,10 @@ class Narrative {
         for (k in this.dialogues) {
             data['dialogues'].push(k.idObject());
             if (k.numDiags() > 0) data['diagcontent'].push(k.toObject());
+        }
+        data['items'] = new Array<Dynamic>();
+        for (k in this.items) {
+            data['items'].push(k.toObject());
         }
         return(StringStatic.jsonStringify(data));
     }

@@ -340,8 +340,6 @@ class MovieArea extends Sprite {
                 if (this._target.x < GlobalPlayer.area.aWidth) this._target.x += GlobalPlayer.usingTarget;
         }
         if (GlobalPlayer.parser.onDrag != null) {
-            /*var px:Int = Math.round(this._target.x - (GlobalPlayer.parser.onDrag.width/2));
-            var py:Int = Math.round(this._target.y - (GlobalPlayer.parser.onDrag.height/2));*/
             var px:Int = Math.round(this._target.x - GlobalPlayer.parser.onDrag.lastClick.x);
             var py:Int = Math.round(this._target.y - GlobalPlayer.parser.onDrag.lastClick.y);
             GlobalPlayer.area.setProperty(GlobalPlayer.parser.onDrag.getInstName(), 'x', px, px);
@@ -360,10 +358,12 @@ class MovieArea extends Sprite {
         if (GlobalPlayer.parser.onDrag != null) {
             GlobalPlayer.parser.onDragMoveStop(null);
             this._target.alpha = 1;
-        } else if (GlobalPlayer.contraptions.usingMenu && GlobalPlayer.contraptions.checkMenuCollision(this._target)) {
-            // running menu action
         } else if (GlobalPlayer.contraptions.usingMessages && GlobalPlayer.contraptions.checkMessagesCollision(this._target)) {
             // running messages action
+        } else if (GlobalPlayer.contraptions.usingInv && GlobalPlayer.contraptions.checkInvCollision(this._target)) {
+            // running decision flow action
+        } else if (GlobalPlayer.contraptions.usingMenu && GlobalPlayer.contraptions.checkMenuCollision(this._target)) {
+            // running menu action
         } else if (GlobalPlayer.contraptions.usingDflow && GlobalPlayer.contraptions.checkDflowCollision(this._target)) {
             // running decision flow action
         } else {
@@ -405,7 +405,7 @@ class MovieArea extends Sprite {
                     }
                 }
             }
-            if (GlobalPlayer.contraptions.checkMenuOver(this._target) || GlobalPlayer.contraptions.checkDflowOver(this._target) || GlobalPlayer.contraptions.checkMessagesOver(this._target)) {
+            if (GlobalPlayer.contraptions.checkMenuOver(this._target) || GlobalPlayer.contraptions.checkDflowOver(this._target) || GlobalPlayer.contraptions.checkMessagesOver(this._target) || GlobalPlayer.contraptions.checkInvOver(this._target)) {
                 over = '_menu_';
             }
             if (GlobalPlayer.contraptions.checkInterfaceOver(this._target)) {

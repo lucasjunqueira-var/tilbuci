@@ -20,6 +20,8 @@ class MenuNarrative extends DrawerMenu {
         this.addButton('btChar', Global.ln.get('menu-narrative-characters'), onChar);
         this.addButton('btDiag', Global.ln.get('menu-narrative-dialogues'), onDiag);
         this.addButton('btDflow', Global.ln.get('menu-narrative-dflow'), onDflow);
+        this.addButton('btInventory', Global.ln.get('menu-narrative-inventory'), onInventory);
+        this.addButton('btBattle', Global.ln.get('menu-narrative-battle'), onBattle);
     }
 
     /**
@@ -34,6 +36,10 @@ class MenuNarrative extends DrawerMenu {
             this.ui.buttons['btDiag'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
             this.ui.buttons['btDflow'].enabled = false;
             this.ui.buttons['btDflow'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
+            this.ui.buttons['btInventory'].enabled = false;
+            this.ui.buttons['btInventory'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
+            this.ui.buttons['btBattle'].enabled = false;
+            this.ui.buttons['btBattle'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
         } else {
             this.ui.buttons['btChar'].enabled = true;
             this.ui.buttons['btChar'].toolTip = null;
@@ -41,6 +47,10 @@ class MenuNarrative extends DrawerMenu {
             this.ui.buttons['btDiag'].toolTip = null;
             this.ui.buttons['btDflow'].enabled = true;
             this.ui.buttons['btDflow'].toolTip = null;
+            this.ui.buttons['btInventory'].enabled = true;
+            this.ui.buttons['btInventory'].toolTip = null;
+            this.ui.buttons['btBattle'].enabled = true;
+            this.ui.buttons['btBattle'].toolTip = null;
         }
     }
 
@@ -70,6 +80,20 @@ class MenuNarrative extends DrawerMenu {
     **/
     private  function onDflow(evt:TriggerEvent):Void {
         this._ac('dflow');
+    }
+
+    /**
+        Inventory
+    **/
+    private  function onInventory(evt:TriggerEvent):Void {
+        this._ac('inventory');
+    }
+
+    /**
+        Battle system
+    **/
+    private  function onBattle(evt:TriggerEvent):Void {
+        this._ac('battle');
     }
 
 }

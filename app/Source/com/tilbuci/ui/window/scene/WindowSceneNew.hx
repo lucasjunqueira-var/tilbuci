@@ -74,9 +74,6 @@ class WindowSceneNew extends PopupWindow {
         Scene creation return.
     **/
     private function onCreateSceneReturn(ok:Bool, ld:DataLoader):Void {
-
-trace ('create return', ok, ld.map);
-
         if (!ok) {
             this.ui.createWarning(Global.ln.get('window-scenenew-title'), Global.ln.get('window-scenenew-createer'), 300, 180, this.stage);
         } else if (ld.map['e'] != 0) {

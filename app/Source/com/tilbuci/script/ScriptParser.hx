@@ -7,6 +7,7 @@
  package com.tilbuci.script;
 
 /** TILBUCI **/
+import com.tilbuci.contraptions.InventoryContraption;
 import com.tilbuci.def.TBArray;
 import openfl.geom.Point;
 import openfl.events.MouseEvent;
@@ -15,6 +16,7 @@ import openfl.ui.Mouse;
 import com.tilbuci.narrative.DialogueFolderNarrative;
 import com.tilbuci.narrative.CharacterNarrative;
 import com.tilbuci.narrative.DialogueNarrative;
+import com.tilbuci.narrative.InvItemNarrative;
 import com.tilbuci.player.MovieArea;
 import haxe.macro.Expr.Function;
 import com.tilbuci.contraptions.CoverContraption;
@@ -197,7 +199,7 @@ class ScriptParser {
         for (k in this._bools.keys()) this._bools.remove(k);
         for (k in this._arrays.keys()) {
             this._arrays[k].kill();
-            this._bools.remove(k);
+            this._arrays.remove(k);
         }
         this._strings = null;
         this._floats = null;
@@ -334,9 +336,6 @@ class ScriptParser {
             if (this._currentArray != '') {
                 if (!this._arrays.exists(this._currentArray)) this._arrays[this._currentArray] = new TBArray();
                 if (this._arrays[this._currentArray].fromJson(ld.rawtext)) {
-
-trace ('onarrayfile', this._arrays[this._currentArray]);
-
                     this._currentArray = '';
                     if (this._acOk != null) this.run(this._acOk, true);
                 } else {
@@ -451,6 +450,15 @@ trace ('onarrayfile', this._arrays[this._currentArray]);
                             dfl.kill();
                         }
                     }
+                } else if (k == 'inv') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'inv'))) {
+                        var inv:InventoryContraption = new InventoryContraption();
+                        if (inv.load(Reflect.field(Reflect.field(ld.json, 'inv'), k2))) {
+                            GlobalPlayer.contraptions.inv['inv'] = inv;
+                        } else {
+                            inv.kill();
+                        }
+                    }
                 } else if (k == 'musics') {
                     for (k2 in  Reflect.fields(Reflect.field(ld.json, 'musics'))) {
                         var ms:MusicContraption = new MusicContraption();
@@ -518,6 +526,15 @@ trace ('onarrayfile', this._arrays[this._currentArray]);
                             GlobalPlayer.narrative.dialogues[dnar.id] = dnar;
                         } else {
                             dnar.kill();
+                        }
+                    }
+                } else if (k == 'items') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'items'))) {
+                        var itnar:InvItemNarrative = new InvItemNarrative();
+                        if (itnar.load(Reflect.field(Reflect.field(ld.json, 'items'), k2))) {
+                            GlobalPlayer.narrative.items[itnar.itname] = itnar;
+                        } else {
+                            itnar.kill();
                         }
                     }
                 }
@@ -1455,6 +1472,72 @@ trace ('onarrayfile', this._arrays[this._currentArray]);
                         }
 
                     // narrative actions
+                    case 'inventory.show':
+                        var invclose:Dynamic = null;
+                        if (Reflect.hasField(inf, 'complete')) invclose = Reflect.field(inf, 'complete');
+                        GlobalPlayer.contraptions.inventoryShow(invclose);
+                        return (true);
+                    case 'inventory.close':
+                        GlobalPlayer.contraptions.invHide();
+                        return (true);
+                    case 'inventory.addkeyitem':
+                        if (param.length > 0) {
+                            GlobalPlayer.narrative.addKeyItem(this.parseString(param[0]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'inventory.removekeyitem':
+                        if (param.length > 0) {
+                            GlobalPlayer.narrative.removeKeyItem(this.parseString(param[0]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'inventory.clearkeyitems':
+                        GlobalPlayer.narrative.clearKeyItems();
+                        return (true);
+                    case 'inventory.haskeyitem':
+                        if (param.length > 0) {
+                            if (GlobalPlayer.narrative.hasKeyItem(this.parseString(param[0]))) {
+                                if (Reflect.hasField(inf, 'then')) {
+                                    this.run(Reflect.field(inf, 'then'), true);
+                                }
+                            } else {
+                                if (Reflect.hasField(inf, 'else')) {
+                                    this.run(Reflect.field(inf, 'else'), true);
+                                }
+                            }
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'inventory.addconsumable':
+                        if (param.length > 1) {
+                            GlobalPlayer.narrative.addConsumableItem(this.parseString(param[0]), this.parseInt(param[1]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'inventory.removeconsumable':
+                        if (param.length > 0) {
+                            GlobalPlayer.narrative.removeConsumableItem(this.parseString(param[0]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'inventory.consumeitem':
+                        if (param.length > 0) {
+                            GlobalPlayer.narrative.consumeItem(this.parseString(param[0]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'inventory.clearconsumables':
+                        GlobalPlayer.narrative.clearConsumableItems();
+                        return (true);
+
+
                     case 'dialogue.loadgroup':
                         this._currDiag = '';
                         this._diagInfo = null;
@@ -4157,6 +4240,13 @@ trace ('onarrayfile', this._arrays[this._currentArray]);
                         default:
                             return (0);
                     }
+                } else {
+                    return (0);
+                }
+            } else if (str.substr(0, 15) == "#_INVCONSUMABLE") {
+                var arstr:Array<String> = str.split(':');
+                if (arstr.length == 2) {
+                    return (GlobalPlayer.narrative.consumableAmount(this.parseString(arstr[1])));
                 } else {
                     return (0);
                 }

@@ -40,6 +40,7 @@ class PictureImage extends BaseImage {
     **/
     public function load(media:String):Void {
         media = StringTools.replace(media, (GlobalPlayer.path + 'media/picture/'), '');
+        this._mediaLoaded = false;
         this._lastMedia = media;
         var path:String = GlobalPlayer.parser.parsePath(GlobalPlayer.path + 'media/picture/' + media);
         this._loader.load(new URLRequest(path));
@@ -49,6 +50,7 @@ class PictureImage extends BaseImage {
         Unloads current image.
     **/
     public function unload():Void {
+        this._mediaLoaded = false;
         this._lastMedia = '';
         try { this._loader.unload(); } catch (e) { }
     }
@@ -74,6 +76,7 @@ class PictureImage extends BaseImage {
         this.oHeight = this._loader.content.height;
         var cont:Bitmap = cast this._loader.content;
         cont.smoothing = true;
+        this._mediaLoaded = true;
         if (this._onLoad != null) this._onLoad(true);
     }
 
@@ -82,6 +85,7 @@ class PictureImage extends BaseImage {
     **/
     private function onError(e:Event):Void {
         this._lastMedia = '';
+        this._mediaLoaded = false;
         if (this._onLoad != null) this._onLoad(false);
     }
 }
