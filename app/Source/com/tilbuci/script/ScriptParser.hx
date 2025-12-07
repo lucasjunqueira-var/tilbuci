@@ -7,6 +7,8 @@
  package com.tilbuci.script;
 
 /** TILBUCI **/
+import com.tilbuci.narrative.BattleCardNarrative;
+import com.tilbuci.contraptions.BattleContraption;
 import com.tilbuci.contraptions.InventoryContraption;
 import com.tilbuci.def.TBArray;
 import openfl.geom.Point;
@@ -459,6 +461,15 @@ class ScriptParser {
                             inv.kill();
                         }
                     }
+                } else if (k == 'bs') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'bs'))) {
+                        var bs:BattleContraption = new BattleContraption();
+                        if (bs.load(Reflect.field(Reflect.field(ld.json, 'bs'), k2))) {
+                            GlobalPlayer.contraptions.bs['bs'] = bs;
+                        } else {
+                            bs.kill();
+                        }
+                    }
                 } else if (k == 'musics') {
                     for (k2 in  Reflect.fields(Reflect.field(ld.json, 'musics'))) {
                         var ms:MusicContraption = new MusicContraption();
@@ -535,6 +546,15 @@ class ScriptParser {
                             GlobalPlayer.narrative.items[itnar.itname] = itnar;
                         } else {
                             itnar.kill();
+                        }
+                    }
+                } else if (k == 'cards') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'cards'))) {
+                        var crdar:BattleCardNarrative = new BattleCardNarrative();
+                        if (crdar.load(Reflect.field(Reflect.field(ld.json, 'cards'), k2))) {
+                            GlobalPlayer.narrative.cards[crdar.cardname] = crdar;
+                        } else {
+                            crdar.kill();
                         }
                     }
                 }
@@ -1536,6 +1556,48 @@ class ScriptParser {
                     case 'inventory.clearconsumables':
                         GlobalPlayer.narrative.clearConsumableItems();
                         return (true);
+                    case 'inventory.tostring':
+                        if (param.length > 0) {
+                            this._strings[this.parseString(param[0])] = GlobalPlayer.narrative.currentItems();
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'inventory.fromstring':
+                        if (param.length > 0) {
+                            GlobalPlayer.narrative.loadItems(this._strings[this.parseString(param[0])]);
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'inventory.keytostring':
+                        if (param.length > 0) {
+                            this._strings[this.parseString(param[0])] = GlobalPlayer.narrative.currentKeyItems();
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'inventory.keyfromstring':
+                        if (param.length > 0) {
+                            GlobalPlayer.narrative.loadKeyItems(this._strings[this.parseString(param[0])]);
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'inventory.constostring':
+                        if (param.length > 0) {
+                            this._strings[this.parseString(param[0])] = GlobalPlayer.narrative.currentConsItems();
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'inventory.consfromstring':
+                        if (param.length > 0) {
+                            GlobalPlayer.narrative.loadConsItems(this._strings[this.parseString(param[0])]);
+                            return (true);
+                        } else {
+                            return (false);
+                        }
 
 
                     case 'dialogue.loadgroup':

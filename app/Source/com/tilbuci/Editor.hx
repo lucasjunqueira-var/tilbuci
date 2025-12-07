@@ -10,6 +10,7 @@
 import com.tilbuci.js.ExternBrowser;
 import com.tilbuci.ui.window.narrative.WindowNarrDflow;
 import com.tilbuci.ui.window.narrative.WindowNarrInv;
+import com.tilbuci.ui.window.narrative.WindowNarrBattle;
 import com.tilbuci.ui.window.scene.WindowSceneDflow;
 import com.tilbuci.ui.window.media.WindowMediaStrings;
 import com.tilbuci.ui.window.narrative.WindowNarrChar;
@@ -743,6 +744,9 @@ class Editor extends Drawer {
             case 'inventory':
                 this.opened = false;
                 this.showWindow('narrative-inventory');
+            case 'battle':
+                this.opened = false;
+                this.showWindow('narrative-battle');
             case 'menu-close':
                 this.opened = false;
             case 'window-notes':
@@ -1213,6 +1217,64 @@ class Editor extends Drawer {
                 Global.temp['Media/Single'] = [
                     'type' => 'picture', 
                     'call' => 'inventv'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+        }
+    }
+
+    /**
+        Narrative battle system information.
+        @param  ac  the action id
+    **/
+    private function actionWindowNarrBattle(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
+            case 'battleattr':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'battleattr'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'battleclose':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'battleclose'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'battleh':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'battleh'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'battlev':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'battlev'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'itgraphic':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'itgraphic'
                 ];
                 this.showWindow('mediapicture');
                 this._windows['mediapicture'].action('setmode', [
@@ -1815,6 +1877,36 @@ class Editor extends Drawer {
                                 'name' => data['file'], 
                             ]);
 
+                        case 'battleattr':
+                            this._windows['narrative-battle'].action('battleattr', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'battleclose':
+                            this._windows['narrative-battle'].action('battleclose', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'battleh':
+                            this._windows['narrative-battle'].action('battleh', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'battlev':
+                            this._windows['narrative-battle'].action('battlev', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'itgraphic':
+                            this._windows['narrative-battle'].action('itgraphic', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
 
                         case 'messagesbrowseimgbg':
                             this._windows['messages'].action('messagesbrowseimgbg', [
@@ -2295,6 +2387,7 @@ class Editor extends Drawer {
                 case 'narrative-diag': this._windows['narrative-diag'] = new WindowDiagChar(actionWindowDiagChar);
                 case 'narrative-dflow': this._windows['narrative-dflow'] = new WindowNarrDflow(actionWindowNarrDflow);
                 case 'narrative-inventory': this._windows['narrative-inventory'] = new WindowNarrInv(actionWindowNarrInventory);
+                case 'narrative-battle': this._windows['narrative-battle'] = new WindowNarrBattle(actionWindowNarrBattle);
 
                 case 'visitors': this._windows['visitors'] = new WindowVisitors(actionWindowVisitors, this.build);
                 case 'designnotes': this._windows['designnotes'] = new WindowNotes(actionWindowNotes);

@@ -1116,6 +1116,24 @@ class ActionInfo {
                     { t: 's', n: Global.ln.get('acinfo-invconsume-p1'), v: '' }, 
                 ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-invclearcons'), a: 'inventory.clearconsumables', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-invtostring'), a: 'inventory.tostring', p: [
+                    { t: 's', n: Global.ln.get('acinfo-invtostring-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-invfromstring'), a: 'inventory.fromstring', p: [
+                    { t: 's', n: Global.ln.get('acinfo-invfromstring-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-invtostringk'), a: 'inventory.keytostring', p: [
+                    { t: 's', n: Global.ln.get('acinfo-invtostringk-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-invfromstringk'), a: 'inventory.keyfromstring', p: [
+                    { t: 's', n: Global.ln.get('acinfo-invfromstringk-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-invtostringc'), a: 'inventory.constostring', p: [
+                    { t: 's', n: Global.ln.get('acinfo-invtostringc-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-invfromstringc'), a: 'inventory.consfromstring', p: [
+                    { t: 's', n: Global.ln.get('acinfo-invfromstringc-p1'), v: '' }, 
+                ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-diagloadgroup'), a: 'dialogue.loadgroup', p: [
                     { t: 's', n: Global.ln.get('acinfo-diagloadgroup-p1'), v: '' }, 
                 ], e: [ 'success', 'error' ] }, 

@@ -32,6 +32,9 @@ class Narrative {
     public var consItNames:Array<String> = [ ];
     public var consItAmounts:Array<Int> = [ ];
 
+    // battle cards
+    public var cards:Map<String, BattleCardNarrative> = [ ];
+
     public function new() {
         this.diagSpeech = new AudioImage(onSpeechLoad, onSpeechEnd);
     }
@@ -48,6 +51,10 @@ class Narrative {
         for (k in this.items.keys()) {
             this.items[k].kill();
             this.items.remove(k);
+        }
+        for (k in this.cards.keys()) {
+            this.cards[k].kill();
+            this.cards.remove(k);
         }
         while (this.keyItems.length > 0) this.keyItems.shift();
         while (this.consItNames.length > 0) this.consItNames.shift();
@@ -136,6 +143,90 @@ class Narrative {
         }
     }
 
+    public function currentItems():String {
+        return(StringStatic.jsonStringify({
+            k: this.keyItems, 
+            c: this.consItNames, 
+            a: this.consItAmounts, 
+        }));
+    }
+
+    public function loadItems(str:String):Bool {
+        var json:Dynamic = StringStatic.jsonParse(str);
+        if (json == false) {
+            return (false);
+        } else {
+            if (Reflect.hasField(json, 'k') && Reflect.hasField(json, 'c') && Reflect.hasField(json, 'a')) {
+                var kAr:Array<String> = cast Reflect.field(json, 'k');
+                var cAr:Array<String> = cast Reflect.field(json, 'c');
+                var aAr:Array<Int> = cast Reflect.field(json, 'a');
+                if ((kAr != null) && (cAr != null) && (aAr != null)) {
+                    this.keyItems = kAr;
+                    this.consItNames = cAr;
+                    this.consItAmounts = aAr;
+                    return (true);
+                } else {
+                    return (false);
+                }
+            } else {
+                return (false);
+            }
+        }
+    }
+
+    public function currentKeyItems():String {
+        return(StringStatic.jsonStringify({
+            k: this.keyItems, 
+        }));
+    }
+
+    public function loadKeyItems(str:String):Bool {
+        var json:Dynamic = StringStatic.jsonParse(str);
+        if (json == false) {
+            return (false);
+        } else {
+            if (Reflect.hasField(json, 'k')) {
+                var kAr:Array<String> = cast Reflect.field(json, 'k');
+                if (kAr != null) {
+                    this.keyItems = kAr;
+                    return (true);
+                } else {
+                    return (false);
+                }
+            } else {
+                return (false);
+            }
+        }
+    }
+
+    public function currentConsItems():String {
+        return(StringStatic.jsonStringify({
+            c: this.consItNames, 
+            a: this.consItAmounts, 
+        }));
+    }
+
+    public function loadConsItems(str:String):Bool {
+        var json:Dynamic = StringStatic.jsonParse(str);
+        if (json == false) {
+            return (false);
+        } else {
+            if (Reflect.hasField(json, 'c') && Reflect.hasField(json, 'a')) {
+                var cAr:Array<String> = cast Reflect.field(json, 'c');
+                var aAr:Array<Int> = cast Reflect.field(json, 'a');
+                if ((cAr != null) && (aAr != null)) {
+                    this.consItNames = cAr;
+                    this.consItAmounts = aAr;
+                    return (true);
+                } else {
+                    return (false);
+                }
+            } else {
+                return (false);
+            }
+        }
+    }
+
     public function getData():String {
         var data:Map<String, Array<Dynamic>> = [ ];
         data['chars'] = new Array<Dynamic>();
@@ -151,6 +242,10 @@ class Narrative {
         data['items'] = new Array<Dynamic>();
         for (k in this.items) {
             data['items'].push(k.toObject());
+        }
+        data['cards'] = new Array<Dynamic>();
+        for (k in this.cards) {
+            data['cards'].push(k.toObject());
         }
         return(StringStatic.jsonStringify(data));
     }
