@@ -72,6 +72,12 @@ class WindowNarrBattle extends PopupWindow {
         this.ui.createIconButton('imgattrdel', this.acImgattrdel, new Bitmap(Assets.getBitmapData('btDel')), this.ui.hcontainers['imgattr'], false);
         this.ui.inputs['imgattr'].enabled = false;
 
+        this.ui.createHContainer('imgcard');
+        this.ui.createTInput('imgcard', '', '', this.ui.hcontainers['imgcard'], false);
+        this.ui.createIconButton('imgcard', this.acImgcard, new Bitmap(Assets.getBitmapData('btOpenfile')), this.ui.hcontainers['imgcard'], false);
+        this.ui.createIconButton('imgcarddel', this.acImgcarddel, new Bitmap(Assets.getBitmapData('btDel')), this.ui.hcontainers['imgcard'], false);
+        this.ui.inputs['imgcard'].enabled = false;
+
         this.ui.createHContainer('itgraphic');
         this.ui.createTInput('itgraphic', '', '', this.ui.hcontainers['itgraphic'], false);
         this.ui.createIconButton('itgraphic', this.acItgraphic, new Bitmap(Assets.getBitmapData('btOpenfile')), this.ui.hcontainers['itgraphic'], false);
@@ -128,13 +134,15 @@ class WindowNarrBattle extends PopupWindow {
         
         this.addForm(Global.ln.get('window-narrbattle-display'), this.ui.forge('settings', [
             { tp: 'Label', id: 'set', tx: Global.ln.get('window-narrbattle-setabout'), vr: '' }, 
-            { tp: 'Spacer', id: 'set', ht: 10, ln: false }, 
+            { tp: 'Spacer', id: 'set', ht: 5, ln: false }, 
             { tp: 'Label', id: 'imgbgh', tx: Global.ln.get('window-narrbattle-imgbgh'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'Custom', cont: this.ui.hcontainers['imgbgh'] }, 
             { tp: 'Label', id: 'imgbgv', tx: Global.ln.get('window-narrbattle-imgbgv'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'Custom', cont: this.ui.hcontainers['imgbgv'] }, 
             { tp: 'Label', id: 'set', tx: Global.ln.get('window-narrbattle-button'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'Custom', cont: this.ui.hcontainers['imgbt'] }, 
+            { tp: 'Label', id: 'imgcard', tx: Global.ln.get('window-narrbattle-card'), vr: Label.VARIANT_DETAIL }, 
+            { tp: 'Custom', cont: this.ui.hcontainers['imgcard'] }, 
             { tp: 'Label', id: 'imgattr', tx: Global.ln.get('window-narrbattle-imgattr'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'Custom', cont: this.ui.hcontainers['imgattr'] }, 
             { tp: 'Label', id: 'font', tx: Global.ln.get('window-narrbattle-font'), vr: 'detail' }, 
@@ -143,7 +151,7 @@ class WindowNarrBattle extends PopupWindow {
             { tp: 'Numeric', id: 'fontsize', mn: 8, mx: 200, st: 1, vl: 20 }, 
             { tp: 'Label', id: 'fontc', tx: Global.ln.get('window-narrbattle-fontc'), vr: 'detail' }, 
             { tp: 'TInput', id: 'fontc', tx: '#FFFFFF', vr: '' },  
-            { tp: 'Spacer', id: 'gap', ht: 55, ln: false }, 
+            { tp: 'Spacer', id: 'gap', ht: 10, ln: false }, 
             { tp: 'Button', id: 'set', tx: Global.ln.get('window-narrbattle-btset'), ac: this.onSaveSet },  
         ]));
 
@@ -158,6 +166,7 @@ class WindowNarrBattle extends PopupWindow {
         this.ui.hcontainers['imgbgh'].setWidth(960, [810, 70, 70]);
         this.ui.hcontainers['imgbgv'].setWidth(960, [810, 70, 70]);
         this.ui.hcontainers['imgattr'].setWidth(960, [810, 70, 70]);
+        this.ui.hcontainers['imgcard'].setWidth(960, [810, 70, 70]);
         this.ui.hcontainers['itgraphic'].setWidth(460, [300, 70, 70]);
 
         this.ui.inputs['itname'].text = '';
@@ -168,6 +177,7 @@ class WindowNarrBattle extends PopupWindow {
         this.ui.inputs['imgbgh'].text = '';
         this.ui.inputs['imgbgv'].text = '';
         this.ui.inputs['imgattr'].text = '';
+        this.ui.inputs['imgcard'].text = '';
         this.ui.setSelectValue('font', null);
         this.ui.inputs['fontc'].text = '#FFFFFF';
         this.ui.numerics['fontsize'].value = GlobalPlayer.contraptions.bs['bs'].fontsize;
@@ -187,6 +197,7 @@ class WindowNarrBattle extends PopupWindow {
             this.ui.inputs['imgbgh'].text = GlobalPlayer.contraptions.bs['bs'].horizontal;
             this.ui.inputs['imgbgv'].text = GlobalPlayer.contraptions.bs['bs'].vertical;
             this.ui.inputs['imgattr'].text = GlobalPlayer.contraptions.bs['bs'].attrbg;
+            this.ui.inputs['imgcard'].text = GlobalPlayer.contraptions.bs['bs'].card;
             this.ui.setSelectValue('font', GlobalPlayer.contraptions.bs['bs'].font);
             this.ui.inputs['fontc'].text = GlobalPlayer.contraptions.bs['bs'].fontcolor;
             this.ui.numerics['fontsize'].value = GlobalPlayer.contraptions.bs['bs'].fontsize;
@@ -220,6 +231,8 @@ class WindowNarrBattle extends PopupWindow {
                 this.ui.inputs['imgbgv'].text = data['file'];
             case 'itgraphic':
                 this.ui.inputs['itgraphic'].text = data['file'];
+            case 'imgcard':
+                this.ui.inputs['imgcard'].text = data['file'];
         }
     }
 
@@ -273,6 +286,14 @@ class WindowNarrBattle extends PopupWindow {
 
     private function acItgraphicdel(evt:Event):Void {
         this.ui.inputs['itgraphic'].text = '';
+    }
+
+    private function acImgcard(evt:Event):Void {
+        this._ac('imgcard');
+    }
+
+    private function acImgcarddel(evt:Event):Void {
+        this.ui.inputs['imgcard'].text = '';
     }
 
     private function onLoadIt(evt:Event = null):Void {
@@ -355,7 +376,7 @@ class WindowNarrBattle extends PopupWindow {
         Save display settings.
     **/
     private function onSaveSet(evt:Event):Void {
-        if ((this.ui.inputs['imgbt'].text == '') || (this.ui.inputs['imgattr'].text == '')) {
+        if ((this.ui.inputs['imgbt'].text == '') || (this.ui.inputs['imgattr'].text == '') || (this.ui.inputs['imgcard'].text == '')) {
             Global.showPopup(Global.ln.get('window-narrbattle-display'), Global.ln.get('window-narrbattle-noclose'), 320, 150, Global.ln.get('default-ok'));
         } else if ((this.ui.inputs['imgbgh'].text == '') && (this.ui.inputs['imgbgv'].text == '')) {
             Global.showPopup(Global.ln.get('window-narrbattle-display'), Global.ln.get('window-narrbattle-nobg'), 320, 150, Global.ln.get('default-ok'));
@@ -365,6 +386,7 @@ class WindowNarrBattle extends PopupWindow {
                 GlobalPlayer.contraptions.bs['bs'].fontcolor = StringStatic.colorHex(this.ui.inputs['fontc'].text, '#FFFFFF');
                 GlobalPlayer.contraptions.bs['bs'].fontsize = Math.round(this.ui.numerics['fontsize'].value);
                 GlobalPlayer.contraptions.bs['bs'].close = this.ui.inputs['imgbt'].text;
+                GlobalPlayer.contraptions.bs['bs'].card = this.ui.inputs['imgcard'].text;
                 GlobalPlayer.contraptions.bs['bs'].horizontal = this.ui.inputs['imgbgh'].text;
                 GlobalPlayer.contraptions.bs['bs'].vertical = this.ui.inputs['imgbgv'].text;
                 GlobalPlayer.contraptions.bs['bs'].attrbg = this.ui.inputs['imgattr'].text;
@@ -384,6 +406,7 @@ class WindowNarrBattle extends PopupWindow {
                     horizontal: this.ui.inputs['imgbgh'].text, 
                     vertical: this.ui.inputs['imgbgv'].text, 
                     attrbg:  this.ui.inputs['imgattr'].text, 
+                    card:  this.ui.inputs['imgcard'].text, 
                 })) {
                     for (k in GlobalPlayer.contraptions.bs.keys()) {
                         GlobalPlayer.contraptions.bs[k].kill();

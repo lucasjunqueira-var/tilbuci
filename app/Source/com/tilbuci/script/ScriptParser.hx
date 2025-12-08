@@ -1599,6 +1599,16 @@ class ScriptParser {
                             return (false);
                         }
 
+                    case 'battle.show':
+                        if (param.length > 1) {
+                            var pl:Array<String> = this.parseString(param[0]).split(',');
+                            var op:Array<String> = this.parseString(param[1]).split(',');
+                            GlobalPlayer.contraptions.battleShow(null, pl, op);
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+
 
                     case 'dialogue.loadgroup':
                         this._currDiag = '';

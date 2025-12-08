@@ -36,6 +36,8 @@ class BattleContraption extends Sprite {
 
     public var close:String = '';
 
+    public var card:String = '';
+
     public var attrbg:String = '';
 
     public var attributes:Array<String> = [ ];
@@ -52,17 +54,39 @@ class BattleContraption extends Sprite {
 
     private var _player:BattleCard;
 
-    private var _opponent:BattleCard;    
+    private var _playerCurent:CurrentCards;
+
+    private var _opponent:BattleCard;
+
+    private var _opponentCurent:CurrentCards;
+
+    private var _pcards:Array<String>;
+
+    private var _ocards:Array<String>;
+
+    private var _cardsize:Point;
 
     public function new() {
         super();
     }
 
-    public function create(closeac:Dynamic = null):Sprite {
+    public function create(closeac:Dynamic = null, pcards:Array<String>, ocards:Array<String>):Sprite {
         this.removeChildren();
         this._cbitmap.visible = true;
         this._hbitmap.visible = this._vbitmap.visible = false;
         if (this.ok) {
+            if (this._player == null) this._player = new BattleCard(this.draw);
+            if (this._opponent == null) this._opponent = new BattleCard(this.draw);
+            this._pcards = pcards;
+            this._ocards = ocards;
+            this._player.draw(this._pcards[0]);
+            this._opponent.draw(this._ocards[0]);
+
+            if (this._playerCurent == null) this._playerCurent = new CurrentCards(this.draw);
+            if (this._opponentCurent == null) this._opponentCurent = new CurrentCards(this.draw);
+            this._playerCurent.draw(this._pcards);
+            this._opponentCurent.draw(this._ocards);
+
             if (GlobalPlayer.area.pOrientation == MovieArea.HORIENTATION) {
                 this.addChild(this._hbitmap);
                 this._hbitmap.x = this._hbitmap.y = 0;
@@ -70,6 +94,18 @@ class BattleContraption extends Sprite {
                 this._hbitmap.height = GlobalPlayer.mdata.screen.small;
                 this._cbitmap.x = this._hbitmap.width - this._cbitmap.width;
                 this._hbitmap.visible = true;
+                this._player.x = this._cbitmap.width;
+                this._player.y = this._cbitmap.height;
+                this._opponent.x = (this._hbitmap.width / 2) + (this._cbitmap.width / 2);
+                this._opponent.y = this._cbitmap.height;
+                this._playerCurent.x = this._player.x;
+                this._opponentCurent.x = this._opponent.x;
+                this._playerCurent.y = GlobalPlayer.mdata.screen.small - (this.btAtrHeight() * 1.5);
+                this._opponentCurent.y = GlobalPlayer.mdata.screen.small - (this.btAtrHeight() * 1.5);
+                this._cardsize = new Point(
+                    (GlobalPlayer.mdata.screen.big / 2) - (1.5 * this._cbitmap.width), 
+                    GlobalPlayer.mdata.screen.small - this._cbitmap.height - (this.btAtrHeight() * 2)
+                );
             } else {
                 this.addChild(this._vbitmap);
                 this._vbitmap.x = this._vbitmap.y = 0;
@@ -77,93 +113,57 @@ class BattleContraption extends Sprite {
                 this._vbitmap.height = GlobalPlayer.mdata.screen.big;
                 this._cbitmap.x = this._vbitmap.width - this._cbitmap.width;
                 this._vbitmap.visible = true;
+                this._player.x = this._cbitmap.width;
+                this._player.y = this._cbitmap.height;
+                this._opponent.x = this._cbitmap.width;
+                this._opponent.y = (this._vbitmap.height / 2) + (this._cbitmap.height / 2);
+                this._playerCurent.x = this._player.x;
+                this._opponentCurent.x = this._opponent.x;
+                this._playerCurent.y = (this._vbitmap.height / 2) - (this.btAtrHeight() * 0.5);
+                this._opponentCurent.y = this._vbitmap.height - (this.btAtrHeight() * 1.5);
+                this._cardsize = new Point(
+                    this._vbitmap.width - (2 * this._cbitmap.width), 
+                    (this._vbitmap.height / 2) - (this._cbitmap.height / 2) - (this.btAtrHeight() * 2)
+                );
+
             }
             this._cbitmap.y = 0;
             this.addChild(this._cbitmap); 
+            this.addChild(this._player);
+            this.addChild(this._opponent);
+            this.addChild(this._playerCurent);
+            this.addChild(this._opponentCurent);
             this._closeac = closeac; 
-            if (this._player == null) this._player = new BattleCard();
-            if (this._opponent == null) this._opponent = new BattleCard();
         }
         return (this);
     }
 
     public function draw():Void {
-        /*for (r in this._rows) r.setText(this.font, this.fontsize, StringStatic.colorInt(this.fontcolor));
-        
-        this._rows[0].setData(GlobalPlayer.narrative.keyItems);
-        var cons1names:Array<String> = [ ];
-        var cons1amounts:Array<Int> = [ ];
-        var cons2names:Array<String> = [ ];
-        var cons2amounts:Array<Int> = [ ];
-        if (GlobalPlayer.narrative.consItNames.length > 0) {
-            for (i in 0...4) {
-                if (GlobalPlayer.narrative.consItNames.length > i) {
-                    cons1names.push(GlobalPlayer.narrative.consItNames[i]);
-                    cons1amounts.push(GlobalPlayer.narrative.consItAmounts[i]);
-                }
-            }
+        this._player.width = this._cardsize.x;
+        this._player.scaleY = this._player.scaleX;
+        if (this._player.height > this._cardsize.y) {
+            this._player.height = this._cardsize.y;
+            this._player.scaleX = this._player.scaleY;
         }
-        if (GlobalPlayer.narrative.consItNames.length > 4) {
-            for (i in 4...8) {
-                if (GlobalPlayer.narrative.consItNames.length > i) {
-                    cons2names.push(GlobalPlayer.narrative.consItNames[i]);
-                    cons2amounts.push(GlobalPlayer.narrative.consItAmounts[i]);
-                }
-            }
+        this._opponent.width = this._cardsize.x;
+        this._opponent.scaleY = this._opponent.scaleX;
+        if (this._opponent.height > this._cardsize.y) {
+            this._opponent.height = this._cardsize.y;
+            this._opponent.scaleX = this._opponent.scaleY;
         }
-        this._rows[1].setData(cons1names, cons1amounts);
-        this._rows[2].setData(cons2names, cons2amounts);
-
-        var areax:Float = 0;
-        var areay:Float = 0;
-        var rowref:Float = 0;
-        if (this._hbitmap.visible) {
-            areax = this._hbitmap.width - (2 * this._cbitmap.width);
-            areay = this._hbitmap.height - (2 * this._cbitmap.height);
-            rowref = areay / 5;
-            if (this.mode == 'k') {
-                this._rows[0].x = this._cbitmap.width;
-                this._rows[0].y = this._cbitmap.height + (rowref * 2);
-                this._rows[0].draw('h', areax, rowref);
-                this._rows[1].visible = this._rows[2].visible = false;
-            } else if (this.mode == 'c') {
-                this._rows[1].x = this._rows[2].x = this._cbitmap.width;
-                this._rows[1].y = this._cbitmap.height + (rowref);
-                this._rows[2].y = this._cbitmap.height + (rowref * 3);
-                this._rows[1].draw('h', areax, rowref);
-                this._rows[2].draw('h', areax, rowref);
-                this._rows[0].visible = false;
-            } else {
-                for (r in 0...this._rows.length) {
-                    this._rows[r].x = this._cbitmap.width;
-                    this._rows[r].y = this._cbitmap.height + (r * rowref * 2);
-                    this._rows[r].draw('h', areax, rowref);
-                }
-            }
+        if (GlobalPlayer.area.pOrientation == MovieArea.HORIENTATION) {
+            this._player.x = this._cbitmap.width + ((this._cardsize.x - this._player.width) / 2);
+            this._player.y = this._cbitmap.height + ((this._cardsize.y - this._player.height) / 2);
+            this._opponent.x = (this._hbitmap.width / 2) + (this._cbitmap.width / 2) + ((this._cardsize.x - this._opponent.width) / 2);
+            this._opponent.y = this._cbitmap.height + ((this._cardsize.y - this._opponent.height) / 2);
         } else {
-            areax = this._vbitmap.width - (2 * this._cbitmap.width);
-            areay = this._vbitmap.height - (2 * this._cbitmap.height);
-            rowref = areax / 5;
-            if (this.mode == 'k') {
-                this._rows[0].y = this._cbitmap.height;
-                this._rows[0].x = this._cbitmap.width + (rowref * 2);
-                this._rows[0].draw('v', areay, rowref);
-                this._rows[1].visible = this._rows[2].visible = false;
-            } else if (this.mode == 'c') {
-                this._rows[1].y = this._rows[2].y = this._cbitmap.height;
-                this._rows[1].x = this._cbitmap.width + (rowref);
-                this._rows[2].x = this._cbitmap.width + (rowref * 3);
-                this._rows[1].draw('v', areay, rowref);
-                this._rows[2].draw('v', areay, rowref);
-                this._rows[0].visible = false;
-            } else {
-                for (r in 0...this._rows.length) {
-                    this._rows[r].y = this._cbitmap.height;
-                    this._rows[r].x = this._cbitmap.width + (r * rowref * 2);
-                    this._rows[r].draw('v', areay, rowref);
-                }
-            }
-        }*/
+            this._player.x = this._cbitmap.width + ((this._cardsize.x - this._player.width) / 2);
+            this._opponent.x = this._cbitmap.width + ((this._cardsize.x - this._opponent.width) / 2);
+            this._player.y = this._cbitmap.height + ((this._cardsize.y - this._player.height) / 2);
+            this._opponent.y = ((this._vbitmap.height / 2) + (this._cbitmap.height / 2)) + ((this._cardsize.y - this._opponent.height) / 2);
+        }
+        this._playerCurent.x = this._player.x + ((this._player.width - this._playerCurent.width) / 2);
+        this._opponentCurent.x = this._opponent.x + ((this._opponent.width - this._opponentCurent.width) / 2);
     }
 
     public function checkCollision(obj:Sprite):Bool {
@@ -209,6 +209,7 @@ class BattleContraption extends Sprite {
             close: this.close, 
             attrbg: this.attrbg, 
             attributes: this.attributes, 
+            card: this.card, 
         });
         return (mn);
     }
@@ -231,6 +232,8 @@ class BattleContraption extends Sprite {
                 else this.close = '';
             if (Reflect.hasField(data, 'attrbg')) this.attrbg = Reflect.field(data, 'attrbg');
                 else this.attrbg = '';
+            if (Reflect.hasField(data, 'card')) this.card = Reflect.field(data, 'card');
+                else this.card = '';
             if (Reflect.hasField(data, 'attributes')) {
                 var atr:Array<String> = cast Reflect.field(data, 'attributes');
                 if (atr == null) {
@@ -286,6 +289,18 @@ class BattleContraption extends Sprite {
         this._abitmap = null;
         while (this.attributes.length > 0) this.attributes.shift();
         this.attributes = null;
+        this._player.kill();
+        this._player = null;
+        this._opponent.kill();
+        this._opponent = null;
+        this._playerCurent.kill();
+        this._playerCurent = null;
+        this._opponentCurent.kill();
+        this._opponentCurent = null;
+        while (this._pcards.length > 0) this._pcards.shift();
+        this._pcards = null;
+        while (this._ocards.length > 0) this._ocards.shift();
+        this._ocards = null;
     }
 
     public function toObject():Dynamic {
@@ -299,6 +314,7 @@ class BattleContraption extends Sprite {
             close: this.close, 
             attrbg: this.attrbg, 
             attributes: this.attributes, 
+            card: this.card, 
         });
     }
 
@@ -373,12 +389,24 @@ class BattleCard extends Sprite {
 
     public var graphic:PictureImage;
 
-    public var attributes:Array<AttributeButton>;
+    public var attributes:Array<AttributeButton> = [ ];
 
-    public function new() {
+    public var background:PictureImage;
+
+    private var _holder:Sprite;
+
+    private var _draw:Dynamic;
+
+    public function new(draw:Dynamic) {
         super();
+        this._holder = new Sprite();
         this.graphic = new PictureImage(onPic);
+        this.background = new PictureImage(onBg);
         for (i in 0...5) this.attributes.push(new AttributeButton(i));
+        if (GlobalPlayer.contraptions.bs.exists('bs') && (GlobalPlayer.contraptions.bs['bs'].card != '')) {
+            this.background.load(GlobalPlayer.contraptions.bs['bs'].card);
+        }
+        this._draw = draw;
     }
 
     public function draw(cardid:String):Void {
@@ -389,22 +417,57 @@ class BattleCard extends Sprite {
                 this.attributes[i].draw(i, GlobalPlayer.narrative.cards[cardid].cardattributes[i]);
             }
             this.graphic.load(GlobalPlayer.narrative.cards[cardid].cardgraphic);
+            if (this.background.lastMedia != GlobalPlayer.contraptions.bs['bs'].card) {
+                this.background.load(GlobalPlayer.contraptions.bs['bs'].card);
+            }
         }
     }
 
+    public function kill():Void {
+        this.removeChildren();
+        this._holder.removeChildren();
+        this.graphic.kill();
+        this.graphic = null;
+        this.background.kill();
+        this.background = null;
+        while (this.attributes.length > 0) this.attributes.shift().kill();
+        this.attributes = null;
+        this._draw = null;
+    }
+
     private function onPic(ok:Bool):Void {
-        this.graphic.width = this.graphic.height = GlobalPlayer.contraptions.bs['bs'].btAtrWidth();
-        this.graphic.x = this.graphic.y = 0;
+        this._holder.removeChildren();
+        this.graphic.width = this.graphic.height = GlobalPlayer.contraptions.bs['bs'].btAtrHeight() * 4;
+        this.graphic.x = (GlobalPlayer.contraptions.bs['bs'].btAtrWidth() - this.graphic.width) / 2;
+        this.graphic.y = 0;
         this.graphic.visible = true;
-        this.addChild(this.graphic);
+        this._holder.addChild(this.graphic);
 
         for (i in 0...this.attributes.length) {
             if (this.attributes[i].visible) {
                 this.attributes[i].x = 0;
-                this.attributes[i].y = this.graphic.height + GlobalPlayer.contraptions.bs['bs'].btAtrHeight() + (i * 2 * GlobalPlayer.contraptions.bs['bs'].btAtrHeight());
-                this.addChild(attributes[i]);
+                this.attributes[i].y = this.graphic.height + GlobalPlayer.contraptions.bs['bs'].btAtrHeight() + (i * 1.5 * GlobalPlayer.contraptions.bs['bs'].btAtrHeight());
+                this._holder.addChild(attributes[i]);
             }
         }
+
+        this.place();
+    }
+
+    private function onBg(ok:Bool):Void {
+        this.background.width = this.background.oWidth;
+        this.background.height = this.background.oHeight;
+        this.background.visible = true;
+        this.place();
+    }
+
+    private function place():Void {
+        this.removeChildren();
+        this._holder.x = (this.background.width - this._holder.width) / 2;
+        this._holder.y = (this.background.height - this._holder.height) / 2;
+        this.addChild(this.background);
+        this.addChild(this._holder);
+        this._draw();
     }
 
 }
@@ -425,6 +488,9 @@ class AttributeButton extends Sprite {
         this.addChild(this.graphic);
         this.addChild(this.text);
         this.mouseChildren = false;
+        if (GlobalPlayer.contraptions.bs.exists('bs') && (GlobalPlayer.contraptions.bs['bs'].attrbg) != '') {
+            this.graphic.load(GlobalPlayer.contraptions.bs['bs'].attrbg);
+        }
     }
 
     public function draw(attr:Int, val:Int) {
@@ -441,6 +507,13 @@ class AttributeButton extends Sprite {
         }
     }
 
+    public function kill():Void {
+        this.removeChildren();
+        this.text = null;
+        this.graphic.kill();
+        this.graphic = null;
+    }
+
     private function onPic(ok:Bool):Void {
         this.graphic.visible = true;
         this.graphic.width = this.text.width = this.graphic.oWidth;
@@ -449,4 +522,58 @@ class AttributeButton extends Sprite {
         this.text.y = (this.graphic.oHeight - this.text.height) / 2;
         this.text.visible = true;
     }
+}
+
+class CurrentCards extends Sprite {
+
+    public var cards:Array<PictureImage> = [ ];
+
+    private var _draw:Dynamic;
+
+    public function new(draw:Dynamic) {
+        super();
+        this.mouseEnabled = false;
+        for (i in 0...5) {
+            this.cards.push(new PictureImage(onCard));
+        }
+        this._draw = draw;
+    }
+
+    public function draw(list:Array<String>):Void {
+        this.removeChildren();
+        for (c in this.cards) {
+            c.visible = false;
+            c.unload();
+        }
+        for (i in 0...list.length) {
+            if (i < this.cards.length) {
+                if (GlobalPlayer.narrative.cards.exists(list[i])) {
+                    this.cards[i].load(GlobalPlayer.narrative.cards[list[i]].cardgraphic);
+                }
+            }
+            
+        }
+    }
+
+    public function kill():Void {
+        this.removeChildren();
+        while (this.cards.length > 0) this.cards.shift().kill();
+        this.cards = null;
+        this._draw = null;
+    }
+
+    private function onCard(ok:Bool):Void {
+        this.removeChildren();
+        for (i in 0...this.cards.length) {
+            if (this.cards[i].mediaLoaded) {
+                this.cards[i].width = this.cards[i].height = GlobalPlayer.contraptions.bs['bs'].btAtrHeight();
+                this.cards[i].y = 0;
+                this.cards[i].x = i * 1.5 * GlobalPlayer.contraptions.bs['bs'].btAtrHeight();
+                this.cards[i].visible = true;
+                this.addChild(this.cards[i]);
+            }
+        }
+        this._draw();
+    }
+
 }

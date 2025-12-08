@@ -1280,6 +1280,15 @@ class Editor extends Drawer {
                 this._windows['mediapicture'].action('setmode', [
                     'mode' => 'single', 
                 ]);
+            case 'imgcard':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'imgcard'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
         }
     }
 
@@ -1903,6 +1912,12 @@ class Editor extends Drawer {
                             ]);
                         case 'itgraphic':
                             this._windows['narrative-battle'].action('itgraphic', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'imgcard':
+                            this._windows['narrative-battle'].action('imgcard', [
                                 'file' => data['path'] + data['file'], 
                                 'type' => data['type'], 
                                 'name' => data['file'], 
