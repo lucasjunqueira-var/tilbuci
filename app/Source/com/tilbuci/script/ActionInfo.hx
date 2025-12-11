@@ -1134,6 +1134,27 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-invfromstringc'), a: 'inventory.consfromstring', p: [
                     { t: 's', n: Global.ln.get('acinfo-invfromstringc-p1'), v: '' }, 
                 ], e: [ ] }, 
+
+                { n: Global.ln.get('acinfo-battleshow'), a: 'battle.show', p: [
+                    { t: 's', n: Global.ln.get('acinfo-battleshow-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-battleshow-p2'), v: '' }, 
+                ], e: [ 'win', 'loose' ] },
+                { n: Global.ln.get('acinfo-battleclose'), a: 'battle.close', p: [ ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-battlesetattr'), a: 'battle.setattribute', p: [
+                    { t: 'i', n: Global.ln.get('acinfo-battlesetattr-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-battlesetattr-p2'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-battlesetattr-p3'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-battlesetattr-p4'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-battlesetoppo'), a: 'battle.setopponent', p: [
+                    { t: 'i', n: Global.ln.get('acinfo-battlesetoppo-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-battlesetoppo-p2'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-battlesetoppo-p3'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-battlesetoppo-p4'), v: '' }, 
+                ], e: [ ] },
+
+
+
                 { n: Global.ln.get('acinfo-diagloadgroup'), a: 'dialogue.loadgroup', p: [
                     { t: 's', n: Global.ln.get('acinfo-diagloadgroup-p1'), v: '' }, 
                 ], e: [ 'success', 'error' ] }, 

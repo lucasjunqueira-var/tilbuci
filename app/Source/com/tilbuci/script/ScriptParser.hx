@@ -7,6 +7,7 @@
  package com.tilbuci.script;
 
 /** TILBUCI **/
+import moonshine.editor.text.syntax.format.SyntaxColorSettings;
 import com.tilbuci.narrative.BattleCardNarrative;
 import com.tilbuci.contraptions.BattleContraption;
 import com.tilbuci.contraptions.InventoryContraption;
@@ -1603,8 +1604,45 @@ class ScriptParser {
                         if (param.length > 1) {
                             var pl:Array<String> = this.parseString(param[0]).split(',');
                             var op:Array<String> = this.parseString(param[1]).split(',');
-                            GlobalPlayer.contraptions.battleShow(null, pl, op);
+                            var plfinal:Array<String> = [ ];
+                            var opfinal:Array<String> = [ ];
+                            for (i in 0...pl.length) {
+                                if (i < 5) plfinal.push(StringTools.trim(pl[i]));
+                            }
+                            for (i in 0...op.length) {
+                                if (i < 5) opfinal.push(StringTools.trim(op[i]));
+                            }
+                            var onwin:Dynamic = null;
+                            var onloose:Dynamic = null;
+                            if (Reflect.hasField(inf, 'win')) onwin = Reflect.field(inf, 'win');
+                            if (Reflect.hasField(inf, 'loose')) onloose = Reflect.field(inf, 'loose');
+                            GlobalPlayer.contraptions.battleShow(onwin, onloose, plfinal, opfinal);
                             return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'battle.close':
+                        GlobalPlayer.contraptions.bsHide();
+                        return (true);
+                    case "battle.setattribute":
+                        if (param.length > 3) {
+                            if (GlobalPlayer.contraptions.bs.exists('bs')) {
+                                GlobalPlayer.contraptions.bs['bs'].setAttributes(true, (this.parseInt(param[0])-1), this.parseInt(param[1]), this.parseInt(param[2]), this.parseInt(param[3]));
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case "battle.setopponent":
+                        if (param.length > 3) {
+                            if (GlobalPlayer.contraptions.bs.exists('bs')) {
+                                GlobalPlayer.contraptions.bs['bs'].setAttributes(false, (this.parseInt(param[0])-1), this.parseInt(param[1]), this.parseInt(param[2]), this.parseInt(param[3]));
+                                return (true);
+                            } else {
+                                return (false);
+                            }
                         } else {
                             return (false);
                         }

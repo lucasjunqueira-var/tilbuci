@@ -207,7 +207,6 @@ class WindowNarrBattle extends PopupWindow {
         }
 
         for (k in this._list.keys()) {
-            this._list[k].kill();
             this._list.remove(k);
         }
         for (k in GlobalPlayer.narrative.cards) {
@@ -344,12 +343,10 @@ class WindowNarrBattle extends PopupWindow {
 
     private function onSaveItems(evt:Event):Void {
         for (k in GlobalPlayer.narrative.cards.keys()) {
-            GlobalPlayer.narrative.cards[k].kill();
             GlobalPlayer.narrative.cards.remove(k);
         }
         for (k in this._list.keys()) {
             GlobalPlayer.narrative.cards[k] = this._list[k];
-            this._list.remove(k);
         }
         Global.ws.send('Movie/SaveNarrative', [
             'movie' => GlobalPlayer.movie.mvId, 

@@ -7,6 +7,7 @@
  package com.tilbuci.contraptions;
 
 /** OPENFL **/
+import com.tilbuci.statictools.SpriteStatic;
 import openfl.text.TextFormat;
 import openfl.text.TextField;
 import openfl.filters.GlowFilter;
@@ -438,6 +439,7 @@ class InvItemRow extends Sprite {
                                 GlobalPlayer.narrative.consumeItem(b.extraInfo[0]);
                                 this._draw();
                             }
+                            SpriteStatic.quickJump(b, 0.3, 5);
                             GlobalPlayer.parser.run(ac);
                         }
                     }
@@ -472,6 +474,7 @@ class InvItemRow extends Sprite {
                     GlobalPlayer.narrative.consumeItem(box.extraInfo[0]);
                     this._draw();
                 }
+                SpriteStatic.quickJump(box, 0.3, 5);
                 GlobalPlayer.parser.run(ac);
             }
         }

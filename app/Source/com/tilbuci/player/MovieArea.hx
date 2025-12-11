@@ -362,6 +362,8 @@ class MovieArea extends Sprite {
             // running messages action
         } else if (GlobalPlayer.contraptions.usingInv && GlobalPlayer.contraptions.checkInvCollision(this._target)) {
             // running decision flow action
+        } else if (GlobalPlayer.contraptions.usingBs && GlobalPlayer.contraptions.checkBsCollision(this._target)) {
+            // running decision flow action
         } else if (GlobalPlayer.contraptions.usingMenu && GlobalPlayer.contraptions.checkMenuCollision(this._target)) {
             // running menu action
         } else if (GlobalPlayer.contraptions.usingDflow && GlobalPlayer.contraptions.checkDflowCollision(this._target)) {
@@ -405,7 +407,7 @@ class MovieArea extends Sprite {
                     }
                 }
             }
-            if (GlobalPlayer.contraptions.checkMenuOver(this._target) || GlobalPlayer.contraptions.checkDflowOver(this._target) || GlobalPlayer.contraptions.checkMessagesOver(this._target) || GlobalPlayer.contraptions.checkInvOver(this._target)) {
+            if (GlobalPlayer.contraptions.checkMenuOver(this._target) || GlobalPlayer.contraptions.checkDflowOver(this._target) || GlobalPlayer.contraptions.checkMessagesOver(this._target) || GlobalPlayer.contraptions.checkInvOver(this._target) || GlobalPlayer.contraptions.checkBsOver(this._target)) {
                 over = '_menu_';
             }
             if (GlobalPlayer.contraptions.checkInterfaceOver(this._target)) {

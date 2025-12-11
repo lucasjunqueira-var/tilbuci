@@ -407,12 +407,12 @@ class Contraptions {
         }
     }
 
-    public function battleShow(closeac:Dynamic, player:Array<String>, opponent:Array<String>):Bool {
+    public function battleShow(onwin:Dynamic, onloose:Dynamic, player:Array<String>, opponent:Array<String>):Bool {
         this.bsHide();
         if ((GlobalPlayer.mode != Player.MODE_EDITOR) && this.bs.exists('bs')) {
             this._bsCurrent = this.bs['bs'];
             if (this._bsCurrent.ok) {
-                this._bsOverlay.addChild(this._bsCurrent.create(closeac, player, opponent));
+                this._bsOverlay.addChild(this._bsCurrent.create(onwin, onloose, player, opponent));
                 this.usingBs = true;
                 return (true);
             } else {
