@@ -39,6 +39,8 @@ class InventoryContraption extends Sprite {
 
     public var mode:String = 'a';
 
+    public var sound:String = '';
+
     private var _hbitmap:PictureImage;
 
     private var _vbitmap:PictureImage;
@@ -206,6 +208,7 @@ class InventoryContraption extends Sprite {
             vertical: this.vertical, 
             close: this.close, 
             mode: this.mode, 
+            sound: this.sound, 
         });
         return (mn);
     }
@@ -228,8 +231,9 @@ class InventoryContraption extends Sprite {
                 else this.close = '';
             if (Reflect.hasField(data, 'mode')) this.mode = Reflect.field(data, 'mode');
                 else this.mode = 'a';
+            if (Reflect.hasField(data, 'sound')) this.sound = Reflect.field(data, 'sound');
+                else this.sound = '';
             this.fontcolor = StringStatic.colorHex(this.fontcolor, '#FFFFFF');
-
             if (this.close == '') {
                 return (false);
             } else if ((this.horizontal == '') && (this.vertical == '')) {
@@ -249,7 +253,7 @@ class InventoryContraption extends Sprite {
     public function kill():Void {
         if (this.parent != null) this.parent.removeChild(this);
         this.removeChildren();
-        this.id = this.font = this.fontcolor = this.horizontal = this.vertical = this.close = null;
+        this.id = this.font = this.fontcolor = this.horizontal = this.vertical = this.close = this.sound = null;
         if (this.parent != null) this.parent.removeChild(this);
         if (this._cbitmap != null) {
             if (this._cbitmap.hasEventListener(MouseEvent.CLICK)) {
@@ -278,6 +282,7 @@ class InventoryContraption extends Sprite {
             vertical: this.vertical, 
             close: this.close, 
             mode: this.mode, 
+            sound: this.sound, 
         });
     }
 
@@ -440,6 +445,7 @@ class InvItemRow extends Sprite {
                                 this._draw();
                             }
                             SpriteStatic.quickJump(b, 0.3, 5);
+                            if (GlobalPlayer.contraptions.inv['inv'].sound != '') GlobalPlayer.contraptions.soundPlay(GlobalPlayer.parser.parseString(GlobalPlayer.contraptions.inv['inv'].sound));
                             GlobalPlayer.parser.run(ac);
                         }
                     }
@@ -475,6 +481,7 @@ class InvItemRow extends Sprite {
                     this._draw();
                 }
                 SpriteStatic.quickJump(box, 0.3, 5);
+                if (GlobalPlayer.contraptions.inv['inv'].sound != '') GlobalPlayer.contraptions.soundPlay(GlobalPlayer.parser.parseString(GlobalPlayer.contraptions.inv['inv'].sound));
                 GlobalPlayer.parser.run(ac);
             }
         }

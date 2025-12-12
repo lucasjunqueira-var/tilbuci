@@ -43,6 +43,14 @@ class BattleContraption extends Sprite {
 
     public var attrbg:String = '';
 
+    public var soundpick:String = '';
+
+    public var soundwin:String = '';
+
+    public var soundloose:String = '';
+
+    public var soundtie:String = '';
+
     public var attributes:Array<String> = [ ];
 
     private var _hbitmap:PictureImage;
@@ -79,6 +87,8 @@ class BattleContraption extends Sprite {
 
     private var _timer:Timer;
 
+    private var _timerParam:Int = 0;
+
     public function new() {
         super();
         this._playerData = new BattleData();
@@ -87,24 +97,37 @@ class BattleContraption extends Sprite {
 
     private function compare(num:Int):Void {
         if (this._timer == null) {
-            var valP:Int = this._playerData.getValue(num);
-            var valO:Int = this._opponentData.getValue(num);
-            if (valP < valO) {
-                SpriteStatic.shake(this._player, 0.5, 5);
-                SpriteStatic.quickJump(this._opponent, 0.5, 30);
-                this._opponent.showAttrVal(num);
-                this._timer = new Timer(500);
-                this._timer.run = this.onLoose;
-            } else if (valP > valO) {
-                SpriteStatic.quickJump(this._player, 0.5, 30);
-                SpriteStatic.shake(this._opponent, 0.5, 5);
-                this._timer = new Timer(500);
-                this._timer.run = this.onWin;
-            } else {
-                SpriteStatic.shake(this._player, 0.5, 5);
-                SpriteStatic.shake(this._opponent, 0.5, 5);
-                this._opponent.showAttrVal(num);
-            }
+            this._opponent.showAttrVal(num);
+            if (this.soundpick != '') GlobalPlayer.contraptions.soundPlay(GlobalPlayer.parser.parseString((this.soundpick)));
+            this._player.pulse(num);
+            this._opponent.pulse(num);
+            this._timerParam = num;
+            this._timer = new Timer(500);
+            this._timer.run = this.evaluateCompare;
+        }
+    }
+
+    private function evaluateCompare():Void {
+        try { this._timer.stop(); } catch (e) { }
+        this._timer = null;
+        var valP:Int = this._playerData.getValue(this._timerParam);
+        var valO:Int = this._opponentData.getValue(this._timerParam);
+        if (valP < valO) {
+            if (this.soundloose != '') GlobalPlayer.contraptions.soundPlay(GlobalPlayer.parser.parseString((this.soundloose)));
+            SpriteStatic.shake(this._player, 0.5, 10);
+            SpriteStatic.quickJump(this._opponent, 0.5, 30);
+            this._timer = new Timer(500);
+            this._timer.run = this.onLoose;
+        } else if (valP > valO) {
+            if (this.soundwin != '') GlobalPlayer.contraptions.soundPlay(GlobalPlayer.parser.parseString((this.soundwin)));
+            SpriteStatic.quickJump(this._player, 0.5, 30);
+            SpriteStatic.shake(this._opponent, 0.5, 10);
+            this._timer = new Timer(500);
+            this._timer.run = this.onWin;
+        } else {
+            if (this.soundtie != '') GlobalPlayer.contraptions.soundPlay(GlobalPlayer.parser.parseString((this.soundtie)));
+            SpriteStatic.shake(this._player, 0.5, 5);
+            SpriteStatic.shake(this._opponent, 0.5, 5);
         }
     }
 
@@ -297,6 +320,10 @@ class BattleContraption extends Sprite {
             attrbg: this.attrbg, 
             attributes: this.attributes, 
             card: this.card, 
+            soundpick: this.soundpick, 
+            soundwin: this.soundwin, 
+            soundloose: this.soundloose, 
+            soundtie: this.soundtie, 
         });
         return (mn);
     }
@@ -321,6 +348,14 @@ class BattleContraption extends Sprite {
                 else this.attrbg = '';
             if (Reflect.hasField(data, 'card')) this.card = Reflect.field(data, 'card');
                 else this.card = '';
+            if (Reflect.hasField(data, 'soundpick')) this.soundpick = Reflect.field(data, 'soundpick');
+                else this.soundpick = '';
+            if (Reflect.hasField(data, 'soundwin')) this.soundwin = Reflect.field(data, 'soundwin');
+                else this.soundwin = '';
+            if (Reflect.hasField(data, 'soundloose')) this.soundloose = Reflect.field(data, 'soundloose');
+                else this.soundloose = '';
+            if (Reflect.hasField(data, 'soundtie')) this.soundtie = Reflect.field(data, 'soundtie');
+                else this.soundtie = '';
             if (Reflect.hasField(data, 'attributes')) {
                 var atr:Array<String> = cast Reflect.field(data, 'attributes');
                 if (atr == null) {
@@ -358,6 +393,7 @@ class BattleContraption extends Sprite {
         if (this.parent != null) this.parent.removeChild(this);
         this.removeChildren();
         this.id = this.font = this.fontcolor = this.horizontal = this.vertical = this.close = null;
+        this.soundpick = this.soundwin = this.soundloose = this.soundtie = null;
         if (this.parent != null) this.parent.removeChild(this);
         if (this._cbitmap != null) {
             if (this._cbitmap.hasEventListener(MouseEvent.CLICK)) {
@@ -408,6 +444,10 @@ class BattleContraption extends Sprite {
             attrbg: this.attrbg, 
             attributes: this.attributes, 
             card: this.card, 
+            soundpick: this.soundpick, 
+            soundwin: this.soundwin, 
+            soundloose: this.soundloose, 
+            soundtie: this.soundtie, 
         });
     }
 
@@ -570,6 +610,12 @@ class BattleCard extends Sprite {
             }
         }
         return (found);
+    }
+
+    public function pulse(num:Int):Void {
+        this._holder.removeChild(this.attributes[num]);
+        this._holder.addChild(this.attributes[num]);
+        SpriteStatic.pulse(this.attributes[num], 0.5, 1.5, 2);
     }
 
     private function onPic(ok:Bool):Void {
@@ -843,7 +889,6 @@ class BattleData {
     }
 
     public function loadCard(name:String, index:Int):Void {
-        trace ('load card', name, GlobalPlayer.narrative.cards[name].cardattributes);
         if (GlobalPlayer.narrative.cards.exists(name)) {
             while (this.attr.length > 0) this.attr.shift();
             for (i in GlobalPlayer.narrative.cards[name].cardattributes) {
@@ -860,7 +905,6 @@ class BattleData {
     }
 
     public function getValue(attr:Int, base:Bool = false):Int {
-        trace ('get value', attr, this.attr[attr], this.gain[attr], this.add[attr], this.rem[attr]);
         if (base) {
             return (this.attr[attr] + this.gain[attr]);
         } else {

@@ -21,6 +21,7 @@ class MenuContraptions extends DrawerMenu {
         this.addButton('btBackground', Global.ln.get('menu-contraptions-background'), onBackground);
         this.addButton('btMenus', Global.ln.get('menu-contraptions-menus'), onMenus);
         this.addButton('btMusic', Global.ln.get('menu-contraptions-music'), onMusic);
+        this.addButton('btSound', Global.ln.get('menu-contraptions-sound'), onSound);
         this.addButton('btForms', Global.ln.get('menu-contraptions-forms'), onForms);
         this.addButton('btInterfaces', Global.ln.get('menu-contraptions-interfaces'), onInterfaces);
         this.addButton('btTargets', Global.ln.get('menu-contraptions-targets'), onTargets);
@@ -39,6 +40,8 @@ class MenuContraptions extends DrawerMenu {
             this.ui.buttons['btCover'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
             this.ui.buttons['btMusic'].enabled = false;
             this.ui.buttons['btMusic'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
+            this.ui.buttons['btSound'].enabled = false;
+            this.ui.buttons['btSound'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
             this.ui.buttons['btForms'].enabled = false;
             this.ui.buttons['btForms'].toolTip = Global.ln.get('tooltip-movie-nomovieaccess');
             this.ui.buttons['btInterfaces'].enabled = false;
@@ -56,6 +59,8 @@ class MenuContraptions extends DrawerMenu {
             this.ui.buttons['btCover'].toolTip = null;
             this.ui.buttons['btMusic'].enabled = true;
             this.ui.buttons['btMusic'].toolTip = null;
+            this.ui.buttons['btSound'].enabled = true;
+            this.ui.buttons['btSound'].toolTip = null;
             this.ui.buttons['btForms'].enabled = true;
             this.ui.buttons['btForms'].toolTip = null;
             this.ui.buttons['btInterfaces'].enabled = true;
@@ -95,6 +100,13 @@ class MenuContraptions extends DrawerMenu {
     **/
     private  function onMusic(evt:TriggerEvent):Void {
         this._ac('music');
+    }
+
+    /**
+        Sound effects
+    **/
+    private  function onSound(evt:TriggerEvent):Void {
+        this._ac('sound');
     }
 
     /**

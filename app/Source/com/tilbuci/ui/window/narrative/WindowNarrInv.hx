@@ -99,7 +99,7 @@ class WindowNarrInv extends PopupWindow {
         
         this.addForm(Global.ln.get('window-narrinv-settings'), this.ui.forge('settings', [
             { tp: 'Label', id: 'set', tx: Global.ln.get('window-narrinv-setabout'), vr: '' }, 
-            { tp: 'Spacer', id: 'set', ht: 10, ln: false }, 
+            { tp: 'Spacer', id: 'set', ht: 5, ln: false }, 
             { tp: 'Label', id: 'mode', tx: Global.ln.get('window-narrinv-mode'), vr: 'detail' }, 
             { tp: 'Select', id: 'mode', vl: [
                 { text: Global.ln.get('window-narrinv-modeall'), value: 'a' }, 
@@ -112,13 +112,15 @@ class WindowNarrInv extends PopupWindow {
             { tp: 'Custom', cont: this.ui.hcontainers['imgbgv'] }, 
             { tp: 'Label', id: 'set', tx: Global.ln.get('window-narrinv-button'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'Custom', cont: this.ui.hcontainers['imgbt'] }, 
+            { tp: 'Label', id: 'sound', tx: Global.ln.get('window-narrinv-sound'), vr: 'detail' }, 
+            { tp: 'TInput', id: 'sound', tx: '', vr: '' }, 
             { tp: 'Label', id: 'font', tx: Global.ln.get('window-narrinv-font'), vr: 'detail' }, 
             { tp: 'Select', id: 'font', vl: [ ], sl: null }, 
             { tp: 'Label', id: 'fontsize', tx: Global.ln.get('window-narrinv-fontsize'), vr: 'detail' },
             { tp: 'Numeric', id: 'fontsize', mn: 8, mx: 200, st: 1, vl: 20 }, 
             { tp: 'Label', id: 'fontc', tx: Global.ln.get('window-narrinv-fontc'), vr: 'detail' }, 
             { tp: 'TInput', id: 'fontc', tx: '#FFFFFF', vr: '' },  
-            { tp: 'Spacer', id: 'gap', ht: 60, ln: false }, 
+            { tp: 'Spacer', id: 'gap', ht: 10, ln: false }, 
             { tp: 'Button', id: 'set', tx: Global.ln.get('window-narrinv-btset'), ac: this.onSaveSet },  
         ]));
 
@@ -152,6 +154,7 @@ class WindowNarrInv extends PopupWindow {
             this.ui.inputs['fontc'].text = GlobalPlayer.contraptions.inv['inv'].fontcolor;
             this.ui.numerics['fontsize'].value = GlobalPlayer.contraptions.inv['inv'].fontsize;
             this.ui.setSelectValue('mode', GlobalPlayer.contraptions.inv['inv'].mode);
+            this.ui.inputs['sound'].text = GlobalPlayer.contraptions.inv['inv'].sound;
         }
 
         for (k in this._list.keys()) {
@@ -310,6 +313,7 @@ class WindowNarrInv extends PopupWindow {
                 horizontal: this.ui.inputs['imgbgh'].text, 
                 vertical: this.ui.inputs['imgbgv'].text, 
                 mode: this.ui.selects['mode'].selectedItem.value, 
+                sound: this.ui.inputs['sound'].text, 
             })) {
                 for (k in GlobalPlayer.contraptions.inv.keys()) {
                     GlobalPlayer.contraptions.inv[k].kill();

@@ -95,6 +95,10 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-sceneloadkf'), a: 'scene.loadkeyframe', p: [
                     { t: 'i', n: Global.ln.get('acinfo-sceneloadkf-p1'), v: '' }
                 ], e: [ ] },
+                { n: Global.ln.get('acinfo-sceneshake'), a: 'scene.shake', p: [
+                    { t: 'f', n: Global.ln.get('acinfo-sceneshake-p1'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-sceneshake-p2'), v: '' }, 
+                ], e: [ 'end' ] },
             ]
         ));
 
@@ -1046,6 +1050,19 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-musicstop'), a: 'contraption.musicstop', p: [ ], e: [ ] },
                 { n: Global.ln.get('acinfo-musicvolume'), a: 'contraption.musicvolume', p: [
                     { t: 'i', n: Global.ln.get('acinfo-musicvolume-p1'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-soundplay'), a: 'contraption.soundplay', p: [
+                    { t: 's', n: Global.ln.get('acinfo-soundplay-p1'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-soundpause'), a: 'contraption.soundpause', p: [
+                    { t: 'e', n: Global.ln.get('acinfo-soundpause-p1'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-soundstop'), a: 'contraption.soundstop', p: [
+                    { t: 'e', n: Global.ln.get('acinfo-soundstop-p1'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-soundvolume'), a: 'contraption.soundvolume', p: [
+                    { t: 'i', n: Global.ln.get('acinfo-soundvolume-p1'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-soundvolume-p2'), v: '' }, 
                 ], e: [ ] },
                 { n: Global.ln.get('acinfo-showform'), a: 'contraption.form', p: [
                     { t: 's', n: Global.ln.get('acinfo-showform-p1'), v: '' }, 

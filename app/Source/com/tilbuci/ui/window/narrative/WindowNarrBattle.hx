@@ -155,6 +155,21 @@ class WindowNarrBattle extends PopupWindow {
             { tp: 'Button', id: 'set', tx: Global.ln.get('window-narrbattle-btset'), ac: this.onSaveSet },  
         ]));
 
+        this.addForm(Global.ln.get('window-narrbattle-sounds'), this.ui.forge('sounds', [
+            { tp: 'Label', id: 'soundsabout', tx: Global.ln.get('window-narrbattle-soundsabout'), vr: '' }, 
+            { tp: 'Spacer', id: 'soundsabout', ht: 10, ln: false }, 
+            { tp: 'Label', id: 'soundpick', tx: Global.ln.get('window-narrbattle-soundpick'), vr: Label.VARIANT_DETAIL }, 
+            { tp: 'TInput', id: 'soundpick', tx: '', vr: '' },  
+            { tp: 'Label', id: 'soundwin', tx: Global.ln.get('window-narrbattle-soundwin'), vr: Label.VARIANT_DETAIL }, 
+            { tp: 'TInput', id: 'soundwin', tx: '', vr: '' },  
+            { tp: 'Label', id: 'soundloose', tx: Global.ln.get('window-narrbattle-soundloose'), vr: Label.VARIANT_DETAIL }, 
+            { tp: 'TInput', id: 'soundloose', tx: '', vr: '' },  
+            { tp: 'Label', id: 'soundtie', tx: Global.ln.get('window-narrbattle-soundtie'), vr: Label.VARIANT_DETAIL }, 
+            { tp: 'TInput', id: 'soundtie', tx: '', vr: '' },    
+            { tp: 'Spacer', id: 'gapattr', ht: 210, ln: false }, 
+            { tp: 'Button', id: 'setattr', tx: Global.ln.get('window-narrbattle-soundsave'), ac: this.onSaveSound },  
+        ]));
+
         super.startInterface();
     }
 
@@ -186,6 +201,10 @@ class WindowNarrBattle extends PopupWindow {
         this.ui.numerics['cardat3'].value = 0;
         this.ui.numerics['cardat4'].value = 0;
         this.ui.numerics['cardat5'].value = 0;
+        this.ui.inputs['soundpick'].text = '';
+        this.ui.inputs['soundwin'].text = '';
+        this.ui.inputs['soundloose'].text = '';
+        this.ui.inputs['soundtie'].text = '';
         
         var fnts:Array<Dynamic> = [ ];
         for (n in 0...Global.fonts.length) fnts.push({ text: Global.fonts[n], value: Global.fonts[n] });
@@ -204,6 +223,10 @@ class WindowNarrBattle extends PopupWindow {
             for (i in 0...GlobalPlayer.contraptions.bs['bs'].attributes.length) {
                 this.ui.inputs['attr' + (i+1)].text = GlobalPlayer.contraptions.bs['bs'].attributes[i];
             }
+            this.ui.inputs['soundpick'].text = GlobalPlayer.contraptions.bs['bs'].soundpick;
+            this.ui.inputs['soundwin'].text = GlobalPlayer.contraptions.bs['bs'].soundwin;
+            this.ui.inputs['soundloose'].text = GlobalPlayer.contraptions.bs['bs'].soundloose;
+            this.ui.inputs['soundtie'].text = GlobalPlayer.contraptions.bs['bs'].soundtie;
         }
 
         for (k in this._list.keys()) {
@@ -482,6 +505,38 @@ class WindowNarrBattle extends PopupWindow {
             }
         } else {
             Global.showPopup(Global.ln.get('window-narrbattle-attributes'), Global.ln.get('window-narrbattle-ersaveset'), 320, 150, Global.ln.get('default-ok'));
+        }
+    }
+
+    /**
+        Save sound settings.
+    **/
+    private function onSaveSound(evt:Event):Void {
+        if (!GlobalPlayer.contraptions.bs.exists('bs')) {
+            GlobalPlayer.contraptions.bs['bs'] = new BattleContraption();
+        }
+        GlobalPlayer.contraptions.bs['bs'].soundpick = this.ui.inputs['soundpick'].text;
+        GlobalPlayer.contraptions.bs['bs'].soundwin = this.ui.inputs['soundwin'].text;
+        GlobalPlayer.contraptions.bs['bs'].soundloose = this.ui.inputs['soundloose'].text;
+        GlobalPlayer.contraptions.bs['bs'].soundtie = this.ui.inputs['soundtie'].text;
+        Global.ws.send('Movie/SaveContraptions', [
+            'movie' => GlobalPlayer.movie.mvId, 
+            'data' => GlobalPlayer.contraptions.getData()
+        ], this.onSaveSoundReturn);
+    }
+
+    private function onSaveSoundReturn(ok:Bool, ld:DataLoader):Void {
+        if (ok) {
+            if (ld.map['e'] == 1) {
+                Global.showPopup(Global.ln.get('window-narrbattle-sounds'), Global.ln.get('window-narrbattle-ersave1set'), 320, 150, Global.ln.get('default-ok'));
+            } else if (ld.map['e'] == 2) {
+                Global.showPopup(Global.ln.get('window-narrbattle-sounds'), Global.ln.get('window-narrbattle-ersaveset'), 320, 150, Global.ln.get('default-ok'));
+            } else {
+                Global.showMsg(Global.ln.get('window-narrbattle-oksaveset'));
+                PopUpManager.removePopUp(this);
+            }
+        } else {
+            Global.showPopup(Global.ln.get('window-narrbattle-sounds'), Global.ln.get('window-narrbattle-ersaveset'), 320, 150, Global.ln.get('default-ok'));
         }
     }
 

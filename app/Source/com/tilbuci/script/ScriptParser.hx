@@ -7,6 +7,8 @@
  package com.tilbuci.script;
 
 /** TILBUCI **/
+import com.tilbuci.contraptions.SoundContraption;
+import com.tilbuci.statictools.SpriteStatic;
 import moonshine.editor.text.syntax.format.SyntaxColorSettings;
 import com.tilbuci.narrative.BattleCardNarrative;
 import com.tilbuci.contraptions.BattleContraption;
@@ -478,6 +480,15 @@ class ScriptParser {
                             GlobalPlayer.contraptions.musics[ms.id] = ms;
                         } else {
                             ms.kill();
+                        }
+                    }
+                } else if (k == 'sounds') {
+                    for (k2 in  Reflect.fields(Reflect.field(ld.json, 'sounds'))) {
+                        var snd:SoundContraption = new SoundContraption();
+                        if (snd.load(Reflect.field(Reflect.field(ld.json, 'sounds'), k2))) {
+                            GlobalPlayer.contraptions.sounds[snd.id] = snd;
+                        } else {
+                            snd.kill();
                         }
                     }
                 } else if (k == 'targets') {
@@ -1426,6 +1437,38 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
+
+                    case 'contraption.soundplay':
+                        if (param.length > 0) {
+                            return (GlobalPlayer.contraptions.soundPlay(this.parseString(param[0])));
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.soundpause':
+                        if (param.length > 0) {
+                            GlobalPlayer.contraptions.soundPause(this.parseString(param[0]));
+                        } else {
+                            GlobalPlayer.contraptions.soundPause();
+                        }
+                        return (true);
+                    case 'contraption.soudstop':
+                        if (param.length > 0) {
+                            GlobalPlayer.contraptions.soundStop(this.parseString(param[0]));
+                        } else {
+                            GlobalPlayer.contraptions.soundStop();
+                        }
+                        return (true);
+                    case 'contraption.soundvolume':
+                        if (param.length > 1) {
+                            GlobalPlayer.contraptions.soundVolume(this.parseInt(param[0]), this.parseString(param[1]));
+                            return (true);
+                        } else if (param.length > 0) {
+                            GlobalPlayer.contraptions.soundVolume(this.parseInt(param[0]));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+
                     case 'contraption.form':
                         if (param.length > 2) {
                             var acOk:Dynamic = null;
@@ -1607,10 +1650,10 @@ class ScriptParser {
                             var plfinal:Array<String> = [ ];
                             var opfinal:Array<String> = [ ];
                             for (i in 0...pl.length) {
-                                if (i < 5) plfinal.push(StringTools.trim(pl[i]));
+                                if (i < 5) plfinal.push(this.parseString(StringTools.trim(pl[i])));
                             }
                             for (i in 0...op.length) {
-                                if (i < 5) opfinal.push(StringTools.trim(op[i]));
+                                if (i < 5) opfinal.push(this.parseString(StringTools.trim(op[i])));
                             }
                             var onwin:Dynamic = null;
                             var onloose:Dynamic = null;
@@ -1789,7 +1832,16 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
-
+                    case 'scene.shake':
+                        if (param.length > 1) {
+                            var end:Dynamic = null;
+                            if (Reflect.hasField(inf, 'end')) end = Reflect.field(inf, 'end');
+                            SpriteStatic.shake(GlobalPlayer.area, this.parseFloat(param[0]), this.parseFloat(param[1]), end);
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                        
                     // instance actions
                     case 'instance.morezoom':
                         if (param.length > 1) {

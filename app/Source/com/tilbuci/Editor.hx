@@ -21,6 +21,7 @@ import com.tilbuci.ui.window.contraptions.WindowContrMenu;
 import com.tilbuci.ui.window.contraptions.WindowContrMessages;
 import com.tilbuci.ui.window.contraptions.WindowContrCover;
 import com.tilbuci.ui.window.contraptions.WindowContrMusic;
+import com.tilbuci.ui.window.contraptions.WindowContrSound;
 import com.tilbuci.ui.window.contraptions.WindowContrForm;
 import com.tilbuci.ui.window.contraptions.WindowContrInterf;
 import com.tilbuci.ui.window.contraptions.WindowContrBackground;
@@ -719,6 +720,9 @@ class Editor extends Drawer {
             case 'music':
                 this.opened = false;
                 this.showWindow('music');
+            case 'sound':
+                this.opened = false;
+                this.showWindow('sound');
             case 'menu-close':
                 this.opened = false;
             case 'window-notes':
@@ -1131,6 +1135,28 @@ class Editor extends Drawer {
                 Global.temp['Media/Single'] = [
                     'type' => 'audio', 
                     'call' => 'music'
+                ];
+                this.showWindow('mediaaudio');
+                this._windows['mediaaudio'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'window-notes':
+                this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Contraption sound effects actions.
+        @param  ac  the action id
+    **/
+    private function actionWindowContrSound(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+            case 'sound':
+                Global.temp['Media/Single'] = [
+                    'type' => 'audio', 
+                    'call' => 'sound'
                 ];
                 this.showWindow('mediaaudio');
                 this._windows['mediaaudio'].action('setmode', [
@@ -1983,6 +2009,12 @@ class Editor extends Drawer {
                                 'type' => data['type'], 
                                 'name' => data['file'], 
                             ]);
+                        case 'sound':
+                            this._windows['sound'].action('sound', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
                         case 'audiodialogue':
                             this._windows['narrative-diag'].action('audio', [
                                 'file' => data['path'] + data['file'], 
@@ -2394,6 +2426,7 @@ class Editor extends Drawer {
                 case 'cover': this._windows['cover'] = new WindowContrCover(actionWindowContrCover);
                 case 'background': this._windows['background'] = new WindowContrBackground(actionWindowContrBackground);
                 case 'music': this._windows['music'] = new WindowContrMusic(actionWindowContrMusic);
+                case 'sound': this._windows['sound'] = new WindowContrSound(actionWindowContrSound);
                 case 'form': this._windows['form'] = new WindowContrForm(actionWindowContrForm);
                 case 'interfaces': this._windows['interfaces'] = new WindowContrInterf(actionWindowContrInterf);
                 case 'targets': this._windows['targets'] = new WindowContrTarget(actionWindowContrTarget);

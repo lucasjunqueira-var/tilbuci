@@ -75,6 +75,9 @@ class Contraptions {
     // music
     public var musics:Map<String, MusicContraption> = [ ];
 
+    // sound
+    public var sounds:Map<String, SoundContraption> = [ ];
+
     // forms
     public var forms:Map<String, FormContraption> = [ ];
     private var _formsOverlay:Sprite;
@@ -187,6 +190,10 @@ class Contraptions {
             this.musics[k].kill();
             this.musics.remove(k);
         }
+        for (k in this.sounds.keys()) {
+            this.sounds[k].kill();
+            this.sounds.remove(k);
+        }
         for (k in this.targets.keys()) {
             this.targets[k].kill();
             this.targets.remove(k);
@@ -234,6 +241,10 @@ class Contraptions {
         data['musics'] = new Array<Dynamic>();
         for (ms in this.musics) {
             data['musics'].push(ms.toObject());
+        }
+        data['sounds'] = new Array<Dynamic>();
+        for (snd in this.sounds) {
+            data['sounds'].push(snd.toObject());
         }
         data['forms'] = new Array<Dynamic>();
         for (ms in this.forms) {
@@ -547,6 +558,7 @@ class Contraptions {
         this.removeZoom();
         if (all) {
             this.musicStop();
+            this.soundStop();
             this.hideCover();
             this.hideBackground();
             this.hideAllInterfaces();
@@ -565,16 +577,66 @@ class Contraptions {
         }
     }
 
+    public function soundPlay(name:String):Bool {
+
+trace ('sound play', name);
+
+        if (this.sounds.exists(name)) {
+            for (snd in this.sounds) {
+                if (snd.id == name) snd.play();
+            }
+            return (true);
+        } else {
+            return (false);
+        }
+    }
+
     public function musicPause():Void {
         for (ms in this.musics) ms.pause();
+    }
+
+    public function soundPause(name:String = ''):Void {
+        if (name == '') {
+            for (snd in this.sounds) {
+                snd.pause();
+            }
+        } else if (this.sounds.exists(name)) {
+            for (snd in this.sounds) {
+                if (snd.id == name) snd.pause();
+            }
+        }
     }
 
     public function musicStop():Void {
         for (ms in this.musics) ms.stop();
     }
 
+    public function soundStop(name:String = ''):Void {
+        if (name == '') {
+            for (snd in this.sounds) {
+                snd.stop();
+            }
+        } else if (this.sounds.exists(name)) {
+            for (snd in this.sounds) {
+                if (snd.id == name) snd.stop();
+            }
+        }
+    }
+
     public function musicVolume(vol:Int):Void {
         for (ms in this.musics) ms.volume(vol);
+    }
+
+    public function soundVolume(vol:Int, name:String = ''):Void {
+        if (name == '') {
+            for (snd in this.sounds) {
+                snd.volume(vol);
+            }
+        } else if (this.sounds.exists(name)) {
+            for (snd in this.sounds) {
+                if (snd.id == name) snd.volume(vol);
+            }
+        }
     }
 
     public function menuHide():Void {
