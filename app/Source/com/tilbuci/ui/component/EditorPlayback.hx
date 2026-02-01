@@ -65,6 +65,10 @@ class EditorPlayback extends Panel {
     **/
     public var info:PlayerInfo;
 
+    private var _st:Stage;
+
+    private var _hd:PlayerHolder;
+
     /**
         user interface
     **/
@@ -138,11 +142,11 @@ class EditorPlayback extends Panel {
         @param  hd  the player holder
     **/
     public function show(st:Stage, hd:PlayerHolder):Void {
-        GlobalPlayer.area.maskArea(true);
+        this._st = st;
+        this._hd = hd;
+        /*GlobalPlayer.area.maskArea(true);
         GlobalPlayer.area.pause();
         GlobalPlayer.movie.data.applySets(true);
-        /*if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);
-        if (GlobalPlayer.movie.scene.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.scene.acstart);*/
         GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf], GlobalPlayer.area.currentKf);
         this.width = st.stageWidth;
         this.height = st.stageHeight;
@@ -150,7 +154,54 @@ class EditorPlayback extends Panel {
         this._top.width = this.width;
         this._bottom.width = this.width;
         this._player = hd;
-        var curkf:Int = GlobalPlayer.area.currentKf;
+        
+        this.info = {
+            x: this._player.player.x, 
+            y: this._player.player.y,
+            width: this._player.player.width, 
+            height: this._player.player.height, 
+            orientation: Global.displayType, 
+            keyframe: GlobalPlayer.area.currentKf, 
+            scene: GlobalPlayer.movie.scId, 
+            sceneobj: GlobalPlayer.movie.scene.toObject(), 
+            movie: GlobalPlayer.movie.mvId, 
+        };
+        this._player.removeChild(this._player.player);
+        this._top.addChild(this._player.player);
+        this.centerPlayer();
+        this.ui.buttons['screen'].enabled = (GlobalPlayer.mdata.screen.type == 'both');
+
+        PopUpManager.addPopUp(this, st);*/
+
+        GlobalPlayer.mode = Player.MODE_EDPLAYERWAIT;
+        GlobalPlayer.parser.clearVars();
+        
+        if (Global.testActions != '') {
+            GlobalPlayer.parser.run(Global.testActions);
+            if (Global.testDelay > 0) {
+                Timer.delay(this.startTest, Global.testDelay);
+            } else {
+                this.startTest();
+            }
+        } else {
+            this.startTest();
+        }
+    }
+
+    private function startTest():Void {
+        var st:Stage = this._st;
+        var hd:PlayerHolder = this._hd;
+        GlobalPlayer.area.maskArea(true);
+        GlobalPlayer.area.pause();
+        GlobalPlayer.movie.data.applySets();
+        GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf], GlobalPlayer.area.currentKf);
+        this.width = st.stageWidth;
+        this.height = st.stageHeight;
+        this._top.minHeight = this._top.maxHeight = this._top.height = (this.height - this._bottom.height - 10);
+        this._top.width = this.width;
+        this._bottom.width = this.width;
+        this._player = hd;
+        
         this.info = {
             x: this._player.player.x, 
             y: this._player.player.y,
@@ -169,7 +220,8 @@ class EditorPlayback extends Panel {
 
         PopUpManager.addPopUp(this, st);
 
-        GlobalPlayer.mode = Player.MODE_EDPLAYERWAIT;
+        var curkf:Int = GlobalPlayer.area.currentKf;
+
         if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);
         if (GlobalPlayer.movie.scene.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.scene.acstart);
         GlobalPlayer.area.play();
@@ -177,6 +229,8 @@ class EditorPlayback extends Panel {
         if (GlobalPlayer.movie.scene.staticsc) {
             GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[curkf], curkf);
         }
+
+        GlobalPlayer.area.updateTexts();
 
         this.ui.buttons['play'].icon = new Bitmap(Assets.getBitmapData('btPause'));
         this.ui.buttons['play'].icon.width = this.ui.buttons['play'].icon.height = 20;
@@ -269,6 +323,7 @@ class EditorPlayback extends Panel {
         GlobalPlayer.area.pause();
         GlobalPlayer.area.releaseAllProperties();
         GlobalPlayer.area.hideTarget();
+        GlobalPlayer.parser.clearVars();
         Mouse.show();
         GlobalPlayer.cursorVisible = true;
         this._player.player.listenInputRemove();

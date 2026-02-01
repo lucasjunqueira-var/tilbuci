@@ -263,7 +263,7 @@ class Contraptions {
 
     public function menuShow(name:String, options:Array<String>, variable:String, actions:Dynamic, pos:String, px:Int, py:Int):Bool {
         this.menuHide();
-        if (this.menus.exists(name)) {
+        if (this.menus.exists(name) && (GlobalPlayer.mode != Player.MODE_EDITOR)) {
             this._menuCurrent = this.menus[name];
             if (this._menuCurrent.ok) {
                 this._menusOverlay.graphics.clear();
@@ -578,9 +578,6 @@ class Contraptions {
     }
 
     public function soundPlay(name:String):Bool {
-
-trace ('sound play', name);
-
         if (this.sounds.exists(name)) {
             for (snd in this.sounds) {
                 if (snd.id == name) snd.play();
@@ -644,6 +641,7 @@ trace ('sound play', name);
         for (mn in this.menus) mn.remove();
         this.getLayers();
         this._menusOverlay.graphics.clear();
+        this._menusOverlay.removeChildren();
         this._menuCurrent = null;
         this.usingMenu = false;
     }

@@ -555,6 +555,10 @@ class TilBuciImage extends Sprite {
             else if (this._currentType == 'html') this._html.setText(txt);
     }
 
+    public function updateText():Void {
+        if (this._currentType == 'paragraph') this._paragraph.updateText();
+    }
+
     /**
         Iterate sound transfomations.
         @param  vol new volume value

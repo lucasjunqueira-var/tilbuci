@@ -67,6 +67,7 @@ import com.tilbuci.ui.window.scene.WindowSceneProperties;
 import com.tilbuci.ui.window.scene.WindowSceneSaveas;
 import com.tilbuci.ui.window.scene.WindowSceneVersions;
 import com.tilbuci.statictools.StringStatic;
+import com.tilbuci.ui.window.WindowTestingActions;
 import haxe.Timer;
 
 /** OPENFL **/
@@ -800,6 +801,19 @@ class Editor extends Drawer {
         @param  ac  the action id
     **/
     private function actionWindowSetup(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
+        }
+    }
+
+    /**
+        Testing actions window actions.
+        @param  ac  the action id
+    **/
+    private function actionWindowTestingActions(ac:String, data:Map<String, Dynamic> = null):Void {
         switch (ac) {
             case 'menu-close':
                 this.opened = false;
@@ -2441,6 +2455,7 @@ class Editor extends Drawer {
                 case 'designnotes': this._windows['designnotes'] = new WindowNotes(actionWindowNotes);
 
                 case 'setup': this._windows['setup'] = new WindowSetup(actionWindowSetup, this.build);
+                case 'testactions': this._windows['testactions'] = new WindowTestingActions(actionWindowTestingActions);
                 default: ok = false;
             }
             if (ok) {
@@ -2484,6 +2499,8 @@ class Editor extends Drawer {
                 this._rightArea.setInstance(data);
             case 'play':
                 this._playback.show(this.stage, this._player);
+            case 'testactions':
+                this.showWindow('testactions');
         }
     }
 

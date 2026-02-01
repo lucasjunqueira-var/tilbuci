@@ -47,7 +47,7 @@ class ContraptionButton extends Sprite {
         this._text.defaultTextFormat = new TextFormat(font, ftsize, ftcolor, null, null, null, null, null, TextFormatAlign.CENTER);
         this._text.multiline = false;
         this._text.wordWrap = false;
-        this._text.text = text;
+        this._text.text = GlobalPlayer.parser.parseString(text);
         this._text.visible = false;
         this._text.selectable = false;
         this.addChild(this._text);

@@ -19,7 +19,7 @@ class Movie extends BaseClass
 	/**
      * TilBuci expected version
      */
-    private $version = 18;
+    private $version = 19;
     
 	/**
 	 * current movie information

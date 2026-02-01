@@ -233,17 +233,23 @@ class InventoryContraption extends Sprite {
                 else this.mode = 'a';
             if (Reflect.hasField(data, 'sound')) this.sound = Reflect.field(data, 'sound');
                 else this.sound = '';
+
+            if (this.font == null) this.font = 'sans';
+            if (this.fontcolor == null) this.fontcolor = '0xffffff';
+            if (this.fontsize == null) this.fontsize = 20;
+            if (this.vertical == null) this.vertical = '';
+            if (this.horizontal == null) this.horizontal = '';
+            if (this.close == null) this.close = '';
+            if (this.mode == null) this.mode = 'a';
+            if (this.sound == null) this.sound = '';
+
             this.fontcolor = StringStatic.colorHex(this.fontcolor, '#FFFFFF');
-            if (this.close == '') {
-                return (false);
-            } else if ((this.horizontal == '') && (this.vertical == '')) {
-                return (false);
-            } else {
+            if ((this.horizontal != '') || (this.vertical != '')) {
                 if (this.horizontal == '') this.horizontal = this.vertical;
                 if (this.vertical == '') this.vertical = this.horizontal;
             }
             if (this._cbitmap == null) this._cbitmap = new PictureImage(onBTLoad);
-            this._cbitmap.load(this.close);
+            if (this.close != '') this._cbitmap.load(this.close);
             return (true);
         } else {
             return (false);

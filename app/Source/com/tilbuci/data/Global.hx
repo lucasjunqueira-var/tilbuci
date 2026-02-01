@@ -175,6 +175,16 @@ class Global {
     public static var copy:CopyData = new CopyData();
 
     /**
+        testing actions
+    **/
+    public static var testActions:String = '';
+
+    /**
+        delay before start testing (miliseconds)
+    **/
+    public static var testDelay:Int = 0;
+
+    /**
         Shows the action editing window.
         @param  current current action text
         @param  onOk    action to call on ok button click (must receive a string parameter with the new action text)

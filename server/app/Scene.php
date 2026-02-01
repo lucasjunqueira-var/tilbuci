@@ -417,7 +417,7 @@ class Scene extends BaseClass
             ':limit' => date('Y-m-d H:i:s', strtotime('-15minutes')), 
         ]);
 		$ret = [ ];
-		$ck = $this->queryAll('SELECT t1.* FROM scenes t1 INNER JOIN (SELECT *, MAX(sc_uid) AS uidmax FROM scenes WHERE sc_movie=:mv GROUP BY sc_id) t2 ON t1.sc_id = t2.sc_id AND t1.sc_uid = t2.uidmax WHERE (t1.sc_dflow1!=:vz1 OR t1.sc_dflow2!=:vz2 OR t1.sc_dflow3!=:vz3 OR t1.sc_dflow4!=:vz4) ORDER BY t1.sc_title ASC', [
+		$ck = $this->queryAll('SELECT t1.* FROM scenes t1 INNER JOIN (SELECT sc_id, MAX(sc_uid) AS uidmax FROM scenes WHERE sc_movie=:mv GROUP BY sc_id) t2 ON t1.sc_id = t2.sc_id AND t1.sc_uid = t2.uidmax WHERE (t1.sc_dflow1!=:vz1 OR t1.sc_dflow2!=:vz2 OR t1.sc_dflow3!=:vz3 OR t1.sc_dflow4!=:vz4) ORDER BY t1.sc_title ASC', [
 			':mv' => $movie, 
 			':vz1' => '', 
 			':vz2' => '', 

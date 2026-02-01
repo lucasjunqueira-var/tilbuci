@@ -170,6 +170,10 @@ class ParagraphImage extends BaseImage {
         this._scrollPos = this._text.scrollV = 0;
     }
 
+    public function updateText():Void {
+        this._text.text = GlobalPlayer.parser.parseString(this._text.text);
+    }
+
     /**
         Gets the current text.
         @return the current text

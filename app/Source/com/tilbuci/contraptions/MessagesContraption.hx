@@ -160,8 +160,19 @@ class MessagesContraption extends Sprite {
             } else {
                 this.buton = [ '', '', '' ];
             }
+
+            if (this.font == null) this.font = 'sans';
+            if (this.fontcolor == null) this.fontcolor = '0xffffff';
+            if (this.fontsize == null) this.fontsize = 20;
+            if (this.gap == null) this.gap = 10;
+            if (this.background == null) this.background = '';
+            if (this.buton == null) this.buton = [ '', '', '' ];
+            for (i in 0...this.buton.length) {
+                if (this.buton[i] == null) this.buton[i] = '';
+            }
             if (this.buton[1] == '') this.buton[1] = this.buton[0];
             if (this.buton[2] == '') this.buton[2] = this.buton[0];
+
             this.fontcolor = StringStatic.colorHex(this.fontcolor, '#FFFFFF');
             if (this._bgbitmap == null) this._bgbitmap = new PictureImage(onBGLoad);
             this._bgbitmap.load(this.background);

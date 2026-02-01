@@ -366,13 +366,20 @@ class BattleContraption extends Sprite {
             } else {
                 this.attributes = [ ];
             }
+            if (this.font == null) this.font = 'sans';
+            if (this.fontcolor == null) this.fontcolor = '0xffffff';
+            if (this.fontsize == null) this.fontsize = 20;
+            if (this.horizontal == null) this.horizontal = '';
+            if (this.vertical == null) this.vertical = '';
+            if (this.close == null) this.close = '';
+            if (this.attrbg == null) this.attrbg = '';
+            if (this.card == null) this.card = '';
+            if (this.soundpick == null) this.soundpick = '';
+            if (this.soundwin == null) this.soundwin = '';
+            if (this.soundloose == null) this.soundloose = '';
+            if (this.soundtie == null) this.soundtie = '';
             this.fontcolor = StringStatic.colorHex(this.fontcolor, '#FFFFFF');
-
-            if ((this.close == '') || (this.attrbg == '')) {
-                return (false);
-            } else if ((this.horizontal == '') && (this.vertical == '')) {
-                return (false);
-            } else {
+            if ((this.horizontal != '') || (this.vertical != '')) {
                 if (this.horizontal == '') this.horizontal = this.vertical;
                 if (this.vertical == '') this.vertical = this.horizontal;
             }
@@ -386,6 +393,12 @@ class BattleContraption extends Sprite {
 
     public function loadGraphics():Void {
         this.ok = false;
+        this.fontcolor = StringStatic.colorHex(this.fontcolor, '#FFFFFF');
+        if ((this.horizontal != '') || (this.vertical != '')) {
+            if (this.horizontal == '') this.horizontal = this.vertical;
+            if (this.vertical == '') this.vertical = this.horizontal;
+        }
+        if (this._cbitmap == null) this._cbitmap = new PictureImage(onBTLoad);
         this._cbitmap.load(this.close);
     }
 
@@ -412,13 +425,13 @@ class BattleContraption extends Sprite {
         this._abitmap = null;
         while (this.attributes.length > 0) this.attributes.shift();
         this.attributes = null;
-        this._player.kill();
+        if (this._player != null) this._player.kill();
         this._player = null;
-        this._opponent.kill();
+        if (this._opponent != null) this._opponent.kill();
         this._opponent = null;
-        this._playerCurent.kill();
+        if (this._playerCurent != null) this._playerCurent.kill();
         this._playerCurent = null;
-        this._opponentCurent.kill();
+        if (this._opponentCurent != null) this._opponentCurent.kill();
         this._opponentCurent = null;
         while (this._pcards.length > 0) this._pcards.shift();
         this._pcards = null;
@@ -426,13 +439,14 @@ class BattleContraption extends Sprite {
         this._ocards = null;
         this._onwin = null;
         this._onloose = null;
-        this._playerData.kill();
-        this._opponentData.kill();
+        if (this._playerData != null) this._playerData.kill();
+        if (this._opponentData != null) this._opponentData.kill();
         this._playerData = null;
         this._opponentData = null;
     }
 
     public function toObject():Dynamic {
+        this.id = 'bs';
         return({
             id: this.id, 
             font: this.font, 

@@ -56,7 +56,7 @@ class MenuContraption extends Sprite {
             this.addChild(this._bgbitmap);
             while (this._buttons.length > 0) this._buttons.shift().kill();
             for (i in 0...bts.length) {
-                this._buttons.push(new ContraptionButton(Std.string(i), this.onClick, this.buton, bts[i], this.font, this.fontsize, StringStatic.colorInt(this.fontcolor)));
+                this._buttons.push(new ContraptionButton(Std.string(i + 1), this.onClick, this.buton, bts[i], this.font, this.fontsize, StringStatic.colorInt(this.fontcolor)));
             }
             var px:Float = (this._bgbitmap.oWidth - this._btsize.x) / 2;
             var gap:Float = (this._bgbitmap.oHeight - (this._btsize.y * this._buttons.length)) / (this._buttons.length + 1);
@@ -130,6 +130,16 @@ class MenuContraption extends Sprite {
                 else this.bgalpha = 0;
             if (Reflect.hasField(data, 'mode')) this.mode = Reflect.field(data, 'mode');
                 else this.mode = 'v';
+
+            if (this.font == null) this.font = 'sans';
+            if (this.fontcolor == null) this.fontcolor = '0xffffff';
+            if (this.fontsize == null) this.fontsize = 20;
+            if (this.background == null) this.background = '';
+            if (this.buton == null) this.buton = '';
+            if (this.bgcolor == null) this.bgcolor = '0x000000';
+            if (this.bgalpha == null) this.bgalpha = 0;
+            if (this.mode == null) this.mode = 'v';
+
             this.fontcolor = StringStatic.colorHex(this.fontcolor, '#FFFFFF');
             this.bgcolor = StringStatic.colorHex(this.bgcolor, '#000000');
 

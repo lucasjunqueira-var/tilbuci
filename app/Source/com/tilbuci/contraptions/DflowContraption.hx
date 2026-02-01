@@ -120,6 +120,14 @@ class DflowContraption extends Sprite {
                 else this.gap = 10;
             if (Reflect.hasField(data, 'position')) this.position = Reflect.field(data, 'position');
                 else this.position = 'center';
+
+            if (this.font == null) this.font = 'sans';
+            if (this.fontcolor == null) this.fontcolor = '0xffffff';
+            if (this.fontsize == null) this.fontsize = 20;
+            if (this.buton == null) this.buton = '';
+            if (this.gap == null) this.gap = 10;
+            if (this.position == null) this.position = 'center';
+
             this.fontcolor = StringStatic.colorHex(this.fontcolor, '#FFFFFF');
             if (this._btbitmap == null) this._btbitmap = new PictureImage(onBTLoad);
             this._btbitmap.load(this.buton);

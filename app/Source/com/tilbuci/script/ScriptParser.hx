@@ -9,7 +9,6 @@
 /** TILBUCI **/
 import com.tilbuci.contraptions.SoundContraption;
 import com.tilbuci.statictools.SpriteStatic;
-import moonshine.editor.text.syntax.format.SyntaxColorSettings;
 import com.tilbuci.narrative.BattleCardNarrative;
 import com.tilbuci.contraptions.BattleContraption;
 import com.tilbuci.contraptions.InventoryContraption;
@@ -1382,9 +1381,11 @@ class ScriptParser {
                             var mn:String = this.parseString(param[0]);
                             if (GlobalPlayer.contraptions.menus.exists(mn)) {
                                 var bts:Array<String> = this.parseString(param[1]).split(';');
+                                var bts2:Array<String> = [ ];
+                                for (mnit in bts) bts2.push(this.parseString(StringTools.trim(mnit)));
                                 var acSelect:Dynamic = null;
                                 if (Reflect.hasField(inf, 'select')) acSelect = Reflect.field(inf, 'select');
-                                return (GlobalPlayer.contraptions.menuShow(mn, bts, this.parseString(param[2]), acSelect, this.parseString(param[3]), this.parseInt(param[4]), this.parseInt(param[5])));
+                                return (GlobalPlayer.contraptions.menuShow(mn, bts2, this.parseString(param[2]), acSelect, this.parseString(param[3]), this.parseInt(param[4]), this.parseInt(param[5])));
                             } else {
                                 return (false);
                             }
@@ -2858,7 +2859,7 @@ class ScriptParser {
                                             case 'B': this._bools[Reflect.field(obj, 'n')] = Reflect.field(obj, 'v');
                                         }
                                     }
-                                    GlobalPlayer.movie.loadScene(Reflect.field(shared.data, 'scene'));
+                                    //GlobalPlayer.movie.loadScene(Reflect.field(shared.data, 'scene'));
                                     if (Reflect.hasField(inf, 'success')) {
                                         this.run(Reflect.field(inf, 'success'), true);
                                     }
@@ -4539,7 +4540,7 @@ class ScriptParser {
                             case 'B': this._bools[Reflect.field(obj, 'n')] = Reflect.field(obj, 'v');
                         }
                     }
-                    GlobalPlayer.movie.loadScene(ld.map['scene']);
+                    //GlobalPlayer.movie.loadScene(ld.map['scene']);
                     if (this._acOk != null) this.run(this._acOk, true);
                 }
             } else {

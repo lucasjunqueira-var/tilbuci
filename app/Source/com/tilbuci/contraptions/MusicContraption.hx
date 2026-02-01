@@ -36,6 +36,7 @@ class MusicContraption extends Sprite {
             this.id = Reflect.field(data, 'id');
             if (Reflect.hasField(data, 'media')) {
                 this.media = Reflect.field(data, 'media');
+                if (this.media == null) this.media = '';
                 this._music = new AudioImage(onLoad, onEnd);
                 this.ok = true;
                 return (true);

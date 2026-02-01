@@ -799,6 +799,11 @@ class InstanceImage extends Sprite {
         this._imOther.setText(txt);
     }
 
+    public function updateText():Void {
+        this._imCurrent.updateText();
+        this._imOther.updateText();
+    }
+
     /**
         Releases a fixed property value.
         @param  prop    the property name

@@ -1019,6 +1019,10 @@ class MovieArea extends Sprite {
         }
     }
 
+    public function updateTexts():Void {
+        for (i in this._instances) i.updateText();
+    }
+
     /**
         Sets a paragraph text.
         @param  inst    the instance name

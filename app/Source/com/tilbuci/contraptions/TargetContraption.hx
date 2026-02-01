@@ -52,6 +52,14 @@ class TargetContraption {
                 if (Reflect.hasField(data, 'inst2name')) this.inst2name = Reflect.field(data, 'inst2name');
                 if (Reflect.hasField(data, 'inst3')) this.inst3 = Reflect.field(data, 'inst3');
                 if (Reflect.hasField(data, 'inst3name')) this.inst3name = Reflect.field(data, 'inst3name');
+                if (this.menus == null) this.menus = '';
+                if (this.interf == null) this.interf = '';
+                if (this.inst1 == null) this.inst1 = '';
+                if (this.inst1name == null) this.inst1name = '';
+                if (this.inst2 == null) this.inst2 = '';
+                if (this.inst2name == null) this.inst2name = '';
+                if (this.inst3 == null) this.inst3 = '';
+                if (this.inst3name == null) this.inst3name = '';
                 this.ok = true;
                 return (true);
             } else {

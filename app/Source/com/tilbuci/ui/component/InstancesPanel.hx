@@ -189,7 +189,6 @@ class InstancesPanel extends DropDownPanel {
                     var newname:String = StringStatic.random().substr(0, 10);
                     while (nms.contains(newname)) newname = StringStatic.random().substr(0, 10);
                     nms.push(newname);
-                    trace ('inst', name, newname);
                     GlobalPlayer.area.imgSelect(name);
                     GlobalPlayer.area.setCurrentStr('instance', newname);
                 }

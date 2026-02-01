@@ -120,7 +120,20 @@ class PlayerControls extends VDividedBox {
         this.ui.createLabel('keyframes', '', '', kfArea);
         this.ui.createIconButton('right', this.onRight, new Bitmap(Assets.getBitmapData('btRight')), null, kfArea);
         this.ui.createSpacer('keyframe', 10, false, kfArea);
+        this.ui.createIconButton('actions', this.onActions, new Bitmap(Assets.getBitmapData('btSetup')), null, kfArea);
+        this.ui.createLabel('actions', '', '', kfArea);
         this.ui.createIconButton('play', this.onPlay, new Bitmap(Assets.getBitmapData('btPlay')), null, kfArea);
+
+        // tooltips
+        this.ui.buttons['screen'].toolTip = Global.ln.get('tooltip-playercontrols-screen');
+        this.ui.buttons['zoom+'].toolTip = Global.ln.get('tooltip-playercontrols-zoomp');
+        this.ui.buttons['zoom-'].toolTip = Global.ln.get('tooltip-playercontrols-zoomm');
+        this.ui.buttons['zoomfit'].toolTip = Global.ln.get('tooltip-playercontrols-zoomfit');
+        this.ui.buttons['zoom100'].toolTip = Global.ln.get('tooltip-playercontrols-zoom100');
+        this.ui.buttons['left'].toolTip = Global.ln.get('tooltip-playercontrols-left');
+        this.ui.buttons['right'].toolTip = Global.ln.get('tooltip-playercontrols-right');
+        this.ui.buttons['actions'].toolTip = Global.ln.get('tooltip-playercontrols-actions');
+        this.ui.buttons['play'].toolTip = Global.ln.get('tooltip-playercontrols-play');
     }
 
     /**
@@ -218,6 +231,13 @@ class PlayerControls extends VDividedBox {
             Global.history.clear();
             this.updateInfo();
         }
+    }
+
+    /**
+        Shows testing actions window.
+    **/
+    private function onActions(evt:TriggerEvent = null):Void {
+        this._ac('testactions');
     }
 
     /**

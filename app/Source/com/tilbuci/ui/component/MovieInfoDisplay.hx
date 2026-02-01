@@ -76,6 +76,7 @@ class MovieInfoDisplay extends Panel {
         this._mvIcon.smoothing = true;
         this._mvIcon.width = this._mvIcon.height = 22;
         this._movie = new Label();
+        this._movie.variant = Label.VARIANT_DETAIL;
         this._movie.text = '';
 
         // scene display
@@ -83,6 +84,7 @@ class MovieInfoDisplay extends Panel {
         this._scIcon.smoothing = true;
         this._scIcon.width = this._scIcon.height = 22;
         this._scene = new Label();
+        this._scene.variant = Label.VARIANT_DETAIL;
         this._scene.text = '';
 
         // custom message

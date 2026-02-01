@@ -195,7 +195,7 @@ class WindowNarrBattle extends PopupWindow {
         this.ui.inputs['imgcard'].text = '';
         this.ui.setSelectValue('font', null);
         this.ui.inputs['fontc'].text = '#FFFFFF';
-        this.ui.numerics['fontsize'].value = GlobalPlayer.contraptions.bs['bs'].fontsize;
+        this.ui.numerics['fontsize'].value = 20;
         this.ui.numerics['cardat1'].value = 0;
         this.ui.numerics['cardat2'].value = 0;
         this.ui.numerics['cardat3'].value = 0;
@@ -205,6 +205,7 @@ class WindowNarrBattle extends PopupWindow {
         this.ui.inputs['soundwin'].text = '';
         this.ui.inputs['soundloose'].text = '';
         this.ui.inputs['soundtie'].text = '';
+        this.ui.buttons['setattr'].width = 960;
         
         var fnts:Array<Dynamic> = [ ];
         for (n in 0...Global.fonts.length) fnts.push({ text: Global.fonts[n], value: Global.fonts[n] });

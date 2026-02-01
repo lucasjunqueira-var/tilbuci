@@ -94,6 +94,23 @@
 	<assets id="btScreen" path="assets/icons/btScreen.png"/>
 	<assets id="btOpenfile" path="assets/icons/btOpenfile.png"/>
 	<assets id="btCopy" path="assets/icons/btCopy.png"/>
+	<assets id="btPaste" path="assets/icons/btPaste.png"/>
+	<assets id="btNone" path="assets/icons/btNone.png"/>
+	<assets id="btAll" path="assets/icons/btAll.png"/>
+	<assets id="btStageLeft" path="assets/icons/btStageLeft.png"/>
+	<assets id="btStageCenter" path="assets/icons/btStageCenter.png"/>
+	<assets id="btStageRight" path="assets/icons/btStageRight.png"/>
+	<assets id="btStageTop" path="assets/icons/btStageTop.png"/>
+	<assets id="btStageMiddle" path="assets/icons/btStageMiddle.png"/>
+	<assets id="btStageBottom" path="assets/icons/btStageBottom.png"/>
+	<assets id="btSelectionLeft" path="assets/icons/btSelectionLeft.png"/>
+	<assets id="btSelectionCenter" path="assets/icons/btSelectionCenter.png"/>
+	<assets id="btSelectionRight" path="assets/icons/btSelectionRight.png"/>
+	<assets id="btSelectionTop" path="assets/icons/btSelectionTop.png"/>
+	<assets id="btSelectionMiddle" path="assets/icons/btSelectionMiddle.png"/>
+	<assets id="btSelectionBottom" path="assets/icons/btSelectionBottom.png"/>
+	<assets id="btDistributeH" path="assets/icons/btDistributeH.png"/>
+	<assets id="btDistributeV" path="assets/icons/btDistributeV.png"/>
 	<assets id="btBool" path="assets/icons/btBool.png"/>
 	<assets id="btInteger" path="assets/icons/btInteger.png"/>
 	<assets id="btFloat" path="assets/icons/btFloat.png"/>

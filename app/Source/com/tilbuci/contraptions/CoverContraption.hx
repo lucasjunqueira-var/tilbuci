@@ -101,6 +101,9 @@ class CoverContraption extends Sprite {
             } else {
                 this.landscape = '';
             }
+            if (this.holdClick == null) this.holdClick = false;
+            if (this.portrait == null) this.portrait = '';
+            if (this.landscape == null) this.landscape = '';
             if ((this.landscape != '') || (this.portrait != '')) {
                 if (this._landscape != null) this._landscape.load(this.landscape);
                 if (this._portrait != null) this._portrait.load(this.portrait);

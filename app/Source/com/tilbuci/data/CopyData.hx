@@ -64,6 +64,7 @@ class CopyData {
             msg['collections'] = col;
             msg['instances'] = inst;
             ExternBrowser.TBB_sendTabsMessage('copy', StringStatic.jsonStringify(msg));
+            this.receiveMessage(StringStatic.jsonStringify(msg));
         }
     }
 
@@ -98,7 +99,6 @@ class CopyData {
             for (k in this._instances.keys()) {
                 GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][k] = this._instances[k];
             }
-            trace ('paste', GlobalPlayer.area.currentKf);
             GlobalPlayer.area.updateOrder();
             GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf], GlobalPlayer.area.currentKf);
         }
