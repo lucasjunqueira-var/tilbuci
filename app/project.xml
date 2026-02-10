@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
-
-	<!-- app setup -->
-	<meta title="TilBuci" package="br.com.tilbuci" version="1.0.0" company="VAR" />
-	<app main="Main" path="Export" file="TilBuci" preloader="Preloader" />
+	<meta title="TilBuci Runtime" package="com.tilbuci.runtime" version="20.0.0" company="TilBuci" />
+	<app main="Main" path="Export" file="Runtime" preloader="Preloader" />
 	<window background="#000000" />
-	
-	<!-- code source -->
+
 	<source path="Source" />
-	
-	<!-- used libraries -->
 	<haxelib name="openfl" />
+	<assets path="Assets" rename="assets" />
+
+	<!-- renderer -->
+	<!--<define name="dom" if="html5" />-->
+
+	<!-- libs required by TilBuci -->
 	<haxelib name="actuate" />
 	<haxelib name="feathersui" />
 	<haxelib name="crypto" />
-	<haxelib name="moonshine-feathersui-text-editor" />
-	<haxelib name="hscript" />
-
-	<!-- alternative renderers -->
-	<!--<define name="canvas" if="html5" />-->
-	<!--<define name="dom" if="html5" />-->
+	
+	<!-- assets required by TilBuci -->
+	<assets id="btClose" path="assets/tilbuci/btClose.png"/>
+	<assets id="btOk" path="assets/tilbuci/btOk.png"/>
+	<assets id="icTarget" path="assets/tilbuci/icTarget.png"/>
 
 	<!-- javascript externs -->
 	<dependency path="Externs/browser.js" embed="true" />
@@ -27,122 +27,4 @@
 	<dependency path="Externs/embedcontent.js" embed="true" />
 	<dependency path="Externs/overlayplugin.js" embed="true" />
 	
-	<!-- assets path -->
-	<assets path="Assets" rename="assets" />
-
-	<!-- build info -->
-	<assets id="buildInfo" path="assets/build.json"/>
-
-	<!-- license -->
-	<assets id="license" path="assets/license.html"/>
-
-	<!-- language assets -->
-	<assets id="langDefault" path="assets/language/default.json"/>
-
-	<!-- graphic assets -->
-	<assets id="buci" path="assets/icons/buci.png"/>
-	<assets id="tilBuci01" path="assets/icons/tilBuci01.png"/>
-	<assets id="tilBuci02" path="assets/icons/tilBuci02.png"/>
-	<assets id="tilBuci03" path="assets/icons/tilBuci03.png"/>
-	<assets id="tilBuci04" path="assets/icons/tilBuci04.png"/>
-	<assets id="tilBuci05" path="assets/icons/tilBuci05.png"/>
-	<assets id="btBack" path="assets/icons/btBack.png"/>
-	<assets id="btClose" path="assets/icons/btClose.png"/>
-	<assets id="btOk" path="assets/icons/btOk.png"/>
-	<assets id="btMovie" path="assets/icons/btMovie.png"/>
-	<assets id="btScene" path="assets/icons/btScene.png"/>
-	<assets id="btMovieScene" path="assets/icons/btMovieScene.png"/>
-	<assets id="btData" path="assets/icons/btData.png"/>
-	<assets id="icData" path="assets/icons/icData.png"/>
-	<assets id="icInput" path="assets/icons/icInput.png"/>
-	<assets id="icSystem" path="assets/icons/icSystem.png"/>
-	<assets id="icReplace" path="assets/icons/icReplace.png"/>
-	<assets id="icSnippets" path="assets/icons/icSnippets.png"/>
-	<assets id="icText" path="assets/icons/icText.png"/>
-	<assets id="icTimer" path="assets/icons/icTimer.png"/>
-	<assets id="icUser" path="assets/icons/icUser.png"/>
-	<assets id="icDebug" path="assets/icons/icDebug.png"/>
-	<assets id="icShare" path="assets/icons/icShare.png"/>
-	<assets id="icGoogle" path="assets/icons/icGoogle.png"/>
-	<assets id="icContraption" path="assets/icons/icContraption.png"/>
-	<assets id="icNarrative" path="assets/icons/icNarrative.png"/>
-	<assets id="icServer" path="assets/icons/icServer.png"/>
-	<assets id="btPlus" path="assets/icons/btPlus.png"/>
-	<assets id="btPlugin" path="assets/icons/btPlugin.png"/>
-	<assets id="btSetup" path="assets/icons/btSetup.png"/>
-	<assets id="btToggle" path="assets/icons/btToggle.png"/>
-	<assets id="btZoomP" path="assets/icons/btZoomP.png"/>
-	<assets id="btZoomM" path="assets/icons/btZoomM.png"/>
-	<assets id="btZoomFit" path="assets/icons/btZoomFit.png"/>
-	<assets id="btZoom100" path="assets/icons/btZoom100.png"/>
-	<assets id="btMedia" path="assets/icons/btMedia.png"/>
-	<assets id="btFolder" path="assets/icons/btFolder.png"/>
-	<assets id="iconFolder" path="assets/icons/iconFolder.png"/>
-	<assets id="iconUpLevel" path="assets/icons/iconUpLevel.png"/>
-	<assets id="iconPublished" path="assets/icons/iconPublished.png"/>
-	<assets id="btPlay" path="assets/icons/btPlay.png"/>
-	<assets id="btPause" path="assets/icons/btPause.png"/>
-	<assets id="btStop" path="assets/icons/btStop.png"/>
-	<assets id="btLeft" path="assets/icons/btLeft.png"/>
-	<assets id="btRight" path="assets/icons/btRight.png"/>
-	<assets id="btUp" path="assets/icons/btUp.png"/>
-	<assets id="btDown" path="assets/icons/btDown.png"/>
-	<assets id="btKeyframe" path="assets/icons/btKeyframe.png"/>
-	<assets id="btFullscreen" path="assets/icons/btFullscreen.png"/>
-	<assets id="btWorkspace" path="assets/icons/btWorkspace.png"/>
-	<assets id="btScreen" path="assets/icons/btScreen.png"/>
-	<assets id="btOpenfile" path="assets/icons/btOpenfile.png"/>
-	<assets id="btCopy" path="assets/icons/btCopy.png"/>
-	<assets id="btPaste" path="assets/icons/btPaste.png"/>
-	<assets id="btNone" path="assets/icons/btNone.png"/>
-	<assets id="btAll" path="assets/icons/btAll.png"/>
-	<assets id="btStageLeft" path="assets/icons/btStageLeft.png"/>
-	<assets id="btStageCenter" path="assets/icons/btStageCenter.png"/>
-	<assets id="btStageRight" path="assets/icons/btStageRight.png"/>
-	<assets id="btStageTop" path="assets/icons/btStageTop.png"/>
-	<assets id="btStageMiddle" path="assets/icons/btStageMiddle.png"/>
-	<assets id="btStageBottom" path="assets/icons/btStageBottom.png"/>
-	<assets id="btSelectionLeft" path="assets/icons/btSelectionLeft.png"/>
-	<assets id="btSelectionCenter" path="assets/icons/btSelectionCenter.png"/>
-	<assets id="btSelectionRight" path="assets/icons/btSelectionRight.png"/>
-	<assets id="btSelectionTop" path="assets/icons/btSelectionTop.png"/>
-	<assets id="btSelectionMiddle" path="assets/icons/btSelectionMiddle.png"/>
-	<assets id="btSelectionBottom" path="assets/icons/btSelectionBottom.png"/>
-	<assets id="btDistributeH" path="assets/icons/btDistributeH.png"/>
-	<assets id="btDistributeV" path="assets/icons/btDistributeV.png"/>
-	<assets id="btBool" path="assets/icons/btBool.png"/>
-	<assets id="btInteger" path="assets/icons/btInteger.png"/>
-	<assets id="btFloat" path="assets/icons/btFloat.png"/>
-	<assets id="btString" path="assets/icons/btString.png"/>
-	<assets id="btVariables" path="assets/icons/btVariables.png"/>
-	<assets id="btToLeft" path="assets/icons/btToLeft.png"/>
-	<assets id="btToRight" path="assets/icons/btToRight.png"/>
-	<assets id="btToCenter" path="assets/icons/btToCenter.png"/>
-	<assets id="btToTop" path="assets/icons/btToTop.png"/>
-	<assets id="btToDown" path="assets/icons/btToDown.png"/>
-	<assets id="btToMiddle" path="assets/icons/btToMiddle.png"/>
-	<assets id="btExchange" path="assets/icons/btExchange.png"/>
-	<assets id="btVisitors" path="assets/icons/btVisitors.png"/>
-	<assets id="btContraptions" path="assets/icons/btContraptions.png"/>
-	<assets id="btNarrative" path="assets/icons/btNarrative.png"/>
-	<assets id="iconMove" path="assets/icons/iconMove.png"/>
-	<assets id="iconResizeH" path="assets/icons/iconResizeH.png"/>
-	<assets id="iconResizeV" path="assets/icons/iconResizeV.png"/>
-	<assets id="iconResize" path="assets/icons/iconResize.png"/>
-	<assets id="iconPlus" path="assets/icons/iconPlus.png"/>
-	<assets id="iconMinus" path="assets/icons/iconMinus.png"/>
-	<assets id="iconDown" path="assets/icons/iconDown.png"/>
-	<assets id="iconUp" path="assets/icons/iconUp.png"/>
-	<assets id="iconLock" path="assets/icons/iconLock.png"/>
-	<assets id="landscape" path="assets/icons/iconLandscape.png"/>
-	<assets id="portrait" path="assets/icons/iconPortrait.png"/>
-	<assets id="btBlocks" path="assets/icons/btBlocks.png"/>
-	<assets id="btCode" path="assets/icons/btCode.png"/>
-	<assets id="btDel" path="assets/icons/btDel.png"/>
-	<assets id="btEdit" path="assets/icons/btEdit.png"/>
-	<assets id="btExpand" path="assets/icons/btExpand.png"/>
-	<assets id="btCompress" path="assets/icons/btCompress.png"/>	
-	<assets id="btNotes" path="assets/icons/btNotes.png"/>
-	<assets id="btLock" path="assets/icons/btLock.png"/>
-	<assets id="icTarget" path="assets/icons/icTarget.png"/>
 </project>

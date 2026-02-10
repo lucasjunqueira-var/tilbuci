@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<meta title="TilBuci Runtime" package="com.tilbuci.runtime" version="20.0.0" company="TilBuci" />
+	<app main="Main" path="Export" file="Runtime" preloader="Preloader" />
+	<window background="#000000" />
+
+	<source path="Source" />
+	<haxelib name="openfl" />
+	<assets path="Assets" rename="assets" />
+
+	<!-- renderer -->
+	<!--<define name="dom" if="html5" />-->
+
+	<!-- libs required by TilBuci -->
+	<haxelib name="actuate" />
+	<haxelib name="feathersui" />
+	<haxelib name="crypto" />
+	
+	<!-- assets required by TilBuci -->
+	<assets id="btClose" path="assets/tilbuci/btClose.png"/>
+	<assets id="btOk" path="assets/tilbuci/btOk.png"/>
+	<assets id="icTarget" path="assets/tilbuci/icTarget.png"/>
+
+	<!-- javascript externs -->
+	<dependency path="Externs/browser.js" embed="true" />
+	<dependency path="Externs/upload.js" embed="true" />
+	<dependency path="Externs/embedcontent.js" embed="true" />
+	<dependency path="Externs/overlayplugin.js" embed="true" />
+	
+</project>

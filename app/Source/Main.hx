@@ -6,6 +6,118 @@
 
  package;
 
+#if tilbuciplayer
+
+/**
+	OpenFL
+**/
+import haxe.crypto.Base64;
+import openfl.display.BitmapData;
+import openfl.events.Event;
+import openfl.display.Sprite;
+import openfl.events.KeyboardEvent;
+import openfl.ui.Keyboard;
+
+/**
+	TilBuci
+**/
+import com.tilbuci.Player;
+import com.tilbuci.data.DataLoader;
+import com.tilbuci.font.EmbedFont;
+import plugins.DebugPlugin;
+import plugins.GoogleAnalyticsPlugin;
+import plugins.OverlayPlugin;
+import plugins.ServerCallPlugin;
+import plugins.SharePlugin;
+
+class Main extends Sprite {
+
+	/**
+		index movie
+	**/
+	private var _movie:String = '';
+
+	/**
+		index scene
+	**/
+	public static var scene:String = '';
+
+	/**
+		webservices full url
+	**/
+	public static var ws:String = '';
+
+	/**
+		the TilBuci player
+	**/
+	private var _tilbuci:Player;
+	
+	public function new () {
+		super();
+
+		// font files set?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'fonts')) {
+			var fntar:Array<Dynamic> = cast Reflect.field(this.loaderInfo.parameters, 'fonts');
+			for (fnt in fntar) {
+				new EmbedFont(fnt[1], fnt[0]);
+			}
+		}
+
+		// index movie set?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'movie')) {
+			this._movie = Reflect.field(this.loaderInfo.parameters, 'movie');
+		}
+		if (Reflect.hasField(this.loaderInfo.parameters, 'scene')) {
+			Main.scene = Reflect.field(this.loaderInfo.parameters, 'scene');
+		}
+		// webservices url set?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'ws')) {
+			Main.ws = Reflect.field(this.loaderInfo.parameters, 'ws');
+		}
+		// custom decryption method?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'decrypt')) {
+			DataLoader.customDecrypt = Reflect.field(this.loaderInfo.parameters, 'decrypt');
+		}
+		if (this._movie != '') {
+			// stage available?
+			if (this.stage != null) {
+				this.onStage();
+			} else {
+				this.addEventListener(Event.ADDED_TO_STAGE, this.onStage);
+			}
+		}
+	}
+
+	/**
+		The stage is available.
+	**/
+	private function onStage(evt:Event = null):Void {
+		if (this.hasEventListener(Event.ADDED_TO_STAGE)) {
+			this.removeEventListener(Event.ADDED_TO_STAGE, this.onStage);
+		}
+		this._tilbuci = new Player();
+		this._tilbuci.registerPlugin(new DebugPlugin());
+		this._tilbuci.registerPlugin(new SharePlugin());
+		this._tilbuci.registerPlugin(new GoogleAnalyticsPlugin());
+		this._tilbuci.registerPlugin(new ServerCallPlugin());
+		this._tilbuci.registerPlugin(new OverlayPlugin());
+		this.addChild(this._tilbuci);
+		this.stage.addEventListener(Event.RESIZE, this.onResize);
+		this.onResize();
+		this._tilbuci.load(this._movie);
+	}
+
+	/**
+		Stage resize.
+	**/
+	private function onResize(evt:Event = null):Void {
+		this._tilbuci.setSize(this.stage.stageWidth, this.stage.stageHeight);
+	}
+	
+}
+
+#else
+
 /** OPENFL **/
 import haxe.io.Bytes;
 import com.tilbuci.data.DataLoader;
@@ -181,3 +293,5 @@ class Main extends Application
 	}
 	
 }
+
+#end
