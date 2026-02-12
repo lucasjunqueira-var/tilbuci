@@ -17,9 +17,9 @@
 	<haxelib name="crypto" />
 	
 	<!-- assets required by TilBuci -->
-	<assets id="btClose" path="assets/tilbuci/btClose.png"/>
-	<assets id="btOk" path="assets/tilbuci/btOk.png"/>
-	<assets id="icTarget" path="assets/tilbuci/icTarget.png"/>
+	<assets id="btClose" path="Assets/tilbuci/btClose.png"/>
+	<assets id="btOk" path="Assets/tilbuci/btOk.png"/>
+	<assets id="icTarget" path="Assets/tilbuci/icTarget.png"/>
 
 	<!-- javascript externs -->
 	<dependency path="Externs/browser.js" embed="true" />

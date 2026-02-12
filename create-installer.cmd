@@ -4,9 +4,6 @@ setlocal enabledelayedexpansion
 echo ============================================
 echo TilBuci Installer Creation Script
 echo ============================================
-echo This script automates the creation of the TilBuci installer
-echo based on the instructions in models/installer.md
-echo ============================================
 
 REM Step 1: creating the full Javascript file
 echo.
