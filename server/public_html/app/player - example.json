@@ -1,8 +1,25 @@
 {
-	"server": true, 
-	"base": "http://tilbuci/", 
-	"ws": "http://tilbuci/ws/",
-	"font": "http://tilbuci/font/", 
-	"start": "", 
-	"secret": "00000000000000000000000000000000"
+	"server": true,
+    "base": "http:\/\/tilbuci\/",
+    "ws": "http:\/\/tilbuci\/ws\/",
+    "font": "http:\/\/tilbuci\/font\/",
+    "systemfonts": [{
+            "name": "Averia Serif GWF",
+            "file": "averiaserifgwf.woff2"
+        }, {
+            "name": "Liberation Serif",
+            "file": "liberationserif.woff2"
+        }, {
+            "name": "Libra Sans",
+            "file": "librasans.woff2"
+        }, {
+            "name": "Roboto Sans",
+            "file": "roboto.woff2"
+        }
+    ],
+    "start": "tilbuci",
+    "render": "webgl",
+    "share": "never",
+    "fps": "30",
+    "secret": "31323334353637383930313233343536"
 }
