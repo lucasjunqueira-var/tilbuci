@@ -77,18 +77,22 @@ class GoogleAnalyticsPlugin extends Plugin {
     }
 
     /**
-        Sends a custom event to Analytics.
+        Sends a custom event to Google Analytics.
+        @param param Array of strings where:
+            - param[0]: event name (parsed as string)
+            - param[1]: event description (parsed as string)
+        @return True if the event was successfully sent, false otherwise.
     **/
     private function acEvent(param:Array<String>):Bool {
         if (param.length >= 2) {
             var ok:Bool = false;
             try {
                 ExternGoogleAnalytics.gtag('event', this._access.parser.parseString(param[0]), {
-                    'movie_name': GlobalPlayer.mdata.title, 
-                    'scene_name': GlobalPlayer.movie.scene.title,  
-                    'movie_id': GlobalPlayer.movie.mvId, 
-                    'scene_id': GlobalPlayer.movie.scId, 
-                    'about': this._access.parser.parseString(param[1]), 
+                    'movie_name': GlobalPlayer.mdata.title,
+                    'scene_name': GlobalPlayer.movie.scene.title,
+                    'movie_id': GlobalPlayer.movie.mvId,
+                    'scene_id': GlobalPlayer.movie.scId,
+                    'about': this._access.parser.parseString(param[1]),
                 });
                 ok = true;
             } catch (e) {
@@ -138,19 +142,20 @@ class GoogleAnalyticsPlugin extends Plugin {
     }
 
     /**
-        A movie was just loaded.
+        Called when a movie is loaded; sends movie‑load event and campaign data to Google Analytics.
+        @param evt PluginEvent containing movie load information.
     **/
     private function onMovieLoad(evt:PluginEvent):Void {
         if ((GlobalPlayer.mode == Player.MODE_PLAYER) && this.config.exists('measurementid')) {
             this._firstsent = true;
             try {
                 ExternGoogleAnalytics.gtag('set', 'campaign', {
-                    'id': GlobalPlayer.movie.mvId, 
-                    'name': GlobalPlayer.mdata.title, 
+                    'id': GlobalPlayer.movie.mvId,
+                    'name': GlobalPlayer.mdata.title,
                     'source': GlobalPlayer.base
                 });
                 ExternGoogleAnalytics.gtag('event', 'movie.load', {
-                    'movie_id': GlobalPlayer.movie.mvId, 
+                    'movie_id': GlobalPlayer.movie.mvId,
                     'movie_name': GlobalPlayer.mdata.title
                 });
             } catch (e) { }
@@ -158,16 +163,18 @@ class GoogleAnalyticsPlugin extends Plugin {
     }
 
     /**
-        A scene was just loaded.
+        Called when a scene is loaded; sends scene‑load event to Google Analytics.
+        If no movie event has been sent yet, triggers onMovieLoad first.
+        @param evt PluginEvent containing scene load information.
     **/
     private function onSceneLoad(evt:PluginEvent):Void {
         if (!this._firstsent) this.onMovieLoad(null);
         if ((GlobalPlayer.mode == Player.MODE_PLAYER) && this.config.exists('measurementid')) {
             try {
                 ExternGoogleAnalytics.gtag('event', 'scene.load', {
-                    'scene_id': GlobalPlayer.movie.scId, 
-                    'scene_name': GlobalPlayer.movie.scene.title, 
-                    'movie_id': GlobalPlayer.movie.mvId, 
+                    'scene_id': GlobalPlayer.movie.scId,
+                    'scene_name': GlobalPlayer.movie.scene.title,
+                    'movie_id': GlobalPlayer.movie.mvId,
                     'movie_name': GlobalPlayer.mdata.title
                 });
             } catch (e) { }

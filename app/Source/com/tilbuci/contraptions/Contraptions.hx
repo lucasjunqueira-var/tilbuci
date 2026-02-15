@@ -108,6 +108,10 @@ class Contraptions {
         this._loadingOverlay.mouseEnabled = false;
     }
 
+    /**
+        Clears all contraptions from their overlay layers and removes them from memory.
+        This function also clears the graphics of each overlay layer.
+    **/
     public function clear():Void {
         this.getLayers();
         for (k in this.covers.keys()) {
@@ -157,6 +161,10 @@ class Contraptions {
         this._interfaceOverlay.graphics.clear();
     }
 
+    /**
+        Removes all contraptions from memory without clearing overlay graphics.
+        This function kills each contraption instance and removes it from the internal maps.
+    **/
     public function removeAll():Void {
         for (k in this.menus.keys()) {
             this.menus[k].kill();
@@ -208,6 +216,10 @@ class Contraptions {
         }
     }
 
+    /**
+        Serializes all contraptions data into a JSON string.
+        @return JSON string containing all contraptions data (covers, backgrounds, menus, dflow, inv, bs, messages, musics, sounds, forms, interf, targets)
+    **/
     public function getData():String {
         var data:Map<String, Array<Dynamic>> = [ ];
         data['covers'] = new Array<Dynamic>();
@@ -261,6 +273,17 @@ class Contraptions {
         return(StringStatic.jsonStringify(data));
     }
 
+    /**
+        Shows a menu contraption with the given name, options, and positioning.
+        @param name The name of the menu contraption (must exist in the menus map)
+        @param options Array of strings representing menu options
+        @param variable The variable name where the selected option index will be stored
+        @param actions The script actions to run after a menu selection
+        @param pos Positioning keyword: 'top', 'topleft', 'topright', 'centerleft', 'centerright', 'bottom', 'bottomleft', 'bottomright', 'absolute', or 'center' (default)
+        @param px Horizontal offset or absolute X coordinate (depending on pos)
+        @param py Vertical offset or absolute Y coordinate (depending on pos)
+        @return True if the menu was successfully shown, false otherwise
+    **/
     public function menuShow(name:String, options:Array<String>, variable:String, actions:Dynamic, pos:String, px:Int, py:Int):Bool {
         this.menuHide();
         if (this.menus.exists(name) && (GlobalPlayer.mode != Player.MODE_EDITOR)) {
@@ -351,6 +374,11 @@ class Contraptions {
         return (this._bsOverlay.numChildren > 0);
     }
 
+    /**
+        Shows the decision flow (dflow) contraption with the given options.
+        @param options Array of arrays of strings, each inner array represents a decision flow option with its label and target scene
+        @return True if the dflow was successfully shown, false otherwise
+    **/
     public function dflowShow(options:Array<Array<String>>):Bool {
         this.dflowHide();
         if ((GlobalPlayer.mode != Player.MODE_EDITOR) && this.dflow.exists('dflow')) {
@@ -399,6 +427,11 @@ class Contraptions {
         }
     }
 
+    /**
+        Shows the inventory contraption.
+        @param closeac The script actions to run when the inventory is closed
+        @return True if the inventory was successfully shown, false otherwise
+    **/
     public function inventoryShow(closeac:Dynamic):Bool {
         this.invHide();
         if ((GlobalPlayer.mode != Player.MODE_EDITOR) && this.inv.exists('inv')) {
@@ -418,6 +451,14 @@ class Contraptions {
         }
     }
 
+    /**
+        Shows the battle system contraption.
+        @param onwin The script actions to run when the player wins the battle
+        @param onloose The script actions to run when the player loses the battle
+        @param player Array of strings describing the player's battle cards
+        @param opponent Array of strings describing the opponent's battle cards
+        @return True if the battle system was successfully shown, false otherwise
+    **/
     public function battleShow(onwin:Dynamic, onloose:Dynamic, player:Array<String>, opponent:Array<String>):Bool {
         this.bsHide();
         if ((GlobalPlayer.mode != Player.MODE_EDITOR) && this.bs.exists('bs')) {
@@ -488,6 +529,15 @@ class Contraptions {
         }
     }
 
+    /**
+        Shows a messages contraption with a message and options.
+        @param name The name of the messages contraption (must exist in the messages map)
+        @param msg The message text to display
+        @param options Array of strings representing the response options
+        @param variable The variable name where the selected option index will be stored
+        @param actions The script actions to run after a message option is selected
+        @return True if the messages contraption was successfully shown, false otherwise
+    **/
     public function messagesShow(name:String, msg:String, options:Array<String>, variable:String, actions:Dynamic):Bool {
         this.messagesHide();
         if (this.messages.exists(name)) {
@@ -636,6 +686,9 @@ class Contraptions {
         }
     }
 
+    /**
+        Hides the currently displayed menu contraption and clears the menu overlay.
+    **/
     public function menuHide():Void {
         if (this._coverOverlay == null) this._coverOverlay = GlobalPlayer.area.getOverlay('contraptions-cover');
         for (mn in this.menus) mn.remove();
@@ -646,6 +699,9 @@ class Contraptions {
         this.usingMenu = false;
     }
 
+    /**
+        Hides the currently displayed decision flow contraption and clears the dflow overlay.
+    **/
     public function dflowHide():Void {
         if (this._coverOverlay == null) this._coverOverlay = GlobalPlayer.area.getOverlay('contraptions-cover');
         for (mn in this.dflow) mn.remove();
@@ -655,6 +711,9 @@ class Contraptions {
         this.usingDflow = false;
     }
 
+    /**
+        Hides the currently displayed inventory contraption and clears the inventory overlay.
+    **/
     public function invHide():Void {
         if (this._coverOverlay == null) this._coverOverlay = GlobalPlayer.area.getOverlay('contraptions-cover');
         for (mn in this.inv) mn.remove();
@@ -665,6 +724,9 @@ class Contraptions {
         this.usingInv = false;
     }
 
+    /**
+        Hides the currently displayed battle system contraption and clears the battle overlay.
+    **/
     public function bsHide():Void {
         if (this._coverOverlay == null) this._coverOverlay = GlobalPlayer.area.getOverlay('contraptions-cover');
         for (mn in this.bs) mn.remove();
@@ -675,6 +737,9 @@ class Contraptions {
         this.usingBs = false;
     }
 
+    /**
+        Hides the currently displayed messages contraption and clears the messages overlay.
+    **/
     public function messagesHide():Void {
         if (this._coverOverlay == null) this._coverOverlay = GlobalPlayer.area.getOverlay('contraptions-cover');
         for (mn in this.messages) mn.remove();

@@ -11,35 +11,13 @@ import com.tilbuci.js.ExternBrowser;
 import com.tilbuci.ui.window.narrative.WindowNarrDflow;
 import com.tilbuci.ui.window.narrative.WindowNarrInv;
 import com.tilbuci.ui.window.narrative.WindowNarrBattle;
-import com.tilbuci.ui.window.scene.WindowSceneDflow;
-import com.tilbuci.ui.window.media.WindowMediaStrings;
 import com.tilbuci.ui.window.narrative.WindowNarrChar;
 import com.tilbuci.ui.window.narrative.WindowDiagChar;
-import com.tilbuci.ui.menu.MenuNarrative;
-import com.tilbuci.def.AssetData;
-import com.tilbuci.ui.window.contraptions.WindowContrMenu;
-import com.tilbuci.ui.window.contraptions.WindowContrMessages;
-import com.tilbuci.ui.window.contraptions.WindowContrCover;
-import com.tilbuci.ui.window.contraptions.WindowContrMusic;
-import com.tilbuci.ui.window.contraptions.WindowContrSound;
-import com.tilbuci.ui.window.contraptions.WindowContrForm;
-import com.tilbuci.ui.window.contraptions.WindowContrInterf;
-import com.tilbuci.ui.window.contraptions.WindowContrBackground;
-import com.tilbuci.ui.window.contraptions.WindowContrTarget;
-import com.tilbuci.script.ActionInfo;
-import feathers.core.ToolTipManager;
-import com.tilbuci.script.AssistVariables;
-import com.tilbuci.script.AssistScene;
-import com.tilbuci.script.AssistInstance;
-import com.tilbuci.script.AssistDataInput;
-import com.tilbuci.script.AssistPlus;
-import com.tilbuci.script.AssistRuntime;
-import com.tilbuci.script.AssistPlugin;
-import com.tilbuci.script.AssistContraptions;
-import com.tilbuci.script.AssistNarrative;
-import com.tilbuci.ui.window.media.WindowCollectionsAdd;
-import com.tilbuci.ui.window.media.WindowCollectionsRm;
-import com.tilbuci.ui.window.media.WindowCollections;
+import com.tilbuci.ui.window.scene.WindowSceneDflow;
+import com.tilbuci.ui.window.scene.WindowSceneProperties;
+import com.tilbuci.ui.window.scene.WindowSceneSaveas;
+import com.tilbuci.ui.window.scene.WindowSceneVersions;
+import com.tilbuci.ui.window.media.WindowMediaStrings;
 import com.tilbuci.ui.window.media.WindowMediaVideo;
 import com.tilbuci.ui.window.media.WindowMediaEmbed;
 import com.tilbuci.ui.window.media.WindowMediaAudio;
@@ -51,6 +29,18 @@ import com.tilbuci.ui.window.media.WindowMediaText;
 import com.tilbuci.ui.window.media.WindowAssetBase;
 import com.tilbuci.ui.window.media.WindowCollectionBase;
 import com.tilbuci.ui.window.media.WindowTimedAction;
+import com.tilbuci.ui.window.media.WindowCollectionsAdd;
+import com.tilbuci.ui.window.media.WindowCollectionsRm;
+import com.tilbuci.ui.window.media.WindowCollections;
+import com.tilbuci.ui.window.contraptions.WindowContrMenu;
+import com.tilbuci.ui.window.contraptions.WindowContrMessages;
+import com.tilbuci.ui.window.contraptions.WindowContrCover;
+import com.tilbuci.ui.window.contraptions.WindowContrMusic;
+import com.tilbuci.ui.window.contraptions.WindowContrSound;
+import com.tilbuci.ui.window.contraptions.WindowContrForm;
+import com.tilbuci.ui.window.contraptions.WindowContrInterf;
+import com.tilbuci.ui.window.contraptions.WindowContrBackground;
+import com.tilbuci.ui.window.contraptions.WindowContrTarget;
 import com.tilbuci.ui.window.exchange.WindowExchangeExport;
 import com.tilbuci.ui.window.exchange.WindowExchangeImport;
 import com.tilbuci.ui.window.exchange.WindowExchangeWebsite;
@@ -60,14 +50,24 @@ import com.tilbuci.ui.window.exchange.WindowExchangePublish;
 import com.tilbuci.ui.window.exchange.WindowExchangeDesktop;
 import com.tilbuci.ui.window.exchange.WindowExchangeCordova;
 import com.tilbuci.ui.window.WindowNotes;
-import com.tilbuci.data.History;
-import com.tilbuci.ui.component.EditorPlayback;
-import com.tilbuci.ui.menu.MenuKeyframe;
-import com.tilbuci.ui.window.scene.WindowSceneProperties;
-import com.tilbuci.ui.window.scene.WindowSceneSaveas;
-import com.tilbuci.ui.window.scene.WindowSceneVersions;
-import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.ui.window.WindowTestingActions;
+import com.tilbuci.ui.menu.MenuNarrative;
+import com.tilbuci.ui.menu.MenuKeyframe;
+import com.tilbuci.ui.component.EditorPlayback;
+import com.tilbuci.script.ActionInfo;
+import com.tilbuci.script.AssistVariables;
+import com.tilbuci.script.AssistScene;
+import com.tilbuci.script.AssistInstance;
+import com.tilbuci.script.AssistDataInput;
+import com.tilbuci.script.AssistPlus;
+import com.tilbuci.script.AssistRuntime;
+import com.tilbuci.script.AssistPlugin;
+import com.tilbuci.script.AssistContraptions;
+import com.tilbuci.script.AssistNarrative;
+import com.tilbuci.data.History;
+import com.tilbuci.def.AssetData;
+import com.tilbuci.statictools.StringStatic;
+import feathers.core.ToolTipManager;
 import haxe.Timer;
 
 /** OPENFL **/
@@ -75,19 +75,28 @@ import openfl.events.Event;
 
 /** FEATHERS UI **/
 import feathers.controls.Drawer;
-import feathers.skins.RectangleSkin;
 import feathers.controls.HDividedBox;
 import feathers.controls.ScrollContainer;
-import feathers.layout.AnchorLayoutData;
 import feathers.controls.Label;
-import feathers.layout.AnchorLayout;
 import feathers.controls.Panel;
+import feathers.skins.RectangleSkin;
+import feathers.layout.AnchorLayoutData;
+import feathers.layout.AnchorLayout;
 import feathers.core.PopUpManager;
 
 /** TILBUCI **/
 import com.tilbuci.Player;
 import com.tilbuci.ws.Webservice;
+import com.tilbuci.plugin.Plugin;
+import com.tilbuci.font.EmbedFont;
+import com.tilbuci.js.ExternUpload;
 import com.tilbuci.data.EditorConfig;
+import com.tilbuci.data.Global;
+import com.tilbuci.data.Language;
+import com.tilbuci.data.FileUpload;
+import com.tilbuci.data.DataLoader;
+import com.tilbuci.data.BuildInfo;
+import com.tilbuci.data.GlobalPlayer;
 import com.tilbuci.ui.main.LeftInterface;
 import com.tilbuci.ui.main.RightInterface;
 import com.tilbuci.ui.base.BackgroundSkin;
@@ -100,29 +109,20 @@ import com.tilbuci.ui.menu.MenuExchange;
 import com.tilbuci.ui.window.PopupWindow;
 import com.tilbuci.ui.window.WindowSetup;
 import com.tilbuci.ui.window.WindowVisitors;
+import com.tilbuci.ui.window.WindowLogin;
 import com.tilbuci.ui.window.movie.WindowMovieNew;
 import com.tilbuci.ui.window.movie.WindowMovieOpen;
 import com.tilbuci.ui.window.movie.WindowMovieProperties;
 import com.tilbuci.ui.window.movie.WindowMovieSequences;
 import com.tilbuci.ui.window.movie.WindowMovieRepublish;
-import com.tilbuci.ui.window.scene.WindowSceneNew;
-import com.tilbuci.ui.window.keyframe.WindowKeyframeManage;
-import com.tilbuci.ui.window.WindowLogin;
-import com.tilbuci.data.Global;
-import com.tilbuci.data.Language;
-import com.tilbuci.data.FileUpload;
-import com.tilbuci.data.DataLoader;
-import com.tilbuci.js.ExternUpload;
-import com.tilbuci.font.EmbedFont;
-import com.tilbuci.data.BuildInfo;
-import com.tilbuci.ui.PlayerHolder;
-import com.tilbuci.ui.window.media.WindowMediaPicture;
-import com.tilbuci.ui.window.scene.WindowSceneOpen;
 import com.tilbuci.ui.window.movie.WindowMoviePlugins;
-import com.tilbuci.plugin.Plugin;
-import com.tilbuci.data.GlobalPlayer;
 import com.tilbuci.ui.window.movie.WindowMovieUsers;
 import com.tilbuci.ui.window.movie.WindowMovieRemove;
+import com.tilbuci.ui.window.scene.WindowSceneNew;
+import com.tilbuci.ui.window.scene.WindowSceneOpen;
+import com.tilbuci.ui.window.keyframe.WindowKeyframeManage;
+import com.tilbuci.ui.window.media.WindowMediaPicture;
+import com.tilbuci.ui.PlayerHolder;
 import com.tilbuci.ui.PlayerControls;
 
 /**
@@ -368,6 +368,11 @@ class Editor extends Drawer {
         }
     }
 
+    /**
+        Handles messages from the browser tabs communication channel.
+        @param  type    message type (e.g., 'copy')
+        @param  message message content
+    **/
     private function onChannelMessage(type:String, message:String):Void {
         switch (type) {
             case 'copy': Global.copy.receiveMessage(message);
@@ -617,6 +622,12 @@ class Editor extends Drawer {
         }
     }
 
+    /**
+        Starts a specific window by name, used by the right interface.
+        @param  name    window identifier
+        @param  data    optional data to pass to the window
+        @return true if the window was found and opened, false otherwise
+    **/
     private function startWindow(name:String, data:Map<String, Dynamic> = null):Bool {
         switch (name) {
             case 'assetbase':
@@ -2325,7 +2336,9 @@ class Editor extends Drawer {
     }
 
     /**
-        Login finish.
+        Callback for login attempt.
+        @param  ok  whether the webservice request succeeded
+        @param  ld  data loader containing server response
     **/
     private function onLogin(ok:Bool, ld:DataLoader):Void {
         if (!ok) {
@@ -2505,7 +2518,10 @@ class Editor extends Drawer {
     }
 
     /**
-        Getting information about the loaded movie.
+        Callback for movie information request.
+        Sets ownership and collaboration flags for the current user.
+        @param  ok  whether the webservice request succeeded
+        @param  ld  data loader containing server response
     **/
     private function onMovieInfo(ok:Bool, ld:DataLoader):Void {
         Global.mvOwner = false;

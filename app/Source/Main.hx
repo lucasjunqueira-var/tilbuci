@@ -52,6 +52,10 @@ class Main extends Sprite {
 	**/
 	private var _tilbuci:Player;
 	
+	/**
+		Main constructor. Initializes the TilBuci player with parameters from loaderInfo.
+		Sets up fonts, movie, scene, webservices URL, and custom decryption if provided.
+	**/
 	public function new () {
 		super();
 
@@ -194,6 +198,11 @@ class Main extends Application
 	**/
 	private var _editor:Editor;
 
+	/**
+		Main constructor for the Feathers UI application (editor/player).
+		Sets up dark mode theme, layout, and reads startup parameters (mode, movie, scene, user, key, decryption).
+		If haxeJSON flag is missing, shows a warning popup; otherwise proceeds to onStage.
+	**/
 	public function new()
 	{
 		// prepare interface

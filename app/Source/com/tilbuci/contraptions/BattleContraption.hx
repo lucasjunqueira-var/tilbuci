@@ -159,6 +159,14 @@ class BattleContraption extends Sprite {
         }
     }
 
+    /**
+        Sets attribute values for either player or opponent.
+        @param pl True for player, false for opponent.
+        @param attr Attribute index (0-4).
+        @param gain Gain value to set.
+        @param add Add value to set.
+        @param rem Remove value to set.
+    **/
     public function setAttributes(pl:Bool, attr:Int, gain:Int, add:Int, rem:Int):Void {
         if (attr < 0) attr = 0;
         if (attr > 4) attr = 4;
@@ -169,6 +177,14 @@ class BattleContraption extends Sprite {
         }
     }
 
+    /**
+        Creates and initializes the battle contraption with player and opponent cards.
+        @param win Action to run when the player wins.
+        @param loose Action to run when the player loses.
+        @param pcards Array of player card IDs.
+        @param ocards Array of opponent card IDs.
+        @return The battle contraption sprite.
+    **/
     public function create(win:Dynamic, loose:Dynamic, pcards:Array<String>, ocards:Array<String>):Sprite {
         this.removeChildren();
         this._cbitmap.visible = true;
@@ -206,7 +222,7 @@ class BattleContraption extends Sprite {
                 this._playerCurent.y = GlobalPlayer.mdata.screen.small - (this.btAtrHeight() * 1.5);
                 this._opponentCurent.y = GlobalPlayer.mdata.screen.small - (this.btAtrHeight() * 1.5);
                 this._cardsize = new Point(
-                    (GlobalPlayer.mdata.screen.big / 2) - (1.5 * this._cbitmap.width), 
+                    (GlobalPlayer.mdata.screen.big / 2) - (1.5 * this._cbitmap.width),
                     GlobalPlayer.mdata.screen.small - this._cbitmap.height - (this.btAtrHeight() * 2)
                 );
             } else {
@@ -225,24 +241,28 @@ class BattleContraption extends Sprite {
                 this._playerCurent.y = (this._vbitmap.height / 2) - (this.btAtrHeight() * 0.5);
                 this._opponentCurent.y = this._vbitmap.height - (this.btAtrHeight() * 1.5);
                 this._cardsize = new Point(
-                    this._vbitmap.width - (2 * this._cbitmap.width), 
+                    this._vbitmap.width - (2 * this._cbitmap.width),
                     (this._vbitmap.height / 2) - (this._cbitmap.height / 2) - (this.btAtrHeight() * 2)
                 );
 
             }
             this._cbitmap.y = 0;
-            this.addChild(this._cbitmap); 
+            this.addChild(this._cbitmap);
             this.addChild(this._player);
             this.addChild(this._opponent);
             this.addChild(this._playerCurent);
             this.addChild(this._opponentCurent);
-            this._onloose = loose; 
-            this._onwin = win; 
+            this._onloose = loose;
+            this._onwin = win;
             this._won = false;
         }
         return (this);
     }
 
+    /**
+        Updates the layout and positioning of battle elements (cards, buttons, etc.).
+        Called when screen orientation changes or after creation.
+    **/
     public function draw():Void {
         this._player.width = this._cardsize.x;
         this._player.scaleY = this._player.scaleX;
@@ -280,6 +300,11 @@ class BattleContraption extends Sprite {
         this._opponentCurent.x = this._opponent.x + ((this._opponent.width - this._opponentCurent.width) / 2);
     }
 
+    /**
+        Checks collision between a sprite and the battle contraption (close button or player card).
+        @param obj Sprite to test collision with.
+        @return True if collision detected.
+    **/
     public function checkCollision(obj:Sprite):Bool {
         var found:Bool = false;
         if (this.ok) {
@@ -293,6 +318,11 @@ class BattleContraption extends Sprite {
         return (found);
     }
 
+    /**
+        Checks if a sprite is hovering over the battle contraption (close button or player card).
+        @param obj Sprite to test hover with.
+        @return True if hover detected.
+    **/
     public function checkOver(obj:Sprite):Bool {
         var found:Bool = false;
         if (this.ok) {
@@ -302,32 +332,44 @@ class BattleContraption extends Sprite {
         return (found);
     }
 
+    /**
+        Removes the battle contraption from its parent container and clears its children.
+    **/
     public function remove():Void {
         this.removeChildren();
         if (this.parent != null) this.parent.removeChild(this);
     }
 
+    /**
+        Creates a deep copy of this battle contraption with the same configuration.
+        @return A new BattleContraption instance with identical properties.
+    **/
     public function clone():BattleContraption {
         var mn:BattleContraption = new BattleContraption();
         mn.load({
-            id: this.id, 
-            font: this.font, 
-            fontcolor: this.fontcolor, 
-            fontsize: this.fontsize, 
-            horizontal: this.horizontal, 
-            vertical: this.vertical, 
-            close: this.close, 
-            attrbg: this.attrbg, 
-            attributes: this.attributes, 
-            card: this.card, 
-            soundpick: this.soundpick, 
-            soundwin: this.soundwin, 
-            soundloose: this.soundloose, 
-            soundtie: this.soundtie, 
+            id: this.id,
+            font: this.font,
+            fontcolor: this.fontcolor,
+            fontsize: this.fontsize,
+            horizontal: this.horizontal,
+            vertical: this.vertical,
+            close: this.close,
+            attrbg: this.attrbg,
+            attributes: this.attributes,
+            card: this.card,
+            soundpick: this.soundpick,
+            soundwin: this.soundwin,
+            soundloose: this.soundloose,
+            soundtie: this.soundtie,
         });
         return (mn);
     }
 
+    /**
+        Loads configuration data into the battle contraption.
+        @param data Dynamic object containing battle contraption properties (id, font, colors, images, etc.).
+        @return True if data contains required 'id' field, false otherwise.
+    **/
     public function load(data:Dynamic):Bool {
         this.ok = false;
         if (Reflect.hasField(data, 'id')) {
@@ -391,6 +433,10 @@ class BattleContraption extends Sprite {
         }
     }
 
+    /**
+        Loads graphics resources (close button, background images) based on current configuration.
+        Called after configuration is set to prepare visual elements.
+    **/
     public function loadGraphics():Void {
         this.ok = false;
         this.fontcolor = StringStatic.colorHex(this.fontcolor, '#FFFFFF');
@@ -402,6 +448,10 @@ class BattleContraption extends Sprite {
         this._cbitmap.load(this.close);
     }
 
+    /**
+        Destroys the battle contraption, releasing all resources and removing all references.
+        Called when the contraption is no longer needed.
+    **/
     public function kill():Void {
         if (this.parent != null) this.parent.removeChild(this);
         this.removeChildren();
@@ -433,9 +483,9 @@ class BattleContraption extends Sprite {
         this._playerCurent = null;
         if (this._opponentCurent != null) this._opponentCurent.kill();
         this._opponentCurent = null;
-        while (this._pcards.length > 0) this._pcards.shift();
+        if (this._pcards != null) while (this._pcards.length > 0) this._pcards.shift();
         this._pcards = null;
-        while (this._ocards.length > 0) this._ocards.shift();
+        if (this._ocards != null) while (this._ocards.length > 0) this._ocards.shift();
         this._ocards = null;
         this._onwin = null;
         this._onloose = null;
@@ -445,26 +495,33 @@ class BattleContraption extends Sprite {
         this._opponentData = null;
     }
 
+    /**
+        Serializes the battle contraption configuration into a dynamic object.
+        @return Dynamic object containing all configurable properties.
+    **/
     public function toObject():Dynamic {
         this.id = 'bs';
         return({
-            id: this.id, 
-            font: this.font, 
-            fontcolor: this.fontcolor, 
-            fontsize: this.fontsize, 
-            horizontal: this.horizontal, 
-            vertical: this.vertical, 
-            close: this.close, 
-            attrbg: this.attrbg, 
-            attributes: this.attributes, 
-            card: this.card, 
-            soundpick: this.soundpick, 
-            soundwin: this.soundwin, 
-            soundloose: this.soundloose, 
-            soundtie: this.soundtie, 
+            id: this.id,
+            font: this.font,
+            fontcolor: this.fontcolor,
+            fontsize: this.fontsize,
+            horizontal: this.horizontal,
+            vertical: this.vertical,
+            close: this.close,
+            attrbg: this.attrbg,
+            attributes: this.attributes,
+            card: this.card,
+            soundpick: this.soundpick,
+            soundwin: this.soundwin,
+            soundloose: this.soundloose,
+            soundtie: this.soundtie,
         });
     }
 
+    /**
+        Closes the battle contraption and runs the appropriate win/lose actions.
+    **/
     public function bsClose():Void {
         this.onCloseOut(null);
         this.removeChildren();
@@ -478,6 +535,10 @@ class BattleContraption extends Sprite {
         this._onwin = null;
     }
 
+    /**
+        Returns the width of an attribute button image.
+        @return Width in pixels, or 0 if graphics not loaded.
+    **/
     public function btAtrWidth():Float {
         if (this.ok) {
             return (this._abitmap.oWidth);
@@ -486,6 +547,10 @@ class BattleContraption extends Sprite {
         }
     }
 
+    /**
+        Returns the height of an attribute button image.
+        @return Height in pixels, or 0 if graphics not loaded.
+    **/
     public function btAtrHeight():Float {
         if (this.ok) {
             return (this._abitmap.oHeight);

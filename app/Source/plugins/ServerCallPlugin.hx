@@ -53,14 +53,19 @@ class ServerCallPlugin extends Plugin {
     }
 
     /**
-        Calls an URL from the server.
+        Calls a URL via the server-side proxy and stores the response in a variable.
+        @param param Array of strings where:
+            - param[0]: URL to call
+            - param[1] (optional): variable name to store the response (if empty, response is discarded)
+        @param after AfterScript containing success/error callbacks.
+        @return True if the request was sent, false if parameters are insufficient.
     **/
     private function acUrl(param:Array<String>, after:AfterScript):Bool {
         if (param.length > 0) {
                 var strvar:String = '';
                 if (param.length > 1) strvar = this._access.parser.parseString(param[1]);
                 GlobalPlayer.ws.send('ServerCall/Url', [
-                    'url' => this._access.parser.parseString(param[0]), 
+                    'url' => this._access.parser.parseString(param[0]),
                     'var' => strvar
                 ], onCallReturn, after);
                 return (true);
@@ -70,7 +75,10 @@ class ServerCallPlugin extends Plugin {
     }
 
     /**
-        URL call returns.
+        Callback for the server URL call.
+        Stores the response in the specified variable and triggers success/error callbacks.
+        @param ok Whether the server request succeeded.
+        @param ld DataLoader containing the server response.
     **/
     private function onCallReturn(ok:Bool, ld:DataLoader):Void {
         var after:AfterScript = cast ld.extra;
@@ -87,7 +95,12 @@ class ServerCallPlugin extends Plugin {
     }
 
     /**
-        Calls an URL from the server for data processing.
+        Calls a server-side URL for data processing, sending movie/scene context and additional data.
+        @param param Array of strings where:
+            - param[0]: URL to call
+            - param[1..] (optional): extra data values to send as JSON array
+        @param after AfterScript containing success/error callbacks.
+        @return True if the request was sent, false if parameters are insufficient.
     **/
     private function acProcess(param:Array<String>, after:AfterScript):Bool {
         if (param.length > 0) {
@@ -96,13 +109,13 @@ class ServerCallPlugin extends Plugin {
                     for (i in 1...param.length) prData.push(this._access.parser.parseString(param[i]));
                 }
                 GlobalPlayer.ws.send('ServerCall/Process', [
-                    'url' => this._access.parser.parseString(param[0]), 
-                    'data' => StringStatic.jsonStringify(prData), 
-                    'movieid' => GlobalPlayer.movie.mvId, 
-                    'sceneid' => GlobalPlayer.movie.scId, 
-                    'movietitle' => GlobalPlayer.mdata.title, 
-                    'scenetitle' => GlobalPlayer.movie.scene.title, 
-                    'visitor' => GlobalPlayer.ws.user, 
+                    'url' => this._access.parser.parseString(param[0]),
+                    'data' => StringStatic.jsonStringify(prData),
+                    'movieid' => GlobalPlayer.movie.mvId,
+                    'sceneid' => GlobalPlayer.movie.scId,
+                    'movietitle' => GlobalPlayer.mdata.title,
+                    'scenetitle' => GlobalPlayer.movie.scene.title,
+                    'visitor' => GlobalPlayer.ws.user,
                 ], onProcessReturn, after);
                 return (true);
         } else {
@@ -111,7 +124,12 @@ class ServerCallPlugin extends Plugin {
     }
 
     /**
-        Calls an URL from the same domain for data processing.
+        Calls a URL on the same domain (no server proxy) for data processing.
+        @param param Array of strings where:
+            - param[0]: URL to call (same origin)
+            - param[1..] (optional): extra data values to send as JSON array
+        @param after AfterScript containing success/error callbacks.
+        @return True if the request was sent, false if parameters are insufficient.
     **/
     private function acSdProcess(param:Array<String>, after:AfterScript):Bool {
         if (param.length > 0) {
@@ -120,12 +138,12 @@ class ServerCallPlugin extends Plugin {
                 for (i in 1...param.length) prData.push(this._access.parser.parseString(param[i]));
             }
             new DataLoader(true, this._access.parser.parseString(param[0]), 'POST', [
-                'data' => StringStatic.jsonStringify(prData), 
-                'movieid' => GlobalPlayer.movie.mvId, 
-                'sceneid' => GlobalPlayer.movie.scId, 
-                'movietitle' => GlobalPlayer.mdata.title, 
-                'scenetitle' => GlobalPlayer.movie.scene.title, 
-                'visitor' => GlobalPlayer.ws.user, 
+                'data' => StringStatic.jsonStringify(prData),
+                'movieid' => GlobalPlayer.movie.mvId,
+                'sceneid' => GlobalPlayer.movie.scId,
+                'movietitle' => GlobalPlayer.mdata.title,
+                'scenetitle' => GlobalPlayer.movie.scene.title,
+                'visitor' => GlobalPlayer.ws.user,
             ], DataLoader.MODEJSON, onSdProcessReturn, null, null, null, null, after);
             return (true);
         } else {
