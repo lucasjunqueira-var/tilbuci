@@ -23,34 +23,49 @@ import openfl.display.Sprite;
 
 class BattleContraption extends Sprite {
 
+    /** Indicates whether the contraption is properly loaded and ready. */
     public var ok:Bool = false;
 
+    /** Unique identifier for this battle contraption. */
     public var id:String;
 
+    /** Font family used for text elements (e.g., 'sans', 'serif'). */
     public var font:String = 'sans';
 
+    /** Font color as a hexadecimal string (e.g., '0xffffff'). */
     public var fontcolor:String = '0xffffff';
 
+    /** Font size in pixels. */
     public var fontsize:Int = 20;
 
+    /** Path or identifier for the horizontal orientation background image. */
     public var horizontal:String = '';
 
+    /** Path or identifier for the vertical orientation background image. */
     public var vertical:String = '';
 
+    /** Path or identifier for the close button image. */
     public var close:String = '';
 
+    /** Path or identifier for the card background image. */
     public var card:String = '';
 
+    /** Path or identifier for the attribute button background image. */
     public var attrbg:String = '';
 
+    /** Sound played when a card attribute is picked. */
     public var soundpick:String = '';
 
+    /** Sound played when the player wins a round. */
     public var soundwin:String = '';
 
+    /** Sound played when the player loses a round. */
     public var soundloose:String = '';
 
+    /** Sound played when a round ends in a tie. */
     public var soundtie:String = '';
 
+    /** Array of attribute names (max 5) used in battle cards. */
     public var attributes:Array<String> = [ ];
 
     private var _hbitmap:PictureImage;
@@ -89,6 +104,10 @@ class BattleContraption extends Sprite {
 
     private var _timerParam:Int = 0;
 
+    /**
+        Creates a new BattleContraption instance.
+        Initializes player and opponent data structures.
+    */
     public function new() {
         super();
         this._playerData = new BattleData();

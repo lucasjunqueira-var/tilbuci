@@ -16,11 +16,24 @@ import openfl.display.Sprite;
 
 class Target extends Sprite {
 
+    /**
+        Timer used for target animations or updates.
+    **/
     public var timer:Timer;
 
+    /**
+        Name of the last instance that was over the target (hover state).
+    **/
     public var lastInstOver:String = '';
 
+    /**
+        X coordinate of the target position.
+    **/
     public var targetX:Float = 0;
+
+    /**
+        Y coordinate of the target position.
+    **/
     public var targetY:Float = 0;
 
     private var _bmp:Bitmap;
@@ -35,6 +48,10 @@ class Target extends Sprite {
 
     private var _lastname:String = 'xxx';
 
+    /**
+        Creates a new Target instance for custom cursor/target functionality.
+        Initializes the target as invisible and sets up the default graphic.
+    **/
     public function new() {
         super();
         this.visible = false;
@@ -43,6 +60,10 @@ class Target extends Sprite {
         this.clear();
     }
 
+    /**
+        Clears the current target graphic and resets to the default icon.
+        Removes all children, disposes of the current bitmap, and loads the default 'icTarget' asset.
+    **/
     public function clear():Void {
         this.removeChildren();
         this._tgname = '';
@@ -57,6 +78,12 @@ class Target extends Sprite {
         this.addChild(this._bmp);
     }
 
+    /**
+        Loads a target definition by name from the global contraptions.
+        
+        @param nm Name of the target definition to load.
+        @return True if the target was successfully loaded, false otherwise.
+    **/
     public function load(nm:String):Bool {
         if (GlobalPlayer.contraptions.targets.exists(nm)) {
             if (GlobalPlayer.contraptions.targets[nm].ok) {
@@ -76,6 +103,12 @@ class Target extends Sprite {
         }
     }
 
+    /**
+        Sets the target graphic based on the provided name.
+        The name can be empty (default), '_menu_', '_interface_', or match one of the instance prefixes.
+        
+        @param nm Name of the graphic to display.
+    **/
     public function setGraphic(nm:String):Void {
         if ((this._tgname != '') && (nm != this._lastname)) {
             this._lastname = nm;
@@ -99,6 +132,10 @@ class Target extends Sprite {
         }
     }
 
+    /**
+        Shows the target at the center of the player area.
+        Updates target position, makes it visible, and sets the usingTarget value.
+    **/
     public function show():Void {
         this.targetX = this.x = GlobalPlayer.area.aWidth / 2;
         this.targetY = this.y = GlobalPlayer.area.aHeight / 2;
@@ -109,12 +146,20 @@ class Target extends Sprite {
         this.alpha = 1;
     }
 
+    /**
+        Hides the target and resets the usingTarget value.
+    **/
     public function hide() {
         GlobalPlayer.usingTarget = 0;
         this.visible = false;
         GlobalPlayer.parser.onDragMoveStop(null);
     }
 
+    /**
+        Callback invoked when a custom graphic finishes loading.
+        
+        @param ok Whether the loading succeeded.
+    **/
     private function onLoad(ok):Void {
         if (!ok) {
             this.clear();

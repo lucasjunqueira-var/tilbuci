@@ -19,47 +19,60 @@ import openfl.display.Sprite;
 class Contraptions {
 
     // menu contraption
+    /** Map of menu contraptions keyed by their identifier. */
     public var menus:Map<String, MenuContraption> = [ ];
     private var _menusOverlay:Sprite;
     private var _menuAction:Dynamic;
     private var _menuVariable:String;
     private var _menuCurrent:MenuContraption = null;
+    /** Indicates whether a menu contraption is currently being displayed. */
     public var usingMenu:Bool = false;
 
     // decision flow contraption
+    /** Map of decision flow contraptions keyed by their identifier. */
     public var dflow:Map<String, DflowContraption> = [ ];
     private var _dflowOverlay:Sprite;
     private var _dflowCurrent:DflowContraption = null;
+    /** Indicates whether a decision flow contraption is currently being displayed. */
     public var usingDflow:Bool = false;
 
     // inventory contraption
+    /** Map of inventory contraptions keyed by their identifier. */
     public var inv:Map<String, InventoryContraption> = [ ];
     private var _invOverlay:Sprite;
     private var _invCurrent:InventoryContraption = null;
+    /** Indicates whether an inventory contraption is currently being displayed. */
     public var usingInv:Bool = false;
 
     // battle system contraption
+    /** Map of battle system contraptions keyed by their identifier. */
     public var bs:Map<String, BattleContraption> = [ ];
     private var _bsOverlay:Sprite;
     private var _bsCurrent:BattleContraption = null;
+    /** Indicates whether a battle system contraption is currently being displayed. */
     public var usingBs:Bool = false;
 
     // messages contraption
+    /** Map of messages contraptions keyed by their identifier. */
     public var messages:Map<String, MessagesContraption> = [ ];
     private var _messagesOverlay:Sprite;
     private var _messagesAction:Dynamic;
     private var _messagesVariable:String;
     private var _messagesCurrent:MessagesContraption = null;
+    /** Indicates whether a messages contraption is currently being displayed. */
     public var usingMessages:Bool = false;
 
     // cover contraption
+    /** Map of cover contraptions keyed by their identifier. */
     public var covers:Map<String, CoverContraption> = [ ];
     private var _coverOverlay:Sprite;
 
     // target contraption
+    /** Map of target contraptions keyed by their identifier. */
     public var targets:Map<String, TargetContraption> = [ ];
 
     // background contraption
+    /** Map of background contraptions keyed by their identifier. */
     public var backgrounds:Map<String, BackgroundContraption> = [ ];
     private var _backgroundOverlay:Sprite;
 
@@ -73,20 +86,28 @@ class Contraptions {
     private var _zoomVideo:VideoImage;
 
     // music
+    /** Map of music contraptions keyed by their identifier. */
     public var musics:Map<String, MusicContraption> = [ ];
 
     // sound
+    /** Map of sound contraptions keyed by their identifier. */
     public var sounds:Map<String, SoundContraption> = [ ];
 
     // forms
+    /** Map of form contraptions keyed by their identifier. */
     public var forms:Map<String, FormContraption> = [ ];
     private var _formsOverlay:Sprite;
     private var _formcurrent:String = '';
 
     // interface
+    /** Map of interface contraptions keyed by their identifier. */
     public var interf:Map<String, InterfaceContraption> = [ ];
     private var _interfaceOverlay:Sprite;
 
+    /**
+        Creates a new Contraptions manager instance.
+        Initializes internal structures for managing various contraption types.
+    */
     public function new() {
 
     }

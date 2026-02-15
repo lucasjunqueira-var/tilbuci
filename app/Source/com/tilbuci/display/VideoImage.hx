@@ -72,6 +72,12 @@ class VideoImage extends BaseImage {
     **/
     private var _onTimedAc:Dynamic;
 
+    /**
+        Creates a new VideoImage instance for video playback.
+        @param  ol      onLoad callback function (Dynamic)
+        @param  end     onEnd callback function (Dynamic)
+        @param  ta      onTimedAction callback function (Dynamic, optional)
+    **/
     public function new(ol:Dynamic, end:Dynamic, ta:Dynamic = null) {
         super('video', true, ol);
         this._onEnd = end;
@@ -80,9 +86,9 @@ class VideoImage extends BaseImage {
         // adding the clickable background
         this._bg = new Shape();
         this._bg.graphics.beginFill(0x000000);
-		this._bg.graphics.drawRect(0, 0, 32, 32);
-		this._bg.graphics.endFill();
-		this.addChild(this._bg);
+  this._bg.graphics.drawRect(0, 0, 32, 32);
+  this._bg.graphics.endFill();
+  this.addChild(this._bg);
 
         this._video = new Video();
         this._video.smoothing = true;
@@ -90,25 +96,25 @@ class VideoImage extends BaseImage {
 
         this._connection = new NetConnection();
         this._connection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
-		this._connection.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-		this._connection.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-		this._connection.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
+  this._connection.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+  this._connection.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+  this._connection.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
         this._connection.connect(null);
 
         this._stream = new NetStream(this._connection);
-		this._stream.checkPolicyFile = true;
-		this._stream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
-		this._stream.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-		this._stream.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+  this._stream.checkPolicyFile = true;
+  this._stream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
+  this._stream.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+  this._stream.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
 
         var clientObj:Dynamic = {
-			'onMetaData': this.metadataEvent,
-			'onImageData': this.imagedataEvent,
-			'onPlayStatus': this.playstatusEvent,
-			'onCuePoint': this.cuepointEvent
-		};
-		this._stream.client = clientObj;
-		this._video.attachNetStream(this._stream);
+   'onMetaData': this.metadataEvent,
+   'onImageData': this.imagedataEvent,
+   'onPlayStatus': this.playstatusEvent,
+   'onCuePoint': this.cuepointEvent
+  };
+  this._stream.client = clientObj;
+  this._video.attachNetStream(this._stream);
     }
 
     /**
@@ -223,6 +229,10 @@ class VideoImage extends BaseImage {
         this._stream.seek(0);
     }
 
+    /**
+        Unloads the current video, resetting playback state and clearing the loaded media.
+        This pauses the stream, seeks to the beginning, and marks the video as not loaded.
+    **/
     public function unload():Void {
         if (this._loaded) {
             this._stream.pause();
@@ -233,8 +243,10 @@ class VideoImage extends BaseImage {
     }
 
     /**
-	 * Net status event.
-	 */
+  * Handles NetStatusEvent from NetConnection/NetStream.
+  * Processes network status codes like 'NetStream.Play.Start' and 'NetStream.Play.Complete'.
+  * @param event The NetStatusEvent containing info.code
+  */
 	private function netStatusHandler(event:NetStatusEvent):Void {
         switch (event.info.code) {
             case 'NetStream.Play.Start':
@@ -251,29 +263,38 @@ class VideoImage extends BaseImage {
 	}
 
     /**
-	 * IO error event.
-	 */
+  * Handles IOErrorEvent from NetConnection/NetStream.
+  * Called when an I/O error occurs during video loading/playback.
+  * @param evt The IOErrorEvent
+  */
 	private function ioErrorHandler(evt:IOErrorEvent):Void {
 		this._onLoad(false);
 	}
 
     /**
-	 * Security error event.
-	 */
+  * Handles SecurityErrorEvent from NetConnection.
+  * Called when a security error occurs (e.g., cross-domain policy).
+  * @param evt The SecurityErrorEvent
+  */
 	private function securityErrorHandler(evt:SecurityErrorEvent):Void {
 		this._onLoad(false);
 	}
 
     /**
-	 * Async error event.
-	 */
+  * Handles AsyncErrorEvent from NetConnection/NetStream.
+  * Called when an asynchronous error occurs (e.g., during data loading).
+  * @param evt The AsyncErrorEvent
+  */
 	private function asyncErrorHandler(evt:AsyncErrorEvent):Void {
         this._onLoad(false);
     }
 
     /**
-	 * Metadata received.
-	 */
+  * Callback for onMetaData from the NetStream client.
+  * Extracts video width/height and updates display dimensions.
+  * In editor mode, stops playback after metadata is received.
+  * @param data Dynamic metadata object containing width, height, etc.
+  */
 	private function metadataEvent(data:Dynamic):Void {
         this.oWidth = data.width;
         this.oHeight = data.height;
@@ -287,15 +308,19 @@ class VideoImage extends BaseImage {
 	}
 
     /**
-	 * Image data received.
-	 */
+  * Callback for onImageData from the NetStream client.
+  * Currently unused; placeholder for future image data handling.
+  * @param data Dynamic image data object
+  */
 	private function imagedataEvent(data:Dynamic):Void {
         //trace ('imagedataEvent', data);
     }
 
     /**
-	 * Playstatus data received.
-	 */
+  * Callback for onPlayStatus from the NetStream client.
+  * Monitors playback time and triggers timed actions when time changes.
+  * @param data Dynamic playstatus object
+  */
 	private function playstatusEvent(data:Dynamic):Void {
 		//trace ('playstatusEvent', data);
         if (this._stream.time != null) {
@@ -310,8 +335,10 @@ class VideoImage extends BaseImage {
 	}
 
     /**
-	 * Cuepoint data received.
-	 */
+  * Callback for onCuePoint from the NetStream client.
+  * Placeholder for future cuepoint support (e.g., chapter markers).
+  * @param data Dynamic cuepoint object
+  */
 	private function cuepointEvent(data:Dynamic):Void {
 		// future cuepoint support
 	}

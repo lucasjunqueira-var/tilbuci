@@ -70,10 +70,16 @@ class AudioImage extends BaseImage {
     **/
     private var _onTimedAc:Dynamic;
 
+    /**
+        Creates a new AudioImage instance for audio playback.
+        @param  ol      onLoad callback function (Dynamic)
+        @param  end     onEnd callback function (Dynamic)
+        @param  ta      onTimedAction callback function (Dynamic, optional)
+    **/
     public function new(ol:Dynamic, end:Dynamic, ta:Dynamic = null) {
         super('audio', true, ol);
         this._onEnd = end;
-        this._sound = new Sound();  
+        this._sound = new Sound();
         this._sound.addEventListener(Event.COMPLETE, onComplete);
         this._sound.addEventListener(IOErrorEvent.IO_ERROR, onError);
         this._onTimedAc = ta;
@@ -193,7 +199,7 @@ class AudioImage extends BaseImage {
     }
 
     /**
-        Pauses video playback.
+        Pauses audio playback.
     **/
     public function pause():Void {
         if (this._loaded) {
@@ -217,7 +223,8 @@ class AudioImage extends BaseImage {
     }
 
     /**
-        Media playback.
+        Timer callback invoked every second during playback.
+        Checks current playback position and triggers timed actions if time changed.
     **/
     private function onTimer():Void {
         var tm:Int = Math.round(this._channel.position / 1000);
@@ -230,8 +237,11 @@ class AudioImage extends BaseImage {
     }
 
     /**
-	 * Media loaded.
-	 */
+  * Event handler for Sound.COMPLETE.
+  * Called when audio file finishes loading.
+  * Starts playback immediately and calls onLoad callback.
+  * @param evt The Event object
+  */
 	private function onComplete(evt:Event):Void {
         this._loaded = true;
         if (this._channel != null) {
@@ -245,16 +255,22 @@ class AudioImage extends BaseImage {
 	}
 
     /**
-	 * IO error event.
-	 */
+  * Event handler for IOErrorEvent.IO_ERROR.
+  * Called when an I/O error occurs during audio loading.
+  * Marks media as not loaded and calls onLoad(false).
+  * @param evt The IOErrorEvent object
+  */
 	private function onError(evt:IOErrorEvent):Void {
         this._loaded = false;
 		this._onLoad(false);
 	}
 
     /**
-	 * Sound playback reaches the end of the file.
-	 */
+  * Event handler for Event.SOUND_COMPLETE.
+  * Called when the sound channel reaches the end of playback.
+  * Invokes the end-of-media callback (_onEnd).
+  * @param evt The Event object
+  */
 	private function soundComplete(evt:Event):Void {
         this._onEnd();
     }

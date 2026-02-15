@@ -7,8 +7,21 @@
  package com.tilbuci.def;
 
 class InterfaceLang {
+    /**
+        Language display name.
+    **/
     public var name:String;
+
+    /**
+        Language file path.
+    **/
     public var file:String;
+
+    /**
+        Creates a new InterfaceLang instance.
+        @param  n   language display name (String)
+        @param  f   language file path (String)
+    **/
     public function new(n:String, f:String) {
         this.name = n;
         this.file = f;

@@ -13,24 +13,37 @@ import com.tilbuci.data.GlobalPlayer;
 import com.tilbuci.statictools.StringStatic;
 import openfl.display.Sprite;
 
+/**
+ * A contraption that displays a dynamic flow of buttons (menu-like) with configurable appearance.
+ * Used for decision points, navigation menus, or interactive choice panels.
+ */
 class DflowContraption extends Sprite {
 
+    /** Indicates whether the contraption is properly loaded and ready. */
     public var ok:Bool = false;
 
+    /** Unique identifier for this flow contraption. */
     public var id:String;
 
+    /** Font family used for button labels. Default 'sans'. */
     public var font:String = 'sans';
 
+    /** Font color in hexadecimal string (e.g., '0xffffff'). */
     public var fontcolor:String = '0xffffff';
 
+    /** Font size in pixels. Default 20. */
     public var fontsize:Int = 20;
 
+    /** Path or URL to the button background image. Empty string means no background. */
     public var buton:String = '';
 
+    /** Positioning of the button group: 'center', 'left', 'right', etc. */
     public var position:String = 'center';
 
+    /** Vertical gap between buttons in pixels. Default 10. */
     public var gap:Int = 10;
 
+    /** Calculated total size of the menu (width and height). */
     public var menuSize:Point = new Point();
 
     private var _btbitmap:PictureImage;
@@ -41,10 +54,19 @@ class DflowContraption extends Sprite {
 
     private var _options:Array<Array<String>> = [ ];
 
+    /**
+     * Creates a new DflowContraption instance.
+     */
     public function new() {
         super();
     }
 
+    /**
+     * Creates the visual button flow from an array of button definitions.
+     * Each button definition is an array [label, targetScene].
+     * @param bts Array of button definitions.
+     * @return This sprite instance.
+     */
     public function create(bts:Array<Array<String>>):Sprite {
         if (this.ok) {
             this.removeChildren();
@@ -67,6 +89,12 @@ class DflowContraption extends Sprite {
         return (this);
     }
 
+    /**
+     * Checks if a given sprite collides with any button in the flow.
+     * If a collision is detected, triggers the button's action.
+     * @param obj Sprite to test collision against.
+     * @return True if a collision occurred, false otherwise.
+     */
     public function checkCollision(obj:Sprite):Bool {
         var found:Bool = false;
         if (this.ok) {
@@ -83,6 +111,9 @@ class DflowContraption extends Sprite {
         return (found);
     }
 
+    /**
+     * Removes all buttons and clears the flow from its parent.
+     */
     public function remove():Void {
         this.removeChildren();
         while (this._buttons.length > 0) this._buttons.shift().kill();
@@ -90,20 +121,29 @@ class DflowContraption extends Sprite {
         if (this.parent != null) this.parent.removeChild(this);
     }
 
+    /**
+     * Creates a deep copy of this flow contraption.
+     * @return A new DflowContraption with the same properties.
+     */
     public function clone():DflowContraption {
         var mn:DflowContraption = new DflowContraption();
         mn.load({
-            id: this.id, 
-            font: this.font, 
-            fontcolor: this.fontcolor, 
-            fontsize: this.fontsize, 
-            buton: this.buton, 
-            position: this.position, 
-            gap: this.gap, 
+            id: this.id,
+            font: this.font,
+            fontcolor: this.fontcolor,
+            fontsize: this.fontsize,
+            buton: this.buton,
+            position: this.position,
+            gap: this.gap,
         });
         return (mn);
     }
 
+    /**
+     * Loads configuration data and prepares the button background image.
+     * @param data Dynamic object containing id, font, fontcolor, fontsize, buton, position, gap.
+     * @return True if the data contains an 'id' field, false otherwise.
+     */
     public function load(data:Dynamic):Bool {
         this.ok = false;
         if (Reflect.hasField(data, 'id')) {
@@ -137,6 +177,9 @@ class DflowContraption extends Sprite {
         }
     }
 
+    /**
+     * Completely destroys the flow contraption, releasing all resources.
+     */
     public function kill():Void {
         if (this.parent != null) this.parent.removeChild(this);
         this.removeChildren();
@@ -148,18 +191,26 @@ class DflowContraption extends Sprite {
         if (this.parent != null) this.parent.removeChild(this);
     }
 
+    /**
+     * Serializes the flow contraption to a plain object.
+     * @return Dynamic object containing id, font, fontcolor, fontsize, buton, position, gap.
+     */
     public function toObject():Dynamic {
         return({
-            id: this.id, 
-            font: this.font, 
-            fontcolor: this.fontcolor, 
-            fontsize: this.fontsize, 
-            buton: this.buton, 
-            position: this.position, 
+            id: this.id,
+            font: this.font,
+            fontcolor: this.fontcolor,
+            fontsize: this.fontsize,
+            buton: this.buton,
+            position: this.position,
             gap: this.gap
         });
     }
 
+    /**
+     * Called when the button background image finishes loading.
+     * @param ok Whether the image loaded successfully.
+     */
     private function onBTLoad(ok:Bool):Void {
         this.ok = ok;
         if (ok) {
@@ -167,6 +218,10 @@ class DflowContraption extends Sprite {
         }
     }
 
+    /**
+     * Handles button click events. Loads the target scene and removes the flow.
+     * @param val The button's value (index as string).
+     */
     private function onClick(val:String):Void {
         if (this._options[Std.parseInt(val)][1] != '') {
             GlobalPlayer.parser.run('{"ac":"scene.load","param":["' + this._options[Std.parseInt(val)][1] + '"]}');

@@ -607,6 +607,9 @@ class MovieDataScreen {
     **/
     public var bgcolor:Int;
 
+    /**
+        Creates a new MovieDataScreen instance and initializes it with default values.
+    **/
     public function new() {
         this.clear();
     }

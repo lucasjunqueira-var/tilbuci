@@ -41,6 +41,10 @@ class HtmlImage extends BaseImage {
     **/
     private var _scrollPos:Int = 0;
 
+    /**
+        Creates a new HtmlImage instance for displaying HTML-formatted text.
+        @param  ol  onLoad callback function (Dynamic)
+    **/
     public function new(ol:Dynamic) {
         super('html', false, ol);
         this._text = new TextField();
@@ -106,7 +110,7 @@ class HtmlImage extends BaseImage {
     /**
         Sets the text field actual size.
         @param  wd  the field width
-        @param  ht' the field height
+        @param  ht  the field height
     **/
     public function setTextSize(wd:Float, ht:Float):Void {
         this._text.width = this.oWidth = wd;
@@ -173,7 +177,10 @@ class HtmlImage extends BaseImage {
     }
 
     /**
-        Text loaded.
+        Event handler for URLLoader.COMPLETE.
+        Called when HTML file finishes loading successfully.
+        Updates text field with loaded content and calls onLoad(true).
+        @param evt The Event object
     **/
     private function onOk(evt:Event):Void {
         var txt:String = this._loader.data;
@@ -184,7 +191,10 @@ class HtmlImage extends BaseImage {
     }
 
     /**
-        Text load error.
+        Event handler for IOErrorEvent.IO_ERROR and SecurityErrorEvent.SECURITY_ERROR.
+        Called when HTML file fails to load due to I/O or security error.
+        Clears text field and calls onLoad(false).
+        @param evt The Event object (IOErrorEvent or SecurityErrorEvent)
     **/
     private function onError(evt:Event):Void {
         this._text.htmlText = '';

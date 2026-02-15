@@ -142,7 +142,7 @@ class InstanceData {
 
     /**
         Gets a JSON-formatted description of the instance.
-        @return JSOn-formatted text
+        @return JSON-formatted text
     **/
     public function toJson():String {
         return(StringStatic.jsonStringify(this.toObject()));

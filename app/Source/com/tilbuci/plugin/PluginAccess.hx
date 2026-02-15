@@ -42,9 +42,18 @@ class PluginAccess {
     **/
     public var parser:ScriptParser;
 
-    public function new(vS:Map<String, String>, 
-                        vF:Map<String, Float>, 
-                        vI:Map<String, Int>, 
+    /**
+        Creates a new PluginAccess instance with references to variable maps and parser.
+        
+        @param vS Map of string variables.
+        @param vF Map of float variables.
+        @param vI Map of integer variables.
+        @param vB Map of boolean variables.
+        @param pr Script parser instance.
+    **/
+    public function new(vS:Map<String, String>,
+                        vF:Map<String, Float>,
+                        vI:Map<String, Int>,
                         vB:Map<String, Bool>,
                         pr:ScriptParser
                         ) {

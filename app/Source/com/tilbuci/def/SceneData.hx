@@ -74,6 +74,9 @@ class SceneData extends DefBase {
     **/
     public var dflow:Array<Array<String>> = [ ];
 
+    /**
+        Creates a new SceneData instance and initializes required fields.
+    **/
     public function new() {
         super(['title', 'about', 'image', 'navigation', 'collections', 'keyframes', 'loop', 'acstart', 'ackeyframes']);
         this.clear();
@@ -179,7 +182,7 @@ class SceneData extends DefBase {
     }
 
     /**
-        Gets a clen representation of current object.
+        Gets a clean representation of current object.
     **/
     public function toObject():Dynamic {
         var kfs:Array<Dynamic> = [ ];

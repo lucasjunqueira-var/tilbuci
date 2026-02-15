@@ -17,7 +17,7 @@ class BaseImage extends Sprite {
     public var type:String = '';
 
     /**
-        addiional information about the image
+        additional information about the image
     **/
     public var extraInfo:Array<String> = [ ];
 
@@ -56,6 +56,12 @@ class BaseImage extends Sprite {
     private var _lastMedia:String;
 
 
+    /**
+        Creates a new BaseImage instance.
+        @param  tp  image type (String)
+        @param  at  autoTimer flag (Bool)
+        @param  ol  onLoad callback function (Dynamic)
+    **/
     public function new(tp:String, at:Bool, ol:Dynamic) {
         super();
         this.type = tp;

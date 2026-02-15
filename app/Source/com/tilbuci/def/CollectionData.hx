@@ -56,6 +56,12 @@ class CollectionData extends DefBase {
     private var _acLoad:Dynamic;
 
 
+    /**
+        Creates a new CollectionData instance.
+        @param  id      collection identifier (String)
+        @param  acLoad  callback function after load (Dynamic)
+        @param  load    whether to load the collection immediately (Bool, default true)
+    **/
     public function new(id:String, acLoad:Dynamic, load:Bool = true) {
         super(['name', 'transition', 'time', 'assets']);
         this._acLoad = acLoad;
@@ -111,19 +117,23 @@ class CollectionData extends DefBase {
         });
     }
 
+    /**
+        Creates a shallow clone of the collection data.
+        @return a ColDataClone structure containing the current collection's data
+    **/
     public function cloneData():ColDataClone {
         var clone:ColDataClone = {
-            name: this.name, 
-            transition: this.transition, 
-            time: this.time, 
-            assets: assets, 
+            name: this.name,
+            transition: this.transition,
+            time: this.time,
+            assets: assets,
             assetOrder: assetOrder
         };
         return (clone);
     }
 
     /**
-        Releases resopurces used by the object.
+        Releases resources used by the object.
     **/
     override public function kill():Void {
         super.kill();

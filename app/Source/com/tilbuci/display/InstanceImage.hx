@@ -248,6 +248,11 @@ class InstanceImage extends Sprite {
         return (to);
     }
 
+    /**
+        Creates a new InstanceImage instance.
+        @param  nm      instance name (String)
+        @param  onSel   callback function for when the instance is selected (Dynamic)
+    **/
     public function new(nm:String, onSel:Dynamic) {
         super();
         this._name = nm;
@@ -281,7 +286,7 @@ class InstanceImage extends Sprite {
         if (GlobalPlayer.movie.data.screen.type == 'landscape') {
             this.x = GlobalPlayer.mdata.screen.big / 2;
             this.y = GlobalPlayer.mdata.screen.small / 2;
-        } else if (GlobalPlayer.movie.data.screen.type == 'portrait') { 
+        } else if (GlobalPlayer.movie.data.screen.type == 'portrait') {
             this.x = GlobalPlayer.mdata.screen.small / 2;
             this.y = GlobalPlayer.mdata.screen.big / 2;
         } else {
@@ -768,6 +773,11 @@ class InstanceImage extends Sprite {
         this._imCurrent.seek(time);
     }
 
+    /**
+        Updates frame-based animation for the current image.
+        @param  fr  frame number (Int)
+        @param  tm  time in milliseconds (Int)
+    **/
     public function updateFrames(fr:Int, tm:Int):Void {
         this._imCurrent.updateFrames(fr, tm);
     }
@@ -799,6 +809,10 @@ class InstanceImage extends Sprite {
         this._imOther.setText(txt);
     }
 
+    /**
+        Updates the text display for both current and other images.
+        This ensures text formatting and content are synchronized.
+    **/
     public function updateText():Void {
         this._imCurrent.updateText();
         this._imOther.updateText();
@@ -1157,6 +1171,10 @@ class InstanceImage extends Sprite {
         Global.history.updateProperties();
     }
 
+    /**
+        Sets the width of the instance description (horizontal/vertical) based on display type.
+        @param  to  the new width value (Float)
+    **/
     public function setDescWidth(to:Float):Void {
         if (Global.displayType == 'portrait') {
             GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._name].vertical.width = to;
@@ -1165,6 +1183,10 @@ class InstanceImage extends Sprite {
         }
     }
 
+    /**
+        Sets the height of the instance description (horizontal/vertical) based on display type.
+        @param  to  the new height value (Float)
+    **/
     public function setDescHeight(to:Float):Void {
         if (Global.displayType == 'portrait') {
             GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._name].vertical.height = to;
@@ -1335,7 +1357,8 @@ class ImageSet {
     public var vertical:InstanceDesc;
 
     /**
-        Constructor.
+        Creates a new ImageSet instance with horizontal and vertical descriptions.
+        Initializes both descriptions as empty but valid (ok = true).
     **/
     public function new() {
         this.horizontal = new InstanceDesc([ ]);

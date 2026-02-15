@@ -14,39 +14,64 @@ import openfl.display.Sprite;
 
 class BackgroundContraption extends Sprite {
 
+    /** Indicates whether the contraption is properly loaded and ready. */
     public var ok:Bool = false;
 
+    /** Unique identifier for this background contraption. */
     public var id:String;
 
+    /** Path or identifier for the landscape orientation image. */
     public var landscape:String;
 
+    /** Path or identifier for the portrait orientation image. */
     public var portrait:String;
 
     private var _landscape:PictureImage;
 
     private var _portrait:PictureImage;
 
+    /**
+        Creates a new BackgroundContraption instance.
+        @param data Optional configuration data to load immediately.
+    */
     public function new(data:Dynamic = null) {
         super();
         if (data != null) this.load(data);
     }
 
+    /**
+        Creates the visual representation of the background contraption.
+        @param bts Unused parameter (kept for compatibility).
+        @param ac Unused parameter (kept for compatibility).
+        @return This instance as a Sprite.
+    */
     public function create(bts:Array<String>, ac:Dynamic):Sprite {
         if (this.ok) {
-            this.removeChildren();   
+            this.removeChildren();
         }
         return (this);
     }
 
+    /**
+        Removes the contraption from its parent container and clears its children.
+    */
     public function remove():Void {
         this.removeChildren();
         if (this.parent != null) this.parent.removeChild(this);
     }
 
+    /**
+        Creates a deep copy of this background contraption.
+        @return A new BackgroundContraption instance with identical properties.
+    */
     public function clone():BackgroundContraption {
         return (new BackgroundContraption(this.toObject()));
     }
 
+    /**
+        Displays the appropriate background image based on screen orientation.
+        @return This instance with the correct image added as a child.
+    */
     public function getCover():BackgroundContraption {
         this.removeChildren();
         if (GlobalPlayer.area.pOrientation == MovieArea.HORIENTATION) {
@@ -73,6 +98,11 @@ class BackgroundContraption extends Sprite {
         return (this);
     }
 
+    /**
+        Loads configuration data into the background contraption.
+        @param data Dynamic object containing `id`, `landscape`, and `portrait` fields.
+        @return True if data contains required 'id' field and at least one image, false otherwise.
+    */
     public function load(data:Dynamic):Bool {
         this.ok = false;
         if (Reflect.hasField(data, 'id')) {
@@ -111,6 +141,11 @@ class BackgroundContraption extends Sprite {
         }
     }
 
+    /**
+        Called when a background image finishes loading.
+        Adjusts the image dimensions according to the current screen orientation.
+        @param ok Whether the image loaded successfully.
+    */
     private function onPicLoad(ok:Bool):Void {
         if (GlobalPlayer.area.pOrientation == MovieArea.HORIENTATION) {
             if (this._landscape != null) {
@@ -131,6 +166,9 @@ class BackgroundContraption extends Sprite {
         }
     }
 
+    /**
+        Destroys the contraption, releasing all resources and removing all references.
+    */
     public function kill():Void {
         if (this.parent != null) this.parent.removeChild(this);
         this.removeChildren();
@@ -143,11 +181,15 @@ class BackgroundContraption extends Sprite {
         this.id = null;
     }
 
+    /**
+        Serializes the contraption configuration into a dynamic object.
+        @return Dynamic object containing `id`, `landscape`, and `portrait` fields.
+    */
     public function toObject():Dynamic {
         return({
-            id: this.id, 
-            landscape: this.landscape, 
-            portrait: this.portrait, 
+            id: this.id,
+            landscape: this.landscape,
+            portrait: this.portrait,
         });
     }
 }

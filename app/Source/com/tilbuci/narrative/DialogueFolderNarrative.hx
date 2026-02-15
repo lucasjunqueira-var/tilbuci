@@ -16,27 +16,47 @@ import openfl.display.Sprite;
 
 class DialogueFolderNarrative extends Sprite {
 
+    /** Indicates whether the folder data has been successfully loaded. */
     public var ok:Bool = false;
 
+    /** Unique identifier for the dialogue folder. */
     public var id:String;
 
+    /** Code used to fetch the folder's content from the server. */
     public var code:String = '';
 
+    /** Flag indicating whether the folder's dialogue content has been loaded. */
     public var loaded:Bool = false;
 
+    /** Map of dialogue IDs to DialogueNarrative objects belonging to this folder. */
     public var diags:Map<String, DialogueNarrative> = [ ];
 
+    /** Private callback reference used during asynchronous content loading. */
     private var _callback:Dynamic;
 
+    /**
+     * Creates a new DialogueFolderNarrative, optionally loading data from a Dynamic object.
+     * @param data Optional Dynamic object containing id, code, and diags.
+     */
     public function new(data:Dynamic = null) {
         super();
         if (data != null) this.load(data);
     }
 
+    /**
+     * Creates a deep copy of this dialogue folder.
+     * @return A new DialogueFolderNarrative instance with identical data.
+     */
     public function clone():DialogueFolderNarrative {
         return (new DialogueFolderNarrative(this.toObject()));
     }
 
+    /**
+     * Loads folder data from a Dynamic object.
+     * Required field: id. Optional fields: code, diags.
+     * @param data Dynamic object containing the folder data.
+     * @return True if loading succeeded, false otherwise.
+     */
     public function load(data:Dynamic):Bool {
         this.ok = false;
         if (Reflect.hasField(data, 'id')) {
@@ -62,6 +82,9 @@ class DialogueFolderNarrative extends Sprite {
         }
     }
 
+    /**
+     * Clears all dialogues from this folder, calling kill() on each.
+     */
     public function clear():Void {
         if (this.ok) {
             for (k in this.diags.keys()) {
@@ -72,6 +95,11 @@ class DialogueFolderNarrative extends Sprite {
         }
     }
 
+    /**
+     * Asynchronously loads the folder's dialogue content from the server.
+     * @param callback Function to be called with a Boolean success parameter.
+     * @return True if the loading process was initiated, false otherwise.
+     */
     public function loadContents(callback:Dynamic):Bool {
         if (this.ok) {
             GlobalPlayer.narrative.clearDialogues();
@@ -87,6 +115,11 @@ class DialogueFolderNarrative extends Sprite {
         }
     }
 
+    /**
+     * Private callback invoked when the server response arrives.
+     * @param ok Whether the HTTP request succeeded.
+     * @param ld The DataLoader instance containing the response.
+     */
     private function onContents(ok:Bool, ld:DataLoader = null):Void {
         if (ok) {
             if (this.load(ld.json)) {
@@ -99,10 +132,17 @@ class DialogueFolderNarrative extends Sprite {
         }
     }
 
+    /**
+     * Returns the number of dialogues in this folder.
+     * @return Count of dialogues.
+     */
     public function numDiags():Int {
         return(Lambda.count(this.diags));
     }
 
+    /**
+     * Removes the folder from the display list and cleans up all contained dialogues.
+     */
     public function kill():Void {
         if (this.parent != null) this.parent.removeChild(this);
         this.removeChildren();
@@ -115,21 +155,29 @@ class DialogueFolderNarrative extends Sprite {
         this._callback = null;
     }
 
+    /**
+     * Exports a lightweight representation of the folder (id, code, loaded) for serialization.
+     * @return Dynamic object with fields id, code, loaded.
+     */
     public function idObject():Dynamic {
         return({
-            id: this.id, 
-            code: this.code, 
-            loaded: this.loaded, 
+            id: this.id,
+            code: this.code,
+            loaded: this.loaded,
         });
     }
 
+    /**
+     * Exports the complete folder data, including all dialogues, as a Dynamic object.
+     * @return Dynamic object with fields id, code, loaded, diags.
+     */
     public function toObject():Dynamic {
         var diagobj:Array<Dynamic> = [ ];
         for (k in this.diags) diagobj.push(k.toObject());
         return({
-            id: this.id, 
-            code: this.code, 
-            loaded: this.loaded, 
+            id: this.id,
+            code: this.code,
+            loaded: this.loaded,
             diags: diagobj
         });
     }
