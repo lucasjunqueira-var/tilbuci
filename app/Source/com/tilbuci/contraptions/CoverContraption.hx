@@ -84,7 +84,7 @@ class CoverContraption extends Sprite {
      */
     public function getCover():CoverContraption {
         this.removeChildren();
-        if (GlobalPlayer.area.pOrientation == MovieArea.HORIZONTAL) {
+        if (GlobalPlayer.area.pOrientation == MovieArea.HORIENTATION) {
             if (this._landscape != null) {
                 this._landscape.width = GlobalPlayer.mdata.screen.big;
                 this._landscape.height = GlobalPlayer.mdata.screen.small;

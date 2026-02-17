@@ -664,4 +664,38 @@ class Media extends BaseClass
             }
         }
     }
+
+	/**
+     * Saves a snippets group file.
+     * @param   string  $movie  the movie id
+     * @param   string  $fname  the uploaded file name
+     */
+    public function saveSnippets($movie, $fname) {
+        if (is_file('../movie/' . $movie . '.movie/media/snippets/' . $fname)) {
+            $name = substr(str_replace(['.json', ' '], '', mb_strtolower($fname)), 0, 128);
+            $content = file_get_contents('../movie/' . $movie . '.movie/media/snippets/' . $fname);
+            if ($content !== false) {
+                $this->execute('DELETE FROM snippets WHERE sn_movie=:mv AND sn_file=:fl', [
+                    ':mv' => $movie, 
+                    ':fl' => $name, 
+                ]);
+                $this->execute('INSERT INTO snippets (sn_movie, sn_file, sn_content) VALUES (:mv, :fl, :cont)', [
+                    ':mv' => $movie, 
+                    ':fl' => $name, 
+                    ':cont' => base64_encode(gzencode($content)), 
+                ]);
+                @unlink('../movie/' . $movie . '.movie/media/snippets/' . $fname);
+                $ck = $this->queryAll('SELECT mv_encrypted FROM movies WHERE mv_id=:mv', [':mv' => $movie]);
+                if (count($ck) == 0) {
+                    file_put_contents(('../movie/' . $movie . '.movie/media/snippets/'.$name.'.json'), $content);
+                } else {
+                    if ($ck[0]['mv_encrypted'] == '1') {
+                        file_put_contents(('../movie/' . $movie . '.movie/media/snippets/'.$name.'.json'), $this->encryptTBFile($movie, $content));
+                    } else {
+                        file_put_contents(('../movie/' . $movie . '.movie/media/snippets/'.$name.'.json'), $content);
+                    }
+                }
+            }
+        }
+    }
 }

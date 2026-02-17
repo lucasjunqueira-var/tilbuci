@@ -912,10 +912,23 @@ class ActionInfo {
         this.groups.push(new ActionInfoGroup(
             Global.ln.get('window-acbsystem-title'), 
             [
-                { n: Global.ln.get('acinfo-systemfullscreen'), a: 'system.fullscreen', p: [ ], e: [ ] },  
                 { n: Global.ln.get('acinfo-run'), a: 'run', p: [
                     { t: 's', n: Global.ln.get('acinfo-run-p1'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-run-p2'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-run-p3'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-run-p4'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-run-p5'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-run-p6'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-run-p7'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-run-p8'), v: '' }, 
                 ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-snippetsload'), a: 'snippets.load', p: [
+                    { t: 's', n: Global.ln.get('acinfo-snippetsload-p1'), v: '' }, 
+                ], e: [ 'success', 'error' ] }, 
+                { n: Global.ln.get('acinfo-snippetsunload'), a: 'snippets.unload', p: [
+                    { t: 's', n: Global.ln.get('acinfo-snippetsunload-p1'), v: '' },
+                ], e: [ ] },  
+                { n: Global.ln.get('acinfo-systemfullscreen'), a: 'system.fullscreen', p: [ ], e: [ ] },  
                 { n: Global.ln.get('acinfo-systemopenembed'), a: 'system.openembed', p: [
                     { t: 's', n: Global.ln.get('acinfo-systemopenembed-p1'), v: '' }, 
                 ], e: [ ] }, 

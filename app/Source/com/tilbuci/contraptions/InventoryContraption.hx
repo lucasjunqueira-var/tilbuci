@@ -86,7 +86,7 @@ class InventoryContraption extends Sprite {
         this._cbitmap.visible = true;
         this._hbitmap.visible = this._vbitmap.visible = false;
         if (this.ok) {
-            if (GlobalPlayer.area.pOrientation == MovieArea.HORIZONTAL) {
+            if (GlobalPlayer.area.pOrientation == MovieArea.HORIENTATION) {
                 this.addChild(this._hbitmap);
                 this._hbitmap.x = this._hbitmap.y = 0;
                 this._hbitmap.width = GlobalPlayer.mdata.screen.big;

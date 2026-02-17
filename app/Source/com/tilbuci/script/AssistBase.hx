@@ -134,6 +134,7 @@ class AssistBase extends PopupWindow {
                     { text: Global.ln.get('window-globals-flag'), value: "?_FLAGS:" }, 
                     { text: Global.ln.get('window-acinput-text'), value: "$_INPUT:" }, 
                     { text: Global.ln.get('window-acform-text'), value: "$_FORM:" }, 
+                    { text: Global.ln.get('window-acparam-text'), value: "$_PARAM:" }, 
                     { text: Global.ln.get('window-acnumeric-text'), value: "#_NUMERIC:" }, 
                     { text: Global.ln.get('window-actoggle-text'), value: "?_TOGGLE:" }, 
                 ], sl: [ ], ht: 95 }, 
