@@ -1,6 +1,8 @@
 _notes
 third/
 models/
+.vscode/
+.well-kown/
 setup/*.zip
 setup/*.xz
 setup/*.dmg
