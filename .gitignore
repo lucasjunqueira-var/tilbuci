@@ -6,6 +6,7 @@ models/
 .roo/
 setup/*.zip
 setup/*.xz
+setup/*.gz
 setup/*.dmg
 app/Export/
 server/public_html/app/editor.json
