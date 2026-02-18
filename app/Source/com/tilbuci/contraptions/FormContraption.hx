@@ -22,12 +22,19 @@ import com.tilbuci.display.PictureImage;
 import com.tilbuci.data.GlobalPlayer;
 import openfl.display.Sprite;
 
+/**
+ * A contraption that represents a form with various input elements (text, numeric, toggle, select, etc.)
+ * and optional OK/Cancel buttons. Used for data entry and configuration dialogs.
+ */
 class FormContraption extends Sprite {
 
+    /** Indicates whether the contraption is properly loaded and ready. */
     public var ok:Bool = false;
 
+    /** Unique identifier for this form contraption. */
     public var id:String;
 
+    /** Array of form element definitions (inputs, buttons, backgrounds). */
     public var elem:Array<FormElem> = [ ];
 
     private var _created:Bool = false;
@@ -40,11 +47,21 @@ class FormContraption extends Sprite {
 
     private var _inputs:Map<String, FeathersControl> = [ ];
 
+    /**
+     * Creates a new FormContraption instance.
+     * @param data Optional initialization data (as returned by `toObject`).
+     */
     public function new(data:Dynamic = null) {
         super();
         if (data != null) this.load(data);
     }
 
+    /**
+     * Sets the value of a named input element.
+     * @param nm Name of the input element.
+     * @param value New value as a string (will be parsed according to input type).
+     * @return True if the element exists and the value was set, false otherwise.
+     */
     public function setValue(nm:String, value:String):Bool {
         if (this._created) {
             if (this._inputs.exists(nm)) {
@@ -83,6 +100,11 @@ class FormContraption extends Sprite {
         }
     }
 
+    /**
+     * Retrieves the current value of a named input element.
+     * @param nm Name of the input element.
+     * @return The value as a string, or empty string if the element does not exist.
+     */
     public function getValue(nm:String):String {
         if (this._created) {
             if (this._inputs.exists(nm)) {
@@ -113,6 +135,14 @@ class FormContraption extends Sprite {
         }
     }
 
+    /**
+     * Configures the range and step of a numeric stepper input.
+     * @param nm Name of the numeric stepper element.
+     * @param min Minimum allowed value.
+     * @param max Maximum allowed value.
+     * @param stp Step increment.
+     * @return True if the element exists and is a numeric stepper, false otherwise.
+     */
     public function setStepper(nm:String, min:Int, max:Int, stp:Int):Bool {
         if (this._created) {
             if (this._inputs.exists(nm)) {
@@ -133,6 +163,12 @@ class FormContraption extends Sprite {
         }
     }
 
+    /**
+     * Starts the form, creating all visual elements and attaching event listeners.
+     * @param acok Callback to execute when the OK button is clicked.
+     * @param accancel Callback to execute when the Cancel button is clicked.
+     * @return True if the contraption is loaded (ok = true), false otherwise.
+     */
     public function start(acok:Dynamic, accancel:Dynamic):Bool {
         if (this.ok) {
             this._ok = acok;
@@ -197,7 +233,7 @@ class FormContraption extends Sprite {
                             this._inputs[el.name] = nst;
                             this._inputs[el.name].x = el.x;
                             this._inputs[el.name].y = el.y;
-                            this._inputs[el.name].width = el.width; 
+                            this._inputs[el.name].width = el.width;
                         case 'password':
                             var tpass:TextInput = new TextInput();
                             tpass.displayAsPassword = true;
@@ -224,15 +260,27 @@ class FormContraption extends Sprite {
         }
     }
 
+    /**
+     * Removes the form from its parent and clears its children.
+     */
     public function remove():Void {
         this.removeChildren();
         if (this.parent != null) this.parent.removeChild(this);
     }
 
+    /**
+     * Creates a deep copy of this form contraption.
+     * @return A new FormContraption with the same properties.
+     */
     public function clone():FormContraption {
         return (new FormContraption(this.toObject()));
     }
 
+    /**
+     * Loads form configuration data.
+     * @param data Dynamic object containing id and elem fields.
+     * @return True if the data contains an 'id' and an 'elem' field, false otherwise.
+     */
     public function load(data:Dynamic):Bool {
         this.ok = false;
         while (this.elem.length > 0) this.elem.shift();
@@ -254,6 +302,9 @@ class FormContraption extends Sprite {
         }
     }
 
+    /**
+     * Completely destroys the form contraption, releasing all resources and removing event listeners.
+     */
     public function kill():Void {
         if (this.parent != null) this.parent.removeChild(this);
         this.removeChildren();
@@ -282,13 +333,21 @@ class FormContraption extends Sprite {
         this._inputs = null;
     }
 
+    /**
+     * Serializes the form contraption to a plain object.
+     * @return Dynamic object containing id and elem fields.
+     */
     public function toObject():Dynamic {
         return({
-            id: this.id, 
-            elem: this.elem, 
+            id: this.id,
+            elem: this.elem,
         });
     }
 
+    /**
+     * OK button click handler. Executes the OK callback and hides the form.
+     * @param evt MouseEvent object.
+     */
     private function onOk(evt:MouseEvent):Void {
         this.onOkOut(null);
         this.onCancelOut(null);
@@ -297,6 +356,10 @@ class FormContraption extends Sprite {
         GlobalPlayer.contraptions.hideForm();
     }
 
+    /**
+     * OK button mouse‑over handler. Applies a highlight glow if highlighting is enabled.
+     * @param evt MouseEvent object.
+     */
     private function onOkOver(evt:MouseEvent):Void {
         if (GlobalPlayer.cursorVisible) if (GlobalPlayer.mdata.highlight != '') {
             this._graphics['btok'].filters = [
@@ -305,10 +368,18 @@ class FormContraption extends Sprite {
         }
     }
 
+    /**
+     * OK button mouse‑out handler. Removes the highlight glow.
+     * @param evt MouseEvent object.
+     */
     private function onOkOut(evt:MouseEvent):Void {
         this._graphics['btok'].filters = [ ];
     }
 
+    /**
+     * Cancel button click handler. Executes the Cancel callback and hides the form.
+     * @param evt MouseEvent object.
+     */
     private function onCancel(evt:MouseEvent):Void {
         this.onOkOut(null);
         this.onCancelOut(null);
@@ -317,6 +388,10 @@ class FormContraption extends Sprite {
         GlobalPlayer.contraptions.hideForm();
     }
 
+    /**
+     * Cancel button mouse‑over handler. Applies a highlight glow if highlighting is enabled.
+     * @param evt MouseEvent object.
+     */
     private function onCancelOver(evt:MouseEvent):Void {
         if (GlobalPlayer.cursorVisible) if (GlobalPlayer.mdata.highlight != '') {
             this._graphics['btcancel'].filters = [
@@ -325,17 +400,31 @@ class FormContraption extends Sprite {
         }
     }
 
+    /**
+     * Cancel button mouse‑out handler. Removes the highlight glow.
+     * @param evt MouseEvent object.
+     */
     private function onCancelOut(evt:MouseEvent):Void {
         this._graphics['btcancel'].filters = [ ];
     }
 }
 
+/**
+ * Structure defining a single form element.
+ */
 typedef FormElem = {
+    /** Element name (used to reference it in `setValue`/`getValue`). */
     var name:String;
+    /** Element type: 'background', 'btok', 'btcancel', 'input', 'select', 'toggle', 'numeric', 'password', 'textarea'. */
     var type:String;
+    /** Path or URL to an image file (for background, btok, btcancel). */
     var file:String;
+    /** Semicolon‑separated list of options (for 'select' type). */
     var options:String;
+    /** Width of the input element in pixels. */
     var width:Int;
+    /** X coordinate of the element. */
     var x:Int;
+    /** Y coordinate of the element. */
     var y:Int;
 }

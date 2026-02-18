@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<!-- HAXE/OpenFL project descriptor -->
+	<meta title="TilBuci" package="br.com.tilbuci" version="1.0.0" company="VAR" />
+	<app main="Main" path="app/Export" file="TilBuci" preloader="Preloader" />
+	<window background="#000000" />
+	<!-- code source -->
+	<source path="app/Source" />
+	<!-- used libraries -->
+	<haxelib name="openfl" />
+	<haxelib name="actuate" />
+	<haxelib name="feathersui" />
+	<haxelib name="crypto" />
+	<haxelib name="moonshine-feathersui-text-editor" />
+	<haxelib name="hscript" />
+	<!-- assets path -->
+	<assets path="app/assets" rename="assets" />
+</project>

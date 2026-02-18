@@ -19,7 +19,7 @@ class Movie extends BaseClass
 	/**
      * TilBuci expected version
      */
-    private $version = 19;
+    private $version = 20;
     
 	/**
 	 * current movie information
@@ -95,6 +95,7 @@ class Movie extends BaseClass
 				$this->createDir('../movie/'.$id.'.movie/media/font');
 				$this->createDir('../movie/'.$id.'.movie/media/spritemap');
                 $this->createDir('../movie/'.$id.'.movie/media/strings');
+                $this->createDir('../movie/'.$id.'.movie/media/snippets');
                 $this->createDir('../movie/'.$id.'.movie/media/dialogues');
 				$this->createDir('../movie/'.$id.'.movie/scene');
 				$this->createDir('../movie/'.$id.'.movie/collection');
@@ -214,6 +215,7 @@ class Movie extends BaseClass
 			if ($ok && !is_dir('../movie/'.$id.'.movie/media/font')) if (!$this->createDir('../movie/'.$id.'.movie/media/font')) $ok = false;
 			if ($ok && !is_dir('../movie/'.$id.'.movie/media/spritemap')) if (!$this->createDir('../movie/'.$id.'.movie/media/spritemap')) $ok = false;
             if ($ok && !is_dir('../movie/'.$id.'.movie/media/strings')) if (!$this->createDir('../movie/'.$id.'.movie/media/strings')) $ok = false;
+            if ($ok && !is_dir('../movie/'.$id.'.movie/media/snippets')) if (!$this->createDir('../movie/'.$id.'.movie/media/snippets')) $ok = false;
             if ($ok && !is_dir('../movie/'.$id.'.movie/media/dialogues')) if (!$this->createDir('../movie/'.$id.'.movie/media/dialogues')) $ok = false;
 			if ($ok && !is_dir('../movie/'.$id.'.movie/scene')) if (!$this->createDir('../movie/'.$id.'.movie/scene')) $ok = false;
 			if ($ok && !is_dir('../movie/'.$id.'.movie/collection')) if (!$this->createDir('../movie/'.$id.'.movie/collection')) $ok = false;
@@ -241,6 +243,10 @@ class Movie extends BaseClass
                     $ckt = $this->queryAll('SELECT st_file, st_content FROM strings WHERE st_movie=:mv', [':mv' => $id]);
                     foreach ($ckt as $t) {
                         file_put_contents(('../movie/'.$id.'.movie/media/strings/' . $t['st_file'] . '.json'), gzdecode(base64_decode($t['st_content'])));
+                    } 
+                    $ckt = $this->queryAll('SELECT sn_file, sn_content FROM snippets WHERE sn_movie=:mv', [':mv' => $id]);
+                    foreach ($ckt as $t) {
+                        file_put_contents(('../movie/'.$id.'.movie/media/snippets/' . $t['sn_file'] . '.json'), gzdecode(base64_decode($t['sn_content'])));
                     }                  
                 } else {
                     // save movie file
@@ -261,6 +267,10 @@ class Movie extends BaseClass
                         foreach ($ckt as $t) {
                             file_put_contents(('../movie/'.$id.'.movie/media/strings/' . $t['st_file'] . '.json'), $this->encryptTBFile($this->info['id'], gzdecode(base64_decode($t['st_content']))));
                         }
+                        $ckt = $this->queryAll('SELECT sn_file, sn_content FROM snippets WHERE sn_movie=:mv', [':mv' => $id]);
+                        foreach ($ckt as $t) {
+                            file_put_contents(('../movie/'.$id.'.movie/media/snippets/' . $t['sn_file'] . '.json'), $this->encryptTBFile($this->info['id'], gzdecode(base64_decode($t['sn_content']))));
+                        }
                     } else {
                         file_put_contents(('../movie/'.$id.'.movie/movie.json'), json_encode($this->info));
                         if (count($ckt) > 0) {
@@ -277,6 +287,10 @@ class Movie extends BaseClass
                         $ckt = $this->queryAll('SELECT st_file, st_content FROM strings WHERE st_movie=:mv', [':mv' => $id]);
                         foreach ($ckt as $t) {
                             file_put_contents(('../movie/'.$id.'.movie/media/strings/' . $t['st_file'] . '.json'), gzdecode(base64_decode($t['st_content'])));
+                        }
+                        $ckt = $this->queryAll('SELECT sn_file, sn_content FROM snippets WHERE sn_movie=:mv', [':mv' => $id]);
+                        foreach ($ckt as $t) {
+                            file_put_contents(('../movie/'.$id.'.movie/media/snippets/' . $t['sn_file'] . '.json'), gzdecode(base64_decode($t['sn_content'])));
                         }
                     }
                 }
@@ -1577,6 +1591,7 @@ class Movie extends BaseClass
                                             if (!is_dir('../movie/'.$movie.'.movie/media/font')) !$this->createDir('../movie/'.$movie.'.movie/media/font');
                                             if (!is_dir('../movie/'.$movie.'.movie/media/spritemap')) !$this->createDir('../movie/'.$movie.'.movie/media/spritemap');
                                             if (!is_dir('../movie/'.$movie.'.movie/media/strings')) !$this->createDir('../movie/'.$movie.'.movie/media/strings');
+                                            if (!is_dir('../movie/'.$movie.'.movie/media/snippets')) !$this->createDir('../movie/'.$movie.'.movie/media/snippets');
                                             if (!is_dir('../movie/'.$movie.'.movie/media/dialogues')) !$this->createDir('../movie/'.$movie.'.movie/media/dialogues');
                                             
                                             // string files
@@ -1591,6 +1606,27 @@ class Movie extends BaseClass
                                                                 ':fl' => $name, 
                                                             ]);
                                                             $this->execute('INSERT INTO strings (st_movie, st_file, st_content) VALUES (:mv, :fl, :ct)', [
+                                                                ':mv' => $movie, 
+                                                                ':fl' => $name, 
+                                                                ':ct' => base64_encode(gzencode($content)), 
+                                                            ]);
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            // snippets files
+                                            if ($handle = opendir('../movie/'.$movie.'.movie/media/snippets')) {
+                                                while (false !== ($file = readdir($handle))) {
+                                                    if (($file != '.') && ($file != '..')) {
+                                                        $name = str_replace('.json', '', $file);
+                                                        $content = file_get_contents('../movie/'.$movie.'.movie/media/snippets/'.$file);
+                                                        if ($content !== false) {
+                                                            $this->execute('DELETE FROM snippets WHERE sn_movie=:mv AND sn_file=:fl', [
+                                                                ':mv' => $movie, 
+                                                                ':fl' => $name, 
+                                                            ]);
+                                                            $this->execute('INSERT INTO snippets (sn_movie, sn_file, sn_content) VALUES (:mv, :fl, :ct)', [
                                                                 ':mv' => $movie, 
                                                                 ':fl' => $name, 
                                                                 ':ct' => base64_encode(gzencode($content)), 
@@ -1660,9 +1696,9 @@ class Movie extends BaseClass
                             $embedft = [ ];
                             $ck = $this->queryAll('SELECT * FROM fonts');
                             foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/site-'.$movie.'/assets/' . $v['fn_file']));
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/site-'.$movie.'/assetsrt/' . $v['fn_file']));
                             }
                             $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
                             if (count($ck) > 0) {
@@ -1671,9 +1707,9 @@ class Movie extends BaseClass
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         foreach ($json as $k => $v) {
                                             if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/site-'.$movie.'/assets/' . $v['file']));
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/site-'.$movie.'/assetsrt/' . $v['file']));
                                             }
                                         }
                                     }
@@ -1805,11 +1841,12 @@ class Movie extends BaseClass
                             ], $index);
                             file_put_contents('../../export/site-'.$movie.'/index.html', $index);
                             // runtime
-                            if ($mode == 'dom') {
+                            @copy('../../export/runtimes/website.js', ('../../export/site-'.$movie.'/TilBuci.js'));
+                            /*if ($mode == 'dom') {
                                 @copy('../../export/runtimes/website-dom.js', ('../../export/site-'.$movie.'/TilBuci.js'));
                             } else {
                                 @copy('../../export/runtimes/website-webgl.js', ('../../export/site-'.$movie.'/TilBuci.js'));
-                            }
+                            }*/
                             // iframe?
                             if ($iframe) {
                                 $ifcontent = file_get_contents('../../export/iframe/iframe.html');
@@ -1967,10 +2004,10 @@ class Movie extends BaseClass
                             $embedft = [ ];
                             $ck = $this->queryAll('SELECT * FROM fonts');
                             foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/pwa-'.$movie.'/assets/' . $v['fn_file']));
-                                $offline[] = $url . 'assets/' . $v['fn_file'];
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/pwa-'.$movie.'/assetsrt/' . $v['fn_file']));
+                                $offline[] = $url . 'assetsrt/' . $v['fn_file'];
                             }
                             $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
                             if (count($ck) > 0) {
@@ -1979,10 +2016,10 @@ class Movie extends BaseClass
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         foreach ($json as $k => $v) {
                                             if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/pwa-'.$movie.'/assets/' . $v['file']));
-                                                $offline[] = $url . 'assets/' . $v['file'];
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/pwa-'.$movie.'/assetsrt/' . $v['file']));
+                                                $offline[] = $url . 'assetsrt/' . $v['file'];
                                             }
                                         }
                                     }
@@ -2227,9 +2264,9 @@ class Movie extends BaseClass
                             $embedft = [ ];
                             $ck = $this->queryAll('SELECT * FROM fonts');
                             foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/publish-'.$movie.'/assets/' . $v['fn_file']));
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/publish-'.$movie.'/assetsrt/' . $v['fn_file']));
                             }
                             $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
                             if (count($ck) > 0) {
@@ -2238,9 +2275,9 @@ class Movie extends BaseClass
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         foreach ($json as $k => $v) {
                                             if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/publish-'.$movie.'/assets/' . $v['file']));
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/publish-'.$movie.'/assetsrt/' . $v['file']));
                                             }
                                         }
                                     }
@@ -2445,7 +2482,7 @@ class Movie extends BaseClass
                     @copy('../../export/desktop/macos-setup.sh', '../../export/desktop-'.$movie.'/'.$movie.'/macos-setup.sh');
                     
                     // other files
-                    $this->copyDir(('../../export/desktop/assets'), ('../../export/desktop-'.$movie.'/'.$movie.'/assets'));
+                    $this->copyDir(('../../export/desktop/assetsrt'), ('../../export/desktop-'.$movie.'/'.$movie.'/assetsrt'));
                     $this->copyDir(('../../export/desktop/lib'), ('../../export/desktop-'.$movie.'/'.$movie.'/lib'));
                     $this->copyDir(('../../export/desktop/manifest'), ('../../export/desktop-'.$movie.'/'.$movie.'/manifest'));
 
@@ -2479,9 +2516,9 @@ class Movie extends BaseClass
                     $embedft = [ ];
                     $ckf = $this->queryAll('SELECT * FROM fonts');
                     foreach ($ckf as $v) {
-                        $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                        $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                        @copy(('../font/' . $v['fn_file']), ('../../export/desktop-'.$movie.'/'.$movie.'/assets/' . $v['fn_file']));
+                        $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                        $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                        @copy(('../font/' . $v['fn_file']), ('../../export/desktop-'.$movie.'/'.$movie.'/assetsrt/' . $v['fn_file']));
                     }
                     $ckf = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
                     if (count($ckf) > 0) {
@@ -2490,9 +2527,9 @@ class Movie extends BaseClass
                             if (json_last_error() == JSON_ERROR_NONE) {
                                 foreach ($json as $k => $v) {
                                     if (isset($v['name']) && isset($v['file'])) {
-                                        $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                        $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                        @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/desktop-'.$movie.'/'.$movie.'/assets/' . $v['file']));
+                                        $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                        $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                        @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/desktop-'.$movie.'/'.$movie.'/assetsrt/' . $v['file']));
                                     }
                                 }
                             }
@@ -2650,9 +2687,9 @@ class Movie extends BaseClass
                             $embedft = [ ];
                             $ck = $this->queryAll('SELECT * FROM fonts');
                             foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assets/' . $v['fn_file']));
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assetsrt/' . $v['fn_file']));
                             }
                             $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
                             if (count($ck) > 0) {
@@ -2661,9 +2698,9 @@ class Movie extends BaseClass
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         foreach ($json as $k => $v) {
                                             if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assets/' . $v['file']));
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assetsrt/' . $v['file']));
                                             }
                                         }
                                     }
@@ -2891,9 +2928,9 @@ class Movie extends BaseClass
                             $embedft = [ ];
                             $ck = $this->queryAll('SELECT * FROM fonts');
                             foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assets/' . $v['fn_file']));
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assetsrt/' . $v['fn_file']));
                             }
                             $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
                             if (count($ck) > 0) {
@@ -2902,9 +2939,9 @@ class Movie extends BaseClass
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         foreach ($json as $k => $v) {
                                             if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assets/' . $v['file']));
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assetsrt/' . $v['file']));
                                             }
                                         }
                                     }
@@ -3614,6 +3651,149 @@ class Movie extends BaseClass
             }
         } else {
             return (1);
+        }
+    }
+
+    /**
+     * List available dynamic snippets groups.
+     * @param   string  $user   request user
+     * @param   string  $movie  the movie id
+     * @return  array|bool  the snippet gourps list or false if it was not loaded
+     */
+    public function listSnippets($user, $movie) {
+        $ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id AND (mv_user=:user OR mv_collaborators LIKE :col)', [
+            ':id' => $movie, 
+            ':user' => $user, 
+            ':col' => '%' . trim($user) . '%', 
+        ]);
+        if (count($ck) > 0) {
+            // listing snippets
+            $list = [ ];
+            if (!is_dir('../movie/'.$movie.'.movie/media/snippets')) $this->createDir('../movie/'.$movie.'.movie/media/snippets');
+            if ($handle = opendir('../movie/'.$movie.'.movie/media/snippets')) {
+                while (false !== ($file = readdir($handle))) {
+                    if (($file != '.') && ($file != '..')) {
+                        $list[] = str_replace('.json', '', $file);
+                    }
+                }
+            }
+            return ($list);
+        } else {
+            return (false);
+        }
+    }
+
+    /**
+     * Save a group of dynamic snippets.
+     * @param   string  $user   request user
+     * @param   string  $movie  the movie id
+     * @param   string  $name   the group name
+     * @param   string  $code   the group snippets code
+     * @return  array|bool  the vailable snippet groups list or false if it was not loaded
+     */
+    public function saveSnippets($user, $movie, $name, $code) {
+        $ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id AND (mv_user=:user OR mv_collaborators LIKE :col)', [
+            ':id' => $movie, 
+            ':user' => $user, 
+            ':col' => '%' . trim($user) . '%', 
+        ]);
+        if (count($ck) > 0) {
+            if ($this->loadMovie($movie)) {
+                // saving snippets
+                $name = trim(str_replace(' ', '', $name));
+                $this->execute('DELETE FROM snippets WHERE sn_movie=:mv AND sn_file=:fl', [
+                    ':mv' => $movie, 
+                    ':fl' => $name, 
+                ]);
+                $this->execute('INSERT INTO snippets (sn_movie, sn_file, sn_content) VALUES (:mv, :fl, :ct)', [
+                    ':mv' => $movie, 
+                    ':fl' => $name, 
+                    ':ct' => base64_encode(gzencode($code)), 
+                ]);
+                // saving file
+                if ($this->info['encrypted']) {
+                    file_put_contents(('../movie/'.$movie.'.movie/media/snippets/' . $name . '.json'), $this->encryptTBFile($this->info['id'], $code));
+                } else {
+                    file_put_contents(('../movie/'.$movie.'.movie/media/snippets/' . $name . '.json'), $code);
+                }
+                // listing snippets
+                $list = [ ];
+                if (!is_dir('../movie/'.$movie.'.movie/media/snippets')) $this->createDir('../movie/'.$movie.'.movie/media/snippets');
+                if ($handle = opendir('../movie/'.$movie.'.movie/media/snippets')) {
+                    while (false !== ($file = readdir($handle))) {
+                        if (($file != '.') && ($file != '..')) {
+                            $list[] = str_replace('.json', '', $file);
+                        }
+                    }
+                }
+                return ($list);
+            } else {
+                return (false);
+            }
+            
+        } else {
+            return (false);
+        }
+    }
+
+    /**
+     * Load a group of dynamic snippets.
+     * @param   string  $user   request user
+     * @param   string  $movie  the movie id
+     * @param   string  $name   the group name
+     * @return  string|bool  the snippet group code or false if it was not loaded
+     */
+    public function loadSnippets($user, $movie, $name) {
+        $ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id AND (mv_user=:user OR mv_collaborators LIKE :col)', [
+            ':id' => $movie, 
+            ':user' => $user, 
+            ':col' => '%' . trim($user) . '%', 
+        ]);
+        if (count($ck) > 0) {
+            $ck2 = $this->queryAll('SELECT sn_content FROM snippets WHERE sn_movie=:mv AND sn_file=:fl', [
+                ':mv' => $movie, 
+                ':fl' => $name, 
+            ]);
+            if (count($ck2) == 0) {
+                return (false);
+            } else {
+                return (gzdecode(base64_decode($ck2[0]['sn_content'])));
+            }
+        } else {
+            return (false);
+        }
+    }
+
+    /**
+     * Remove a group of dynamic snippets.
+     * @param   string  $user   request user
+     * @param   string  $movie  the movie id
+     * @param   string  $name   the group name
+     */
+    public function removeSnippets($user, $movie, $name) {
+        $ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id AND (mv_user=:user OR mv_collaborators LIKE :col)', [
+            ':id' => $movie, 
+            ':user' => $user, 
+            ':col' => '%' . trim($user) . '%', 
+        ]);
+        if (count($ck) > 0) {
+            $this->execute('DELETE FROM snippets WHERE sn_movie=:mv AND sn_file=:fl', [
+                ':mv' => $movie, 
+                ':fl' => $name, 
+            ]);
+            if (!is_dir('../movie/'.$movie.'.movie/media/snippets')) $this->createDir('../movie/'.$movie.'.movie/media/snippets');
+            if (is_file('../movie/'.$movie.'.movie/media/snippets/' . $name . '.json')) @unlink('../movie/'.$movie.'.movie/media/snippets/' . $name . '.json');
+            $list = [ ];
+            if ($handle = opendir('../movie/'.$movie.'.movie/media/snippets')) {
+                while (false !== ($file = readdir($handle))) {
+                    if (($file != '.') && ($file != '..')) {
+                        $list[] = str_replace('.json', '', $file);
+                    }
+                }
+            }
+            return ($list);
+        } else {
+            return (false);
         }
     }
 

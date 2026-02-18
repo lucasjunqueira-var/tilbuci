@@ -168,6 +168,7 @@ if ($render == '') {
 	?>
     <?php if ($nocache == '') { ?>
         <script type="text/javascript" src="./TilBuci<?= $render ?>-min.js?rd=<?= $version ?>"></script>
+		<script type="text/javascript" src="./externs.js?rd=<?= $version ?>"></script>
     <?php } else { ?>
         <script type="text/javascript" src="./TilBuci<?= $render ?>.js<?= $nocache ?>"></script>
     <?php } ?>

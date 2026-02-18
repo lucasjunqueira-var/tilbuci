@@ -1,0 +1,4 @@
+ALTER TABLE `movies` ADD `mv_narrative` LONGTEXT NULL; 
+CREATE TABLE IF NOT EXISTS `strings` (`st_id` INT NOT NULL AUTO_INCREMENT , `st_movie` VARCHAR(32) NOT NULL , `st_file` VARCHAR(128) NOT NULL , `st_content` LONGTEXT NULL , PRIMARY KEY (`st_id`), INDEX (`st_movie`), INDEX (`st_file`)); 
+CREATE TABLE IF NOT EXISTS `dialogues` (`dg_id` INT NOT NULL AUTO_INCREMENT , `dg_movie` VARCHAR(32) NOT NULL , `dg_name` VARCHAR(64) NOT NULL , `dg_content` LONGTEXT NULL , PRIMARY KEY (`dg_id`), INDEX (`dg_movie`), INDEX (`dg_name`)); 
+INSERT INTO config (cf_key, cf_value) VALUES ('dbVersion', '14') ON DUPLICATE KEY UPDATE cf_value=VALUES(cf_value);

@@ -60,9 +60,11 @@ class SharePlugin extends Plugin {
     }
 
     /**
-        Opens a facebook share link.
-        @param  param   the strings to trace
-        @return always true
+        Opens a Facebook share dialog for the current movie or scene.
+        @param param Array of strings where:
+            - param[0]: if true, shares the movie URL; otherwise uses the global share setting.
+        @param after AfterScript (unused).
+        @return Always true.
     **/
     private function acFacebook(param:Array<String>, after:AfterScript):Bool {
         if ((param.length > 0) && (this._access.parser.parseBool(param[0]))) {
@@ -82,9 +84,11 @@ class SharePlugin extends Plugin {
     }
 
     /**
-        Opens a linkedin share link.
-        @param  param   the strings to trace
-        @return always true
+        Opens a LinkedIn share dialog for the current movie or scene.
+        @param param Array of strings where:
+            - param[0]: if true, shares the movie URL; otherwise uses the global share setting.
+        @param after AfterScript (unused).
+        @return Always true.
     **/
     private function acLinkedin(param:Array<String>, after:AfterScript):Bool {
         if ((param.length > 0) && (this._access.parser.parseBool(param[0]))) {
@@ -104,9 +108,11 @@ class SharePlugin extends Plugin {
     }
 
     /**
-        Opens a pinterest share link.
-        @param  param   the strings to trace
-        @return always true
+        Opens a Pinterest share dialog for the current movie or scene.
+        @param param Array of strings where:
+            - param[0]: if true, shares the movie URL; otherwise uses the global share setting.
+        @param after AfterScript (unused).
+        @return Always true.
     **/
     private function acPinterest(param:Array<String>, after:AfterScript):Bool {
         if ((param.length > 0) && (this._access.parser.parseBool(param[0]))) {
@@ -126,9 +132,11 @@ class SharePlugin extends Plugin {
     }
 
     /**
-        Opens a reddit share link.
-        @param  param   the strings to trace
-        @return always true
+        Opens a Reddit submit dialog for the current movie or scene.
+        @param param Array of strings where:
+            - param[0]: if true, shares the movie URL; otherwise uses the global share setting.
+        @param after AfterScript (unused).
+        @return Always true.
     **/
     private function acReddit(param:Array<String>, after:AfterScript):Bool {
         if ((param.length > 0) && (this._access.parser.parseBool(param[0]))) {
@@ -148,9 +156,11 @@ class SharePlugin extends Plugin {
     }
 
     /**
-        Opens a x share link.
-        @param  param   the strings to trace
-        @return always true
+        Opens a Twitter (X) share dialog for the current movie or scene.
+        @param param Array of strings where:
+            - param[0]: if true, shares the movie URL; otherwise uses the global share setting.
+        @param after AfterScript (unused).
+        @return Always true.
     **/
     private function acX(param:Array<String>, after:AfterScript):Bool {
         if ((param.length > 0) && (this._access.parser.parseBool(param[0]))) {

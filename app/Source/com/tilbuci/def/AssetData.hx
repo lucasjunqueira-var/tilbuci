@@ -123,7 +123,7 @@ class AssetData {
     }
 
     /**
-        Gets a clen representation of current asset.
+        Gets a clean representation of current asset.
     **/
     public function toObject():Dynamic {
         return({

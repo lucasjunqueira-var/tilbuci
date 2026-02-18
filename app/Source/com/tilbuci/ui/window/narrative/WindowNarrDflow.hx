@@ -126,9 +126,6 @@ class WindowNarrDflow extends PopupWindow {
             PopUpManager.removePopUp(this);
         } else{
             if (ld.map['e'] == 0) {
-
-                trace ('recuperado', ld.map);
-
                 var ar:Array<Dynamic> = cast ld.map['list'];
                 if (ar.length == 0) {
                     Global.showMsg(Global.ln.get('window-narrdflow-nooption'));
@@ -162,10 +159,18 @@ class WindowNarrDflow extends PopupWindow {
         }
     }
 
+    /**
+        Action for the button image browse button.
+        @param  evt The trigger event
+    **/
     private function acImgbt(evt:Event):Void {
         this._ac('dflowbrowseimgbt');
     }
 
+    /**
+        Action for the button image delete button.
+        @param  evt The trigger event
+    **/
     private function acImgbtdel(evt:Event):Void {
         this.ui.inputs['imgbt'].text = '';
     }
@@ -217,6 +222,11 @@ class WindowNarrDflow extends PopupWindow {
         }
     }
 
+    /**
+        Called when a scene is selected in the scenes list.
+        Updates the options list with the decision flow options of the selected scene.
+        @param  evt The selection event
+    **/
     private function sceneSelected(evt:Event):Void {
         if (this.ui.lists['scenes'].selectedItem != null) {
             var list:Array<Dynamic> = [ ];
@@ -231,6 +241,10 @@ class WindowNarrDflow extends PopupWindow {
         }
     }
 
+    /**
+        Loads the selected scene into the player.
+        @param  evt The trigger event
+    **/
     private function onScene(evt:Event):Void {
         if (this.ui.lists['scenes'].selectedItem != null) {
             var sco:SceneDFOptions = cast this.ui.lists['scenes'].selectedItem.value;
@@ -241,6 +255,10 @@ class WindowNarrDflow extends PopupWindow {
         }
     }
 
+    /**
+        Loads the selected decision flow option (scene) into the player.
+        @param  evt The trigger event
+    **/
     private function onOption(evt:Event):Void {
         if (this.ui.lists['options'].selectedItem != null) {
             GlobalPlayer.area.imgSelect();
@@ -250,6 +268,16 @@ class WindowNarrDflow extends PopupWindow {
 
 }
 
+/**
+    Data structure representing a scene with decision flow options.
+    Used to store scene information and its up to four decision flow choices.
+    @field id The scene identifier
+    @field title The scene title
+    @field df1 First decision flow option: [label, sceneId]
+    @field df2 Second decision flow option: [label, sceneId]
+    @field df3 Third decision flow option: [label, sceneId]
+    @field df4 Fourth decision flow option: [label, sceneId]
+**/
 typedef SceneDFOptions = {
     var id: String;
     var title:String;

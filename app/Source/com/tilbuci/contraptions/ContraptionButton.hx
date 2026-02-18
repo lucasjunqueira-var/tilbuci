@@ -17,16 +17,31 @@ import com.tilbuci.display.PictureImage;
 import openfl.display.Sprite;
 import openfl.text.TextFormatAlign;
 
+/**
+    A button used in contraptions (menus, decision flows, etc.) with an image and text.
+    Supports hover highlighting and click actions.
+*/
 class ContraptionButton extends Sprite {
 
     private var _img:PictureImage;
 
     private var _text:TextField;
 
+    /** The value associated with this button, passed to the action callback when clicked. */
     public var value:String;
 
     private var _ac:Dynamic;
 
+    /**
+        Creates a new ContraptionButton.
+        @param val The value associated with the button.
+        @param action Callback function invoked with `val` when the button is clicked.
+        @param image Path or identifier for the button's background image.
+        @param text Display text (supports parser variables).
+        @param font Font family name.
+        @param ftsize Font size in pixels.
+        @param ftcolor Font color as integer (e.g., 0xFFFFFF).
+    */
     public function new(val:String, action:Dynamic, image:String, text:String, font:String, ftsize:Int, ftcolor:Int) {
         super();
 
@@ -57,6 +72,9 @@ class ContraptionButton extends Sprite {
         this.addEventListener(MouseEvent.CLICK, onClick);
     }
 
+    /**
+        Destroys the button, removing all event listeners and releasing resources.
+    */
     public function kill():Void {
         this.removeChildren();
         if (this.hasEventListener(MouseEvent.MOUSE_OVER)) {

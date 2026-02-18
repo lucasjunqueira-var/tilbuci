@@ -145,6 +145,11 @@ class ScriptParser {
     private var _stringfile:Map<String, String> = [ ];
 
     /**
+        string parameters for action snippets
+    **/
+    private var _snpParam:Array<String> = [ '', '', '', '', '', '', '' ];
+
+    /**
         currently loaded dialogue group
     **/
     private var _currDiag:String = '';
@@ -153,6 +158,16 @@ class ScriptParser {
         currently loaded dialogue
     **/
     private var _diagInfo:DialogueNarrative;
+
+    /**
+        loaded dynamic code snippets
+    **/
+    private var _dSnippets:Map<String, Array<DynamicSnippet>> = [ ];
+
+    /**
+        current snippets group
+    **/
+    private var _sngroup:String = '';
 
     /**
         instance being dragged
@@ -205,11 +220,13 @@ class ScriptParser {
             this._arrays[k].kill();
             this._arrays.remove(k);
         }
+        for (k in this._dSnippets.keys()) this._dSnippets.remove(k);
         this._strings = null;
         this._floats = null;
         this._ints = null;
         this._bools = null;
         this._arrays = null;
+        this._dSnippets = null;
         while (this.available.length > 0) {
             var ag:ActionGroup = this.available.shift();
             while (ag.a.length > 0) {
@@ -328,6 +345,24 @@ class ScriptParser {
             for (k in ld.map.keys()) this._stringfile[k] = ld.map[k];
             if (this._acOk != null) this.run(this._acOk, true);
         } else {
+            if (this._acError != null) this.run(this._acError, true);
+        }
+    }
+
+    /**
+        A snippets group file was just loaded.
+    **/
+    public function onSnippetFile(ok:Bool, ld:DataLoader):Void {
+        if (ok && (this._sngroup != '')) {
+            this._dSnippets[this._sngroup] = [ ];
+            for (k in ld.map.keys()) this._dSnippets[this._sngroup].push({
+                name: k, 
+                code: Std.string(ld.map[k])
+            });
+            this._sngroup = '';
+            if (this._acOk != null) this.run(this._acOk, true);
+        } else {
+            this._sngroup = '';
             if (this._acError != null) this.run(this._acError, true);
         }
     }
@@ -2275,13 +2310,63 @@ class ScriptParser {
                         GlobalPlayer.style.clear();
                         return (true);
 
-                    // named actions
+                    // action snippets
                     case 'run':
-                        if (GlobalPlayer.mvActions.exists(this.parseString(param[0]))) {
-                            return (this.run(GlobalPlayer.mvActions[this.parseString(param[0])]));
+                        if (param.length > 0) {
+                            this._snpParam = [ '', '', '', '', '', '', '' ];
+                            if (param.length >= 2) this._snpParam[0] = param[1];
+                            if (param.length >= 3) this._snpParam[1] = param[2];
+                            if (param.length >= 4) this._snpParam[2] = param[3];
+                            if (param.length >= 5) this._snpParam[3] = param[4];
+                            if (param.length >= 6) this._snpParam[4] = param[5];
+                            if (param.length >= 7) this._snpParam[5] = param[6];
+                            if (param.length >= 8) this._snpParam[6] = param[7];
+                            var found:String = '';
+                            for (k in this._dSnippets.keys()) {
+                                for (s in this._dSnippets[k]) {
+                                    if (s.name == this.parseString(param[0])) {
+                                        found = s.code;
+                                    }
+                                }
+                            }
+                            if (found == '') {
+                                if (GlobalPlayer.mvActions.exists(this.parseString(param[0]))) {
+                                    return (this.run(GlobalPlayer.mvActions[this.parseString(param[0])]));
+                                } else {
+                                    return (false);
+                                }
+                            } else {
+                                return (this.run(found));
+                            }
                         } else {
                             return (false);
                         }
+                    case 'snippets.load':
+                        if (param.length > 0) {
+                            this._acOk = this._acError = null;
+                            if (Reflect.hasField(inf, 'success')) this._acOk = Reflect.field(inf, 'success');
+                            if (Reflect.hasField(inf, 'error')) this._acError = Reflect.field(inf, 'error');
+                            var cache:Map<String, Dynamic> = null;
+                            if (GlobalPlayer.nocache) cache = [ 'rand' => Math.ceil(Math.random()*10000) ];
+                            this._sngroup = this.parseString(param[0]);
+                            new DataLoader(true, (GlobalPlayer.path + 'media/snippets/' + this.parseString(param[0]) + '.json'), 'GET', cache, DataLoader.MODEMAP, onSnippetFile);
+                            return (true);
+                        } else {
+                            if (Reflect.hasField(inf, 'error')) {
+                                this.run(Reflect.field(inf, 'error'), true);
+                            }
+                            return (false);
+                        }
+                    case 'snippets.unload':
+                        if (param.length > 0) {
+                            if (this._dSnippets.exists(this.parseString(param[0]))) {
+                                this._dSnippets.remove(this.parseString(param[0]));
+                            }
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                        
 
                     // input
                     case 'target.show':
@@ -4123,6 +4208,23 @@ class ScriptParser {
                 } else {
                     return ('');
                 }
+            } else if (str.substr(0, 7) == "$_PARAM") {
+                var arstr:Array<String> = str.split(':');
+                if (arstr.length == 2) {
+                    switch (arstr[1]) {
+                        case '1': return (this._snpParam[0]);
+                        case '2': return (this._snpParam[1]);
+                        case '3': return (this._snpParam[2]);
+                        case '4': return (this._snpParam[3]);
+                        case '5': return (this._snpParam[4]);
+                        case '6': return (this._snpParam[5]);
+                        case '7': return (this._snpParam[6]);
+                        default: return('');
+                    }
+                    return (GlobalPlayer.contraptions.getFormValue(arstr[1]));
+                } else {
+                    return ('');
+                }
             } else if ((this._jsongropup != '') && this._stringsjson.exists(this._jsongropup) && this._stringsjson[this._jsongropup].exists(str)) {
                 return(this._stringsjson[this._jsongropup][str]);
             } else {
@@ -4766,6 +4868,14 @@ typedef AfterScript = {
     var onend:Dynamic;
     var onsuccess:Dynamic;
     var onerror:Dynamic;
+}
+
+/**
+    Dynamic conde snippet.
+**/
+typedef DynamicSnippet = {
+    var name:String;
+    var code:String;
 }
 
 /**

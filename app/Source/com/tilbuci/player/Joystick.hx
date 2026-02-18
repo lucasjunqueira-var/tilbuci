@@ -31,6 +31,10 @@ class Joystick {
     private var _counterd:Int = 0;
     private var _directionclick:Array<Bool> = [ true, true, true, true ];
 
+    /**
+        Creates a new Joystick instance for game controller support.
+        Initializes GameInput and sets up event listeners for device addition/removal.
+    **/
     public function new() {
         this._gameInput = new GameInput();
         this._gameInput.addEventListener(GameInputEvent.DEVICE_ADDED, onDeviceAdded);

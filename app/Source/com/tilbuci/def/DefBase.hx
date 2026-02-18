@@ -9,7 +9,7 @@
 class DefBase {
 
     /**
-        requered feilds on loaded maps
+        required fields on loaded maps
     **/
     public var reqFields:Array<String> = [ ];
 
@@ -24,7 +24,7 @@ class DefBase {
     /**
         Checks if the required fields exist on a map.
         @param  data    the map to check
-        @return were all feidls found at the map?
+        @return were all fields found at the map?
     **/
     public function checkFields(data:Map<String, Dynamic>):Bool {
         var ok = true;

@@ -19,26 +19,40 @@ import com.tilbuci.data.GlobalPlayer;
 import com.tilbuci.statictools.StringStatic;
 import openfl.display.Sprite;
 
+/**
+ * A contraption that displays an inventory panel with key items and consumables.
+ * Supports horizontal and vertical layouts, close button, and interactive item boxes.
+ */
 class InventoryContraption extends Sprite {
 
+    /** Indicates whether the contraption is properly loaded and ready. */
     public var ok:Bool = false;
 
+    /** Unique identifier for this inventory contraption. */
     public var id:String;
 
+    /** Font family used for item labels. Default 'sans'. */
     public var font:String = 'sans';
 
+    /** Font color in hexadecimal string (e.g., '0xffffff'). */
     public var fontcolor:String = '0xffffff';
 
+    /** Font size in pixels. Default 20. */
     public var fontsize:Int = 20;
 
+    /** Path or URL to the horizontal background image. */
     public var horizontal:String = '';
 
+    /** Path or URL to the vertical background image. */
     public var vertical:String = '';
 
+    /** Path or URL to the close button image. */
     public var close:String = '';
 
+    /** Display mode: 'a' (all), 'k' (key items only), 'c' (consumables only). */
     public var mode:String = 'a';
 
+    /** Sound effect to play when an item is clicked. */
     public var sound:String = '';
 
     private var _hbitmap:PictureImage;
@@ -51,6 +65,9 @@ class InventoryContraption extends Sprite {
 
     private var _rows:Array<InvItemRow> = [ ];
 
+    /**
+     * Creates a new InventoryContraption instance. Initializes three item rows.
+     */
     public function new() {
         super();
         for (i in 0...3) {
@@ -59,6 +76,11 @@ class InventoryContraption extends Sprite {
         }
     }
 
+    /**
+     * Creates the visual inventory panel, positioning backgrounds and rows according to screen orientation.
+     * @param closeac Optional callback to execute when the close button is clicked.
+     * @return This sprite instance.
+     */
     public function create(closeac:Dynamic = null):Sprite {
         this.removeChildren();
         this._cbitmap.visible = true;
@@ -81,8 +103,8 @@ class InventoryContraption extends Sprite {
             }
             for (r in this._rows) this.addChild(r);
             this._cbitmap.y = 0;
-            this.addChild(this._cbitmap); 
-            this._closeac = closeac; 
+            this.addChild(this._cbitmap);
+            this._closeac = closeac;
         }
         return (this);
     }

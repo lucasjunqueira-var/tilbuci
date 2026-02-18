@@ -1,9 +1,9 @@
 {
-    "base": "http://tilbuci/editor/",
-	"player": "http://tilbuci/",
-	"ws": "http://tilbuci/ws/",
-	"font": "http://tilbuci/font/",
-	"secret": "00000000000000000000000000000000", 
+    "base": "http:\/\/tilbuci\/editor\/",
+    "player": "http:\/\/tilbuci\/",
+    "ws": "http:\/\/tilbuci\/ws\/",
+    "font": "http:\/\/tilbuci\/font\/",
+    "secret": "09dcb0152964c46bb098eebb9e11f1ee",
     "language": [{
             "name": "English",
             "file": "default"

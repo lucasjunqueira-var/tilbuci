@@ -385,11 +385,13 @@ class WSMedia extends Webservice
 								// no file received
 								return (true);
 							}
-							
-
 						} else if ($r['type'] == 'strings') {
                             $md = new Media;
                             $md->saveStrings($r['movie'], $r['fname']);
+                            return (true);
+						} else if ($r['type'] == 'snippets') {
+                            $md = new Media;
+                            $md->saveSnippets($r['movie'], $r['fname']);
                             return (true);
                         } else {
                             return (true);

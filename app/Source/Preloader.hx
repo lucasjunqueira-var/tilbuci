@@ -10,8 +10,16 @@ import openfl.events.ProgressEvent;
 import openfl.events.Event;
 import openfl.display.Sprite;
 
+/**
+    Preloader screen displayed while assets are loading.
+    Shows a gray background with a black progress rectangle that expands as loading progresses.
+**/
 class Preloader extends Sprite {
 
+    /**
+        Constructs the preloader and sets up the initial gray background.
+        Registers event listeners for loading progress and completion.
+    **/
     public function new() {
         super();
         if (this.stage != null) {
@@ -24,6 +32,11 @@ class Preloader extends Sprite {
         this.addEventListener(ProgressEvent.PROGRESS, this.onProgress);
     }
 
+    /**
+        Called when loading progress updates.
+        Draws a black rectangle that grows proportionally to the loading progress.
+        @param evt ProgressEvent containing bytesLoaded and bytesTotal.
+    **/
     private function onProgress(evt:ProgressEvent):Void {
         if (this.stage != null) {
             this.graphics.clear();
@@ -40,6 +53,11 @@ class Preloader extends Sprite {
         }
     }
 
+    /**
+        Called when loading is complete.
+        Clears the preloader graphics and dispatches an UNLOAD event.
+        @param evt The COMPLETE event.
+    **/
     private function onComplete(evt:Event):Void {
         this.graphics.clear();
         evt.preventDefault();

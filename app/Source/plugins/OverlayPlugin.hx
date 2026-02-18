@@ -73,7 +73,14 @@ class OverlayPlugin extends Plugin {
     }
 
     /**
-        Gets a key to overlay display.
+        Requests a key from the server to display an overlay.
+        @param param Array of strings where:
+            - param[0]: URL to load in the overlay
+            - param[1]: overlay title
+            - param[2] (optional): boolean indicating whether to add GET parameters (default false)
+            - param[3..] (optional): extra data values to pass as GET parameters
+        @param after AfterScript containing success/error callbacks.
+        @return True if the request was sent, false if parameters are insufficient.
     **/
     private function getKey(param:Array<String>, after:AfterScript):Bool {
         if (param.length >= 2) {
@@ -85,10 +92,10 @@ class OverlayPlugin extends Plugin {
                     for (p in 3...param.length) data['v'+(p-2)] = this._access.parser.parseString(param[p]);
                 }
                 GlobalPlayer.ws.send('Overlay/GetKey', [
-                    'url' => this._access.parser.parseString(param[0]), 
-                    'title' => this._access.parser.parseString(param[1]), 
-                    'addget' => addget, 
-                    'data' => StringStatic.jsonStringify(data), 
+                    'url' => this._access.parser.parseString(param[0]),
+                    'title' => this._access.parser.parseString(param[1]),
+                    'addget' => addget,
+                    'data' => StringStatic.jsonStringify(data),
                 ], onKeyReturn, after);
                 return (true);
         } else {
@@ -97,7 +104,10 @@ class OverlayPlugin extends Plugin {
     }
 
     /**
-        Key request return.
+        Callback for the overlay key request.
+        If successful, stores the key and opens the overlay; otherwise triggers error callback.
+        @param ok Whether the server request succeeded.
+        @param ld DataLoader containing the server response.
     **/
     private function onKeyReturn(ok:Bool, ld:DataLoader):Void {
         var after:AfterScript = cast ld.extra;
@@ -105,9 +115,9 @@ class OverlayPlugin extends Plugin {
             if (ld.map['e'] == 0) {
                 if (ld.map['key'] != '') {
                     OverlayPlugin.overlayInfo = {
-                        key: ld.map['key'], 
-                        onerror: after.onerror, 
-                        onsuccess: after.onsuccess, 
+                        key: ld.map['key'],
+                        onerror: after.onerror,
+                        onsuccess: after.onsuccess,
                         parser: this._access.parser
                     };
                     var url:String = ld.map['url'] + '?key=' + ld.map['key'];
@@ -121,7 +131,7 @@ class OverlayPlugin extends Plugin {
                         ExternOverlay.overlay_place(url, ld.map['title']);
                     } catch (e) {  }
                 } else {
-                    if (after.onerror != null) this._access.parser.run(after.onerror, true);    
+                    if (after.onerror != null) this._access.parser.run(after.onerror, true);
                 }
             } else {
                 if (after.onerror != null) this._access.parser.run(after.onerror, true);
@@ -168,20 +178,24 @@ class OverlayPlugin extends Plugin {
     }
 
     /**
-        Exposed function to call on overlay close.
+        Exposed JavaScript function called when the overlay is closed.
+        Requests the data collected by the overlay from the server.
     **/
     @:expose('overlay_return')
     public static function overlay_return() {
         if (OverlayPlugin.overlayInfo != null) {
             // request return data
             GlobalPlayer.ws.send('Overlay/LoadKey', [
-                'key' => OverlayPlugin.overlayInfo.key, 
+                'key' => OverlayPlugin.overlayInfo.key,
             ], OverlayPlugin.onkeyLoaded);
         }
     }
 
     /**
-        Data returned from the overlay content was loaded.
+        Callback for the overlay data load request.
+        Parses the returned JSON and sets variables in the script parser, then triggers success/error callbacks.
+        @param ok Whether the server request succeeded.
+        @param ld DataLoader containing the server response.
     **/
     public static function onkeyLoaded(ok:Bool, ld:DataLoader):Void {
         if (ok) {
@@ -191,7 +205,7 @@ class OverlayPlugin extends Plugin {
                         var json:Dynamic = StringStatic.jsonParse(ld.map['ret']);
                         if (json == false) {
                             // response error
-                            if (OverlayPlugin.overlayInfo.onerror != null) OverlayPlugin.overlayInfo.parser.run(OverlayPlugin.overlayInfo.onerror, true); 
+                            if (OverlayPlugin.overlayInfo.onerror != null) OverlayPlugin.overlayInfo.parser.run(OverlayPlugin.overlayInfo.onerror, true);
                         } else {
                             // getting variables
                             for (k in Reflect.fields(json)) {
@@ -211,9 +225,9 @@ class OverlayPlugin extends Plugin {
                             }
                         }
                     }
-                    if (OverlayPlugin.overlayInfo.onsuccess != null) OverlayPlugin.overlayInfo.parser.run(OverlayPlugin.overlayInfo.onsuccess, true); 
+                    if (OverlayPlugin.overlayInfo.onsuccess != null) OverlayPlugin.overlayInfo.parser.run(OverlayPlugin.overlayInfo.onsuccess, true);
                 } else {
-                    if (OverlayPlugin.overlayInfo.onerror != null) OverlayPlugin.overlayInfo.parser.run(OverlayPlugin.overlayInfo.onerror, true);    
+                    if (OverlayPlugin.overlayInfo.onerror != null) OverlayPlugin.overlayInfo.parser.run(OverlayPlugin.overlayInfo.onerror, true);
                 }
             } else {
                 if (OverlayPlugin.overlayInfo.onerror != null) OverlayPlugin.overlayInfo.parser.run(OverlayPlugin.overlayInfo.onerror, true);

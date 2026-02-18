@@ -18,7 +18,22 @@ if (isset($_GET['a'])) {
 		$mime = '';
 		$name = '';
 		switch (trim($_GET['file'])) {
-            case 'strings':
+            case 'snippets':
+                if (isset($_GET['movie']) && isset($_GET['media'])) {
+                    $data = new Data;
+                    $media = str_replace(['.json', ' '], '', mb_strtolower($_GET['media']));
+                    $ck = $data->queryAll('SELECT sn_content FROM snippets WHERE sn_movie=:mv AND sn_file=:fl', [':mv' => $_GET['movie'], ':fl' => $media]);
+                    if (count($ck) > 0) {
+                        file_put_contents(('../../export/'.$_GET['movie'].'-snippets.json'), gzdecode(base64_decode($ck[0]['sn_content'])));
+                        $path = '../../export/'.$_GET['movie'].'-snippets.json';
+                        if (is_file($path)) {
+                            $name = $media.'.json';
+                            $mime = 'application/json';
+                        }
+                    }
+                }
+                break;
+			case 'strings':
                 if (isset($_GET['movie']) && isset($_GET['media'])) {
                     $data = new Data;
                     $media = str_replace(['.json', ' '], '', mb_strtolower($_GET['media']));

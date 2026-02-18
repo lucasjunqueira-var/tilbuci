@@ -112,6 +112,10 @@ class Player extends Sprite {
     private var _rHeight:Float = 0;
     private function get_rHeight():Float { return (this._rHeight); }
 
+    /**
+        Total height of the player area (excluding UI overlay).
+        @return The height in pixels.
+    **/
     public var tHeight(get, null):Float;
     private function get_tHeight():Float {
         GlobalPlayer.area.setOverlay(false);
@@ -745,6 +749,10 @@ class Player extends Sprite {
         this.stage.removeEventListener(MouseEvent.RIGHT_CLICK, onMouseRight);
     }
 
+    /**
+        Handles touch move events for pinch gestures.
+        @param evt The touch event containing movement data.
+    **/
     private function onTouchMove(evt:TouchEvent):Void {
         if (evt.touchPointID == 1) {
             if ((Date.now().getTime() - this._touchDistanceCheck) >= 250) {
@@ -763,6 +771,10 @@ class Player extends Sprite {
         }
     }
 
+    /**
+        Handles touch begin events, storing start position and distance for multi‑touch gestures.
+        @param evt The touch event containing start coordinates and touch point ID.
+    **/
     private function onTouchBegin(evt:TouchEvent):Void {
         if (evt.touchPointID == 0) {
             this._touchStart.x = evt.stageX;
@@ -778,6 +790,10 @@ class Player extends Sprite {
         }
     }
 
+    /**
+        Handles touch end events, detecting swipes, holds, and pinch gestures.
+        @param evt The touch event containing end coordinates and touch point ID.
+    **/
     private function onTouchEnd(evt:TouchEvent):Void {
         if (evt.touchPointID == 0) {
             if ((Date.now().getTime() - this._touchStartTime) < 300) {
@@ -815,7 +831,7 @@ class Player extends Sprite {
                     }
                 }
             } else if ((Date.now().getTime() - this._touchStartTime) > 1200) {
-                GlobalPlayer.canTrigger = false;            
+                GlobalPlayer.canTrigger = false;
                 if (!GlobalPlayer.parser.runInput('touchhold')) {
                     GlobalPlayer.canTrigger = true;
                 }

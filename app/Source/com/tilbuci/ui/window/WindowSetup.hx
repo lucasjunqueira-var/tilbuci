@@ -91,14 +91,14 @@ class WindowSetup extends PopupWindow {
                 { tp: 'Label', id: 'movie-index', tx: Global.ln.get('window-setup-config-index'), vr: '' }, 
                 { tp: 'Select', id: 'movie-index', vl: [ ], sl: '' }, 
                 { tp: 'Button', id: 'movie-index', tx: Global.ln.get('window-setup-config-indexset'), ac: this.onMovieIndex }, 
-                { tp: 'Spacer', id: 'render', ht: 5, ln: false }, 
+                /*{ tp: 'Spacer', id: 'render', ht: 5, ln: false }, 
                 { tp: 'Label', id: 'render', tx: Global.ln.get('window-setup-config-render'), vr: '' }, 
                 { tp: 'Select', id: 'render', vl: [
                     { text: Global.ln.get('window-setup-config-rdopt'), value: 'webgl' }, 
                     { text: Global.ln.get('window-setup-config-rdsite'), value: 'dom' }
                 ], sl: GlobalPlayer.render }, 
                 { tp: 'Label', id: 'renderabout', tx: Global.ln.get('window-setup-config-rdabout'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'Button', id: 'render', tx: Global.ln.get('window-setup-config-rdset'), ac: this.onRenderSet }, 
+                { tp: 'Button', id: 'render', tx: Global.ln.get('window-setup-config-rdset'), ac: this.onRenderSet }, */
                 { tp: 'Spacer', id: 'share', ht: 5, ln: false }, 
                 { tp: 'Label', id: 'share', tx: Global.ln.get('window-setup-config-share'), vr: '' }, 
                 { tp: 'Select', id: 'share', vl: [
@@ -120,7 +120,7 @@ class WindowSetup extends PopupWindow {
                 ], sl: GlobalPlayer.fps }, 
                 { tp: 'Button', id: 'fps', tx: Global.ln.get('window-setup-config-fpssave'), ac: this.onFpsSet },
             ]));
-            this.ui.labels['renderabout'].wordWrap = true;
+            //this.ui.labels['renderabout'].wordWrap = true;
 
             // email
             this.addForm(Global.ln.get('window-setup-email-title'), this.ui.forge('form-email', [
@@ -762,14 +762,14 @@ class WindowSetup extends PopupWindow {
 
     /**
         Click on render mode button.
-    **/
+    **
     private function onRenderSet(evt:TriggerEvent):Void {
         if (this.ui.selects['render'].selectedItem != null) {
             Global.ws.send('Movie/SetRender', [
                 'rd' => this.ui.selects['render'].selectedItem.value
             ], onRenderReturn);
         }
-    }
+    }*/
 
     /**
         Click on share mode button.

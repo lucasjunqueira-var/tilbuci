@@ -26,6 +26,7 @@ class MenuMovie extends DrawerMenu {
         this.addButton('btUsers', Global.ln.get('menu-movie-users'), onUsers);
         this.addButton('btRemove', Global.ln.get('menu-movie-remove'), onRemove);
         this.addButton('btNavigation', Global.ln.get('menu-movie-navigation'), onNavigation);
+        this.addButton('btSnippets', Global.ln.get('menu-movie-snippets'), onSnippets);
         this.addButton('btRepublish', Global.ln.get('menu-movie-republish'), onRepublish);
         this.addButton('btNotes', Global.ln.get('menu-movie-notes'), onNotes);
         this.addButton('btPlayer', Global.ln.get('menu-movie-player'), onPlayer);
@@ -61,6 +62,8 @@ class MenuMovie extends DrawerMenu {
             this.ui.buttons['btPlayer'].toolTip = null;
             this.ui.buttons['btNavigation'].enabled = true;
             this.ui.buttons['btNavigation'].toolTip = null;
+            this.ui.buttons['btSnippets'].enabled = true;
+            this.ui.buttons['btSnippets'].toolTip = null;
             this.ui.buttons['btNotes'].enabled = true;
             this.ui.buttons['btNotes'].toolTip = null;
             this.ui.buttons['btRepublish'].enabled = true;
@@ -75,6 +78,7 @@ class MenuMovie extends DrawerMenu {
             }
             this.ui.buttons['btPlayer'].enabled = false;
             this.ui.buttons['btNavigation'].enabled = false;
+            this.ui.buttons['btSnippets'].enabled = false;
             this.ui.buttons['btNotes'].enabled = false;
             this.ui.buttons['btProperties'].enabled = false;
             this.ui.buttons['btUsers'].enabled = false;
@@ -83,6 +87,7 @@ class MenuMovie extends DrawerMenu {
             this.ui.buttons['btUsers'].toolTip = Global.ln.get('tooltip-movie-nomovie');
             this.ui.buttons['btPlayer'].toolTip = Global.ln.get('tooltip-movie-nomovie');
             this.ui.buttons['btNavigation'].toolTip = Global.ln.get('tooltip-movie-nomovie');
+            this.ui.buttons['btSnippets'].toolTip = Global.ln.get('tooltip-movie-nomovie');
             this.ui.buttons['btNotes'].toolTip = Global.ln.get('tooltip-movie-nomovie');
             this.ui.buttons['btRepublish'].toolTip = Global.ln.get('tooltip-movie-nomovie');
         }
@@ -135,6 +140,13 @@ class MenuMovie extends DrawerMenu {
     **/
     private  function onNavigation(evt:TriggerEvent):Void {
         this._ac('navigation');
+    }
+
+    /**
+        Shows the dynamic snippets window.
+    **/
+    private  function onSnippets(evt:TriggerEvent):Void {
+        this._ac('snippets');
     }
 
     /**
