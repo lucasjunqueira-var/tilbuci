@@ -14,5 +14,5 @@
 	<haxelib name="moonshine-feathersui-text-editor" />
 	<haxelib name="hscript" />
 	<!-- assets path -->
-	<assets path="app/Assets" rename="assets" />
+	<assets path="app/assets" rename="assets" />
 </project>

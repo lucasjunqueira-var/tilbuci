@@ -6,7 +6,7 @@ echo TilBuci WEBSITE build...
 powershell -Command "cp project-runtime.xml project.xml"
 openfl build html5 -D haxeJSON -D tilbuciplayer -D runtimewebsite
 if %errorlevel% equ 0 (
-    copy %export%Runtime.js %server%website.js
+    copy %export%TilBuci.js %server%website.js
     echo  build ok!
 ) else (
     echo error!
@@ -14,7 +14,7 @@ if %errorlevel% equ 0 (
 echo TilBuci PWA build...
 openfl build html5 -D haxeJSON -D tilbuciplayer -D runtimepwa
 if %errorlevel% equ 0 (
-    copy %export%Runtime.js %server%pwa.js
+    copy %export%TilBuci.js %server%pwa.js
     echo  build ok!
 ) else (
     echo error!
@@ -22,7 +22,7 @@ if %errorlevel% equ 0 (
 echo TilBuci DESKTOP build...
 openfl build html5 -D haxeJSON -D tilbuciplayer -D runtimedesktop
 if %errorlevel% equ 0 (
-    copy %export%Runtime.js %server%desktop.js
+    copy %export%TilBuci.js %server%desktop.js
     echo  build ok!
 ) else (
     echo error!
@@ -30,7 +30,7 @@ if %errorlevel% equ 0 (
 echo TilBuci MOBILE build...
 openfl build html5 -D haxeJSON -D tilbuciplayer -D runtimemobile
 if %errorlevel% equ 0 (
-    copy %export%Runtime.js %server%mobile.js
+    copy %export%TilBuci.js %server%mobile.js
     echo  build ok!
 ) else (
     echo error!
@@ -38,7 +38,7 @@ if %errorlevel% equ 0 (
 echo TilBuci PUBLISH SERVICES build...
 openfl build html5 -D haxeJSON -D tilbuciplayer -D runtimepublish
 if %errorlevel% equ 0 (
-    copy %export%Runtime.js %server%publish.js
+    copy %export%TilBuci.js %server%publish.js
     echo  build ok!
 ) else (
     echo error!

@@ -5,6 +5,17 @@ echo ============================================
 echo TilBuci Installer Creation Script
 echo ============================================
 
+REM Looking for 7-Zip
+set "SEVENZ="
+if exist "C:\Program Files\7-Zip\7z.exe" (
+    set "SEVENZ=C:\Program Files\7-Zip\7z.exe"
+) else (
+    echo ERROR: 7-Zip not found.
+    echo Please ensure 7-zip is installed in the "Program Files" folder.
+    exit /b 1
+)
+echo Using 7-zip: %SEVENZ%
+
 REM Step 1: creating the full Javascript file
 echo.
 echo Step 1: Creating the full Javascript file...
@@ -99,13 +110,17 @@ if exist language\langDefault.json (
     copy language\langDefault.json temp_part1\language\ /Y
 )
 
-REM Create ZIP using PowerShell
-powershell -NoProfile -ExecutionPolicy Bypass -Command "Compress-Archive -Path 'temp_part1\*' -DestinationPath '..\setup\setup\part1.zip' -CompressionLevel Optimal"
+REM Create ZIP using 7-Zip
+echo Creating part1.zip with 7-Zip...
+cd temp_part1
+"%SEVENZ%" a -tzip "..\..\setup\setup\part1.zip" * -mx=9
 if %errorlevel% neq 0 (
     echo ERROR: Failed to create part1.zip.
+    cd ..
     rmdir /s /q temp_part1
     exit /b 1
 )
+cd ..
 
 REM Cleanup
 rmdir /s /q temp_part1
@@ -180,13 +195,17 @@ if exist license.txt (
     copy license.txt temp_part2\ /Y
 )
 
-REM Create ZIP
-powershell -NoProfile -ExecutionPolicy Bypass -Command "Compress-Archive -Path 'temp_part2\*' -DestinationPath '..\..\setup\setup\part2.zip' -CompressionLevel Optimal"
+REM Create ZIP using 7-Zip
+echo Creating part2.zip with 7-Zip...
+cd temp_part2
+"%SEVENZ%" a -tzip "..\..\..\setup\setup\part2.zip" * -mx=9
 if %errorlevel% neq 0 (
     echo ERROR: Failed to create part2.zip.
+    cd ..
     rmdir /s /q temp_part2
     exit /b 1
 )
+cd ..
 
 rmdir /s /q temp_part2
 cd ..\..
@@ -207,12 +226,17 @@ mkdir temp_part3
 if exist index.php copy index.php temp_part3\ /Y
 if exist VisitorTerms.txt copy VisitorTerms.txt temp_part3\ /Y
 
-powershell -NoProfile -ExecutionPolicy Bypass -Command "Compress-Archive -Path 'temp_part3\*' -DestinationPath '..\..\setup\setup\part3.zip' -CompressionLevel Optimal"
+REM Create ZIP using 7-Zip
+echo Creating part3.zip with 7-Zip...
+cd temp_part3
+"%SEVENZ%" a -tzip "..\..\..\setup\setup\part3.zip" * -mx=9
 if %errorlevel% neq 0 (
     echo ERROR: Failed to create part3.zip.
+    cd ..
     rmdir /s /q temp_part3
     exit /b 1
 )
+cd ..
 
 rmdir /s /q temp_part3
 cd ..\..
@@ -231,12 +255,31 @@ if exist "TilBuci_webinstall_update_NEW.zip" (
     echo Deleted old TilBuci_webinstall_update_NEW.zip
 )
 
-REM Create ZIP with 'setup' folder, README.txt and setup.php
-powershell -NoProfile -ExecutionPolicy Bypass -Command "Compress-Archive -Path 'setup', 'README.txt', 'setup.php' -DestinationPath 'TilBuci_webinstall_update_NEW.zip' -CompressionLevel Optimal"
+REM Create temporary directory for final ZIP structure
+if exist temp_final rmdir /s /q temp_final
+mkdir temp_final
+
+REM Copy setup folder (the inner one) into temp_final
+xcopy setup temp_final\setup /E /I /Y
+
+REM Copy README.txt and setup.php into temp_final
+copy README.txt temp_final\ /Y
+copy setup.php temp_final\ /Y
+
+REM Create ZIP using 7-Zip
+echo Creating final installer with 7-Zip...
+cd temp_final
+"%SEVENZ%" a -tzip "..\TilBuci_webinstall_update_NEW.zip" * -mx=9
 if %errorlevel% neq 0 (
     echo ERROR: Failed to create final installer.
+    cd ..
+    rmdir /s /q temp_final
     exit /b 1
 )
+cd ..
+
+REM Cleanup temporary directory
+rmdir /s /q temp_final
 cd ..
 echo Step 8 completed.
 

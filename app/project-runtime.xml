@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	<meta title="TilBuci Runtime" package="com.tilbuci.runtime" version="20.0.0" company="TilBuci" />
-	<app main="Main" path="Export" file="Runtime" preloader="Preloader" />
+	<app main="Main" path="Export" file="TilBuci" preloader="Preloader" />
 	<window background="#000000" />
 
 	<source path="Source" />
 	<haxelib name="openfl" />
-	<assets path="Assets" rename="assets" />
-
-	<!-- renderer -->
-	<!--<define name="dom" if="html5" />-->
+	<assets path="assetsrt" rename="assetsrt" />
 
 	<!-- libs required by TilBuci -->
 	<haxelib name="actuate" />
@@ -17,9 +14,9 @@
 	<haxelib name="crypto" />
 	
 	<!-- assets required by TilBuci -->
-	<assets id="btClose" path="Assets/tilbuci/btClose.png"/>
-	<assets id="btOk" path="Assets/tilbuci/btOk.png"/>
-	<assets id="icTarget" path="Assets/tilbuci/icTarget.png"/>
+	<assets id="btClose" path="assetsrt/btClose.png"/>
+	<assets id="btOk" path="assetsrt/btOk.png"/>
+	<assets id="icTarget" path="assetsrt/icTarget.png"/>
 
 	<!-- javascript externs -->
 	<dependency path="Externs/browser.js" embed="true" />

@@ -25,7 +25,7 @@ build_runtime() {
     echo "TilBuci $name build..."
     openfl build html5 -D haxeJSON -D tilbuciplayer -D "$define"
     if [ $? -eq 0 ]; then
-        cp "${export_dir}Runtime.js" "${server_dir}${output}"
+        cp "${export_dir}TilBuci.js" "${server_dir}${output}"
         echo "  build ok!"
     else
         echo "  error!"

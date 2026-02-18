@@ -19,7 +19,7 @@ class Movie extends BaseClass
 	/**
      * TilBuci expected version
      */
-    private $version = 19;
+    private $version = 20;
     
 	/**
 	 * current movie information
@@ -1696,9 +1696,9 @@ class Movie extends BaseClass
                             $embedft = [ ];
                             $ck = $this->queryAll('SELECT * FROM fonts');
                             foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/site-'.$movie.'/assets/' . $v['fn_file']));
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/site-'.$movie.'/assetsrt/' . $v['fn_file']));
                             }
                             $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
                             if (count($ck) > 0) {
@@ -1707,9 +1707,9 @@ class Movie extends BaseClass
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         foreach ($json as $k => $v) {
                                             if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/site-'.$movie.'/assets/' . $v['file']));
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/site-'.$movie.'/assetsrt/' . $v['file']));
                                             }
                                         }
                                     }
@@ -1841,11 +1841,12 @@ class Movie extends BaseClass
                             ], $index);
                             file_put_contents('../../export/site-'.$movie.'/index.html', $index);
                             // runtime
-                            if ($mode == 'dom') {
+                            @copy('../../export/runtimes/website.js', ('../../export/site-'.$movie.'/TilBuci.js'));
+                            /*if ($mode == 'dom') {
                                 @copy('../../export/runtimes/website-dom.js', ('../../export/site-'.$movie.'/TilBuci.js'));
                             } else {
                                 @copy('../../export/runtimes/website-webgl.js', ('../../export/site-'.$movie.'/TilBuci.js'));
-                            }
+                            }*/
                             // iframe?
                             if ($iframe) {
                                 $ifcontent = file_get_contents('../../export/iframe/iframe.html');
@@ -2003,10 +2004,10 @@ class Movie extends BaseClass
                             $embedft = [ ];
                             $ck = $this->queryAll('SELECT * FROM fonts');
                             foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/pwa-'.$movie.'/assets/' . $v['fn_file']));
-                                $offline[] = $url . 'assets/' . $v['fn_file'];
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/pwa-'.$movie.'/assetsrt/' . $v['fn_file']));
+                                $offline[] = $url . 'assetsrt/' . $v['fn_file'];
                             }
                             $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
                             if (count($ck) > 0) {
@@ -2015,10 +2016,10 @@ class Movie extends BaseClass
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         foreach ($json as $k => $v) {
                                             if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/pwa-'.$movie.'/assets/' . $v['file']));
-                                                $offline[] = $url . 'assets/' . $v['file'];
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/pwa-'.$movie.'/assetsrt/' . $v['file']));
+                                                $offline[] = $url . 'assetsrt/' . $v['file'];
                                             }
                                         }
                                     }
@@ -2263,9 +2264,9 @@ class Movie extends BaseClass
                             $embedft = [ ];
                             $ck = $this->queryAll('SELECT * FROM fonts');
                             foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/publish-'.$movie.'/assets/' . $v['fn_file']));
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/publish-'.$movie.'/assetsrt/' . $v['fn_file']));
                             }
                             $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
                             if (count($ck) > 0) {
@@ -2274,9 +2275,9 @@ class Movie extends BaseClass
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         foreach ($json as $k => $v) {
                                             if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/publish-'.$movie.'/assets/' . $v['file']));
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/publish-'.$movie.'/assetsrt/' . $v['file']));
                                             }
                                         }
                                     }
@@ -2481,7 +2482,7 @@ class Movie extends BaseClass
                     @copy('../../export/desktop/macos-setup.sh', '../../export/desktop-'.$movie.'/'.$movie.'/macos-setup.sh');
                     
                     // other files
-                    $this->copyDir(('../../export/desktop/assets'), ('../../export/desktop-'.$movie.'/'.$movie.'/assets'));
+                    $this->copyDir(('../../export/desktop/assetsrt'), ('../../export/desktop-'.$movie.'/'.$movie.'/assetsrt'));
                     $this->copyDir(('../../export/desktop/lib'), ('../../export/desktop-'.$movie.'/'.$movie.'/lib'));
                     $this->copyDir(('../../export/desktop/manifest'), ('../../export/desktop-'.$movie.'/'.$movie.'/manifest'));
 
@@ -2515,9 +2516,9 @@ class Movie extends BaseClass
                     $embedft = [ ];
                     $ckf = $this->queryAll('SELECT * FROM fonts');
                     foreach ($ckf as $v) {
-                        $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                        $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                        @copy(('../font/' . $v['fn_file']), ('../../export/desktop-'.$movie.'/'.$movie.'/assets/' . $v['fn_file']));
+                        $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                        $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                        @copy(('../font/' . $v['fn_file']), ('../../export/desktop-'.$movie.'/'.$movie.'/assetsrt/' . $v['fn_file']));
                     }
                     $ckf = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
                     if (count($ckf) > 0) {
@@ -2526,9 +2527,9 @@ class Movie extends BaseClass
                             if (json_last_error() == JSON_ERROR_NONE) {
                                 foreach ($json as $k => $v) {
                                     if (isset($v['name']) && isset($v['file'])) {
-                                        $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                        $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                        @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/desktop-'.$movie.'/'.$movie.'/assets/' . $v['file']));
+                                        $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                        $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                        @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/desktop-'.$movie.'/'.$movie.'/assetsrt/' . $v['file']));
                                     }
                                 }
                             }
@@ -2686,9 +2687,9 @@ class Movie extends BaseClass
                             $embedft = [ ];
                             $ck = $this->queryAll('SELECT * FROM fonts');
                             foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assets/' . $v['fn_file']));
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assetsrt/' . $v['fn_file']));
                             }
                             $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
                             if (count($ck) > 0) {
@@ -2697,9 +2698,9 @@ class Movie extends BaseClass
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         foreach ($json as $k => $v) {
                                             if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assets/' . $v['file']));
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assetsrt/' . $v['file']));
                                             }
                                         }
                                     }
@@ -2927,9 +2928,9 @@ class Movie extends BaseClass
                             $embedft = [ ];
                             $ck = $this->queryAll('SELECT * FROM fonts');
                             foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assets/' . $v['fn_file']));
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assetsrt/' . $v['fn_file']));
                             }
                             $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
                             if (count($ck) > 0) {
@@ -2938,9 +2939,9 @@ class Movie extends BaseClass
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         foreach ($json as $k => $v) {
                                             if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assets/' . $v['file']));
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assetsrt/' . $v['file']));
                                             }
                                         }
                                     }

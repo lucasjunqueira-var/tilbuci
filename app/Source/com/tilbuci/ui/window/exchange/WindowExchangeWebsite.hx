@@ -31,7 +31,7 @@ class WindowExchangeWebsite extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-exchsite-title'), 800, InterfaceFactory.pickValue(430, 460), false, true, true);
+        super(ac, Global.ln.get('window-exchsite-title'), 800, InterfaceFactory.pickValue(370, 400), false, true, true);
     }
 
     /**
@@ -41,12 +41,12 @@ class WindowExchangeWebsite extends PopupWindow {
         // creating columns
         this.addForm(Global.ln.get('window-exchsite-title'), this.ui.forge('leftcol', [
             { tp: 'Label', id: 'about', tx: Global.ln.get('window-exchsite-about'), vr: '' }, 
-            { tp: 'Spacer', id: 'mode', ht: 10 },  
+            /*{ tp: 'Spacer', id: 'mode', ht: 10 },  
             { tp: 'Label', id: 'mode', tx: Global.ln.get('window-exchsite-mode'), vr: '' }, 
             { tp: 'Select', id: 'mode', vl: [
                 { text: Global.ln.get('window-exchsite-webgl'), value: 'webgl' }, 
                 { text: Global.ln.get('window-exchsite-dom'), value: 'dom' }, 
-            ], sl: 'webgl' }, 
+            ], sl: 'webgl' }, */
             { tp: 'Spacer', id: 'location', ht: 10 }, 
             { tp: 'Label', id: 'location', tx: Global.ln.get('window-exchsite-location'), vr: '' }, 
             { tp: 'Select', id: 'location', vl: [
@@ -96,7 +96,7 @@ class WindowExchangeWebsite extends PopupWindow {
     private function onExport(evt:TriggerEvent):Void {
         Global.ws.send('Movie/ExportSite', [
             'movie' => GlobalPlayer.movie.mvId, 
-            'mode' => this.ui.selects['mode'].selectedItem.value, 
+            'mode' => 'webgl', //this.ui.selects['mode'].selectedItem.value, 
             'location' => this.ui.selects['location'].selectedItem.value, 
             'sitemap' => this.ui.inputs['sitemap'].text, 
         ], onExportReturn);

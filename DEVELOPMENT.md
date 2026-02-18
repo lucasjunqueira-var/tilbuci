@@ -1,6 +1,6 @@
 # TilBuci Development Guide
 
-This document provides detailed instructions for setting up a development environment for TilBuci, building from source, and contributing to the project. It expands upon the information found in `models/develop.md` with additional context, links, and explanations.
+This document provides detailed instructions for setting up a development environment for TilBuci, building from source, and contributing to the project.
 
 ## Introduction
 
@@ -102,9 +102,9 @@ Create a virtual host that points to the project's `server/public_html` director
 
 ```apache
 <VirtualHost *:80>
-  DocumentRoot "C:/TilBuci/tilbuci/server/public_html"
+  DocumentRoot "/server/public_html"
   ServerName tilbuci
-  <Directory "C:/TilBuci/tilbuci/server/public_html">
+  <Directory "/server/public_html">
     Options Indexes FollowSymLinks Includes ExecCGI
     AllowOverride All
     Require all granted
@@ -120,14 +120,14 @@ Then add `tilbuci` to your hosts file (`C:\Windows\System32\drivers\etc\hosts` o
 
 #### Linux-Specific Notes
 
-On Ubuntu-based systems, you may need to adjust folder permissions for the web server user (typically `www-data`):
+On Linux-based systems, you may need to adjust folder permissions for the web server user (typically `www-data`):
 
 ```bash
 sudo chown -R www-data:www-data /path/to/tilbuci/server/public_html
 sudo chmod -R 755 /path/to/tilbuci/server/public_html
 ```
 
-If you use AppArmor, you may need to adjust its profile to allow Apache/PHP to access the project directories.
+If you use AppArmor (many Ubuntu-based distros do), you may need to adjust its profile to allow Apache/PHP to access the project directories, not only the ones from /var/www.
 
 #### Install PHP and MariaDB/MySQL
 
@@ -151,7 +151,7 @@ Adjust these according to your local setup.
 
 ## Configuration Files
 
-TilBciu requires three configuration files that are created during installation. The repository includes example files that you can copy and modify.
+Tilbuci requires three configuration files that are created during installation. The repository includes example files that you can copy and modify.
 
 | File | Example Location | Target Location | Purpose |
 |------|------------------|-----------------|---------|
@@ -209,59 +209,24 @@ minimize-js.cmd
 
 Generates the TilBuci web installer from the current codebase.
 
+**Prerequisites**:
+- ZIP compression support
+- For Windows systems, please download 7-Zip and install it on the "C:/Program Files/" folder (the default one): [https://www.7-zip.org/](https://www.7-zip.org/)
+- For Linux and macOS systems, you may install zip supporr using your distribution default method, like running *sudo apt install zip*
+
 ```bash
 ./create-installer.sh
 create-installer.cmd
 ```
 
-## Testing and Deployment
-
-### Running the Development Server
-
-After setting up the web server and configuration files, you can access TilBuci at:
-
-- Editor: `http://tilbuci/editor/`
-- Player: `http://tilbuci/`
-
-### Building for Production
-
-1. Run `deploy-full` to compile the latest Haxe source to JavaScript.
-2. Optionally run `minimize-js` to minify the JavaScript files for production.
-3. The compiled assets will be placed in `server/public_html/app/`.
-
-### Exporting Runtimes
-
-Use `deploy-runtime` to generate platform‑specific packages:
-
-- **Desktop**: Electron‑based packages for Windows, macOS, and Linux.
-- **Mobile**: Capacitor projects for iOS and Android.
-- **PWA**: Progressive Web App with service worker and manifest.
-- **Website**: Static website with SEO‑friendly sitemap.
-- **Publish**: Packages optimized for itch.io, Game Jolt, etc.
-
-The output is placed in `server/export/`.
-
 ## Additional Resources
 
 - **Official Website**: [https://tilbuci.com.br/](https://tilbuci.com.br/)
-- **Online Demo**: [https://try.tilbuci.com.br/](https://try.tilbuci.com.br/)
 - **Tutorials & Examples**: [https://tilbuci.com.br/site/tutorials/](https://tilbuci.com.br/site/tutorials/)
 - **Scripting Actions Manual**: [https://tilbuci.com.br/files/TilBuci-ScriptingActions.pdf](https://tilbuci.com.br/files/TilBuci-ScriptingActions.pdf)
 - **GitHub Repository**: [https://github.com/tilbuci/tilbuci](https://github.com/tilbuci/tilbuci)
 - **License**: MPL 2.0 (see `LICENSE` file)
 
-## Contributing
-
-TilBuci is an open‑source project and welcomes contributions. To contribute:
-
-1. Fork the repository on GitHub.
-2. Create a feature branch.
-3. Make your changes, ensuring they follow the existing code style.
-4. Test your changes thoroughly.
-5. Submit a pull request with a clear description of the changes.
-
-For questions or discussions, contact the maintainers at [doggo@tilbuci.com.br](mailto:doggo@tilbuci.com.br).
-
 ---
 
-*This document was generated from `models/develop.md` with additional details and links. Last updated: February 2026.*
+*For questions or discussions, contact the maintainers at [doggo@tilbuci.com.br](mailto:doggo@tilbuci.com.br).*

@@ -3,6 +3,7 @@ third/
 models/
 .vscode/
 .well-kown/
+.roo/
 setup/*.zip
 setup/*.xz
 setup/*.dmg
