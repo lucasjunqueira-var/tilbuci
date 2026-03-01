@@ -17,7 +17,7 @@ class BaseClass
 	/**
 	 * global configuration
 	 */
-	protected $conf;
+	public $conf;
 	
 	/**
 	 * translated text
@@ -57,7 +57,7 @@ class BaseClass
 				$this->error = -6;
 			}
 		}
-		
+		if (!isset($this->conf['databasePrefix'])) $this->conf['databasePrefix'] = '';
 	}
 	
 	/**
@@ -249,8 +249,8 @@ class BaseClass
 	 */
 	public function setConfig($key, $value) {
 		if (!is_null($this->db)) {
-			$this->execute('DELETE FROM config WHERE cf_key=:key', [':key' => $key]);
-			return($this->execute('INSERT INTO config (cf_key, cf_value) VALUES (:key, :value)', [
+			$this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'config WHERE cf_key=:key', [':key' => $key]);
+			return($this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'config (cf_key, cf_value) VALUES (:key, :value)', [
 				':key' => $key, 
 				':value' => $value, 
 			]));
@@ -266,7 +266,7 @@ class BaseClass
 	 */
 	public function getConfig($key) {
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT cf_value FROM config WHERE cf_key=:key', [':key' => $key]);
+			$ck = $this->queryAll('SELECT cf_value FROM ' . $this->conf['databasePrefix'] . 'config WHERE cf_key=:key', [':key' => $key]);
 			if (count($ck) == 0) {
 				return (false);
 			} else {
@@ -284,7 +284,7 @@ class BaseClass
 	 */
 	public function clearConfig($key) {
 		if (!is_null($this->db)) {
-			return($this->execute('DELETE FROM config WHERE cf_key=:key', [':key' => $key]));
+			return($this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'config WHERE cf_key=:key', [':key' => $key]));
 		} else {
 			return (false);
 		}

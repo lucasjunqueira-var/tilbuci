@@ -136,13 +136,13 @@ class WSVisitor extends Webservice
 		// required fields received?
 		if ($this->requiredFields(['name', 'values', 'movie'])) {
 			// adding save
-			$this->data->execute('INSERT INTO visitordata (vd_id, vd_movie, vd_user, vd_name, vd_value) VALUES (:id, :mv, :us, :nm, :vl) ON DUPLICATE KEY UPDATE vd_value=VALUES(vd_value)', [
+			$this->data->execute('INSERT INTO ' . $this->data->conf['databasePrefix'] . 'visitordata (vd_id, vd_movie, vd_user, vd_name, vd_value) VALUES (:id, :mv, :us, :nm, :vl) ON DUPLICATE KEY UPDATE vd_value=VALUES(vd_value)', [
 				':id' => $this->user . '_' . $this->req['movie'] . '_' . $this->req['name'], 
 				':mv' => $this->req['movie'], 
 				':us' => $this->user, 
 				':nm' => $this->req['name'], 
 				':vl' => base64_encode(gzencode($this->req['values'])), 
-			], 'INSERT INTO visitordata (vd_id, vd_movie, vd_user, vd_name, vd_value) VALUES (:id, :mv, :us, :nm, :vl) ON CONFLICT(vd_id) DO UPDATE SET vd_value = excluded.vd_value');
+			], 'INSERT INTO ' . $this->data->conf['databasePrefix'] . 'visitordata (vd_id, vd_movie, vd_user, vd_name, vd_value) VALUES (:id, :mv, :us, :nm, :vl) ON CONFLICT(vd_id) DO UPDATE SET vd_value = excluded.vd_value');
 			$this->returnRequest([ 'e' => 0 ]);
 		}
 	}
@@ -154,7 +154,7 @@ class WSVisitor extends Webservice
 		// required fields received?
 		if ($this->requiredFields(['name', 'movie'])) {
 			// loading data
-			$ck = $this->data->queryAll('SELECT vd_value FROM visitordata WHERE vd_id=:id', [
+			$ck = $this->data->queryAll('SELECT vd_value FROM ' . $this->data->conf['databasePrefix'] . 'visitordata WHERE vd_id=:id', [
 				':id' => $this->user . '_' . $this->req['movie'] . '_' . $this->req['name'], 
 			]);
 			if (count($ck) == 0) {
@@ -185,7 +185,7 @@ class WSVisitor extends Webservice
 			// creating id
 			$id = $this->user . '_' . $this->req['movie'] . '_' . ($this->req['quick'] ? '0' : time());
 			// adding state
-			$this->data->execute('INSERT INTO visitorstate (vs_id, vs_movie, vs_user, vs_quick, vs_scene, vs_about, vs_value) VALUES (:id, :mv, :us, :qc, :sc, :ab, :vl) ON DUPLICATE KEY UPDATE vs_scene=VALUES(vs_scene), vs_about=VALUES(vs_about), vs_value=VALUES(vs_value)', [
+			$this->data->execute('INSERT INTO ' . $this->data->conf['databasePrefix'] . 'visitorstate (vs_id, vs_movie, vs_user, vs_quick, vs_scene, vs_about, vs_value) VALUES (:id, :mv, :us, :qc, :sc, :ab, :vl) ON DUPLICATE KEY UPDATE vs_scene=VALUES(vs_scene), vs_about=VALUES(vs_about), vs_value=VALUES(vs_value)', [
 				':id' => $id, 
 				':mv' => $this->req['movie'], 
 				':us' => $this->user, 
@@ -193,15 +193,15 @@ class WSVisitor extends Webservice
 				':sc' => $this->req['scene'], 
 				':ab' => $this->req['about'], 
 				':vl' => base64_encode(gzencode($this->req['values'])), 
-			], 'INSERT INTO visitorstate (vs_id, vs_movie, vs_user, vs_quick, vs_scene, vs_about, vs_value) VALUES ( :id, :mv, :us, :qc, :sc, :ab, :vl) ON CONFLICT(vs_id) DO UPDATE SET vs_scene = excluded.vs_scene, vs_about = excluded.vs_about, vs_value = excluded.vs_value');
+			], 'INSERT INTO ' . $this->data->conf['databasePrefix'] . 'visitorstate (vs_id, vs_movie, vs_user, vs_quick, vs_scene, vs_about, vs_value) VALUES ( :id, :mv, :us, :qc, :sc, :ab, :vl) ON CONFLICT(vs_id) DO UPDATE SET vs_scene = excluded.vs_scene, vs_about = excluded.vs_about, vs_value = excluded.vs_value');
 			// remove old states?
 			if (!$this->req['quick']) {
-				$ck = $this->data->queryAll('SELECT vs_id FROM visitorstate WHERE vs_movie=:mv AND vs_user=:us AND vs_quick=:qc ORDER BY vs_created DESC LIMIT 10 OFFSET 10', [
+				$ck = $this->data->queryAll('SELECT vs_id FROM ' . $this->data->conf['databasePrefix'] . 'visitorstate WHERE vs_movie=:mv AND vs_user=:us AND vs_quick=:qc ORDER BY vs_created DESC LIMIT 10 OFFSET 10', [
 					':mv' => $this->req['movie'], 
 					':us' => $this->user, 
 					':qc' => '0', 
 				]);
-				foreach ($ck as $v) $this->data->execute('DELETE FROM visitorstate WHERE vs_id=:id LIMIT 1', [ ':id' => $v['vs_id'] ], 'DELETE FROM visitorstate WHERE vs_id=:id');
+				foreach ($ck as $v) $this->data->execute('DELETE FROM ' . $this->data->conf['databasePrefix'] . 'visitorstate WHERE vs_id=:id LIMIT 1', [ ':id' => $v['vs_id'] ], 'DELETE FROM ' . $this->data->conf['databasePrefix'] . 'visitorstate WHERE vs_id=:id');
 			}
 			$this->returnRequest([ 'e' => 0 ]);
 		}
@@ -215,13 +215,13 @@ class WSVisitor extends Webservice
 		if ($this->requiredFields(['id', 'quick', 'movie'])) {
 			// looking for state
 			if ($this->req['quick']) {
-				$ck = $this->data->queryAll('SELECT * FROM visitorstate WHERE vs_movie=:mv AND vs_user=:us AND vs_quick=:qc', [
+				$ck = $this->data->queryAll('SELECT * FROM ' . $this->data->conf['databasePrefix'] . 'visitorstate WHERE vs_movie=:mv AND vs_user=:us AND vs_quick=:qc', [
 					':mv' => $this->req['movie'], 
 					':us' => $this->user, 
 					':qc' => '1', 
 				]);
 			} else {
-				$ck = $this->data->queryAll('SELECT * FROM visitorstate WHERE vs_id=:id', [':id'=>$this->req['id']]);
+				$ck = $this->data->queryAll('SELECT * FROM ' . $this->data->conf['databasePrefix'] . 'visitorstate WHERE vs_id=:id', [':id'=>$this->req['id']]);
 			}
 			if (count($ck) > 0) {
 				$val = base64_decode($ck[0]['vs_value']);
@@ -254,7 +254,7 @@ class WSVisitor extends Webservice
 		// required fields received?
 		if ($this->requiredFields(['movie', 'format'])) {
 			// looking for saved states
-			$ck = $this->data->queryAll('SELECT * FROM visitorstate WHERE vs_movie=:mv AND vs_user=:us AND vs_quick=:qc ORDER BY vs_updated DESC LIMIT 10', [
+			$ck = $this->data->queryAll('SELECT * FROM ' . $this->data->conf['databasePrefix'] . 'visitorstate WHERE vs_movie=:mv AND vs_user=:us AND vs_quick=:qc ORDER BY vs_updated DESC LIMIT 10', [
 				':mv' => $this->req['movie'], 
 				':us' => $this->user, 
 				':qc' => '0', 
@@ -469,7 +469,7 @@ class WSVisitor extends Webservice
 		// required fields received?
 		if ($this->requiredFields(['name', 'data', 'movieid', 'sceneid', 'movietitle', 'scenetitle', 'visitor', 'sessionid'])) {
             if (!isset($this->req['when'])) $this->req['when'] = date('Y-m-d H:i:s');
-			$this->data->execute('INSERT INTO events (ev_when, ev_name, ev_movie, ev_moviename, ev_scene, ev_scenename, ev_visitor, ev_extra, ev_session) VALUES (:wh, :nm, :mv, :mvname, :sc, :scname, :vis, :ex, :session)', [
+			$this->data->execute('INSERT INTO ' . $this->data->conf['databasePrefix'] . 'events (ev_when, ev_name, ev_movie, ev_moviename, ev_scene, ev_scenename, ev_visitor, ev_extra, ev_session) VALUES (:wh, :nm, :mv, :mvname, :sc, :scname, :vis, :ex, :session)', [
                 ':wh' => $this->req['when'], 
                 ':nm' => $this->req['name'], 
                 ':mv' => $this->req['movieid'], 
@@ -521,9 +521,9 @@ class WSVisitor extends Webservice
 	private function removeCors() {
 		// required fields received?
 		if ($this->requiredFields(['domain'])) {
-			$this->data->execute('DELETE FROM cors WHERE cr_domain=:dom LIMIT 1', [
+			$this->data->execute('DELETE FROM ' . $this->data->conf['databasePrefix'] . 'cors WHERE cr_domain=:dom LIMIT 1', [
                 ':dom' => $this->req['domain'], 
-            ], 'DELETE FROM cors WHERE cr_domain=:dom');
+            ], 'DELETE FROM ' . $this->data->conf['databasePrefix'] . 'cors WHERE cr_domain=:dom');
             $this->returnRequest([ 'e' => 0 ]);
 		}
 	}
@@ -545,9 +545,9 @@ class WSVisitor extends Webservice
                         }
                     }
                 }
-                $this->data->execute('INSERT IGNORE INTO cors (cr_domain) VALUES (:dom)', [
+                $this->data->execute('INSERT IGNORE INTO ' . $this->data->conf['databasePrefix'] . 'cors (cr_domain) VALUES (:dom)', [
                     ':dom' => $domain, 
-                ], 'INSERT OR IGNORE INTO cors (cr_domain) VALUES (:dom)');
+                ], 'INSERT OR IGNORE INTO ' . $this->data->conf['databasePrefix'] . 'cors (cr_domain) VALUES (:dom)');
                 $this->returnRequest([ 'e' => 0 ]);
             } else {
                 $this->returnRequest([ 'e' => 1 ]);

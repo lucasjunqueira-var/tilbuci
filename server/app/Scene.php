@@ -53,7 +53,7 @@ class Scene extends BaseClass
 			$ckid = true;
 			while ($ckid) {
 				$id = md5(time() . rand(0, 9999));
-				$ck = $this->queryAll('SELECT sc_uid FROM scenes WHERE sc_id=:id AND sc_movie=:mv', [
+				$ck = $this->queryAll('SELECT sc_uid FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_id=:id AND sc_movie=:mv', [
 					':id' => $id, 
 					':mv' => $movie, 
 				]);
@@ -62,7 +62,7 @@ class Scene extends BaseClass
 		}
 		
 		// adding to database
-		if ($this->execute('INSERT INTO scenes (sc_id, sc_movie, sc_title, sc_user, sc_published) VALUES (:id, :mv, :tt, :us, :pub)', [
+		if ($this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'scenes (sc_id, sc_movie, sc_title, sc_user, sc_published) VALUES (:id, :mv, :tt, :us, :pub)', [
 			':id' => $id, 
 			':mv' => $movie, 
 			':tt' => $title, 
@@ -72,7 +72,7 @@ class Scene extends BaseClass
 			
 			// creating an empty keyframe
 			$uid = $this->insertID();
-			$this->execute('INSERT INTO keyframes (kf_scene, kf_order) VALUES (:sc, :or)', [
+			$this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'keyframes (kf_scene, kf_order) VALUES (:sc, :or)', [
 				':sc' => $uid, 
 				':or' => 0, 
 			]);
@@ -98,7 +98,7 @@ class Scene extends BaseClass
 	 * @return	bool	was the scene found and loaded?
 	 */
 	public function loadSceneUid($user, $id, $movie) {
-		$ck = $this->queryAll('SELECT sc_id FROM scenes WHERE sc_uid=:id AND sc_movie=:mv', [
+		$ck = $this->queryAll('SELECT sc_id FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_uid=:id AND sc_movie=:mv', [
 			':id' => $id, 
 			':mv' => $movie, 
 		]);
@@ -121,18 +121,18 @@ class Scene extends BaseClass
 		$this->info = [ ];
 		$this->loaded = false;
 		if (is_null($version)) {
-			$ck = $this->queryAll('SELECT * FROM scenes WHERE sc_id=:id AND sc_movie=:mv ORDER by sc_uid DESC LIMIT 1', [
+			$ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_id=:id AND sc_movie=:mv ORDER by sc_uid DESC LIMIT 1', [
 				':id' => $id, 
 				':mv' => $movie, 
 			]);
 		} else if ($version < 0) {
-			$ck = $this->queryAll('SELECT * FROM scenes WHERE sc_id=:id AND sc_movie=:mv AND sc_published=:pub', [
+			$ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_id=:id AND sc_movie=:mv AND sc_published=:pub', [
 				':id' => $id, 
 				':mv' => $movie, 
 				':pub' => '1', 
 			]);
 		} else {
-			$ck = $this->queryAll('SELECT * FROM scenes WHERE sc_id=:id AND sc_movie=:mv AND sc_uid=:uid', [
+			$ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_id=:id AND sc_movie=:mv AND sc_uid=:uid', [
 				':id' => $id, 
 				':mv' => $movie, 
 				':uid' => $version, 
@@ -189,12 +189,12 @@ class Scene extends BaseClass
 			];
 			
 			// keyframes
-			$ckk = $this->queryAll('SELECT * FROM keyframes WHERE kf_scene=:uid ORDER BY kf_order ASC', [
+			$ckk = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'keyframes WHERE kf_scene=:uid ORDER BY kf_order ASC', [
 				':uid' => $ck[0]['sc_uid'], 
 			]);
 			foreach ($ckk as $vk) {
 				$kf = [ ];
-				$cki = $this->queryAll('SELECT * FROM instances WHERE in_keyframe=:kf ORDER BY in_name ASC', [
+				$cki = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'instances WHERE in_keyframe=:kf ORDER BY in_name ASC', [
 					':kf' => $vk['kf_id'], 
 				]);
 				foreach ($cki as $vi) {
@@ -260,7 +260,7 @@ class Scene extends BaseClass
 								'textAlign' => 'left', 
 							], 
 					];
-					$ckd = $this->queryAll('SELECT * FROM instancedesc WHERE id_instance=:inst ORDER BY id_order ASC', [
+					$ckd = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'instancedesc WHERE id_instance=:inst ORDER BY id_order ASC', [
 						':inst' => $vi['in_id'], 
 					]);
 					foreach ($ckd as $vd) {
@@ -331,16 +331,16 @@ class Scene extends BaseClass
             
             // locking scene
             if (!is_null($user)) {
-                $this->execute('DELETE FROM scenelock WHERE sl_user=:user', [
+                $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'scenelock WHERE sl_user=:user', [
                     ':user' => $user, 
                 ]);
-                $this->execute('INSERT INTO scenelock (sl_id, sl_movie, sl_scene, sl_user, sl_when) VALUES (:id, :movie, :scene, :user, :when) ON DUPLICATE KEY UPDATE sl_user=VALUES(sl_user), sl_when=VALUES(sl_when)', [
+                $this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'scenelock (sl_id, sl_movie, sl_scene, sl_user, sl_when) VALUES (:id, :movie, :scene, :user, :when) ON DUPLICATE KEY UPDATE sl_user=VALUES(sl_user), sl_when=VALUES(sl_when)', [
                     ':id' => $movie . '_' . $id, 
                     ':movie' => $movie, 
                     ':scene' => $id, 
                     ':user' => $user, 
                     ':when' => date('Y-m-d H:i:s'), 
-                ], 'INSERT INTO scenelock (sl_id, sl_movie, sl_scene, sl_user, sl_when) VALUES (:id, :movie, :scene, :user, :when) ON CONFLICT(sl_id) DO UPDATE SET sl_user = excluded.sl_user, sl_when = excluded.sl_when');
+                ], 'INSERT INTO ' . $this->conf['databasePrefix'] . 'scenelock (sl_id, sl_movie, sl_scene, sl_user, sl_when) VALUES (:id, :movie, :scene, :user, :when) ON CONFLICT(sl_id) DO UPDATE SET sl_user = excluded.sl_user, sl_when = excluded.sl_when');
             }
 		}
 		return ($this->loaded);
@@ -366,7 +366,7 @@ class Scene extends BaseClass
                 // encrypted?
                 $encr = false;
                 if (!$decrypt) {
-                    $ck = $this->queryAll('SELECT mv_encrypted FROM movies WHERE mv_id=:mv', [':mv'=>$movie]);
+                    $ck = $this->queryAll('SELECT mv_encrypted FROM ' . $this->conf['databasePrefix'] . 'movies WHERE mv_id=:mv', [':mv'=>$movie]);
                     if (count($ck) > 0) {
                         $encr = $ck[0]['mv_encrypted'] == '1';
                     }
@@ -390,15 +390,15 @@ class Scene extends BaseClass
 	 * @return array scenes list
 	 */
 	public function listScenes($user, $movie) {
-        $this->execute('DELETE FROM scenelock WHERE sl_movie=:mv AND sl_when<=:limit', [
+        $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'scenelock WHERE sl_movie=:mv AND sl_when<=:limit', [
             ':mv' => $movie, 
             ':limit' => date('Y-m-d H:i:s', strtotime('-15minutes')), 
         ]);
 		$ret = [ ];
-		$ck = $this->queryAll('SELECT * FROM (SELECT t1.sc_id, t1.sc_movie, (SELECT t2.sc_title FROM scenes t2 WHERE t2.sc_movie=:t2mv AND t2.sc_id=t1.sc_id ORDER BY t2.sc_uid DESC LIMIT 1) as sc_title FROM scenes t1 WHERE t1.sc_movie=:t1mv ORDER BY t1.sc_title ASC) tbs LEFT JOIN scenelock lck ON (tbs.sc_id=lck.sl_scene AND tbs.sc_movie=lck.sl_movie) GROUP BY tbs.sc_id, lck.sl_id ORDER BY tbs.sc_title ASC', [
+		$ck = $this->queryAll('SELECT * FROM (SELECT t1.sc_id, t1.sc_movie, (SELECT t2.sc_title FROM ' . $this->conf['databasePrefix'] . 'scenes t2 WHERE t2.sc_movie=:t2mv AND t2.sc_id=t1.sc_id ORDER BY t2.sc_uid DESC LIMIT 1) as sc_title FROM ' . $this->conf['databasePrefix'] . 'scenes t1 WHERE t1.sc_movie=:t1mv ORDER BY t1.sc_title ASC) tbs LEFT JOIN ' . $this->conf['databasePrefix'] . 'scenelock lck ON (tbs.sc_id=lck.sl_scene AND tbs.sc_movie=lck.sl_movie) GROUP BY tbs.sc_id, lck.sl_id ORDER BY tbs.sc_title ASC', [
 			':t2mv' => $movie, 
 			':t1mv' => $movie, 
-		], 'SELECT * FROM (SELECT t1.sc_id, t1.sc_movie, (SELECT t2.sc_title FROM scenes t2 WHERE t2.sc_movie = :t2mv AND t2.sc_id = t1.sc_id ORDER BY t2.sc_uid DESC LIMIT 1) AS sc_title FROM scenes t1 WHERE t1.sc_movie = :t1mv ORDER BY t1.sc_title ASC) tbs LEFT JOIN scenelock lck ON tbs.sc_id = lck.sl_scene AND tbs.sc_movie = lck.sl_movie GROUP BY tbs.sc_id, lck.sl_id ORDER BY tbs.sc_title ASC');
+		], 'SELECT * FROM (SELECT t1.sc_id, t1.sc_movie, (SELECT t2.sc_title FROM ' . $this->conf['databasePrefix'] . 'scenes t2 WHERE t2.sc_movie = :t2mv AND t2.sc_id = t1.sc_id ORDER BY t2.sc_uid DESC LIMIT 1) AS sc_title FROM ' . $this->conf['databasePrefix'] . 'scenes t1 WHERE t1.sc_movie = :t1mv ORDER BY t1.sc_title ASC) tbs LEFT JOIN ' . $this->conf['databasePrefix'] . 'scenelock lck ON tbs.sc_id = lck.sl_scene AND tbs.sc_movie = lck.sl_movie GROUP BY tbs.sc_id, lck.sl_id ORDER BY tbs.sc_title ASC');
 		foreach ($ck as $v) $ret[] = [
 			'id' => $v['sc_id'], 
 			'title' => $v['sc_title'], 
@@ -412,18 +412,18 @@ class Scene extends BaseClass
 	 * @return array scenes list
 	 */
 	public function listDflow($user, $movie) {
-        $this->execute('DELETE FROM scenelock WHERE sl_movie=:mv AND sl_when<=:limit', [
+        $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'scenelock WHERE sl_movie=:mv AND sl_when<=:limit', [
             ':mv' => $movie, 
             ':limit' => date('Y-m-d H:i:s', strtotime('-15minutes')), 
         ]);
 		$ret = [ ];
-		$ck = $this->queryAll('SELECT t1.* FROM scenes t1 INNER JOIN (SELECT sc_id, MAX(sc_uid) AS uidmax FROM scenes WHERE sc_movie=:mv GROUP BY sc_id) t2 ON t1.sc_id = t2.sc_id AND t1.sc_uid = t2.uidmax WHERE (t1.sc_dflow1!=:vz1 OR t1.sc_dflow2!=:vz2 OR t1.sc_dflow3!=:vz3 OR t1.sc_dflow4!=:vz4) ORDER BY t1.sc_title ASC', [
+		$ck = $this->queryAll('SELECT t1.* FROM ' . $this->conf['databasePrefix'] . 'scenes t1 INNER JOIN (SELECT sc_id, MAX(sc_uid) AS uidmax FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_movie=:mv GROUP BY sc_id) t2 ON t1.sc_id = t2.sc_id AND t1.sc_uid = t2.uidmax WHERE (t1.sc_dflow1!=:vz1 OR t1.sc_dflow2!=:vz2 OR t1.sc_dflow3!=:vz3 OR t1.sc_dflow4!=:vz4) ORDER BY t1.sc_title ASC', [
 			':mv' => $movie, 
 			':vz1' => '', 
 			':vz2' => '', 
 			':vz3' => '', 
 			':vz4' => '', 
-		], 'SELECT t1.* FROM scenes t1 INNER JOIN (SELECT sc_id, MAX(sc_uid) AS uidmax FROM scenes WHERE sc_movie=:mv GROUP BY sc_id) t2 ON t1.sc_id = t2.sc_id AND t1.sc_uid = t2.uidmax WHERE (t1.sc_dflow1!=:vz1 OR t1.sc_dflow2!=:vz2 OR t1.sc_dflow3!=:vz3 OR t1.sc_dflow4!=:vz4) ORDER BY t1.sc_title ASC');
+		], 'SELECT t1.* FROM ' . $this->conf['databasePrefix'] . 'scenes t1 INNER JOIN (SELECT sc_id, MAX(sc_uid) AS uidmax FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_movie=:mv GROUP BY sc_id) t2 ON t1.sc_id = t2.sc_id AND t1.sc_uid = t2.uidmax WHERE (t1.sc_dflow1!=:vz1 OR t1.sc_dflow2!=:vz2 OR t1.sc_dflow3!=:vz3 OR t1.sc_dflow4!=:vz4) ORDER BY t1.sc_title ASC');
 		foreach ($ck as $v) {
 			$df = [ ];
 			for ($i=1; $i<=4; $i++) {
@@ -487,7 +487,7 @@ class Scene extends BaseClass
 					if (is_null($id) || ($id == '')) $id = md5(time().rand(1000, 9999));
 					$check = true;
 					while ($check) {
-						$ck = $this->queryAll('SELECT COUNT(*) AS TOTAL FROM scenes WHERE sc_id=:id AND sc_movie=:mv', [
+						$ck = $this->queryAll('SELECT COUNT(*) AS TOTAL FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_id=:id AND sc_movie=:mv', [
 							':id' => $id, 
 							':mv' => $movie, 
 						]);
@@ -501,7 +501,7 @@ class Scene extends BaseClass
 					$scene['id'] = $id;
 					$scene['title'] = $asTitle;
 				} else {
-					$ck = $this->queryAll('SELECT COUNT(*) AS TOTAL FROM scenes WHERE sc_id=:id AND sc_movie=:mv', [
+					$ck = $this->queryAll('SELECT COUNT(*) AS TOTAL FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_id=:id AND sc_movie=:mv', [
 						':id' => $id, 
 						':mv' => $movie, 
 					]);
@@ -523,21 +523,21 @@ class Scene extends BaseClass
 					// saving collection updates
 					foreach ($cols as $k => $v) {
 						// add/update collection description
-						$this->execute('INSERT INTO collections (cl_uid, cl_id, cl_movie, cl_title, cl_transition, cl_time) VALUES (:uid, :id, :movie, :title, :transition, :time) ON DUPLICATE KEY UPDATE cl_title=VALUES(cl_title), cl_transition=VALUES(cl_transition), cl_time=VALUES(cl_time)', [
+						$this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'collections (cl_uid, cl_id, cl_movie, cl_title, cl_transition, cl_time) VALUES (:uid, :id, :movie, :title, :transition, :time) ON DUPLICATE KEY UPDATE cl_title=VALUES(cl_title), cl_transition=VALUES(cl_transition), cl_time=VALUES(cl_time)', [
 							':uid' => ($movie . $k), 
 							':id' => $k, 
 							':movie' => $movie, 
 							':title' => $v['name'], 
 							':transition' => $v['transition'], 
 							':time' => $v['time'], 
-						], 'INSERT INTO collections (cl_uid, cl_id, cl_movie, cl_title, cl_transition, cl_time) VALUES (:uid, :id, :movie, :title, :transition, :time) ON CONFLICT(cl_uid) DO UPDATE SET cl_title = excluded.cl_title, cl_transition = excluded.cl_transition, cl_time = excluded.cl_time');
+						], 'INSERT INTO ' . $this->conf['databasePrefix'] . 'collections (cl_uid, cl_id, cl_movie, cl_title, cl_transition, cl_time) VALUES (:uid, :id, :movie, :title, :transition, :time) ON CONFLICT(cl_uid) DO UPDATE SET cl_title = excluded.cl_title, cl_transition = excluded.cl_transition, cl_time = excluded.cl_time');
 						// remove previous assets
-						$this->execute('DELETE FROM assets WHERE at_collection=:col', [
+						$this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'assets WHERE at_collection=:col', [
 							':col' => ($movie . $k), 
 						]);
 						// add current assets
 						foreach ($v['assets'] as $ka => $a) {
-							$this->execute('INSERT INTO assets (at_id, at_collection, at_order, at_name, at_type, at_time, at_action, at_frames, at_frtime, at_file1, at_file2, at_file3, at_file4, at_file5) VALUES (:id, :collection, :order, :name, :type, :time, :action, :frames, :frtime, :file1, :file2, :file3, :file4, :file5)', [
+							$this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'assets (at_id, at_collection, at_order, at_name, at_type, at_time, at_action, at_frames, at_frtime, at_file1, at_file2, at_file3, at_file4, at_file5) VALUES (:id, :collection, :order, :name, :type, :time, :action, :frames, :frtime, :file1, :file2, :file3, :file4, :file5)', [
 								':id' => $ka, 
 								':collection' => ($movie . $k), 
 								':order' => $a['order'], 
@@ -561,28 +561,28 @@ class Scene extends BaseClass
 					
 					// removing old scene versions
 					if (!$saveas) {
-						$ck = $this->queryAll('SELECT sc_uid FROM scenes WHERE sc_id=:id AND sc_movie=:mv AND sc_published=:pub ORDER BY sc_date DESC LIMIT ' . $this->conf['sceneVersions'] . ' OFFSET ' . $this->conf['sceneVersions'], [
+						$ck = $this->queryAll('SELECT sc_uid FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_id=:id AND sc_movie=:mv AND sc_published=:pub ORDER BY sc_date DESC LIMIT ' . $this->conf['sceneVersions'] . ' OFFSET ' . $this->conf['sceneVersions'], [
 							':id' => $id, 
 							':mv' => $movie, 
 							':pub' => 0, 
 						]);
 						foreach ($ck as $v) {
 							// getting old keyframes
-							$ckok = $this->queryAll('SELECT kf_id FROM keyframes WHERE kf_scene=:sc', [':sc'=>$v['sc_uid']]);
+							$ckok = $this->queryAll('SELECT kf_id FROM ' . $this->conf['databasePrefix'] . 'keyframes WHERE kf_scene=:sc', [':sc'=>$v['sc_uid']]);
 							foreach ($ckok as $kfo) {
 								// getting ond instances
-								$ckoi = $this->queryAll('SELECT in_id FROM instances WHERE in_keyframe=:kf', [':kf'=>$kfo['kf_id']]);
+								$ckoi = $this->queryAll('SELECT in_id FROM ' . $this->conf['databasePrefix'] . 'instances WHERE in_keyframe=:kf', [':kf'=>$kfo['kf_id']]);
 								foreach ($ckoi as $inso) {
 									// remove instance descriptions
-									$this->execute('DELETE FROM instancedesc WHERE id_instance=:id LIMIT 2', [':id'=>$inso['in_id']], 'DELETE FROM instancedesc WHERE id_instance=:id');
+									$this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'instancedesc WHERE id_instance=:id LIMIT 2', [':id'=>$inso['in_id']], 'DELETE FROM ' . $this->conf['databasePrefix'] . 'instancedesc WHERE id_instance=:id');
 									// remove the instance
-									$this->execute('DELETE FROM instances WHERE in_id=:id LIMIT 1', [':id'=>$inso['in_id']], 'DELETE FROM instances WHERE in_id=:id');
+									$this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'instances WHERE in_id=:id LIMIT 1', [':id'=>$inso['in_id']], 'DELETE FROM ' . $this->conf['databasePrefix'] . 'instances WHERE in_id=:id');
 								}
 								// remove the keyframe
-								$this->execute('DELETE FROM keyframes WHERE kf_id=:id LIMIT 1', [':id'=>$kfo['kf_id']], 'DELETE FROM keyframes WHERE kf_id=:id');
+								$this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'keyframes WHERE kf_id=:id LIMIT 1', [':id'=>$kfo['kf_id']], 'DELETE FROM ' . $this->conf['databasePrefix'] . 'keyframes WHERE kf_id=:id');
 							}
 							// remove the scene
-							$this->execute('DELETE FROM scenes WHERE sc_uid=:id LIMIT 1', [':id'=>$v['sc_uid']], 'DELETE FROM scenes WHERE sc_uid=:id');
+							$this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_uid=:id LIMIT 1', [':id'=>$v['sc_uid']], 'DELETE FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_uid=:id');
 						}
 					}
 					
@@ -595,7 +595,7 @@ class Scene extends BaseClass
 							if (isset($scene['dflow'][$i])) $dflow[$i] = $scene['dflow'][$i];
 						}
 					}
-					$this->execute('INSERT INTO scenes (sc_id, sc_movie, sc_title, sc_about, sc_image, sc_up, sc_down, sc_left, sc_right, sc_nin, sc_nout, sc_collections, sc_loop, sc_acstart, sc_ackeyframes, sc_user, sc_static, sc_dflow1, sc_dflow2, sc_dflow3, sc_dflow4) VALUES (:id, :movie, :title, :about, :image, :up, :down, :left, :right, :nin, :nout, :collections, :loop, :acstart, :ackeyframes, :user, :static, :df1, :df2, :df3, :df4)', [
+					$this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'scenes (sc_id, sc_movie, sc_title, sc_about, sc_image, sc_up, sc_down, sc_left, sc_right, sc_nin, sc_nout, sc_collections, sc_loop, sc_acstart, sc_ackeyframes, sc_user, sc_static, sc_dflow1, sc_dflow2, sc_dflow3, sc_dflow4) VALUES (:id, :movie, :title, :about, :image, :up, :down, :left, :right, :nin, :nout, :collections, :loop, :acstart, :ackeyframes, :user, :static, :df1, :df2, :df3, :df4)', [
 						':id' => $id, 
 						':movie' => $movie, 
 						':title' => $scene['title'], 
@@ -623,13 +623,13 @@ class Scene extends BaseClass
 					// saving keyframes
 					$order = 0;
 					foreach ($scene['keyframes'] as $kf) {
-						$this->execute('INSERT INTO keyframes (kf_scene, kf_order) VALUES (:scene, :order)', [
+						$this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'keyframes (kf_scene, kf_order) VALUES (:scene, :order)', [
 							':scene' => $uid, 
 							':order' => $order, 
 						]);
 						$kid = $this->insertID();
 						foreach ($kf as $kins => $ins) {
-							$this->execute('INSERT INTO instances (in_keyframe, in_name, in_collection, in_asset, in_action, in_play, in_actionover, in_timedac) VALUES (:keyframe, :name, :collection, :asset, :action, :play, :actionover, :timedac)', [
+							$this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'instances (in_keyframe, in_name, in_collection, in_asset, in_action, in_play, in_actionover, in_timedac) VALUES (:keyframe, :name, :collection, :asset, :action, :play, :actionover, :timedac)', [
 								':keyframe' => $kid, 
 								':name' => $kins, 
 								':collection' => $ins['collection'], 
@@ -640,7 +640,7 @@ class Scene extends BaseClass
                                 ':timedac' => $ins['timedac'] == '' ? '' : base64_encode(gzencode($ins['timedac'])), 
 							]);
 							$iid = $this->insertID();
-							$this->execute('INSERT INTO instancedesc (id_instance, id_position, id_order, id_x, id_y, id_alpha, id_width, id_height, id_rotation, id_visible, id_color, id_coloralpha, id_volume, id_pan, id_blur, id_dropshadow, id_glow, id_blend, id_textfont, id_textsize, id_textcolor, id_textbold, id_textitalic, id_textleading, id_textspacing, id_textbackground, id_textalign) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :glow, :blend,  :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign)', [
+							$this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'instancedesc (id_instance, id_position, id_order, id_x, id_y, id_alpha, id_width, id_height, id_rotation, id_visible, id_color, id_coloralpha, id_volume, id_pan, id_blur, id_dropshadow, id_glow, id_blend, id_textfont, id_textsize, id_textcolor, id_textbold, id_textitalic, id_textleading, id_textspacing, id_textbackground, id_textalign) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :glow, :blend,  :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign)', [
 								':instance' => $iid, 
 								':position' => 'h', 
 								':order' => $ins['horizontal']['order'], 
@@ -669,7 +669,7 @@ class Scene extends BaseClass
 								':textbackground' => $ins['horizontal']['textBackground'], 
 								':textalign' => $ins['horizontal']['textAlign'], 
 							]);
-							$this->execute('INSERT INTO instancedesc (id_instance, id_position, id_order, id_x, id_y, id_alpha, id_width, id_height, id_rotation, id_visible, id_color, id_coloralpha, id_volume, id_pan, id_blur, id_dropshadow, id_glow, id_blend, id_textfont, id_textsize, id_textcolor, id_textbold, id_textitalic, id_textleading, id_textspacing, id_textbackground, id_textalign) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :glow, :blend, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign)', [
+							$this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'instancedesc (id_instance, id_position, id_order, id_x, id_y, id_alpha, id_width, id_height, id_rotation, id_visible, id_color, id_coloralpha, id_volume, id_pan, id_blur, id_dropshadow, id_glow, id_blend, id_textfont, id_textsize, id_textcolor, id_textbold, id_textitalic, id_textleading, id_textspacing, id_textbackground, id_textalign) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :glow, :blend, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign)', [
 								':instance' => $iid, 
 								':position' => 'v', 
 								':order' => $ins['vertical']['order'], 
@@ -700,17 +700,17 @@ class Scene extends BaseClass
 							]);
 						}
 						// adjusting order values
-						$ckord = $this->queryAll('SELECT id_id, id_position, id_order FROM instancedesc d INNER JOIN instances i ON d.id_instance=i.in_id WHERE i.in_keyframe=:kf ORDER BY id_position, id_order', [ ':kf' => $kid ]);
+						$ckord = $this->queryAll('SELECT id_id, id_position, id_order FROM ' . $this->conf['databasePrefix'] . 'instancedesc d INNER JOIN ' . $this->conf['databasePrefix'] . 'instances i ON d.id_instance=i.in_id WHERE i.in_keyframe=:kf ORDER BY id_position, id_order', [ ':kf' => $kid ]);
 						$ordv = $ordh = 0;
 						foreach ($ckord as $vord) {
 							if ($vord['id_position'] == 'v') {
-								$this->execute('UPDATE instancedesc SET id_order=:ord WHERE id_id=:id', [
+								$this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'instancedesc SET id_order=:ord WHERE id_id=:id', [
 									':ord' => $ordv, 
 									':id' => $vord['id_id'], 
 								]);
 								$ordv++;
 							} else {
-								$this->execute('UPDATE instancedesc SET id_order=:ord WHERE id_id=:id', [
+								$this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'instancedesc SET id_order=:ord WHERE id_id=:id', [
 									':ord' => $ordh, 
 									':id' => $vord['id_id'], 
 								]);
@@ -723,19 +723,19 @@ class Scene extends BaseClass
 					// publish?
 					if ($pub) {
 						if (!$saveas) {
-							$this->execute('UPDATE scenes SET sc_published=:pub WHERE sc_id=:id AND sc_movie=:mv', [
+							$this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'scenes SET sc_published=:pub WHERE sc_id=:id AND sc_movie=:mv', [
 								':pub' => '0', 
 								':id' => $id, 
 								':mv' => $movie, 
 							]);
 						}
-						$this->execute('UPDATE scenes SET sc_published=:pub WHERE sc_uid=:id', [
+						$this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'scenes SET sc_published=:pub WHERE sc_uid=:id', [
 							':pub' => '1', 
 							':id' => $uid, 
 						]);
 						$this->loadSceneUid($user, $uid, $movie);
                         // restricted movie?
-                        $ckm = $this->queryAll('SELECT mv_identify, mv_vsgroups FROM movies WHERE mv_id=:mv', [ ':mv' => $movie ]);
+                        $ckm = $this->queryAll('SELECT mv_identify, mv_vsgroups FROM ' . $this->conf['databasePrefix'] . 'movies WHERE mv_id=:mv', [ ':mv' => $movie ]);
                         if (count($ckm) > 0) {
                             if (($ckm[0]['mv_identify'] == '1') || (!is_null($ckm[0]['mv_vsgroups']) && ($ckm[0]['mv_vsgroups'] != ''))) {
                                 // nothing to do
@@ -746,16 +746,16 @@ class Scene extends BaseClass
 					}
 					
                     // locking scene
-                    $this->execute('DELETE FROM scenelock WHERE sl_user=:user', [
+                    $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'scenelock WHERE sl_user=:user', [
                         ':user' => $user, 
                     ]);
-                    $this->execute('INSERT INTO scenelock (sl_id, sl_movie, sl_scene, sl_user, sl_when) VALUES (:id, :movie, :scene, :user, :when) ON DUPLICATE KEY UPDATE sl_user=VALUES(sl_user), sl_when=VALUES(sl_when)', [
+                    $this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'scenelock (sl_id, sl_movie, sl_scene, sl_user, sl_when) VALUES (:id, :movie, :scene, :user, :when) ON DUPLICATE KEY UPDATE sl_user=VALUES(sl_user), sl_when=VALUES(sl_when)', [
                         ':id' => $movie . '_' . $id, 
                         ':movie' => $movie, 
                         ':scene' => $id, 
                         ':user' => $user, 
                         ':when' => date('Y-m-d H:i:s'), 
-                    ], 'INSERT INTO scenelock (sl_id, sl_movie, sl_scene, sl_user, sl_when) VALUES (:id, :movie, :scene, :user, :when) ON CONFLICT(sl_id) DO UPDATE SET sl_user = excluded.sl_user, sl_when = excluded.sl_when');
+                    ], 'INSERT INTO ' . $this->conf['databasePrefix'] . 'scenelock (sl_id, sl_movie, sl_scene, sl_user, sl_when) VALUES (:id, :movie, :scene, :user, :when) ON CONFLICT(sl_id) DO UPDATE SET sl_user = excluded.sl_user, sl_when = excluded.sl_when');
                     
 					// finish
 					return (0);
@@ -773,7 +773,7 @@ class Scene extends BaseClass
 	 */
 	public function listVersions($movie, $id, $format) {
 		$ret = [ ];
-		$ck = $this->queryAll('SELECT sc_uid, sc_user, sc_date, sc_published FROM scenes WHERE sc_movie=:mv AND sc_id=:id ORDER BY sc_uid DESC', [
+		$ck = $this->queryAll('SELECT sc_uid, sc_user, sc_date, sc_published FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_movie=:mv AND sc_id=:id ORDER BY sc_uid DESC', [
 			':mv' => $movie, 
 			':id' => $id, 
 		]);		
@@ -793,26 +793,26 @@ class Scene extends BaseClass
 	 * @return	bool	was the scene found and removed?
 	 */
 	public function removeScene($movie, $id) {
-		$ck = $this->queryAll('SELECT COUNT(*) AS TOTAL FROM scenes WHERE sc_movie=:mv AND sc_id=:id', [
+		$ck = $this->queryAll('SELECT COUNT(*) AS TOTAL FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_movie=:mv AND sc_id=:id', [
 			':mv' => $movie, 
 			':id' => $id, 
 		]);	
 		if ($ck[0]['TOTAL'] > 0) {
-			$ck = $this->queryAll('SELECT sc_uid FROM scenes WHERE sc_id=:id AND sc_movie=:mv', [
+			$ck = $this->queryAll('SELECT sc_uid FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_id=:id AND sc_movie=:mv', [
 				':id' => $id, 
 				':mv' => $movie, 
 			]);
 			foreach ($ck as $v) {
-				$ckok = $this->queryAll('SELECT kf_id FROM keyframes WHERE kf_scene=:sc', [':sc'=>$v['sc_uid']]);
+				$ckok = $this->queryAll('SELECT kf_id FROM ' . $this->conf['databasePrefix'] . 'keyframes WHERE kf_scene=:sc', [':sc'=>$v['sc_uid']]);
 				foreach ($ckok as $kfo) {
-					$ckoi = $this->queryAll('SELECT in_id FROM instances WHERE in_keyframe=:kf', [':kf'=>$kfo['kf_id']]);
+					$ckoi = $this->queryAll('SELECT in_id FROM ' . $this->conf['databasePrefix'] . 'instances WHERE in_keyframe=:kf', [':kf'=>$kfo['kf_id']]);
 					foreach ($ckoi as $inso) {
-						$this->execute('DELETE FROM instancedesc WHERE id_instance=:id LIMIT 2', [':id'=>$inso['in_id']], 'DELETE FROM instancedesc WHERE id_instance=:id');
-						$this->execute('DELETE FROM instances WHERE in_id=:id LIMIT 1', [':id'=>$inso['in_id']], 'DELETE FROM instances WHERE in_id=:id');
+						$this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'instancedesc WHERE id_instance=:id LIMIT 2', [':id'=>$inso['in_id']], 'DELETE FROM ' . $this->conf['databasePrefix'] . 'instancedesc WHERE id_instance=:id');
+						$this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'instances WHERE in_id=:id LIMIT 1', [':id'=>$inso['in_id']], 'DELETE FROM ' . $this->conf['databasePrefix'] . 'instances WHERE in_id=:id');
 					}
-					$this->execute('DELETE FROM keyframes WHERE kf_id=:id LIMIT 1', [':id'=>$kfo['kf_id']], 'DELETE FROM keyframes WHERE kf_id=:id');
+					$this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'keyframes WHERE kf_id=:id LIMIT 1', [':id'=>$kfo['kf_id']], 'DELETE FROM ' . $this->conf['databasePrefix'] . 'keyframes WHERE kf_id=:id');
 				}
-				$this->execute('DELETE FROM scenes WHERE sc_uid=:id LIMIT 1', [':id'=>$v['sc_uid']], 'DELETE FROM scenes WHERE sc_uid=:id');
+				$this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_uid=:id LIMIT 1', [':id'=>$v['sc_uid']], 'DELETE FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_uid=:id');
 			}
 			@unlink('../movie/'.$movie.'.movie/scene/' . $id . '.json');
 			return (true);
@@ -826,12 +826,12 @@ class Scene extends BaseClass
      */
     public function saveSequence() {
         if ($this->loaded) {
-            $this->execute('UPDATE scenes SET sc_published=:pub WHERE sc_movie=:mv AND sc_id=:id', [
+            $this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'scenes SET sc_published=:pub WHERE sc_movie=:mv AND sc_id=:id', [
                 ':pub' => '0', 
                 ':mv' => $this->info['movie'], 
                 ':id' => $this->info['id'], 
             ]);
-            $this->execute('UPDATE scenes SET sc_published=:pub, sc_up=:up, sc_down=:down, sc_left=:left, sc_right=:right, sc_nin=:nin, sc_nout=:nout WHERE sc_uid=:uid', [
+            $this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'scenes SET sc_published=:pub, sc_up=:up, sc_down=:down, sc_left=:left, sc_right=:right, sc_nin=:nin, sc_nout=:nout WHERE sc_uid=:uid', [
                 ':pub' => '1', 
                 ':up' => $this->info['navigation']['up'], 
                 ':down' => $this->info['navigation']['down'], 

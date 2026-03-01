@@ -435,6 +435,10 @@ class Player extends Sprite {
             GlobalPlayer.parser = new ScriptParser();
             GlobalPlayer.parser.eventSend = this.warnListeners;
             GlobalPlayer.ready = true;
+            // automatic login?
+            if ((GlobalPlayer.mode == Player.MODE_PLAYER) && (Main.us != '') && (Main.uk != '')) {
+                GlobalPlayer.ws.checkVisitorKey(Main.us, Main.uk, this.onKeyCheck);
+            }
             // creating the display area
             this._bgarea = new Sprite();
             if (GlobalPlayer.mode != Player.MODE_EDITOR) this.addChild(this._bgarea);
@@ -476,6 +480,10 @@ class Player extends Sprite {
                             new EmbedFont((GlobalPlayer.font + sysfonts[i].file), sysfonts[i].name);
                         }
                     }
+                    // automatic login?
+                    if ((Main.us != '') && (Main.uk != '')) {
+                        GlobalPlayer.ws.checkVisitorKey(Main.us, Main.uk, this.onKeyCheck);
+                    }
                 }
                 // start game controller support
                 var joystick = new Joystick();
@@ -512,6 +520,17 @@ class Player extends Sprite {
             } else {
                 // default language must be loaded to continue
                 this.halt('language');
+            }
+        }
+    }
+
+    /**
+        Result for automatic login key check.
+    **/
+    private function onKeyCheck(ok:Bool, ld:DataLoader):Void {
+        if (ok) {
+            if (ld.map['e'] == 0) {
+                GlobalPlayer.ws.setUser(Main.us, ld.map['key'], ld.map['groups']);
             }
         }
     }
