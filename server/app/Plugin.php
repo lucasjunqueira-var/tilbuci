@@ -39,7 +39,7 @@ class Plugin extends Data
 		$this->id = $id;
 		
 		// get configuration
-		$ck = $this->queryAll('SELECT pc_setup FROM pluginconfig WHERE pc_id=:id', [ ':id' => $this->id ]);
+		$ck = $this->queryAll('SELECT pc_setup FROM ' . $this->conf['databasePrefix'] . 'pluginconfig WHERE pc_id=:id', [ ':id' => $this->id ]);
 		if (count($ck) > 0) {
 			if ($ck[0]['pc_setup'] != '') {
 				$json = json_decode($ck[0]['pc_setup'], true);
@@ -49,7 +49,7 @@ class Plugin extends Data
 			}
 		} else {
 			// create configuration
-			$this->execute('INSERT INTO pluginconfig (pc_id, pc_active, pc_setup, pc_file, pc_index, pc_ws) VALUES (:id, :ac, :st, :fl, :in, :ws)', [
+			$this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'pluginconfig (pc_id, pc_active, pc_setup, pc_file, pc_index, pc_ws) VALUES (:id, :ac, :st, :fl, :in, :ws)', [
 				':id' => $id, 
 				':ac' => '1', 
 				':st' => '', 
@@ -68,7 +68,7 @@ class Plugin extends Data
 	 * @param	string	$ws	does the plugin have its own webservice? ('0' or '1')
 	 */
 	public function setPluginConfig($conf, $file, $index, $ws) {
-		$this->execute('UPDATE pluginconfig SET pc_setup=:cf, pc_file=:fl, pc_index=:in, pc_ws=:ws WHERE pc_id=:id', [
+		$this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'pluginconfig SET pc_setup=:cf, pc_file=:fl, pc_index=:in, pc_ws=:ws WHERE pc_id=:id', [
 			':cf' => $conf, 
 			':fl' => $file,
 			':in' => $index, 

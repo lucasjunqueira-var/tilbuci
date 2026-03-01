@@ -22,7 +22,7 @@ if (isset($_GET['a'])) {
                 if (isset($_GET['movie']) && isset($_GET['media'])) {
                     $data = new Data;
                     $media = str_replace(['.json', ' '], '', mb_strtolower($_GET['media']));
-                    $ck = $data->queryAll('SELECT sn_content FROM snippets WHERE sn_movie=:mv AND sn_file=:fl', [':mv' => $_GET['movie'], ':fl' => $media]);
+                    $ck = $data->queryAll('SELECT sn_content FROM ' . $data->conf['databasePrefix'] . 'snippets WHERE sn_movie=:mv AND sn_file=:fl', [':mv' => $_GET['movie'], ':fl' => $media]);
                     if (count($ck) > 0) {
                         file_put_contents(('../../export/'.$_GET['movie'].'-snippets.json'), gzdecode(base64_decode($ck[0]['sn_content'])));
                         $path = '../../export/'.$_GET['movie'].'-snippets.json';
@@ -37,7 +37,7 @@ if (isset($_GET['a'])) {
                 if (isset($_GET['movie']) && isset($_GET['media'])) {
                     $data = new Data;
                     $media = str_replace(['.json', ' '], '', mb_strtolower($_GET['media']));
-                    $ck = $data->queryAll('SELECT st_content FROM strings WHERE st_movie=:mv AND st_file=:fl', [':mv' => $_GET['movie'], ':fl' => $media]);
+                    $ck = $data->queryAll('SELECT st_content FROM ' . $data->conf['databasePrefix'] . 'strings WHERE st_movie=:mv AND st_file=:fl', [':mv' => $_GET['movie'], ':fl' => $media]);
                     if (count($ck) > 0) {
                         file_put_contents(('../../export/'.$_GET['movie'].'-string.json'), gzdecode(base64_decode($ck[0]['st_content'])));
                         $path = '../../export/'.$_GET['movie'].'-string.json';
@@ -51,7 +51,7 @@ if (isset($_GET['a'])) {
 			case 'strings.json':
 				if (isset($_GET['movie'])) {
                     $data = new Data;
-                    $ck = $data->queryAll('SELECT mv_strings FROM movies WHERE mv_id=:mv', [':mv' => $_GET['movie']]);
+                    $ck = $data->queryAll('SELECT mv_strings FROM ' . $data->conf['databasePrefix'] . 'movies WHERE mv_id=:mv', [':mv' => $_GET['movie']]);
                     if (count($ck) > 0) {
                         file_put_contents(('../../export/'.$_GET['movie'].'-string.json'), gzdecode(base64_decode($ck[0]['mv_strings'])));
                         $path = '../../export/'.$_GET['movie'].'-string.json';

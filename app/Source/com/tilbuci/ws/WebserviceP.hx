@@ -125,6 +125,22 @@ class WebserviceP extends EventDispatcher {
     }
 
     /**
+        Checks an autopmatic visitor key login.
+        @param  email   the e-mail address
+        @param  key     the key to check
+    **/
+    public function checkVisitorKey(email:String, key:String, callback:Dynamic):Bool {
+        return (this.send(
+            'System/VisitorKey', 
+            [
+                'email' => email, 
+                'key' => key
+            ], 
+            callback
+        ));
+    }
+
+    /**
         Saves visitor data to the server.
         @param  name    the save name
         @param  values  the values to save

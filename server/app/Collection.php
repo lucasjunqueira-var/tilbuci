@@ -50,9 +50,9 @@ class Collection extends BaseClass
 		$this->info = [ ];
 		$this->loaded = false;
 		if (is_null($movie)) {
-			$ck = $this->queryAll('SELECT * FROM collections WHERE cl_uid=:id', [':id' => $id]);
+			$ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'collections WHERE cl_uid=:id', [':id' => $id]);
 		} else {
-			$ck = $this->queryAll('SELECT * FROM collections WHERE cl_id=:id AND cl_movie=:mv', [':id' => $id, ':mv' => $movie]);
+			$ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'collections WHERE cl_id=:id AND cl_movie=:mv', [':id' => $id, ':mv' => $movie]);
 		}
 		if (count($ck) == 0) {
 			return (false);
@@ -65,7 +65,7 @@ class Collection extends BaseClass
 				'time' => (float)$ck[0]['cl_time'], 
 				'assets' => [ ], 
 			];
-			$cka = $this->queryAll('SELECT * FROM assets WHERE at_collection=:col ORDER BY at_order ASC', [':col' => $ck[0]['cl_uid']]);
+			$cka = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'assets WHERE at_collection=:col ORDER BY at_order ASC', [':col' => $ck[0]['cl_uid']]);
 			foreach ($cka as $a) {
 				$this->info['assets'][$a['at_id']] = [
 					'order' => (int)$a['at_order'], 
@@ -109,7 +109,7 @@ class Collection extends BaseClass
                 // encrypted?
                 $encr = false;
                 if (!$decrypt) {
-                    $ck = $this->queryAll('SELECT mv_encrypted FROM movies WHERE mv_id=:mv', [':mv'=>$movie]);
+                    $ck = $this->queryAll('SELECT mv_encrypted FROM ' . $this->conf['databasePrefix'] . 'movies WHERE mv_id=:mv', [':mv'=>$movie]);
                     if (count($ck) > 0) {
                         $encr = $ck[0]['mv_encrypted'] == '1';
                     }
