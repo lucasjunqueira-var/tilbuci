@@ -158,12 +158,11 @@ class TilBuci_WP_Shortcode {
     public static function get_project_data($project_id) {
         global $wpdb;
         
-        $table_name = 'tilbuci_movies';
+        $table_name = $wpdb->prefix . 'tilbuci_movies';
         $project = $wpdb->get_row(
             $wpdb->prepare(
-                "SELECT * FROM $table_name WHERE id = %d OR name = %s",
-                $project_id,
-                $project_id
+                "SELECT * FROM %i WHERE %i = %d OR %i = %s",
+                $table_name, 'id', $project_id, 'name', $project_id
             )
         );
 
@@ -178,10 +177,11 @@ class TilBuci_WP_Shortcode {
     public static function get_all_projects() {
         global $wpdb;
         
-        $table_name = 'tilbuci_movies';
-        $projects = $wpdb->get_results(
-            "SELECT id, name, description, created_at FROM $table_name ORDER BY created_at DESC"
-        );
+        $table_name = $wpdb->prefix . 'tilbuci_movies';
+        $projects = $wpdb->get_results($wpdb->prepare(
+            "SELECT %i, %i, %i, %i FROM %i ORDER BY %i DESC", 
+            'id', 'name', 'description', 'created_at', $table_name, 'created_at'
+        ));
 
         return $projects;
     }

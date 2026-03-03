@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `tilbuci_assets` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_assets` (
   `at_uid` int(11) NOT NULL AUTO_INCREMENT,
   `at_id` varchar(32) NOT NULL,
   `at_collection` varchar(64) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_assets` (
   KEY `at_id` (`at_id`),
   KEY `at_collection` (`at_collection`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_collections` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_collections` (
   `cl_uid` varchar(64) NOT NULL,
   `cl_id` varchar(32) NOT NULL,
   `cl_movie` varchar(32) NOT NULL,
@@ -29,16 +29,16 @@ CREATE TABLE IF NOT EXISTS `tilbuci_collections` (
   KEY `cl_id` (`cl_id`),
   KEY `cl_movie` (`cl_movie`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_config` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_config` (
   `cf_key` varchar(16) NOT NULL,
   `cf_value` text DEFAULT NULL,
   PRIMARY KEY (`cf_key`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_cors` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_cors` (
   `cr_domain` varchar(256) NOT NULL,
   PRIMARY KEY (`cr_domain`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_dialogues` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_dialogues` (
   `dg_id` int(11) NOT NULL AUTO_INCREMENT,
   `dg_movie` varchar(32) NOT NULL,
   `dg_name` varchar(64) NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_dialogues` (
   KEY `dg_movie` (`dg_movie`),
   KEY `dg_name` (`dg_name`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_events` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_events` (
   `ev_id` int(11) NOT NULL AUTO_INCREMENT,
   `ev_date` datetime NOT NULL DEFAULT current_timestamp(),
   `ev_when` datetime NOT NULL,
@@ -64,12 +64,12 @@ CREATE TABLE IF NOT EXISTS `tilbuci_events` (
   KEY `ev_movie` (`ev_movie`),
   KEY `ev_when` (`ev_when`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_fonts` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_fonts` (
   `fn_name` varchar(128) NOT NULL,
   `fn_file` varchar(512) NOT NULL,
   PRIMARY KEY (`fn_name`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_instancedesc` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_instancedesc` (
   `id_id` int(11) NOT NULL AUTO_INCREMENT,
   `id_instance` int(11) NOT NULL,
   `id_position` varchar(1) NOT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_instancedesc` (
   PRIMARY KEY (`id_id`),
   KEY `id_instance` (`id_instance`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_instances` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_instances` (
   `in_id` int(11) NOT NULL AUTO_INCREMENT,
   `in_keyframe` int(11) NOT NULL,
   `in_name` varchar(32) NOT NULL,
@@ -114,14 +114,14 @@ CREATE TABLE IF NOT EXISTS `tilbuci_instances` (
   PRIMARY KEY (`in_id`),
   KEY `in_keyframe` (`in_keyframe`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_keyframes` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_keyframes` (
   `kf_id` int(11) NOT NULL AUTO_INCREMENT,
   `kf_scene` int(11) NOT NULL,
   `kf_order` tinyint(4) NOT NULL,
   PRIMARY KEY (`kf_id`),
   KEY `kf_scene` (`kf_scene`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_menus` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_menus` (
   `mn_id` int(11) NOT NULL AUTO_INCREMENT,
   `mn_movie` varchar(64) NOT NULL,
   `mn_name` varchar(64) NOT NULL,
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_menus` (
   KEY `mn_movie` (`mn_movie`),
   KEY `mn_name` (`mn_name`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_movies` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_movies` (
   `mv_id` varchar(32) NOT NULL,
   `mv_user` varchar(256) NOT NULL,
   `mv_collaborators` varchar(2048) NOT NULL DEFAULT '',
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_movies` (
   KEY `mv_collaborators` (`mv_collaborators`(768)),
   KEY `mv_collaborators_2` (`mv_collaborators`(768))
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_notes` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_notes` (
   `nt_id` int(11) NOT NULL AUTO_INCREMENT,
   `nt_movie` varchar(32) NOT NULL,
   `nt_scene` varchar(32) NOT NULL,
@@ -196,7 +196,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_notes` (
   KEY `nt_movie` (`nt_movie`),
   KEY `nt_scene` (`nt_scene`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_overlay_plugin` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_overlay_plugin` (
   `op_key` varchar(32) NOT NULL,
   `op_url` varchar(2048) NOT NULL,
   `op_request` longtext DEFAULT NULL,
@@ -208,7 +208,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_overlay_plugin` (
   KEY `op_created` (`op_created`),
   KEY `op_updated` (`op_updated`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_pluginconfig` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_pluginconfig` (
   `pc_id` varchar(64) NOT NULL,
   `pc_active` tinyint(4) NOT NULL DEFAULT 1,
   `pc_setup` longtext DEFAULT NULL,
@@ -217,7 +217,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_pluginconfig` (
   `pc_ws` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`pc_id`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_plugins` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_plugins` (
   `pl_id` varchar(128) NOT NULL,
   `pl_name` varchar(64) NOT NULL,
   `pl_movie` varchar(64) NOT NULL,
@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_plugins` (
   KEY `pl_name` (`pl_name`),
   KEY `pl_movie` (`pl_movie`,`pl_scene`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_scenelock` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_scenelock` (
   `sl_id` varchar(128) NOT NULL,
   `sl_movie` varchar(32) NOT NULL,
   `sl_scene` varchar(32) NOT NULL,
@@ -237,7 +237,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_scenelock` (
   KEY `sl_movie` (`sl_movie`),
   KEY `sl_scene` (`sl_scene`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_scenes` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_scenes` (
   `sc_uid` int(11) NOT NULL AUTO_INCREMENT,
   `sc_id` varchar(32) NOT NULL,
   `sc_movie` varchar(32) NOT NULL,
@@ -267,7 +267,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_scenes` (
   KEY `sc_movie` (`sc_movie`),
   KEY `sc_published` (`sc_published`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_snippets` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_snippets` (
   `sn_id` int(11) NOT NULL AUTO_INCREMENT,
   `sn_movie` varchar(32) NOT NULL,
   `sn_file` varchar(128) NOT NULL,
@@ -276,7 +276,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_snippets` (
   KEY `sn_movie` (`sn_movie`),
   KEY `sn_file` (`sn_file`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_strings` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_strings` (
   `st_id` int(11) NOT NULL AUTO_INCREMENT,
   `st_movie` varchar(32) NOT NULL,
   `st_file` varchar(128) NOT NULL,
@@ -285,7 +285,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_strings` (
   KEY `st_movie` (`st_movie`),
   KEY `st_file` (`st_file`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_users` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_users` (
   `us_email` varchar(256) NOT NULL,
   `us_pass` varchar(32) NOT NULL,
   `us_passtemp` varchar(32) NOT NULL,
@@ -295,7 +295,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_users` (
   `us_updated` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`us_email`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_visitorassoc` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_visitorassoc` (
   `va_id` int(11) NOT NULL AUTO_INCREMENT,
   `va_visitor` varchar(512) NOT NULL,
   `va_group` int(11) NOT NULL,
@@ -303,7 +303,7 @@ CREATE TABLE IF NOT EXISTS `tilbuci_visitorassoc` (
   KEY `va_visitor` (`va_visitor`),
   KEY `va_group` (`va_group`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_visitordata` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_visitordata` (
   `vd_id` varchar(128) NOT NULL,
   `vd_movie` varchar(64) NOT NULL,
   `vd_user` varchar(128) NOT NULL,
@@ -316,14 +316,14 @@ CREATE TABLE IF NOT EXISTS `tilbuci_visitordata` (
   KEY `vd_user` (`vd_user`),
   KEY `vd_name` (`vd_name`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_visitorgroups` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_visitorgroups` (
   `vg_id` int(11) NOT NULL AUTO_INCREMENT,
   `vg_name` varchar(512) NOT NULL,
   `vg_created` datetime NOT NULL DEFAULT current_timestamp(),
   `vg_updated` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`vg_id`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_visitors` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_visitors` (
   `vs_email` varchar(256) NOT NULL,
   `vs_key` varchar(32) NOT NULL,
   `vs_created` datetime NOT NULL DEFAULT current_timestamp(),
@@ -332,13 +332,13 @@ CREATE TABLE IF NOT EXISTS `tilbuci_visitors` (
   `vs_level` tinyint(4) NOT NULL DEFAULT 100,
   PRIMARY KEY (`vs_email`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_visitorsblocked` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_visitorsblocked` (
   `vb_email` varchar(512) NOT NULL,
   `vb_admin` varchar(512) NOT NULL,
   `vb_when` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`vb_email`)
 );
-CREATE TABLE IF NOT EXISTS `tilbuci_visitorstate` (
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_visitorstate` (
   `vs_id` varchar(128) NOT NULL,
   `vs_movie` varchar(64) NOT NULL,
   `vs_user` varchar(128) NOT NULL,

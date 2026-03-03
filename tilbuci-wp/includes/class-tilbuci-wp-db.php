@@ -21,18 +21,23 @@ class TilBuci_WP_DB {
     public static function activate() {
         global $wpdb;
 
-        // Execute tables.sql
-        self::execute_sql_file('tables.sql');
+        // Create tables using dbDelta (WordPress recommended method)
+        self::create_tables_with_dbdelta();
 
         // Check if dbVersion record exists in tilbuci_config table (as per specification)
-        $db_version_exists = $wpdb->get_var("SELECT COUNT(*) FROM tilbuci_config WHERE cf_key = 'dbVersion'");
+        $table_prefix = $wpdb->prefix;
+        $config_table = $table_prefix . 'tilbuci_config';
+        $db_version_exists = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM %i WHERE %i = %s", 
+            $config_table, 'cf_key', 'dbVersion'
+        ));
         
         if (!$db_version_exists) {
-            // Execute data.sql
+            // Execute data.sql using regular query execution
             self::execute_sql_file('data.sql');
         }
 
-        // Update Config.php with WordPress database settings
+        // Update Config.php with WordPress database settings (just failsafe - on WordPress, use $wpdb instead)
         self::update_config_file();
 
         // Update editor.json and player.json files
@@ -40,6 +45,132 @@ class TilBuci_WP_DB {
 
         // Add plugin version option
         add_option('tilbuci_wp_version', TILBUCI_WP_VERSION);
+    }
+
+    /**
+     * Deactivate the plugin - remove tables, configuration files, and movie folders
+     */
+    public static function deactivate() {
+        global $wpdb;
+
+        // 0. Create backups of movie folders before removing anything
+        if (class_exists('TilBuci_WP')) {
+            $plugin = new TilBuci_WP();
+            $plugin->create_movie_backups();
+        }
+
+        // 1. Remove all tables containing "tilbuci_" in the name
+        $tables = $wpdb->get_col($wpdb->prepare("SHOW TABLES LIKE %s", '%tilbuci_%'));
+        foreach ($tables as $table) {
+            $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %i", $table));
+        }
+
+        // 2. Delete configuration files
+        $plugin_dir = dirname(dirname(__FILE__));
+        
+        // Config.php
+        $config_file = $plugin_dir . '/tilbuci/app/Config.php';
+        if (file_exists($config_file)) {
+            unlink($config_file);
+        }
+        
+        // editor.json
+        $editor_file = $plugin_dir . '/tilbuci/public/app/editor.json';
+        if (file_exists($editor_file)) {
+            unlink($editor_file);
+        }
+        
+        // player.json
+        $player_file = $plugin_dir . '/tilbuci/public/app/player.json';
+        if (file_exists($player_file)) {
+            unlink($player_file);
+        }
+
+        // 3. Remove all folders inside public/movie/
+        $movie_dir = $plugin_dir . '/tilbuci/public/movie/';
+        if (is_dir($movie_dir)) {
+            $folders = glob($movie_dir . '*', GLOB_ONLYDIR);
+            foreach ($folders as $folder) {
+                self::delete_directory($folder);
+            }
+        }
+
+        // Remove plugin version option
+        delete_option('tilbuci_wp_version');
+    }
+
+    /**
+     * Recursively delete a directory and its contents
+     *
+     * @param string $dir Directory path
+     */
+    private static function delete_directory($dir) {
+        if (!is_dir($dir)) {
+            return;
+        }
+        
+        $items = scandir($dir);
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+            
+            $path = $dir . '/' . $item;
+            if (is_dir($path)) {
+                self::delete_directory($path);
+            } else {
+                @unlink($path);
+            }
+        }
+        
+        @rmdir($dir);
+    }
+
+    /**
+     * Create database tables using WordPress dbDelta method
+     * This ensures tables are created or updated safely
+     */
+    private static function create_tables_with_dbdelta() {
+        global $wpdb;
+        
+        // Include WordPress upgrade functions for dbDelta
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        
+        $sql_file = dirname(dirname(__FILE__)) . '/tilbuci/tables.sql';
+        
+        if (!file_exists($sql_file)) {
+            error_log('TilBuci WP: SQL file not found: ' . $sql_file);
+            return;
+        }
+
+        // Read SQL file
+        $sql = file_get_contents($sql_file);
+        if ($sql === false) {
+            error_log('TilBuci WP: Failed to read SQL file: ' . $sql_file);
+            return;
+        }
+
+        // Get WordPress table prefix and replace {PR} placeholder
+        $table_prefix = $wpdb->prefix;
+        $sql = str_replace('{PR}', $table_prefix, $sql);        
+        $queries = explode(';', $sql);
+        
+        foreach ($queries as $query) {
+            $query = trim($query);
+            if (!empty($query)) {
+                // Remove trailing semicolon if present
+                $query = rtrim($query, ';');
+                // Remove "IF NOT EXISTS" clause for dbDelta compatibility
+                $query = preg_replace('/CREATE TABLE IF NOT EXISTS/i', 'CREATE TABLE', $query);
+                // Execute dbDelta
+                dbDelta($query);
+            }
+        }
+        
+        // Log any errors
+        if (!empty($wpdb->last_error)) {
+            error_log('TilBuci WP: dbDelta error: ' . $wpdb->last_error);
+        }
     }
 
     /**
@@ -63,6 +194,10 @@ class TilBuci_WP_DB {
             error_log('TilBuci WP: Failed to read SQL file: ' . $sql_file);
             return;
         }
+
+        // Get WordPress table prefix and replace {PR} placeholder
+        $table_prefix = $wpdb->prefix;
+        $sql = str_replace('{PR}', $table_prefix, $sql);
 
         // Split SQL statements (assuming each statement ends with ; and newline)
         $queries = explode(';', $sql);
@@ -91,13 +226,14 @@ $gconf = [
 \'databasePass\' => \'\',
 \'databaseName\' => \'\',
 \'databasePort\' => \'\',
-\'databasePrefix\' => \'tilbuci_\',
+\'databasePrefix\' => \'{PR}tilbuci_\',
 \'path\' => \'\',
 \'singleUser\' => false,
 \'encVec\' => \'1234567890123456\',
 \'encKey\' => \'b8f983e2c5d052da195646d79bb3af1e\',
 \'secret\' => \'dbfa29a53f4b366c1b8e9ae0402439e3\',
 \'sceneVersions\' => 10,
+\'host\' => \'WordPress\',
 ];
 ?>';
 
@@ -135,6 +271,12 @@ $gconf = [
         $path = $site_url . '/wp-content/plugins/tilbuci-wp/tilbuci/public';
         // Ensure path ends with a slash
         $path = trailingslashit($path);
+        
+        // Get WordPress table prefix
+        global $wpdb;
+        $table_prefix = $wpdb->prefix;
+        $database_prefix = '{PR}tilbuci_';
+        $database_prefix = str_replace('{PR}', $table_prefix, $database_prefix);
 
         // Replace the values in the array (looking for empty strings)
         $replacements = [
@@ -143,6 +285,7 @@ $gconf = [
             "'databaseName' => ''" => "'databaseName' => '" . addslashes($db_name) . "'",
             "'databasePass' => ''" => "'databasePass' => '" . addslashes($database_pass) . "'",
             "'path' => ''" => "'path' => '" . addslashes($path) . "'",
+            "'databasePrefix' => '{PR}tilbuci_'" => "'databasePrefix' => '" . addslashes($database_prefix) . "'",
         ];
 
         foreach ($replacements as $search => $replace) {
@@ -282,96 +425,98 @@ $gconf = [
         
         file_put_contents($player_file, $player_content);
     }
-/**
- * Check and update plugin version by executing SQL update files
- * This should be called when the plugin page loads in WordPress dashboard
- */
-public static function check_and_update_version() {
-    global $wpdb;
-    
-    // Get current version from database (correct query as per specification)
-    $current_version = $wpdb->get_var("SELECT cf_value FROM tilbuci_config WHERE cf_key = 'dbVersion'");
-    
-    // If no version found, assume version 0 (initial installation)
-    if ($current_version === null) {
-        $current_version = 0;
-    } else {
-        $current_version = intval($current_version);
-    }
-    
-    // Get latest version from version.md file
-    $version_file = dirname(dirname(__FILE__)) . '/tilbuci/version.md';
-    if (!file_exists($version_file)) {
-        error_log('TilBuci WP: version.md file not found');
-        return;
-    }
-    
-    $latest_version = intval(trim(file_get_contents($version_file)));
-    
-    // If latest version is greater than current version, execute update files
-    if ($latest_version > $current_version) {
-        // Loop through version numbers from current+1 to latest
-        for ($version = $current_version + 1; $version <= $latest_version; $version++) {
-            $update_file = dirname(dirname(__FILE__)) . '/tilbuci/update/' . $version . '.sql';
-            
-            if (file_exists($update_file)) {
-                // Execute the SQL update file
-                self::execute_sql_update_file($update_file);
+
+    /**
+     * Check and update plugin version by executing SQL update files
+     * This should be called when the plugin page loads in WordPress dashboard
+     */
+    public static function check_and_update_version() {
+        global $wpdb;
+        
+        // Get WordPress table prefix
+        $table_prefix = $wpdb->prefix;
+        $config_table = $table_prefix . 'tilbuci_config';
+        
+        // Get current version from database
+        $current_version = $wpdb->get_var($wpdb->prepare(
+            "SELECT %i FROM %i WHERE %i = %s", 
+            'cf_value', $config_table, 'cf_key', 'dbVersion'
+        ));
+        
+        // If no version found, assume version 0 (initial installation)
+        if ($current_version === null) {
+            $current_version = 0;
+        } else {
+            $current_version = intval($current_version);
+        }
+        
+        // Get latest version from version.md file
+        $version_file = dirname(dirname(__FILE__)) . '/tilbuci/version.md';
+        if (!file_exists($version_file)) {
+            error_log('TilBuci WP: version.md file not found');
+            return;
+        }
+        
+        $latest_version = intval(trim(file_get_contents($version_file)));
+        
+        // If latest version is greater than current version, execute update files
+        if ($latest_version > $current_version) {
+            // Loop through version numbers from current+1 to latest
+            for ($version = $current_version + 1; $version <= $latest_version; $version++) {
+                $update_file = dirname(dirname(__FILE__)) . '/tilbuci/update/' . $version . '.sql';
                 
-                // Update version in database after successful execution
-                // Use INSERT ... ON DUPLICATE KEY UPDATE to handle both insert and update
-                $wpdb->query($wpdb->prepare(
-                    "INSERT INTO tilbuci_config (cf_key, cf_value) VALUES ('dbVersion', %d)
-                     ON DUPLICATE KEY UPDATE cf_value = %d",
-                    $version, $version
-                ));
-                
-                error_log('TilBuci WP: Updated to version ' . $version);
-            } else {
-                error_log('TilBuci WP: Update file not found for version ' . $version);
+                if (file_exists($update_file)) {
+                    // Execute the SQL update file
+                    self::execute_sql_update_file($update_file);
+                    
+                    // Update version in database after successful execution
+                    $wpdb->query($wpdb->prepare(
+                        "INSERT INTO %i (%i, %i) VALUES (%s, %d)
+                         ON DUPLICATE KEY UPDATE %i = %d",
+                        $config_table, 'cf_key', 'cf_value', 'dbVersion', $version, 'cf_value', $version
+                    ));
+                    
+                    error_log('TilBuci WP: Updated to version ' . $version);
+                } else {
+                    error_log('TilBuci WP: Update file not found for version ' . $version);
+                }
             }
         }
     }
-}
 
-/**
- * Execute SQL update file (similar to execute_sql_file but for update files)
- *
- * @param string $filename Full path to SQL update file
- */
-private static function execute_sql_update_file($filename) {
-    global $wpdb;
-    
-    if (!file_exists($filename)) {
-        error_log('TilBuci WP: SQL update file not found: ' . $filename);
-        return;
-    }
+    /**
+     * Execute SQL update file (similar to execute_sql_file but for update files)
+     *
+     * @param string $filename Full path to SQL update file
+     */
+    private static function execute_sql_update_file($filename) {
+        global $wpdb;
+        
+        if (!file_exists($filename)) {
+            error_log('TilBuci WP: SQL update file not found: ' . $filename);
+            return;
+        }
 
-    // Read SQL file
-    $sql = file_get_contents($filename);
-    if ($sql === false) {
-        error_log('TilBuci WP: Failed to read SQL update file: ' . $filename);
-        return;
-    }
+        // Read SQL file
+        $sql = file_get_contents($filename);
+        if ($sql === false) {
+            error_log('TilBuci WP: Failed to read SQL update file: ' . $filename);
+            return;
+        }
 
-    // Split SQL statements (assuming each statement ends with ; and newline)
-    $queries = explode(';', $sql);
-    
-    foreach ($queries as $query) {
-        $query = trim($query);
-        if (!empty($query)) {
-            // Execute query as-is (table names must be preserved as per specification)
-            $wpdb->query($query);
+        // Get WordPress table prefix and replace {PR} placeholder
+        $table_prefix = $wpdb->prefix;
+        $sql = str_replace('{PR}', $table_prefix, $sql);
+
+        // Split SQL statements (assuming each statement ends with ; and newline)
+        $queries = explode(';', $sql);
+        
+        foreach ($queries as $query) {
+            $query = trim($query);
+            if (!empty($query)) {
+                // Execute query as-is (table names must be preserved as per specification)
+                $wpdb->query($query);
+            }
         }
     }
-}
-
-/**
- * Deactivate the plugin
- */
-public static function deactivate() {
-    // Remove plugin options
-    delete_option('tilbuci_wp_version');
-    delete_option('tilbuci_wp_remove_tables_on_deactivate');
-}
 }

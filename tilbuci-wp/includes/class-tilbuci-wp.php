@@ -167,18 +167,17 @@ class TilBuci_WP {
             $key = md5(wp_generate_password(32, true, true));
             
             // 3. Insert or update visitor record
-            $visitors_table = 'tilbuci_visitors';
+            $visitors_table = $wpdb->prefix . 'tilbuci_visitors';
             $wpdb->query($wpdb->prepare(
-                "INSERT INTO $visitors_table (vs_email, vs_key, vs_code) VALUES (%s, %s, 'A1B2C3') ON DUPLICATE KEY UPDATE vs_key=VALUES(vs_key)",
-                $user,
-                $key
+                "INSERT INTO %i (%i, %i, %i) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE %i=VALUES(%i)",
+                $visitors_table, 'vs_email', 'vs_key', 'vs_code', $user, $key, 'A1B2C3', 'vs_key', 'vs_key'
             ));
             
             // 4. Check if user is associated with group 1
-            $visitorassoc_table = 'tilbuci_visitorassoc';
+            $visitorassoc_table = $wpdb->prefix . 'tilbuci_visitorassoc';
             $existing_assoc = $wpdb->get_var($wpdb->prepare(
-                "SELECT va_id FROM $visitorassoc_table WHERE va_visitor=%s AND va_group=1",
-                $user
+                "SELECT %i FROM %i WHERE %i=%s AND %i=%d",
+                'va_id', $visitorassoc_table, 'va_visitor', $user, 'va_group', 1
             ));
             
             // 5. If not associated, insert association
@@ -268,7 +267,7 @@ class TilBuci_WP {
      * Add admin menu
      */
     public function add_admin_menu() {
-        // Main menu - TilBuci (no submenus)
+        // Main menu - TilBuci
         add_menu_page(
             __('TilBuci', 'tilbuci-wp'),
             __('TilBuci', 'tilbuci-wp'),
@@ -277,6 +276,26 @@ class TilBuci_WP {
             array($this, 'display_tilbuci_page'),
             'dashicons-pets',
             30
+        );
+
+        // Submenu - TilBuci (same as main menu, but ensures it appears as first submenu)
+        add_submenu_page(
+            'tilbuci-wp',
+            __('TilBuci', 'tilbuci-wp'),
+            __('TilBuci', 'tilbuci-wp'),
+            'manage_options',
+            'tilbuci-wp',
+            array($this, 'display_tilbuci_page')
+        );
+
+        // Submenu - Backup
+        add_submenu_page(
+            'tilbuci-wp',
+            __('Backup', 'tilbuci-wp'),
+            __('Backup', 'tilbuci-wp'),
+            'manage_options',
+            'tilbuci-wp-backup',
+            array($this, 'display_backup_page')
         );
     }
 
@@ -302,7 +321,7 @@ class TilBuci_WP {
         }
         
         // 3. Remove existing record from tilbuci_users where us_email = user
-        $table_name = 'tilbuci_users';
+        $table_name = $wpdb->prefix . 'tilbuci_users';
         $wpdb->delete($table_name, array('us_email' => $user));
         
         // 4. Insert new record
@@ -433,6 +452,156 @@ class TilBuci_WP {
         <?php
     }
 
+    /**
+     * Create ZIP backups for all movie folders
+     */
+    public function create_movie_backups() {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'tilbuci_movies';
+        $movie_ids = $wpdb->get_col($wpdb->prepare(
+            "SELECT %i FROM %i", 
+            'mv_id', $table_name
+        ));
+        
+        $plugin_dir = dirname(dirname(__FILE__)) . '/tilbuci/';
+        $movie_base = $plugin_dir . 'public/movie/';
+        $backup_dir = $plugin_dir . 'backup/';
+        
+        // Ensure backup directory exists
+        if (!is_dir($backup_dir)) {
+            wp_mkdir_p($backup_dir);
+        }
+        
+        $backup_created = 0;
+        
+        foreach ($movie_ids as $mv_id) {
+            $movie_folder = $movie_base . $mv_id . '.movie/';
+            if (!is_dir($movie_folder)) {
+                continue;
+            }
+            
+            $zip_file = $backup_dir . $mv_id . '.zip';
+            
+            // Check if ZipArchive is available
+            if (!class_exists('ZipArchive')) {
+                error_log('TilBuci WP: ZipArchive class not available. Cannot create backup.');
+                return 0;
+            }
+            
+            // Create ZIP archive
+            $zip = new ZipArchive();
+            if ($zip->open($zip_file, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+                $files = new RecursiveIteratorIterator(
+                    new RecursiveDirectoryIterator($movie_folder),
+                    RecursiveIteratorIterator::LEAVES_ONLY
+                );
+                
+                foreach ($files as $file) {
+                    if (!$file->isDir()) {
+                        $file_path = $file->getRealPath();
+                        $relative_path = substr($file_path, strlen($movie_folder));
+                        // Normalize directory separators to forward slash for ZIP
+                        $relative_path = str_replace('\\', '/', $relative_path);
+                        // Remove leading slash if present
+                        $relative_path = ltrim($relative_path, '/');
+                        $zip->addFile($file_path, $relative_path);
+                    }
+                }
+                
+                $zip->close();
+                $backup_created++;
+            }
+        }
+        
+        return $backup_created;
+    }
+
+    /**
+     * Display Backup page with backup creation button and list of existing backups
+     */
+    public function display_backup_page() {
+        global $wpdb;
+        
+        // Handle backup creation request
+        if (isset($_POST['create_backups']) && check_admin_referer('tilbuci_create_backups', 'tilbuci_backup_nonce')) {
+            $created = $this->create_movie_backups();
+            if ($created > 0) {
+                $message = sprintf(__('Successfully created %d backup(s).', 'tilbuci-wp'), $created);
+                $message_class = 'updated';
+            } else {
+                $message = __('No backups created. Ensure movie folders exist.', 'tilbuci-wp');
+                $message_class = 'error';
+            }
+        }
+        
+        // Get list of existing backup files
+        $plugin_dir = dirname(dirname(__FILE__)) . '/tilbuci/';
+        $backup_dir = $plugin_dir . 'backup/';
+        $backup_files = array();
+        
+        if (is_dir($backup_dir)) {
+            $files = glob($backup_dir . '*.zip');
+            foreach ($files as $file) {
+                $backup_files[] = array(
+                    'name' => basename($file),
+                    'size' => filesize($file),
+                    'modified' => filemtime($file),
+                    'url' => plugins_url('tilbuci/backup/' . basename($file), dirname(__FILE__))
+                );
+            }
+        }
+        ?>
+        <div class="wrap">
+            <h1><?php echo esc_html__('Movie backups', 'tilbuci-wp'); ?></h1>
+            
+            <?php if (isset($message)): ?>
+                <div class="notice <?php echo esc_attr($message_class); ?> is-dismissible">
+                    <p><?php echo esc_html($message); ?></p>
+                </div>
+            <?php endif; ?>
+            
+            <div class="card">
+                <h2><?php echo esc_html__('Create movie backups', 'tilbuci-wp'); ?></h2>
+                <p><?php echo esc_html__('Click the button below to create backups for all current movies.', 'tilbuci-wp'); ?></p>
+                <form method="post">
+                    <?php wp_nonce_field('tilbuci_create_backups', 'tilbuci_backup_nonce'); ?>
+                    <input type="submit" name="create_backups" class="button button-primary" value="<?php echo esc_attr__('Create movie backups', 'tilbuci-wp'); ?>" />
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2><?php echo esc_html__('Movie backups', 'tilbuci-wp'); ?></h2>
+                <?php if (!empty($backup_files)): ?>
+                    <p><?php echo esc_html__('Check out the available backups in the table below. These files can be used to import the movies into any TilBuci installation.', 'tilbuci-wp'); ?></p>
+                    <table class="wp-list-table widefat fixed striped">
+                        <thead>
+                            <tr>
+                                <th><?php echo esc_html__('File Name', 'tilbuci-wp'); ?></th>
+                                <th><?php echo esc_html__('Size', 'tilbuci-wp'); ?></th>
+                                <th><?php echo esc_html__('Last Modified', 'tilbuci-wp'); ?></th>
+                                <th><?php echo esc_html__('Action', 'tilbuci-wp'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($backup_files as $file): ?>
+                                <tr>
+                                    <td><?php echo esc_html($file['name']); ?></td>
+                                    <td><?php echo size_format($file['size']); ?></td>
+                                    <td><?php echo date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $file['modified']); ?></td>
+                                    <td><a href="<?php echo esc_url($file['url']); ?>" class="button button-small"><?php echo esc_html__('Download', 'tilbuci-wp'); ?></a></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p><?php echo esc_html__('No backup files found.', 'tilbuci-wp'); ?></p>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php
+    }
+
 
     /**
      * Enqueue admin scripts and styles
@@ -441,7 +610,8 @@ class TilBuci_WP {
         $allowed_hooks = array(
             'toplevel_page_tilbuci-wp',
             'tilbuci-wp_page_tilbuci-wp-events',
-            'tilbuci-wp_page_tilbuci-wp-visitors'
+            'tilbuci-wp_page_tilbuci-wp-visitors',
+            'tilbuci-wp_page_tilbuci-wp-backup'
         );
         
         if (!in_array($hook, $allowed_hooks)) {
@@ -491,19 +661,18 @@ class TilBuci_WP {
     public function get_movies_rest($request) {
         global $wpdb;
         
-        $table_name = 'tilbuci_movies';
+        $table_name = $wpdb->prefix . 'tilbuci_movies';
         
         // Check if table exists
         if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
             return new WP_Error('table_not_found', __('Movies table does not exist', 'tilbuci-wp'), array('status' => 404));
         }
         
-        // Get movies from database - use correct column names from table definition
-        $movies = $wpdb->get_results(
-            "SELECT mv_id, mv_title, mv_about, mv_created, mv_updated
-             FROM $table_name
-             ORDER BY mv_title ASC"
-        );
+        // Get movies from database
+        $movies = $wpdb->get_results($wpdb->prepare(
+            "SELECT %i, %i, %i, %i, %i FROM %i ORDER BY %i ASC", 
+            'mv_id', 'mv_title', 'mv_about', 'mv_created', 'mv_updated', $table_name, 'mv_title'
+        ));
         
         if (empty($movies)) {
             return new WP_REST_Response(array(), 200);

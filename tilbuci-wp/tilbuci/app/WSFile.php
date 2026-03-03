@@ -143,7 +143,7 @@ class WSFile extends Webservice
 						// movie font?
 						if (isset($this->req['movie'])) {
 							// register font
-							$ck = $this->data->queryAll('SELECT mv_fonts FROM ' . $this->data->conf['databasePrefix'] . 'movies WHERE mv_id=:mv AND mv_user=:us', [
+							$ck = $this->data->queryAll('SELECT `mv_fonts` FROM `' . $this->data->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:mv AND `mv_user`=:us', [
 								':mv' => $this->req['movie'], 
 								':us' => $this->user, 
 							]);
@@ -167,10 +167,10 @@ class WSFile extends Webservice
 									'name' => $this->req['name'], 
 									'file' => $this->req['fname'], 
 								];
-								$this->data->execute('UPDATE ' . $this->data->conf['databasePrefix'] . 'movies SET mv_fonts=:ft WHERE mv_id=:mv', [
+								$this->data->execute('UPDATE `' . $this->data->conf['databasePrefix'] . 'movies` SET `mv_fonts`=:ft WHERE `mv_id`=:mv', [
 									':ft' => base64_encode(gzencode(json_encode($fonts))), 
 									':mv' => $this->req['movie'], 
-								], 'UPDATE ' . $this->data->conf['databasePrefix'] . 'movies SET mv_fonts=:ft, mv_updated=:time WHERE mv_id=:mv', [
+								], 'UPDATE `' . $this->data->conf['databasePrefix'] . 'movies` SET `mv_fonts`=:ft, `mv_updated`=:time WHERE `mv_id`=:mv', [
 									':ft' => base64_encode(gzencode(json_encode($fonts))), 
 									':time' => date('Y-m-d H:i:s'), 
 									':mv' => $this->req['movie'], 
@@ -188,8 +188,8 @@ class WSFile extends Webservice
 							}
 						} else {
 							// register font
-							$this->data->execute('DELETE FROM ' . $this->data->conf['databasePrefix'] . 'fonts WHERE fn_name=:name', [':name' => $this->req['name']]);
-							$this->data->execute('INSERT INTO ' . $this->data->conf['databasePrefix'] . 'fonts (fn_name, fn_file) VALUES (:name, :file)', [
+							$this->data->execute('DELETE FROM `' . $this->data->conf['databasePrefix'] . 'fonts` WHERE `fn_name`=:name', [':name' => $this->req['name']]);
+							$this->data->execute('INSERT INTO `' . $this->data->conf['databasePrefix'] . 'fonts` (`fn_name`, `fn_file`) VALUES (:name, :file)', [
 								':name' => $this->req['name'], 
 								':file' => $this->req['fname'], 
 							]);
@@ -226,8 +226,8 @@ class WSFile extends Webservice
 				// save font
 				$this->saveB64($this->req['path'] . $this->req['fname']);
 				// register font
-				$this->data->execute('DELETE FROM ' . $this->data->conf['databasePrefix'] . 'fonts WHERE fn_name=:name', [':name' => $this->req['name']]);
-				$this->data->execute('INSERT INTO ' . $this->data->conf['databasePrefix'] . 'fonts (fn_name, fn_file) VALUES (:name, :file)', [
+				$this->data->execute('DELETE FROM `' . $this->data->conf['databasePrefix'] . 'fonts` WHERE `fn_name`=:name', [':name' => $this->req['name']]);
+				$this->data->execute('INSERT INTO `' . $this->data->conf['databasePrefix'] . 'fonts` (`fn_name`, `fn_file`) VALUES (:name, :file)', [
 					':name' => $this->req['name'], 
 					':file' => $this->req['fname'], 
 				]);
@@ -247,7 +247,7 @@ class WSFile extends Webservice
 	private function removeFont() {
 		if (isset($this->req['name'])) {
 			// remove font
-			$this->data->execute('DELETE FROM ' . $this->data->conf['databasePrefix'] . 'fonts WHERE fn_name=:name', [':name' => $this->req['name']]);
+			$this->data->execute('DELETE FROM `' . $this->data->conf['databasePrefix'] . 'fonts` WHERE `fn_name`=:name', [':name' => $this->req['name']]);
 			$this->returnRequest([
 				'e' => 0, 
 				'name' => $this->req['name'], 

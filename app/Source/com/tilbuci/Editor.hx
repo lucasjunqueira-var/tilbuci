@@ -322,6 +322,9 @@ class Editor extends Drawer {
         Loading system general configuration.
     **/
     private function onSysConfig(ok:Bool, ld:DataLoader):Void {
+
+        //trace ('sysconfig', ok, ld, ld.map);
+
         // data received?
         if (!ok) {
             this.halt('sysconfig');

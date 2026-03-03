@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('TILBUCI_WP_VERSION', '1.0.0');
+define('TILBUCI_WP_VERSION', '20.0.0');
 define('TILBUCI_WP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('TILBUCI_WP_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('TILBUCI_WP_BASENAME', plugin_basename(__FILE__));
