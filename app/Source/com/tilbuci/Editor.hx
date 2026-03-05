@@ -322,9 +322,6 @@ class Editor extends Drawer {
         Loading system general configuration.
     **/
     private function onSysConfig(ok:Bool, ld:DataLoader):Void {
-
-        //trace ('sysconfig', ok, ld, ld.map);
-
         // data received?
         if (!ok) {
             this.halt('sysconfig');
@@ -337,6 +334,9 @@ class Editor extends Drawer {
                 Global.singleUser = ld.map['singleUser'];
                 Global.validEmail = ld.map['validEmail'];
                 Global.showWindow = this.showWindow;
+
+                // host
+                if (ld.map.exists('host')) Global.host = ld.map['host'];
 
                 // available fonts
                 var fnt:Array<Dynamic> = cast ld.map['fonts'];

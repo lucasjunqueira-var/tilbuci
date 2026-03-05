@@ -75,6 +75,11 @@ class Global {
     public static var validEmail:Bool = false;
 
     /**
+        system host (empty string if running by itself)
+    **/
+    public static var host:String = '';
+
+    /**
         available fonts
     **/
     public static var fonts:Array<String> = [ ];
