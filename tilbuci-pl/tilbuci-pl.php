@@ -1,14 +1,13 @@
 <?php
 /**
- * Plugin Name: TilBuci WP
+ * Plugin Name: TilBuci
  * Plugin URI: https://github.com/lucasjunqueira-var/tilbuci
  * Description: Integrate TilBuci interactive content creation tool into WordPress.
  * Version: 20.0.0
  * Author: Lucas Junqueira
- * License: GPLv2 or above
+ * License: MPL-2.0
  * License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * Text Domain: tilbuci-wp
- * Domain Path: /languages
+ * Text Domain: tilbuci-pl
  */
 
 // Prevent direct access
@@ -23,9 +22,9 @@ define('TILBUCI_WP_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('TILBUCI_WP_BASENAME', plugin_basename(__FILE__));
 
 // Include required files
-require_once TILBUCI_WP_PLUGIN_DIR . 'includes/class-tilbuci-wp.php';
-require_once TILBUCI_WP_PLUGIN_DIR . 'includes/class-tilbuci-wp-db.php';
-require_once TILBUCI_WP_PLUGIN_DIR . 'includes/class-tilbuci-wp-shortcode.php';
+require_once TILBUCI_WP_PLUGIN_DIR . 'includes/class-tilbuci-pl.php';
+require_once TILBUCI_WP_PLUGIN_DIR . 'includes/class-tilbuci-pl-db.php';
+require_once TILBUCI_WP_PLUGIN_DIR . 'includes/class-tilbuci-pl-shortcode.php';
 
 // Initialize the plugin
 function tilbuci_wp_init() {
@@ -40,7 +39,7 @@ register_deactivation_hook(__FILE__, array('TilBuci_WP_DB', 'deactivate'));
 
 // Add a settings link on the plugin page
 function tilbuci_wp_settings_link($links) {
-    $settings_link = '<a href="admin.php?page=tilbuci-wp-settings">' . __('Settings', 'tilbuci-wp') . '</a>';
+    $settings_link = '<a href="admin.php?page=tilbuci-pl-settings">' . __('Settings', 'tilbuci-pl') . '</a>';
     array_unshift($links, $settings_link);
     return $links;
 }

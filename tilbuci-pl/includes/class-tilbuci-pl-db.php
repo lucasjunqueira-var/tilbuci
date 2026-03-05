@@ -71,19 +71,19 @@ class TilBuci_WP_DB {
         // Config.php
         $config_file = $plugin_dir . '/tilbuci/app/Config.php';
         if (file_exists($config_file)) {
-            unlink($config_file);
+            wp_delete_file($config_file);
         }
         
         // editor.json
         $editor_file = $plugin_dir . '/tilbuci/public/app/editor.json';
         if (file_exists($editor_file)) {
-            unlink($editor_file);
+            wp_delete_file($editor_file);
         }
         
         // player.json
         $player_file = $plugin_dir . '/tilbuci/public/app/player.json';
         if (file_exists($player_file)) {
-            unlink($player_file);
+            wp_delete_file($player_file);
         }
 
         // 3. Remove all folders inside public/movie/
@@ -104,26 +104,27 @@ class TilBuci_WP_DB {
      *
      * @param string $dir Directory path
      */
-    private static function delete_directory($dir) {
-        if (!is_dir($dir)) {
+    private static function delete_directory( $dir ) {
+        global $wp_filesystem;
+        if ( ! function_exists( 'WP_Filesystem' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+        WP_Filesystem();
+        if ( ! $wp_filesystem->is_dir( $dir ) ) {
             return;
         }
-        
-        $items = scandir($dir);
-        foreach ($items as $item) {
-            if ($item === '.' || $item === '..') {
-                continue;
-            }
-            
-            $path = $dir . '/' . $item;
-            if (is_dir($path)) {
-                self::delete_directory($path);
-            } else {
-                @unlink($path);
+        $items = $wp_filesystem->dirlist( $dir );
+        if ( is_array( $items ) ) {
+            foreach ( $items as $item => $details ) {
+                $path = trailingslashit( $dir ) . $item;
+                if ( 'f' === $details['type'] ) {
+                    $wp_filesystem->delete( $path );
+                } elseif ( 'd' === $details['type'] ) {
+                    self::delete_directory( $path );
+                }
             }
         }
-        
-        @rmdir($dir);
+        $wp_filesystem->rmdir( $dir, true );
     }
 
     /**
@@ -139,14 +140,14 @@ class TilBuci_WP_DB {
         $sql_file = dirname(dirname(__FILE__)) . '/tilbuci/tables.sql';
         
         if (!file_exists($sql_file)) {
-            error_log('TilBuci WP: SQL file not found: ' . $sql_file);
+            // debug only: error_log('TilBuci WP: SQL file not found: ' . $sql_file);
             return;
         }
 
         // Read SQL file
         $sql = file_get_contents($sql_file);
         if ($sql === false) {
-            error_log('TilBuci WP: Failed to read SQL file: ' . $sql_file);
+            // debug only: error_log('TilBuci WP: Failed to read SQL file: ' . $sql_file);
             return;
         }
 
@@ -169,7 +170,7 @@ class TilBuci_WP_DB {
         
         // Log any errors
         if (!empty($wpdb->last_error)) {
-            error_log('TilBuci WP: dbDelta error: ' . $wpdb->last_error);
+            // debug only: error_log('TilBuci WP: dbDelta error: ' . $wpdb->last_error);
         }
     }
 
@@ -184,14 +185,14 @@ class TilBuci_WP_DB {
         $sql_file = dirname(dirname(__FILE__)) . '/tilbuci/' . $filename;
         
         if (!file_exists($sql_file)) {
-            error_log('TilBuci WP: SQL file not found: ' . $sql_file);
+            // debug only: error_log('TilBuci WP: SQL file not found: ' . $sql_file);
             return;
         }
 
         // Read SQL file
         $sql = file_get_contents($sql_file);
         if ($sql === false) {
-            error_log('TilBuci WP: Failed to read SQL file: ' . $sql_file);
+            // debug only: error_log('TilBuci WP: Failed to read SQL file: ' . $sql_file);
             return;
         }
 
@@ -206,7 +207,7 @@ class TilBuci_WP_DB {
             $query = trim($query);
             if (!empty($query)) {
                 // Execute query as-is (table names must be preserved as per specification)
-                $wpdb->query($query);
+                $wpdb->query($wpdb->prepare($query));
             }
         }
     }
@@ -241,7 +242,7 @@ $gconf = [
         if (!file_exists($config_file)) {
             $result = file_put_contents($config_file, $default_content);
             if ($result === false) {
-                error_log('TilBuci WP: Failed to create Config.php');
+                // debug only: error_log('TilBuci WP: Failed to create Config.php');
                 return;
             }
             $content = $default_content;
@@ -249,7 +250,7 @@ $gconf = [
             // Read the current content
             $content = file_get_contents($config_file);
             if ($content === false) {
-                error_log('TilBuci WP: Failed to read Config.php');
+                // debug only: error_log('TilBuci WP: Failed to read Config.php');
                 return;
             }
         }
@@ -268,7 +269,7 @@ $gconf = [
         
         // Get site URL
         $site_url = get_option('siteurl');
-        $path = $site_url . '/wp-content/plugins/tilbuci-wp/tilbuci/public';
+        $path = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public';
         // Ensure path ends with a slash
         $path = trailingslashit($path);
         
@@ -295,7 +296,7 @@ $gconf = [
         // Write back to file
         $result = file_put_contents($config_file, $content);
         if ($result === false) {
-            error_log('TilBuci WP: Failed to write Config.php');
+            // debug only: error_log('TilBuci WP: Failed to write Config.php');
         }
     }
 
@@ -325,14 +326,14 @@ $gconf = [
             // Create file with default content
             $result = file_put_contents($editor_file, $default_editor_json);
             if ($result === false) {
-                error_log('TilBuci WP: Failed to create editor.json');
+                // debug only: error_log('TilBuci WP: Failed to create editor.json');
                 return;
             }
             $editor_content = $default_editor_json;
         } else {
             $editor_content = file_get_contents($editor_file);
             if ($editor_content === false) {
-                error_log('TilBuci WP: Failed to read editor.json');
+                // debug only: error_log('TilBuci WP: Failed to read editor.json');
                 return;
             }
         }
@@ -340,22 +341,22 @@ $gconf = [
         // Replace empty strings with actual URLs
         $editor_content = preg_replace(
             '/"base":\s*""/',
-            '"base":"' . addslashes($site_url) . '/wp-content/plugins/tilbuci-wp/tilbuci/public/editor/"',
+            '"base":"' . addslashes($site_url) . '/wp-content/plugins/tilbuci-pl/tilbuci/public/editor/"',
             $editor_content
         );
         $editor_content = preg_replace(
             '/"player":\s*""/',
-            '"player":"' . addslashes($site_url) . '/wp-content/plugins/tilbuci-wp/tilbuci/public/"',
+            '"player":"' . addslashes($site_url) . '/wp-content/plugins/tilbuci-pl/tilbuci/public/"',
             $editor_content
         );
         $editor_content = preg_replace(
             '/"ws":\s*""/',
-            '"ws":"' . addslashes($site_url) . '/wp-content/plugins/tilbuci-wp/tilbuci/public/ws/"',
+            '"ws":"' . addslashes($site_url) . '/wp-content/plugins/tilbuci-pl/tilbuci/public/ws/"',
             $editor_content
         );
         $editor_content = preg_replace(
             '/"font":\s*""/',
-            '"font":"' . addslashes($site_url) . '/wp-content/plugins/tilbuci-wp/tilbuci/public/font/"',
+            '"font":"' . addslashes($site_url) . '/wp-content/plugins/tilbuci-pl/tilbuci/public/font/"',
             $editor_content
         );
         
@@ -394,14 +395,14 @@ $gconf = [
             // Create file with default content
             $result = file_put_contents($player_file, $default_player_json);
             if ($result === false) {
-                error_log('TilBuci WP: Failed to create player.json');
+                // debug only: error_log('TilBuci WP: Failed to create player.json');
                 return;
             }
             $player_content = $default_player_json;
         } else {
             $player_content = file_get_contents($player_file);
             if ($player_content === false) {
-                error_log('TilBuci WP: Failed to read player.json');
+                // debug only: error_log('TilBuci WP: Failed to read player.json');
                 return;
             }
         }
@@ -409,17 +410,17 @@ $gconf = [
         // Replace empty strings with actual URLs
         $player_content = preg_replace(
             '/"base":\s*""/',
-            '"base":"' . addslashes($site_url) . '/wp-content/plugins/tilbuci-wp/tilbuci/public/"',
+            '"base":"' . addslashes($site_url) . '/wp-content/plugins/tilbuci-pl/tilbuci/public/"',
             $player_content
         );
         $player_content = preg_replace(
             '/"ws":\s*""/',
-            '"ws":"' . addslashes($site_url) . '/wp-content/plugins/tilbuci-wp/tilbuci/public/ws/"',
+            '"ws":"' . addslashes($site_url) . '/wp-content/plugins/tilbuci-pl/tilbuci/public/ws/"',
             $player_content
         );
         $player_content = preg_replace(
             '/"font":\s*""/',
-            '"font":"' . addslashes($site_url) . '/wp-content/plugins/tilbuci-wp/tilbuci/public/font/"',
+            '"font":"' . addslashes($site_url) . '/wp-content/plugins/tilbuci-pl/tilbuci/public/font/"',
             $player_content
         );
         
@@ -453,7 +454,7 @@ $gconf = [
         // Get latest version from version.md file
         $version_file = dirname(dirname(__FILE__)) . '/tilbuci/version.md';
         if (!file_exists($version_file)) {
-            error_log('TilBuci WP: version.md file not found');
+            // debug only: error_log('TilBuci WP: version.md file not found');
             return;
         }
         
@@ -476,9 +477,9 @@ $gconf = [
                         $config_table, 'cf_key', 'cf_value', 'dbVersion', $version, 'cf_value', $version
                     ));
                     
-                    error_log('TilBuci WP: Updated to version ' . $version);
+                    // debug only: error_log('TilBuci WP: Updated to version ' . $version);
                 } else {
-                    error_log('TilBuci WP: Update file not found for version ' . $version);
+                    // debug only: error_log('TilBuci WP: Update file not found for version ' . $version);
                 }
             }
         }
@@ -493,14 +494,14 @@ $gconf = [
         global $wpdb;
         
         if (!file_exists($filename)) {
-            error_log('TilBuci WP: SQL update file not found: ' . $filename);
+            // debug only: error_log('TilBuci WP: SQL update file not found: ' . $filename);
             return;
         }
 
         // Read SQL file
         $sql = file_get_contents($filename);
         if ($sql === false) {
-            error_log('TilBuci WP: Failed to read SQL update file: ' . $filename);
+            // debug only: error_log('TilBuci WP: Failed to read SQL update file: ' . $filename);
             return;
         }
 
@@ -515,7 +516,7 @@ $gconf = [
             $query = trim($query);
             if (!empty($query)) {
                 // Execute query as-is (table names must be preserved as per specification)
-                $wpdb->query($query);
+                $wpdb->query($wpdb->prepare($query));
             }
         }
     }

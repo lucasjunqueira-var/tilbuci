@@ -60,11 +60,12 @@ class TilBuci_WP {
      * Load plugin text domain
      */
     public function load_plugin_textdomain() {
+        /* debug only
         load_plugin_textdomain(
-            'tilbuci-wp',
+            'tilbuci-pl',
             false,
             dirname(TILBUCI_WP_BASENAME) . '/languages/'
-        );
+        ); */
     }
 
     /**
@@ -119,7 +120,7 @@ class TilBuci_WP {
         );
 
         // Register block
-        register_block_type('tilbuci-wp/tilbuci-block', array(
+        register_block_type('tilbuci-pl/tilbuci-block', array(
             'editor_script' => 'tilbuci-block',
             'render_callback' => array($this, 'render_tilbuci_block'),
             'attributes' => array(
@@ -197,7 +198,7 @@ class TilBuci_WP {
         }
 
         $site_url = get_option('siteurl');
-        $iframe_url = $site_url . '/wp-content/plugins/tilbuci-wp/tilbuci/public/app/?mv=' . urlencode($movie_id);
+        $iframe_url = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/app/?mv=' . urlencode($movie_id);
         
         // Append user parameters if user is logged in
         if (!empty($user) && !empty($uk)) {
@@ -220,7 +221,7 @@ class TilBuci_WP {
             $output .= '<div class="tilbuci-block-wrapper" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999999; margin: 0; padding: 0; overflow: unset; background: #000;">';
             $output .= '<iframe src="' . esc_url($iframe_url) . '" ';
             $output .= 'style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; border: none; margin: 0; padding: 0;" ';
-            $output .= 'title="' . esc_attr__('TilBuci Movie Player', 'tilbuci-wp') . '" ';
+            $output .= 'title="' . esc_attr__('TilBuci Movie Player', 'tilbuci-pl') . '" ';
             $output .= 'allowfullscreen></iframe>';
             $output .= '</div>';
         } else {
@@ -232,7 +233,7 @@ class TilBuci_WP {
             $output .= '<div class="tilbuci-block-wrapper" style="' . $wrapper_style . '" data-height-percentage="' . esc_attr($height_percentage) . '">';
             $output .= '<iframe src="' . esc_url($iframe_url) . '" ';
             $output .= 'style="' . $iframe_style . '" ';
-            $output .= 'title="' . esc_attr__('TilBuci Movie Player', 'tilbuci-wp') . '" ';
+            $output .= 'title="' . esc_attr__('TilBuci Movie Player', 'tilbuci-pl') . '" ';
             $output .= 'allowfullscreen></iframe>';
             $output .= '</div>';
             
@@ -269,10 +270,10 @@ class TilBuci_WP {
     public function add_admin_menu() {
         // Main menu - TilBuci
         add_menu_page(
-            __('TilBuci', 'tilbuci-wp'),
-            __('TilBuci', 'tilbuci-wp'),
+            __('TilBuci', 'tilbuci-pl'),
+            __('TilBuci', 'tilbuci-pl'),
             'manage_options',
-            'tilbuci-wp',
+            'tilbuci-pl',
             array($this, 'display_tilbuci_page'),
             'dashicons-pets',
             30
@@ -280,21 +281,21 @@ class TilBuci_WP {
 
         // Submenu - TilBuci (same as main menu, but ensures it appears as first submenu)
         add_submenu_page(
-            'tilbuci-wp',
-            __('TilBuci', 'tilbuci-wp'),
-            __('TilBuci', 'tilbuci-wp'),
+            'tilbuci-pl',
+            __('TilBuci', 'tilbuci-pl'),
+            __('TilBuci', 'tilbuci-pl'),
             'manage_options',
-            'tilbuci-wp',
+            'tilbuci-pl',
             array($this, 'display_tilbuci_page')
         );
 
         // Submenu - Backup
         add_submenu_page(
-            'tilbuci-wp',
-            __('Backup', 'tilbuci-wp'),
-            __('Backup', 'tilbuci-wp'),
+            'tilbuci-pl',
+            __('Backup', 'tilbuci-pl'),
+            __('Backup', 'tilbuci-pl'),
             'manage_options',
-            'tilbuci-wp-backup',
+            'tilbuci-pl-backup',
             array($this, 'display_backup_page')
         );
     }
@@ -306,7 +307,7 @@ class TilBuci_WP {
         global $wpdb;
         
         // Check and update plugin version before proceeding (as per specification)
-        require_once dirname(__FILE__) . '/class-tilbuci-wp-db.php';
+        require_once dirname(__FILE__) . '/class-tilbuci-pl-db.php';
         TilBuci_WP_DB::check_and_update_version();
         
         // 1. Generate random key as MD5 of random string
@@ -338,7 +339,7 @@ class TilBuci_WP {
         
         // 5. Create URL for editor
         $site_url = get_option('siteurl');
-        $editor_base_url = $site_url . '/wp-content/plugins/tilbuci-wp/tilbuci/public/editor/';
+        $editor_base_url = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/editor/';
         $params = '?us=' . urlencode($user) . '&uk=' . md5($user . $key);
         $editor_url = $editor_base_url . $params;
         
@@ -417,7 +418,7 @@ class TilBuci_WP {
         <div id="TilBuciArea">
             <iframe
                 src="<?php echo esc_url($editor_url); ?>"
-                title="<?php echo esc_attr__('TilBuci Editor', 'tilbuci-wp'); ?>"
+                title="<?php echo esc_attr__('TilBuci Editor', 'tilbuci-pl'); ?>"
                 allow="fullscreen"
             ></iframe>
         </div>
@@ -430,9 +431,9 @@ class TilBuci_WP {
     public function display_events_page() {
         ?>
         <div class="wrap">
-            <h1><?php echo esc_html__('Events', 'tilbuci-wp'); ?></h1>
+            <h1><?php echo esc_html__('Events', 'tilbuci-pl'); ?></h1>
             <div class="card">
-                <p><?php echo esc_html__('This page is intentionally left blank for future functionality.', 'tilbuci-wp'); ?></p>
+                <p><?php echo esc_html__('This page is intentionally left blank for future functionality.', 'tilbuci-pl'); ?></p>
             </div>
         </div>
         <?php
@@ -444,9 +445,9 @@ class TilBuci_WP {
     public function display_visitors_page() {
         ?>
         <div class="wrap">
-            <h1><?php echo esc_html__('Visitors', 'tilbuci-wp'); ?></h1>
+            <h1><?php echo esc_html__('Visitors', 'tilbuci-pl'); ?></h1>
             <div class="card">
-                <p><?php echo esc_html__('This page is intentionally left blank for future functionality.', 'tilbuci-wp'); ?></p>
+                <p><?php echo esc_html__('This page is intentionally left blank for future functionality.', 'tilbuci-pl'); ?></p>
             </div>
         </div>
         <?php
@@ -485,7 +486,7 @@ class TilBuci_WP {
             
             // Check if ZipArchive is available
             if (!class_exists('ZipArchive')) {
-                error_log('TilBuci WP: ZipArchive class not available. Cannot create backup.');
+                // debug only: error_log('TilBuci WP: ZipArchive class not available. Cannot create backup.');
                 return 0;
             }
             
@@ -527,10 +528,11 @@ class TilBuci_WP {
         if (isset($_POST['create_backups']) && check_admin_referer('tilbuci_create_backups', 'tilbuci_backup_nonce')) {
             $created = $this->create_movie_backups();
             if ($created > 0) {
-                $message = sprintf(__('Successfully created %d backup(s).', 'tilbuci-wp'), $created);
+                /* translators: 1: Number of movie backups created. */
+                $message = sprintf(__('Successfully created %d backup(s).', 'tilbuci-pl'), $created);
                 $message_class = 'updated';
             } else {
-                $message = __('No backups created. Ensure movie folders exist.', 'tilbuci-wp');
+                $message = __('No backups created. Ensure movie folders exist.', 'tilbuci-pl');
                 $message_class = 'error';
             }
         }
@@ -553,7 +555,7 @@ class TilBuci_WP {
         }
         ?>
         <div class="wrap">
-            <h1><?php echo esc_html__('Movie backups', 'tilbuci-wp'); ?></h1>
+            <h1><?php echo esc_html__('Movie backups', 'tilbuci-pl'); ?></h1>
             
             <?php if (isset($message)): ?>
                 <div class="notice <?php echo esc_attr($message_class); ?> is-dismissible">
@@ -562,40 +564,40 @@ class TilBuci_WP {
             <?php endif; ?>
             
             <div class="card">
-                <h2><?php echo esc_html__('Create movie backups', 'tilbuci-wp'); ?></h2>
-                <p><?php echo esc_html__('Click the button below to create backups for all current movies.', 'tilbuci-wp'); ?></p>
+                <h2><?php echo esc_html__('Create movie backups', 'tilbuci-pl'); ?></h2>
+                <p><?php echo esc_html__('Click the button below to create backups for all current movies.', 'tilbuci-pl'); ?></p>
                 <form method="post">
                     <?php wp_nonce_field('tilbuci_create_backups', 'tilbuci_backup_nonce'); ?>
-                    <input type="submit" name="create_backups" class="button button-primary" value="<?php echo esc_attr__('Create movie backups', 'tilbuci-wp'); ?>" />
+                    <input type="submit" name="create_backups" class="button button-primary" value="<?php echo esc_attr__('Create movie backups', 'tilbuci-pl'); ?>" />
                 </form>
             </div>
             
             <div class="card">
-                <h2><?php echo esc_html__('Movie backups', 'tilbuci-wp'); ?></h2>
+                <h2><?php echo esc_html__('Movie backups', 'tilbuci-pl'); ?></h2>
                 <?php if (!empty($backup_files)): ?>
-                    <p><?php echo esc_html__('Check out the available backups in the table below. These files can be used to import the movies into any TilBuci installation.', 'tilbuci-wp'); ?></p>
+                    <p><?php echo esc_html__('Check out the available backups in the table below. These files can be used to import the movies into any TilBuci installation.', 'tilbuci-pl'); ?></p>
                     <table class="wp-list-table widefat fixed striped">
                         <thead>
                             <tr>
-                                <th><?php echo esc_html__('File Name', 'tilbuci-wp'); ?></th>
-                                <th><?php echo esc_html__('Size', 'tilbuci-wp'); ?></th>
-                                <th><?php echo esc_html__('Last Modified', 'tilbuci-wp'); ?></th>
-                                <th><?php echo esc_html__('Action', 'tilbuci-wp'); ?></th>
+                                <th><?php echo esc_html__('File Name', 'tilbuci-pl'); ?></th>
+                                <th><?php echo esc_html__('Size', 'tilbuci-pl'); ?></th>
+                                <th><?php echo esc_html__('Last Modified', 'tilbuci-pl'); ?></th>
+                                <th><?php echo esc_html__('Action', 'tilbuci-pl'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($backup_files as $file): ?>
                                 <tr>
                                     <td><?php echo esc_html($file['name']); ?></td>
-                                    <td><?php echo size_format($file['size']); ?></td>
-                                    <td><?php echo date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $file['modified']); ?></td>
-                                    <td><a href="<?php echo esc_url($file['url']); ?>" class="button button-small"><?php echo esc_html__('Download', 'tilbuci-wp'); ?></a></td>
+                                    <td><?php echo esc_html(size_format($file['size'])); ?></td>
+                                    <td><?php echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $file['modified'])); ?></td>
+                                    <td><a href="<?php echo esc_url($file['url']); ?>" class="button button-small"><?php echo esc_html__('Download', 'tilbuci-pl'); ?></a></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p><?php echo esc_html__('No backup files found.', 'tilbuci-wp'); ?></p>
+                    <p><?php echo esc_html__('No backup files found.', 'tilbuci-pl'); ?></p>
                 <?php endif; ?>
             </div>
         </div>
@@ -608,10 +610,10 @@ class TilBuci_WP {
      */
     public function enqueue_admin_scripts($hook) {
         $allowed_hooks = array(
-            'toplevel_page_tilbuci-wp',
-            'tilbuci-wp_page_tilbuci-wp-events',
-            'tilbuci-wp_page_tilbuci-wp-visitors',
-            'tilbuci-wp_page_tilbuci-wp-backup'
+            'toplevel_page_tilbuci-pl',
+            'tilbuci-pl_page_tilbuci-pl-events',
+            'tilbuci-pl_page_tilbuci-pl-visitors',
+            'tilbuci-pl_page_tilbuci-pl-backup'
         );
         
         if (!in_array($hook, $allowed_hooks)) {
@@ -619,8 +621,8 @@ class TilBuci_WP {
         }
 
         wp_enqueue_style(
-            'tilbuci-wp-admin',
-            TILBUCI_WP_PLUGIN_URL . 'admin/css/tilbuci-wp-admin.css',
+            'tilbuci-pl-admin',
+            TILBUCI_WP_PLUGIN_URL . 'admin/css/tilbuci-pl-admin.css',
             array(),
             $this->version
         );
@@ -645,7 +647,7 @@ class TilBuci_WP {
      * Register REST API endpoints
      */
     public function register_rest_endpoints() {
-        register_rest_route('tilbuci-wp/v1', '/movies', array(
+        register_rest_route('tilbuci-pl/v1', '/movies', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_movies_rest'),
             'permission_callback' => function () {
@@ -664,8 +666,8 @@ class TilBuci_WP {
         $table_name = $wpdb->prefix . 'tilbuci_movies';
         
         // Check if table exists
-        if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-            return new WP_Error('table_not_found', __('Movies table does not exist', 'tilbuci-wp'), array('status' => 404));
+        if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name)) != $table_name) {
+            return new WP_Error('table_not_found', __('Movies table does not exist', 'tilbuci-pl'), array('status' => 404));
         }
         
         // Get movies from database

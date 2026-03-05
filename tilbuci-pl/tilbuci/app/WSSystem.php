@@ -104,6 +104,7 @@ class WSSystem extends Webservice
 			'autouser' => $autouser, 
 			'autokey' => $autokey, 
 			'autolevel' => $autolevel,
+			'host' => $this->conf['host'], 
 		]);
 	}
 	

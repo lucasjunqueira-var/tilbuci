@@ -36,13 +36,13 @@
 
         // looking for available movies
         useEffect(function () {
-            wp.apiFetch({ path: '/tilbuci-wp/v1/movies' })
+            wp.apiFetch({ path: '/tilbuci-pl/v1/movies' })
                 .then(function (data) {
                     setMovies(data);
                     setIsLoading(false);
                 })
                 .catch(function (err) {
-                    setError(err.message || __('Error loading movies', 'tilbuci-wp'));
+                    setError(err.message || __('Error loading movies', 'tilbuci-pl'));
                     setIsLoading(false);
                 });
         }, []);
@@ -50,7 +50,7 @@
         // select options
         var options = [];
         if (movies && movies.length > 0) {
-            options.push({ label: __('Select a TilBuci movie', 'tilbuci-wp'), value: '' });
+            options.push({ label: __('Select a TilBuci movie', 'tilbuci-pl'), value: '' });
             movies.forEach(function (movie) {
                 options.push({
                     label: movie.mv_title,
@@ -63,7 +63,7 @@
         if (isLoading) {
             return createElement(Placeholder, {
                 icon: 'video-alt',
-                label: __('TilBuci Movie', 'tilbuci-wp')
+                label: __('TilBuci Movie', 'tilbuci-pl')
             }, createElement(Spinner, null));
         }
 
@@ -71,32 +71,32 @@
         if (error) {
             return createElement(Placeholder, {
                 icon: 'video-alt',
-                label: __('TilBuci Movie', 'tilbuci-wp')
-            }, __('Error loading movies:', 'tilbuci-wp') + ' ' + error);
+                label: __('TilBuci Movie', 'tilbuci-pl')
+            }, __('Error loading movies:', 'tilbuci-pl') + ' ' + error);
         }
 
         // no movies available
         if (!movies || movies.length === 0) {
             return createElement(Placeholder, {
                 icon: 'video-alt',
-                label: __('TilBuci Movie', 'tilbuci-wp')
-            }, __('No movies found in the database.', 'tilbuci-wp'));
+                label: __('TilBuci Movie', 'tilbuci-pl')
+            }, __('No movies found in the database.', 'tilbuci-pl'));
         }
 
         // cntrols render
         return [
             createElement(InspectorControls, { key: 'inspector' },
-                createElement(PanelBody, { title: __('Display Settings', 'tilbuci-wp'), initialOpen: true },
+                createElement(PanelBody, { title: __('Display Settings', 'tilbuci-pl'), initialOpen: true },
                     createElement(ToggleControl, {
-                        label: __('Full Screen', 'tilbuci-wp'),
+                        label: __('Full Screen', 'tilbuci-pl'),
                         checked: attributes.fullScreen,
                         onChange: function (value) {
                             setAttributes({ fullScreen: value });
                         },
-                        help: __('If enabled, the content will be displayed covering the entire page area.', 'tilbuci-wp')
+                        help: __('If enabled, the content will be displayed covering the entire page area.', 'tilbuci-pl')
                     }),
                     !attributes.fullScreen && createElement(TextControl, {
-                        label: __('Height (%)', 'tilbuci-wp'),
+                        label: __('Height (%)', 'tilbuci-pl'),
                         type: 'number',
                         value: attributes.height,
                         onChange: function (value) {
@@ -105,13 +105,13 @@
                                 setAttributes({ height: num });
                             }
                         },
-                        help: __('Percentage of height relative to content display width - the default is 56%, ideal for 16x9 aspect ratio content.', 'tilbuci-wp')
+                        help: __('Percentage of height relative to content display width - the default is 56%, ideal for 16x9 aspect ratio content.', 'tilbuci-pl')
                     })
                 )
             ),
             createElement('div', { className: 'tilbuci-block-editor', key: 'editor' },
                 createElement(SelectControl, {
-                    label: __('Select a TilBuci movie', 'tilbuci-wp'),
+                    label: __('Select a TilBuci movie', 'tilbuci-pl'),
                     value: attributes.movieId,
                     options: options,
                     onChange: function (value) {
@@ -123,8 +123,8 @@
     };
 
     // block registering
-    registerBlockType('tilbuci-wp/tilbuci-block', {
-        title: __('TilBuci Movie', 'tilbuci-wp'),
+    registerBlockType('tilbuci-pl/tilbuci-block', {
+        title: __('TilBuci Movie', 'tilbuci-pl'),
         icon: 'video-alt', // WordPress SVG icon "captureVideo"
         category: 'embed',
         attributes: {
@@ -149,7 +149,7 @@
 
     // REST for movies
     wp.apiFetch.use(function (options, next) {
-        if (options.path && options.path.indexOf('/tilbuci-wp/v1/movies') === 0) {
+        if (options.path && options.path.indexOf('/tilbuci-pl/v1/movies') === 0) {
             return next(options);
         }
         return next(options);

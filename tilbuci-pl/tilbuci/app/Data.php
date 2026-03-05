@@ -164,7 +164,7 @@ class Data extends BaseClass
 				return (false);
 			} else {
 				// create a password
-				$pass = $this->randSring(8);
+				$pass = $this->randString(8);
 				$mailer = new Mailer;
 				$sender = $mailer->loadSender(true);
 				if ($sender['valid']) {
@@ -242,7 +242,7 @@ class Data extends BaseClass
                 return (false);
             } else {
                 // creating access code
-                $code = $this->randSring(6);
+                $code = $this->randString(6);
                 $this->execute('INSERT IGNORE INTO `' . $this->conf['databasePrefix'] . 'visitors` (`vs_email`, `vs_code`) VALUES (:email, :code) ON DUPLICATE KEY UPDATE `vs_code`=VALUES(`vs_code`)', [
                     ':email' => $email, 
                     ':code' => $code, 
@@ -286,7 +286,7 @@ class Data extends BaseClass
                     // code not found
                     return (false);
                 } else {
-                    $key = md5($this->randSring(16));
+                    $key = md5($this->randString(16));
                     $this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'visitors` SET `vs_key`=:key WHERE `vs_email`=:email', [
                         ':key' => $key, 
                         ':email' => $email, 

@@ -57,8 +57,8 @@ class BaseClass
 		} else if ($this->conf['databaseServ'] == 'sqlite') {
 			try {    
 				$this->db = new PDO('sqlite:../movie/tilbuci.sqlite');
-				$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			} catch (Exception $e) {
+				$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_Throwable);
+			} catch (Throwable $e) {
 				$this->db = null;
 				$this->error = -6;
 			}
@@ -66,7 +66,7 @@ class BaseClass
 			try {
 				$this->db = new PDO('mysql:host=' . $this->conf['databaseServ'] . (($this->conf['databasePort'] != '') ? (':' . $this->conf['databasePort']) : '') . ';dbname=' . $this->conf['databaseName'] . ';charset=utf8', $this->conf['databaseUser'], ($this->conf['databasePass'] == '' ? '' : base64_decode($this->conf['databasePass'])));
 				$this->error = 0;
-			} catch(Exception $e) {
+			} catch(Throwable $e) {
 				$this->db = null;
 				$this->error = -6;
 			}
@@ -150,7 +150,7 @@ class BaseClass
 	 * @param int $size the rand string length
 	 * @return string the random string
 	 */
-	public function randSring($size) {
+	public function randString($size) {
 		$chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		$length = strlen($chars);
 		$rand = '';

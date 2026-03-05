@@ -1,6 +1,6 @@
 /* TilBuci WP Admin Styles */
 
-.tilbuci-wp-admin .card {
+.tilbuci-pl-admin .card {
     background: #fff;
     border: 1px solid #ccd0d4;
     box-shadow: 0 1px 1px rgba(0,0,0,.04);
@@ -8,65 +8,65 @@
     padding: 20px;
 }
 
-.tilbuci-wp-admin h2 {
+.tilbuci-pl-admin h2 {
     margin-top: 0;
     color: #23282d;
 }
 
-.tilbuci-wp-admin code {
+.tilbuci-pl-admin code {
     background: #f1f1f1;
     padding: 2px 4px;
     border-radius: 3px;
     font-family: Consolas, Monaco, monospace;
 }
 
-.tilbuci-wp-admin .notice {
+.tilbuci-pl-admin .notice {
     margin: 20px 0;
 }
 
-.tilbuci-wp-admin table {
+.tilbuci-pl-admin table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
 }
 
-.tilbuci-wp-admin table th,
-.tilbuci-wp-admin table td {
+.tilbuci-pl-admin table th,
+.tilbuci-pl-admin table td {
     border: 1px solid #ccd0d4;
     padding: 8px 12px;
     text-align: left;
 }
 
-.tilbuci-wp-admin table th {
+.tilbuci-pl-admin table th {
     background: #f1f1f1;
     font-weight: 600;
 }
 
-.tilbuci-wp-admin .status-exists {
+.tilbuci-pl-admin .status-exists {
     color: #46b450;
     font-weight: 600;
 }
 
-.tilbuci-wp-admin .status-missing {
+.tilbuci-pl-admin .status-missing {
     color: #dc3232;
     font-weight: 600;
 }
 
 /* Iframe styling for TilBuci Editor */
-.tilbuci-wp-admin iframe {
+.tilbuci-pl-admin iframe {
     transition: all 0.3s ease;
 }
 
-.tilbuci-wp-admin iframe:hover {
+.tilbuci-pl-admin iframe:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.tilbuci-wp-admin .iframe-container {
+.tilbuci-pl-admin .iframe-container {
     position: relative;
     margin: 20px 0;
 }
 
-.tilbuci-wp-admin .iframe-loading {
+.tilbuci-pl-admin .iframe-loading {
     position: absolute;
     top: 50%;
     left: 50%;

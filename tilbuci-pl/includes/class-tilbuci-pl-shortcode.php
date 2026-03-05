@@ -44,7 +44,7 @@ class TilBuci_WP_Shortcode {
 
         // Validate project
         if (empty($atts['project'])) {
-            return '<div class="tilbuci-error">' . __('Please specify a project ID', 'tilbuci-wp') . '</div>';
+            return '<div class="tilbuci-error">' . __('Please specify a project ID', 'tilbuci-pl') . '</div>';
         }
 
         // Sanitize attributes
