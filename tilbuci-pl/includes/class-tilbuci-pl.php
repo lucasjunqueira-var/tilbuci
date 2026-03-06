@@ -218,12 +218,59 @@ class TilBuci_WP {
         
         if ($full_screen) {
             // Full screen mode - iframe covers entire viewport
-            $output .= '<div class="tilbuci-block-wrapper" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999999; margin: 0; padding: 0; overflow: unset; background: #000;">';
+            $output .= '<div class="tilbuci-block-wrapper tilbuci-full-screen-block" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999999; margin: 0; padding: 0; overflow: unset; background: #000;">';
             $output .= '<iframe src="' . esc_url($iframe_url) . '" ';
             $output .= 'style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; border: none; margin: 0; padding: 0;" ';
             $output .= 'title="' . esc_attr__('TilBuci Movie Player', 'tilbuci-pl') . '" ';
             $output .= 'allowfullscreen></iframe>';
             $output .= '</div>';
+            
+            // Add global CSS to set black background and ensure block visibility
+            $output .= '<style id="tilbuci-full-screen-styles">';
+            $output .= 'body { background-color: #000000 !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }';
+            $output .= '.tilbuci-full-screen-block { display: block !important; visibility: visible !important; }';
+            $output .= '</style>';
+            
+            // Add JavaScript to hide other content while preserving the full screen block
+            $output .= '<script>';
+            $output .= '(function() {';
+            $output .= '    // Function to hide elements except the full screen block and its necessary parents';
+            $output .= '    function hideOtherContent() {';
+            $output .= '        var fullScreenBlock = document.querySelector(".tilbuci-full-screen-block");';
+            $output .= '        if (!fullScreenBlock) return;';
+            $output .= '        ';
+            $output .= '        // Walk up the tree to find all ancestors that need to remain visible';
+            $output .= '        var ancestors = [];';
+            $output .= '        var node = fullScreenBlock;';
+            $output .= '        while (node && node !== document.body) {';
+            $output .= '            ancestors.push(node);';
+            $output .= '            node = node.parentNode;';
+            $output .= '        }';
+            $output .= '        ';
+            $output .= '        // Hide all children of body except those in the ancestor chain';
+            $output .= '        var bodyChildren = document.body.children;';
+            $output .= '        for (var i = 0; i < bodyChildren.length; i++) {';
+            $output .= '            var child = bodyChildren[i];';
+            $output .= '            if (ancestors.indexOf(child) === -1) {';
+            $output .= '                child.style.display = "none";';
+            $output .= '            }';
+            $output .= '        }';
+            $output .= '        ';
+            $output .= '        // Also hide any other TilBuci blocks';
+            $output .= '        var otherBlocks = document.querySelectorAll(".tilbuci-block-wrapper:not(.tilbuci-full-screen-block)");';
+            $output .= '        for (var j = 0; j < otherBlocks.length; j++) {';
+            $output .= '            otherBlocks[j].style.display = "none";';
+            $output .= '        }';
+            $output .= '    }';
+            $output .= '    ';
+            $output .= '    // Run when DOM is ready';
+            $output .= '    if (document.readyState === "loading") {';
+            $output .= '        document.addEventListener("DOMContentLoaded", hideOtherContent);';
+            $output .= '    } else {';
+            $output .= '        hideOtherContent();';
+            $output .= '    }';
+            $output .= '})();';
+            $output .= '</script>';
         } else {
             // Normal mode - iframe width is 100% of container, height will be calculated via JavaScript
             $wrapper_style = 'width: 100%; margin: 0 auto;';
@@ -298,6 +345,210 @@ class TilBuci_WP {
             'tilbuci-pl-backup',
             array($this, 'display_backup_page')
         );
+
+        // Submenu - Update (with update indicator)
+        $update_menu_title = __('Update', 'tilbuci-pl');
+        
+        // Check for updates and add indicator if needed
+        $update_count = $this->check_for_updates();
+        if ($update_count > 0) {
+            $update_menu_title .= ' <span class="update-plugins count-' . $update_count . '"><span class="update-count">' . $update_count . '</span></span>';
+        }
+        
+        add_submenu_page(
+            'tilbuci-pl',
+            __('Update', 'tilbuci-pl'),
+            $update_menu_title,
+            'manage_options',
+            'tilbuci-pl-version',
+            array($this, 'display_version_page')
+        );
+    }
+
+    /**
+     * Check for available updates
+     *
+     * @return int Number of available updates (0 or 1)
+     */
+    public function check_for_updates() {
+        require_once dirname(__FILE__) . '/class-tilbuci-pl-db.php';
+        
+        $remote_version = TilBuci_WP_DB::check_remote_version();
+        if ($remote_version === false) {
+            return 0;
+        }
+        
+        // Get current version from database
+        global $wpdb;
+        $table_prefix = $wpdb->prefix;
+        $config_table = $table_prefix . 'tilbuci_config';
+        
+        $current_version = $wpdb->get_var($wpdb->prepare(
+            "SELECT %i FROM %i WHERE %i = %s",
+            'cf_value', $config_table, 'cf_key', 'dbVersion'
+        ));
+        
+        if ($current_version === null) {
+            $current_version = 0;
+        } else {
+            $current_version = floatval($current_version);
+        }
+        
+        // According to specification: if remote version is LESS than local version, show indicator
+        // Actually reading the spec: "If the number in the link is less than the one found in the database"
+        // That seems backwards - usually updates are when remote is GREATER than local.
+        // But we'll follow the spec exactly.
+        if ($remote_version < $current_version) {
+            return 1;
+        }
+        
+        return 0;
+    }
+
+    /**
+     * Display Version page
+     */
+    public function display_version_page() {
+        require_once dirname(__FILE__) . '/class-tilbuci-pl-db.php';
+        
+        // Check and update plugin version before proceeding
+        TilBuci_WP_DB::check_and_update_version();
+        
+        // Check remote version
+        $remote_version = TilBuci_WP_DB::check_remote_version();
+        
+        // Get current version from database - flush cache first if update was successful
+        global $wpdb;
+        if (!isset($update_result)) $update_result = null;
+        if ($update_result !== null && $update_result['success']) {
+            $wpdb->flush(); // Clear query cache to get fresh version
+        }
+        
+        $table_prefix = $wpdb->prefix;
+        $config_table = $table_prefix . 'tilbuci_config';
+        
+        $current_version = $wpdb->get_var($wpdb->prepare(
+            "SELECT %i FROM %i WHERE %i = %s",
+            'cf_value', $config_table, 'cf_key', 'dbVersion'
+        ));
+        
+        if ($current_version === null) {
+            $current_version = 0;
+        }
+        
+        // Process form submission if any
+        $update_result = null;
+        if (isset($_POST['tilbuci_update_action'])) {
+            if (!wp_verify_nonce($_POST['_wpnonce'], 'tilbuci_update_plugin')) {
+                wp_die(__('Security check failed', 'tilbuci-pl'));
+            }
+            
+            if ($_POST['tilbuci_update_action'] === 'auto_update') {
+                // Automatic update (download from server)
+                $update_result = TilBuci_WP_DB::update_tilbuci_plugin();
+            } elseif ($_POST['tilbuci_update_action'] === 'upload_update' && isset($_FILES['update_zip'])) {
+                // Manual update via uploaded file
+                $uploaded_file = $_FILES['update_zip'];
+                if ($uploaded_file['error'] === UPLOAD_ERR_OK) {
+                    $update_result = TilBuci_WP_DB::update_tilbuci_plugin($uploaded_file['tmp_name']);
+                } else {
+                    $update_result = array(
+                        'success' => false,
+                        'message' => __('File upload failed.', 'tilbuci-pl')
+                    );
+                }
+            }
+        }
+        
+        ?>
+        <div class="wrap">
+            <h1><?php _e('TilBuci Update Information', 'tilbuci-pl'); ?></h1>
+            
+            <?php if ($update_result !== null): ?>
+                <div class="notice notice-<?php echo $update_result['success'] ? 'success' : 'error'; ?>">
+                    <p><?php echo esc_html($update_result['message']); ?></p>
+                </div>
+            <?php endif; ?>
+
+            <?php
+            if ($update_result !== null && $update_result['success']) {
+                $current_version = $remote_version;
+            }
+            ?>
+            
+            <div class="card">
+                <h2><?php _e('Current Version', 'tilbuci-pl'); ?></h2>
+                <p><strong><?php echo esc_html($current_version); ?></strong></p>
+                <p><?php _e('This is the version currently installed in your database.', 'tilbuci-pl'); ?></p>
+            </div>
+            
+            <div class="card">
+                <h2><?php _e('Latest Available Version', 'tilbuci-pl'); ?></h2>
+                <?php if ($remote_version !== false): ?>
+                    <p><strong><?php echo esc_html($remote_version); ?></strong></p>
+                    <p><?php _e('This is the latest version available from the TilBuci update server.', 'tilbuci-pl'); ?></p>
+                    
+                    <?php
+                    $current_float = floatval($current_version);
+                    $remote_float = floatval($remote_version);
+
+                    if ($update_result !== null && $update_result['success']) {
+                        $current_float = $remote_float;
+                    }
+                    
+                    if ($remote_float > $current_float): ?>
+                        <div class="notice notice-warning">
+                            <p><?php _e('An update is available! The remote version is newer than your current version.', 'tilbuci-pl'); ?></p>
+                        </div>
+                        
+                        <!-- Automatic update button (only shown when update is available) -->
+                        <form method="post" style="margin: 20px 0;">
+                            <?php wp_nonce_field('tilbuci_update_plugin'); ?>
+                            <input type="hidden" name="tilbuci_update_action" value="auto_update">
+                            <button type="submit" class="button button-primary button-large">
+                                <?php _e('Click here to automatically update your TilBuci plugin', 'tilbuci-pl'); ?>
+                            </button>
+                            <p class="description"><?php _e('This will download the latest version from the TilBuci server and install it.', 'tilbuci-pl'); ?></p>
+                        </form>
+                    <?php elseif ($remote_float < $current_float): ?>
+                        <div class="notice notice-info">
+                            <p><?php _e('Your version is newer than the remote version. This may indicate a development or beta version.', 'tilbuci-pl'); ?></p>
+                        </div>
+                    <?php else: ?>
+                        <div class="notice notice-success">
+                            <p><?php _e('You are running the latest version.', 'tilbuci-pl'); ?></p>
+                        </div>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <div class="notice notice-error">
+                        <p><?php _e('Unable to check for updates. Please check your internet connection or try again later.', 'tilbuci-pl'); ?></p>
+                    </div>
+                <?php endif; ?>
+                
+                <hr>
+            </div>
+            
+            <!-- Manual update form -->
+            <div class="card">
+                <h2><?php _e('Update TilBuci using the plugin install ZIP file', 'tilbuci-pl'); ?></h2>
+                <form method="post" enctype="multipart/form-data">
+                    <?php wp_nonce_field('tilbuci_update_plugin'); ?>
+                    <input type="hidden" name="tilbuci_update_action" value="upload_update">
+                    <p>
+                        <label for="update_zip">
+                            <strong><?php _e('ZIP file:', 'tilbuci-pl'); ?></strong>
+                        </label>
+                        <input type="file" name="update_zip" id="update_zip" accept=".zip" required>
+                    </p>
+                    <p>
+                        <button type="submit" class="button button-secondary">
+                            <?php _e('Send the update file', 'tilbuci-pl'); ?>
+                        </button>
+                    </p>
+                </form>
+            </div>
+        </div>
+        <?php
     }
 
     /**

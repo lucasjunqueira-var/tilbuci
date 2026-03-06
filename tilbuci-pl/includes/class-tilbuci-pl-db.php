@@ -128,6 +128,54 @@ class TilBuci_WP_DB {
     }
 
     /**
+     * Recursively copy a directory and its contents
+     *
+     * @param string $source Source directory path
+     * @param string $destination Destination directory path
+     * @return bool True on success, false on failure
+     */
+    private static function copy_directory( $source, $destination ) {
+        global $wp_filesystem;
+        if ( ! function_exists( 'WP_Filesystem' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+        WP_Filesystem();
+        
+        // Check if source exists
+        if ( ! $wp_filesystem->is_dir( $source ) ) {
+            return false;
+        }
+        
+        // Ensure destination directory exists
+        if ( ! $wp_filesystem->is_dir( $destination ) ) {
+            $wp_filesystem->mkdir( $destination, FS_CHMOD_DIR );
+        }
+        
+        // Get list of items in source directory
+        $items = $wp_filesystem->dirlist( $source );
+        if ( is_array( $items ) ) {
+            foreach ( $items as $item => $details ) {
+                $source_path = trailingslashit( $source ) . $item;
+                $dest_path = trailingslashit( $destination ) . $item;
+                
+                if ( 'f' === $details['type'] ) {
+                    // Copy file
+                    if ( ! $wp_filesystem->copy( $source_path, $dest_path, true, FS_CHMOD_FILE ) ) {
+                        return false;
+                    }
+                } elseif ( 'd' === $details['type'] ) {
+                    // Recursively copy directory
+                    if ( ! self::copy_directory( $source_path, $dest_path ) ) {
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        return true;
+    }
+
+    /**
      * Create database tables using WordPress dbDelta method
      * This ensures tables are created or updated safely
      */
@@ -477,12 +525,80 @@ $gconf = [
                         $config_table, 'cf_key', 'cf_value', 'dbVersion', $version, 'cf_value', $version
                     ));
                     
+                    // Clear query cache to ensure immediate reflection of version update
+                    $wpdb->flush();
+                    
                     // debug only: error_log('TilBuci WP: Updated to version ' . $version);
                 } else {
                     // debug only: error_log('TilBuci WP: Update file not found for version ' . $version);
                 }
             }
         }
+    }
+
+    /**
+     * Check remote version for updates (Update method)
+     *
+     * This method checks the remote version at plugin.tilbuci.com.br/versions/latest.md
+     * and compares it with the local database version.
+     *
+     * @return int|false Returns the remote version number if available and valid,
+     *                   false if check failed or version is invalid
+     */
+    public static function check_remote_version() {
+        global $wpdb;
+        
+        // Get current version from database
+        $table_prefix = $wpdb->prefix;
+        $config_table = $table_prefix . 'tilbuci_config';
+        
+        $current_version = $wpdb->get_var($wpdb->prepare(
+            "SELECT %i FROM %i WHERE %i = %s",
+            'cf_value', $config_table, 'cf_key', 'dbVersion'
+        ));
+        
+        if ($current_version === null) {
+            $current_version = 0;
+        } else {
+            $current_version = intval($current_version);
+        }
+        
+        // Try to fetch remote version - add cache-busting parameter to avoid cached responses
+        $remote_url = 'https://plugin.tilbuci.com.br/versions/latest.md';
+        // Add timestamp to prevent caching
+        $remote_url = add_query_arg('t', time(), $remote_url);
+        $response = wp_remote_get($remote_url, array(
+            'timeout' => 10,
+            'sslverify' => true,
+            'reject_unsafe_urls' => false,
+            'cache' => false
+        ));
+        
+        // Check for errors
+        if (is_wp_error($response)) {
+            // debug only: error_log('TilBuci WP: Failed to fetch remote version: ' . $response->get_error_message());
+            return false;
+        }
+        
+        $status_code = wp_remote_retrieve_response_code($response);
+        if ($status_code !== 200) {
+            // debug only: error_log('TilBuci WP: Remote version check returned status code: ' . $status_code);
+            return false;
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $remote_version = trim($body);
+        
+        // Validate that content is a valid number (integer or decimal)
+        if (!is_numeric($remote_version)) {
+            // debug only: error_log('TilBuci WP: Remote version is not a valid number: ' . $remote_version);
+            return false;
+        }
+        
+        $remote_version = floatval($remote_version);
+        
+        // Return remote version for comparison
+        return $remote_version;
     }
 
     /**
@@ -519,5 +635,171 @@ $gconf = [
                 $wpdb->query($wpdb->prepare($query));
             }
         }
+    }
+
+    /**
+     * Update TilBuci plugin from ZIP file
+     *
+     * This function follows the "Running the update" specification:
+     * 1. If no ZIP file is provided, download latest.zip from plugin.tilbuci.com.br
+     * 2. Verify ZIP contains only "tilbuci-pl" folder in root
+     * 3. Extract contents to plugin folder, overwriting existing files
+     *
+     * @param string|null $uploaded_zip_path Path to uploaded ZIP file (optional)
+     * @return array Result with 'success' boolean and 'message' string
+     */
+    public static function update_tilbuci_plugin($uploaded_zip_path = null) {
+        global $wpdb;
+        
+        // Step 1: Get ZIP file
+        $zip_path = null;
+        
+        if (!empty($uploaded_zip_path) && file_exists($uploaded_zip_path)) {
+            $zip_path = $uploaded_zip_path;
+        } else {
+            // Download latest.zip
+            $download_url = 'https://plugin.tilbuci.com.br/versions/latest.zip';
+            $response = wp_remote_get($download_url, array(
+                'timeout' => 60,
+                'sslverify' => true
+            ));
+            
+            if (is_wp_error($response)) {
+                return array(
+                    'success' => false,
+                    'message' => __('Failed to download update: ', 'tilbuci-pl') . $response->get_error_message()
+                );
+            }
+            
+            $status_code = wp_remote_retrieve_response_code($response);
+            if ($status_code !== 200) {
+                return array(
+                    'success' => false,
+                    'message' => sprintf(__('Download failed with status code: %d', 'tilbuci-pl'), $status_code)
+                );
+            }
+            
+            $zip_content = wp_remote_retrieve_body($response);
+            
+            // Save to temporary file
+            $temp_dir = get_temp_dir();
+            $zip_path = $temp_dir . 'tilbuci-latest-' . time() . '.zip';
+            $result = file_put_contents($zip_path, $zip_content);
+            
+            if ($result === false) {
+                return array(
+                    'success' => false,
+                    'message' => __('Failed to save downloaded ZIP file', 'tilbuci-pl')
+                );
+            }
+        }
+        
+        // Step 2: Verify ZIP structure
+        if (!class_exists('ZipArchive')) {
+            return array(
+                'success' => false,
+                'message' => __('ZipArchive class not available. PHP zip extension is required.', 'tilbuci-pl')
+            );
+        }
+        
+        $zip = new ZipArchive();
+        if ($zip->open($zip_path) !== true) {
+            return array(
+                'success' => false,
+                'message' => __('Failed to open ZIP file', 'tilbuci-pl')
+            );
+        }
+        
+        // Check that root contains only "tilbuci-pl" folder
+        $valid_structure = true;
+        $found_tilbuci_pl = false;
+        
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $filename = $zip->getNameIndex($i);
+            $parts = explode('/', $filename);
+            
+            // Skip empty entries
+            if (empty($parts[0])) {
+                continue;
+            }
+            
+            // Check if root entry is "tilbuci-pl" folder
+            if ($parts[0] === 'tilbuci-pl') {
+                $found_tilbuci_pl = true;
+            } else {
+                // Found something else in root
+                $valid_structure = false;
+                break;
+            }
+        }
+        
+        if (!$valid_structure || !$found_tilbuci_pl) {
+            $zip->close();
+            return array(
+                'success' => false,
+                'message' => __('ZIP file must contain only "tilbuci-pl" folder in root', 'tilbuci-pl')
+            );
+        }
+        
+        // Step 3: Extract contents of tilbuci-pl folder to plugin folder
+        $plugin_dir = dirname(dirname(__FILE__)); // tilbuci-pl directory
+        
+        // Create temporary directory for extraction
+        $temp_dir = get_temp_dir() . 'tilbuci-extract-' . time() . '/';
+        if (!mkdir($temp_dir, 0755, true)) {
+            $zip->close();
+            return array(
+                'success' => false,
+                'message' => __('Failed to create temporary directory', 'tilbuci-pl')
+            );
+        }
+        
+        // Extract entire ZIP to temporary directory
+        if (!$zip->extractTo($temp_dir)) {
+            $zip->close();
+            self::delete_directory($temp_dir);
+            return array(
+                'success' => false,
+                'message' => __('Failed to extract ZIP file', 'tilbuci-pl')
+            );
+        }
+        
+        $zip->close();
+        
+        // Check if tilbuci-pl folder exists in temp directory
+        $source_folder = $temp_dir . 'tilbuci-pl/';
+        if (!is_dir($source_folder)) {
+            self::delete_directory($temp_dir);
+            return array(
+                'success' => false,
+                'message' => __('ZIP file does not contain tilbuci-pl folder', 'tilbuci-pl')
+            );
+        }
+        
+        // Copy all files from source folder to plugin directory, overwriting existing files
+        $copy_result = self::copy_directory($source_folder, $plugin_dir);
+        
+        // Clean up temporary directory
+        self::delete_directory($temp_dir);
+        
+        if (!$copy_result) {
+            return array(
+                'success' => false,
+                'message' => __('Failed to copy files to plugin directory', 'tilbuci-pl')
+            );
+        }
+        
+        // Clean up temporary file if we downloaded it
+        if (empty($uploaded_zip_path) && file_exists($zip_path)) {
+            unlink($zip_path);
+        }
+        
+        // Execute version update checks and SQL update files
+        self::check_and_update_version();
+        
+        return array(
+            'success' => true,
+            'message' => __('Plugin updated successfully', 'tilbuci-pl')
+        );
     }
 }
