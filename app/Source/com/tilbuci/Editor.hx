@@ -335,6 +335,9 @@ class Editor extends Drawer {
                 Global.validEmail = ld.map['validEmail'];
                 Global.showWindow = this.showWindow;
 
+                // host
+                if (ld.map.exists('host')) Global.host = ld.map['host'];
+
                 // available fonts
                 var fnt:Array<Dynamic> = cast ld.map['fonts'];
                 for (n in 0...fnt.length) new EmbedFont((Global.econfig.font + fnt[n].v), fnt[n].n);

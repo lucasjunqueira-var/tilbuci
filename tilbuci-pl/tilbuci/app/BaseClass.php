@@ -1,0 +1,444 @@
+<?php
+
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+/** GLOBAL CONFIGURATIONS **/
+require_once('Config.php');
+
+/**
+ * Basic Tilbuci PHP calss.
+ */
+class BaseClass
+{
+	/**
+	 * global configuration
+	 */
+	public $conf;
+	
+	/**
+	 * translated text
+	 */
+	private $lang = [ ];
+	
+	/**
+	 * connected database
+	 */
+	public $db = null;
+
+	/**
+	 * last connection error
+	 */
+	public $error = 0;
+	
+	/**
+	 * Class constructor.
+	 */
+	public function __construct() {
+		global $gconf;
+		$this->conf = $gconf;
+		if (!isset($this->conf['databasePrefix'])) $this->conf['databasePrefix'] = '';
+		if (!isset($this->conf['host'])) $this->conf['host'] = '';		
+		if ($this->conf['host'] == 'WordPress') {
+			// avoid $_POST addslashes
+			$postOri = [ ];
+			foreach ($_POST as $k => $v) $postOri[$k] = $v;
+			// getting $wpdb reference
+			require_once('../../../../../../wp-load.php');
+			global $wpdb;
+			$this->db = $wpdb;
+			$this->error = 0;
+			// restoring original $_POST
+			$_POST = [ ];
+			foreach ($postOri as $k => $v) $_POST[$k] = $v;
+		} else if ($this->conf['databaseServ'] == 'sqlite') {
+			try {    
+				$this->db = new PDO('sqlite:../movie/tilbuci.sqlite');
+				$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_Throwable);
+			} catch (Throwable $e) {
+				$this->db = null;
+				$this->error = -6;
+			}
+		} else {
+			try {
+				$this->db = new PDO('mysql:host=' . $this->conf['databaseServ'] . (($this->conf['databasePort'] != '') ? (':' . $this->conf['databasePort']) : '') . ';dbname=' . $this->conf['databaseName'] . ';charset=utf8', $this->conf['databaseUser'], ($this->conf['databasePass'] == '' ? '' : base64_decode($this->conf['databasePass'])));
+				$this->error = 0;
+			} catch(Throwable $e) {
+				$this->db = null;
+				$this->error = -6;
+			}
+		}
+	}
+	
+	/**
+	 * Encrypts a string.
+	 * @param string $string the string to encrypt
+	 * @return string the encrypted value
+	 */
+	public function encrypt($string) {
+		return(openssl_encrypt($string, 'AES-128-CTR', $this->conf['encKey'], 0, $this->conf['encVec']));
+	}
+	
+	/**
+	 * Decrypts a string.
+	 * @param string $string the encrypted value
+	 * @return string the decrypted string
+	 */
+	public function decrypt($string) {
+		return(openssl_decrypt($string, 'AES-128-CTR', $this->conf['encKey'], 0, $this->conf['encVec']));
+	}
+    
+    /**
+     * Encrypt a TilBuci json file.
+     * @param string $movie the movie ID
+     * @param string $content the json file content
+     * @return string the encrypted content
+     */
+    public function encryptTBFile($movie, $content) {
+        $iv = openssl_random_pseudo_bytes(16);
+        $key = mb_strtolower(md5($movie . substr($movie, 2)));
+        $encrypted = openssl_encrypt($content, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
+        $combined = $iv . $encrypted;
+        $txt = 'TB' . base64_encode($combined);
+        $txt = substr($txt, 0, (strlen($txt) - 9)) . 'b' . substr($txt, -9);
+        return ($txt);
+    }
+	
+	/**
+	 * Loads a language file.
+	 * @param string $id the language file id
+	 */
+	public function loadLang($id) {
+		// no default loaed yet?
+		if (empty($this->lang)) {
+			if (is_file('../../language/langDefault.json')) {
+				$json = json_decode(file_get_contents('../../language/langDefault.json'), true);
+				if (json_last_error() == JSON_ERROR_NONE) {
+					foreach ($json as $k => $v) $this->lang[$k] = $v;
+				}
+			}
+		}
+		// load requested language file
+		if ($id != 'langDefault') {
+			if (is_file('../../language/' . $id . '.json')) {
+				$json = json_decode(file_get_contents('../../language/' . $id . '.json'), true);
+				if (json_last_error() == JSON_ERROR_NONE) {
+					foreach ($json as $k => $v) $this->lang[$k] = $v;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Gets a text string in current language.
+	 * @param string $id the text id
+	 * @return string the requested text or empty string if not found
+	 */
+	public function getLang($id) {
+		if (isset($this->lang[$id])) {
+			return ($this->lang[$id]);
+		} else {
+			return ('');
+		}
+	}
+	
+	/**
+	 * Generates a rando string with numbers and capital chars.
+	 * @param int $size the rand string length
+	 * @return string the random string
+	 */
+	public function randString($size) {
+		$chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$length = strlen($chars);
+		$rand = '';
+		for ($i=0; $i<$size; $i++) $rand .= $chars[random_int(0, $length - 1)];
+		return ($rand);
+	}
+	
+	/**
+	 * Creates a clean, lower case string.
+	 * @param string $string the original string
+	 * @return string the "clean" string
+	 */
+	public function cleanString($string) {
+		$string = mb_strtolower(preg_replace('/\s*/m', '', trim($string)));
+		$string = str_replace([' ', '/', '\\', '^', '~', '´', '`', '"', "'", '?', '@', '!', '#', '$', '%', '&', '*', '(', ')', '[', ']', '<', '>', '|', 'ç', 'ñ', 'á', 'à', 'â', 'ã', 'é', 'è', 'ê', 'í', 'ó', 'ô', 'ú'], '', $string);
+		return ($string);
+	}
+	
+	/**
+	 * Queries the database for results.
+	 * @param string $query the sql query
+	 * @param array $values the values to replace on query
+	 * @param string $querylite the sql query for sqlite (empty string to use the same)
+	 * @param array $valueslite values for sqlite query (null to use the same)
+	 * @return array the results as associative array
+	 */
+	public function queryAll($query, $values = [ ], $querylite = '', $valueslite = null) {
+		// connected?
+		if (is_null($this->db)) {
+			return([]);
+		} else {
+			// wordpress ($this->db is actually $wpdb)?
+			if ($this->conf['host'] == 'WordPress') {
+				list($convertedQuery, $convertedValues) = $this->convertPlaceholders($query, $values);
+				$ret = $this->db->get_results($this->db->prepare($convertedQuery, $convertedValues), ARRAY_A);
+				return ($ret);
+			} else {
+				// sqlite?
+				if ($this->conf['databaseServ'] == 'sqlite') {
+					if ($querylite != '') $query = $querylite;
+					if (!is_null($valueslite)) $values = $valueslite;
+				}
+				// run query
+				$sth = $this->db->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+				$sth->execute($values);
+				$ret = $sth->fetchAll(PDO::FETCH_ASSOC);
+				return($ret);
+			}
+		}
+	}
+	
+	/**
+	 * Executes a query on database.
+	 * @param string $query the sql query
+	 * @param array $values the values to replace on query
+	 * @param string $querylite the sql query for sqlite (empty string to use the same)
+	 * @param array $valueslite values for sqlite query (null to use the same)
+	 * @return bool was the query executed?
+	 */
+	public function execute($query, $values = [ ], $querylite = '', $valueslite = null)
+	{
+		// connected?
+		if (is_null($this->db)) {
+			return(false);
+		} else {
+			// wordpress ($this->db is actually $wpdb)?
+			if ($this->conf['host'] == 'WordPress') {
+				list($convertedQuery, $convertedValues) = $this->convertPlaceholders($query, $values);
+				return ($this->db->query($this->db->prepare($convertedQuery, $convertedValues)) !== false);
+			} else {
+				// sqlite?
+				if ($this->conf['databaseServ'] == 'sqlite') {
+					if ($querylite != '') $query = $querylite;
+					if (!is_null($valueslite)) $values = $valueslite;
+				}
+				// run query
+				$sth = $this->db->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+				return($sth->execute($values));
+			}
+		}
+	}
+	
+	/**
+	 * Converts query placeholders from PDO ": format" to a suitable one for $wpdb->prepare.
+	 * @param	string			the original query
+	 * @param	array			original placeholders
+	 * @return	string,array	converted query and pleceholder values
+	 */
+	public function convertPlaceholders($sql, $params) 
+	{
+		$values = [];
+		foreach ($params as $placeholder => $value) {
+			if (is_int($value)) {
+				$replacement = '%d';
+			} elseif (is_float($value)) {
+				$replacement = '%f';
+			} else {
+				$replacement = '%s';
+			}
+			$pattern = '/'.preg_quote($placeholder, '/').'\b/';
+			$sql = preg_replace($pattern, $replacement, $sql, 1);
+			$values[] = $value;
+		}
+		return [$sql, $values];
+	}
+	
+	/**
+	 * Gets the prepared statement for debug.
+	 * @param string $query the sql query
+	 * @param array $values the values to replace on query
+	 * @param string $querylite the sql query for sqlite (empty string to use the same)
+	 * @param array $valueslite values for sqlite query (null to use the same)
+	 * @return	string	the prepared query
+	 */
+	public function debugSql($query, $values = [ ], $querylite = '', $valueslite = null) {
+		// sqlite?
+		if ($this->conf['databaseServ'] == 'sqlite') {
+			if ($querylite != '') $query = $querylite;
+			if (!is_null($valueslite)) $values = $valueslite;
+		}
+		foreach ($values as $k => $v) {
+			$query = str_replace($k.' ', "'" . $v . "' ", $query);
+			$query = str_replace($k.',', "'" . $v . "',", $query);
+		}
+		return ($query);
+	}
+	
+	/**
+	 * Recovers the last inserted ID on database.
+	 * @return * the inserted ID (or null on error)
+	 */
+	public function insertID()
+	{
+		// connected?
+		if (!is_null($this->db)) {
+			if ($this->conf['host'] == 'WordPress') {
+				return($this->db->insert_id);
+			} else {
+				return($this->db->lastInsertId());
+			}
+		} else {
+			return (null);
+		}
+	}
+	
+	/**
+	 * Sets a configuration value.
+	 * @param string $key the configuration key
+	 * @param string $value	the configuraiton value
+	 * @return bool was the configuration saved?
+	 */
+	public function setConfig($key, $value) {
+		if (!is_null($this->db)) {
+			$this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'config` WHERE `cf_key`=:key', [':key' => $key]);
+			return($this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'config` (`cf_key`, `cf_value`) VALUES (:key, :value)', [
+				':key' => $key, 
+				':value' => $value, 
+			]));
+		} else {
+			return (false);
+		}
+	}
+	
+	/**
+	 * Retrieves a configuration value.
+	 * @param string $key the configuration key
+	 * @return string|bool the recovered value or false if it was not found
+	 */
+	public function getConfig($key) {
+		if (!is_null($this->db)) {
+			$ck = $this->queryAll('SELECT `cf_value` FROM `' . $this->conf['databasePrefix'] . 'config` WHERE `cf_key`=:key', [':key' => $key]);
+			if (count($ck) == 0) {
+				return (false);
+			} else {
+				return ($ck[0]['cf_value']);
+			}
+		} else {
+			return (false);
+		}
+	}
+	
+	/**
+	 * Clears a configuration value.
+	 * @param string $key the configuration key
+	 * @return bool was the configuration cleared?
+	 */
+	public function clearConfig($key) {
+		if (!is_null($this->db)) {
+			return($this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'config` WHERE `cf_key`=:key', [':key' => $key]));
+		} else {
+			return (false);
+		}
+	}
+	
+	/**
+	 * Creates a directory.
+	 * @param	string	$path	new dir path
+	 * @param	bool	$recursive	recursive creation?
+	 * @param	int	$perm	new dir permissions
+	 * @return	was the dir created?
+	 */
+	public function createDir($path, $recursive = false, $perm = 0777) {
+		$oldmask = umask(0);
+		$ok = @mkdir($path, $perm, $recursive);
+		umask($oldmask);
+		return ($ok);
+	}
+    
+    /**
+	 * Copies a directory.
+	 * @param	string	$from original dir
+     * @param   string  $to copy path
+	 */
+	public function copyDir($from, $to) {
+		$dir = opendir($from);
+        $this->createDir($to);
+        while(($file = readdir($dir))) {
+            if (($file != '.') && ($file != '..')) {
+                if (is_dir($from.'/'.$file)) {
+                    $this->copyDir(($from.'/'.$file), ($to.'/'.$file));
+                } else {
+                    copy(($from.'/'.$file), ($to.'/'.$file));
+                }
+            }
+        }
+	}
+    
+    /**
+	 * Removes a file or directory.
+	 * @param	string	$path	dir path
+	 * @return	was the dir removed?
+	 */
+	public function removeFileDir($path) {
+        if (is_file($path)) {
+            return(@unlink($path));
+        } else if (is_dir($path)) {
+			chmod($path, 0777);
+            $dir = opendir($path);
+            while(($file = readdir($dir))) {
+                if (($file != '.') && ($file != '..')) {
+                    if (is_file($path.'/'.$file)) {
+                        @unlink($path.'/'.$file);
+                    } else {
+                        $this->removeFileDir($path.'/'.$file);
+                    }
+                }
+            }
+			closedir($dir);
+            return (@rmdir($path));
+        } else {
+            return (true);
+        }
+	}
+    
+    /**
+	 * Lists all files in a directory.
+	 * @param	string	$path	dir path
+	 * @return	array   the file list
+	 */
+	public function listDirFiles($path, $flist = [ ]) {
+        if (is_file($path)) {
+            $flist[] = $path;
+            return ($flist);
+        } else if (is_dir($path)) {
+            $dir = opendir($path);
+            while(($file = readdir($dir))) {
+                if (($file != '.') && ($file != '..')) {
+                    if (is_file($path.'/'.$file)) {
+                        $flist[] = $path.'/'.$file;
+                    } else {
+                        $flist = $this->listDirFiles(($path.'/'.$file), $flist);
+                    }
+                }
+            }
+            return ($flist);
+        } else {
+            return ($flist);
+        }
+	}
+    
+    /**
+     * Checks if a string ends with / and adds it if not.
+     * @param   string  $url    the string to check
+     * @return'string   the prepared string
+     */
+    public function slashUrl($url) {
+        if (substr($url, -1) != '/') $url .= '/';
+        return ($url);
+    }
+	
+}

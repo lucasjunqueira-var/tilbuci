@@ -55,15 +55,10 @@ Several automation options simplify the creation of common structures such as me
 Use the TilBuci own player or export your creation in many formats!
 
 *   Websites with sitemap for better SEO.
-    
 *   Iframe content for embedding.
-    
 *   PWA web application with offline content support.
-    
 *   Packages ready for publish services like itch.io or Game Jolt.
-    
 *   Desktop applications for Windows, macOS and Linux.
-    
 *   Mobile app projects for XCode or Android Studio.
     
 ![exportoptions](https://github.com/user-attachments/assets/aecb2d7c-b1a3-440a-8aac-675716313b0b)
@@ -85,6 +80,8 @@ TilBuci has several features that simplify the creation of narrative stories, in
 TilBuci is a web software with several multi-user features for collective creation. However, there are cases where local use by just one person may be necessary. With that in mind, we now have a desktop version, presented as a portable software that can be copied to your computer or even to external drives, without the need for installation. The portable version is available for Windows, Linux, and macOS (x64-based architectures). Note that when performing in this way, TilBuci's server functions, such as visitor identification (login) or cloud data storage, will not be available, but creations made in the desktop version can be easily exported and imported to a server installation in the usual way.
 
 ![webanddesktop](https://github.com/user-attachments/assets/91e5ff09-16d0-48f9-a7ce-0579fd109414)
+
+TilBuci is also available as a WordPress plugin, integrating functionalities from both software programs. To learn more and see the installation steps, visit https://plugin.tilbuci.com.br/
 
 ## Tutorials and examples
 

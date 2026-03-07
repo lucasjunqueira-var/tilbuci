@@ -44,7 +44,7 @@ class Data extends BaseClass
 			// no db connection
 			return (-6);
 		} else {
-			$ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:email', [':email'=>$email]);
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:email', [':email'=>$email]);
 			if (count($ck) == 0) {
 				// no user found
 				$this->user = null;
@@ -58,11 +58,11 @@ class Data extends BaseClass
 						'level' => $ck[0]['us_level'], 
 						'key' => md5(time().$ck[0]['us_email'].rand(1000, 9999)), 
 					];
-					if ($this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'users SET us_key=:key, us_passtemp=:pass WHERE us_email=:email', [
+					if ($this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'users` SET `us_key`=:key, `us_passtemp`=:pass WHERE `us_email`=:email', [
 						':key' => $this->user['key'], 
 						':pass' => '', 
 						':email' => $this->user['email'], 
-					], 'UPDATE ' . $this->conf['databasePrefix'] . 'users SET us_key=:key, us_passtemp=:pass, us_updated=:time WHERE us_email=:email', [
+					], 'UPDATE `' . $this->conf['databasePrefix'] . 'users` SET `us_key`=:key, `us_passtemp`=:pass, `us_updated`=:time WHERE `us_email`=:email', [
 						':key' => $this->user['key'], 
 						':pass' => '', 
 						':time' => date('Y-m-d H:i:s'), 
@@ -82,12 +82,12 @@ class Data extends BaseClass
 						'level' => $ck[0]['us_level'], 
 						'key' => md5(time().$ck[0]['us_email'].rand(1000, 9999)), 
 					];
-					if ($this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'users SET us_key=:key, us_pass=:pass, us_passtemp=:tpass WHERE us_email=:email', [
+					if ($this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'users` SET `us_key`=:key, `us_pass`=:pass, `us_passtemp`=:tpass WHERE `us_email`=:email', [
 						':key' => $this->user['key'], 
 						':pass' => md5($pass), 
 						':tpass' => '', 
 						':email' => $this->user['email'], 
-					], 'UPDATE ' . $this->conf['databasePrefix'] . 'users SET us_key=:key, us_pass=:pass, us_passtemp=:tpass, us_updated=:time WHERE us_email=:email', [
+					], 'UPDATE `' . $this->conf['databasePrefix'] . 'users` SET `us_key`=:key, `us_pass`=:pass, `us_passtemp`=:tpass, `us_updated`=:time WHERE `us_email`=:email', [
 						':key' => $this->user['key'], 
 						':pass' => md5($pass), 
 						':tpass' => '', 
@@ -122,7 +122,7 @@ class Data extends BaseClass
 			// no db connection
 			return ('');
 		} else {
-			$ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:email', [':email'=>$us]);
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:email', [':email'=>$us]);
 			if (count($ck) == 0) {
 				// no user found
 				$this->user = null;
@@ -157,14 +157,14 @@ class Data extends BaseClass
 			// no db connection
 			return (false);
 		} else {
-			$ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:email', [':email'=>$email]);
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:email', [':email'=>$email]);
 			if (count($ck) == 0) {
 				// no user found
 				$this->user = null;
 				return (false);
 			} else {
 				// create a password
-				$pass = $this->randSring(8);
+				$pass = $this->randString(8);
 				$mailer = new Mailer;
 				$sender = $mailer->loadSender(true);
 				if ($sender['valid']) {
@@ -173,7 +173,7 @@ class Data extends BaseClass
 					$html = '<p>Hello, you recently asked for an account recover for your ' . $sender['sender'] . ' account. Please return to the system login and provide your e-mail and this new password:<br /><strong>' . $pass . '</strong><br />If you didn\'t ask for this, just ignore this message.</p>';
 					if ($mailer->send('', '', $email, '', ($sender['sender'] . ': password recover'), $txt, $html)) {
 						// save temporary password
-						$this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'users SET us_passtemp=:pass WHERE us_email=:email', [
+						$this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'users` SET `us_passtemp`=:pass WHERE `us_email`=:email', [
 							':pass' => md5($pass), 
 							':email' => $email, 
 						]);
@@ -202,17 +202,17 @@ class Data extends BaseClass
 			// no db connection
 			return (false);
 		} else {
-			$ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:email', [':email'=>$email]);
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:email', [':email'=>$email]);
 			if (count($ck) == 0) {
 				// no user found
 				$this->user = null;
 				return (false);
 			} else {
 				// save as temporary password
-				$this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'users SET us_passtemp=:pass WHERE us_email=:email', [
+				$this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'users` SET `us_passtemp`=:pass WHERE `us_email`=:email', [
 					':pass' => md5($pass), 
 					':email' => $email, 
-				], 'UPDATE ' . $this->conf['databasePrefix'] . 'users SET us_passtemp=:pass, us_updated=:time WHERE us_email=:email', [
+				], 'UPDATE `' . $this->conf['databasePrefix'] . 'users` SET `us_passtemp`=:pass, `us_updated`=:time WHERE `us_email`=:email', [
 					':pass' => md5($pass), 
 					':time' => date('Y-m-d H:i:s'), 
 					':email' => $email, 
@@ -234,7 +234,7 @@ class Data extends BaseClass
 			return (false);
 		} else {
             // visitor blocked?
-            $ck = $this->queryAll('SELECT vb_email FROM ' . $this->conf['databasePrefix'] . 'visitorsblocked WHERE vb_email=:em', [
+            $ck = $this->queryAll('SELECT vb_email FROM `' . $this->conf['databasePrefix'] . 'visitorsblocked` WHERE `vb_email`=:em', [
                 ':em' => $email, 
             ]);
             if (count($ck) > 0) {
@@ -242,11 +242,11 @@ class Data extends BaseClass
                 return (false);
             } else {
                 // creating access code
-                $code = $this->randSring(6);
-                $this->execute('INSERT IGNORE INTO ' . $this->conf['databasePrefix'] . 'visitors (vs_email, vs_code) VALUES (:email, :code) ON DUPLICATE KEY UPDATE vs_code=VALUES(vs_code)', [
+                $code = $this->randString(6);
+                $this->execute('INSERT IGNORE INTO `' . $this->conf['databasePrefix'] . 'visitors` (`vs_email`, `vs_code`) VALUES (:email, :code) ON DUPLICATE KEY UPDATE `vs_code`=VALUES(`vs_code`)', [
                     ':email' => $email, 
                     ':code' => $code, 
-                ], 'INSERT INTO ' . $this->conf['databasePrefix'] . 'visitors (vs_email, vs_code) VALUES (:email, :code) (vs_email) DO UPDATE SET vs_code = excluded.vs_code, vs_last=:time', [
+                ], 'INSERT INTO `' . $this->conf['databasePrefix'] . 'visitors` (`vs_email`, `vs_code`) VALUES (:email, :code) (`vs_email`) DO UPDATE SET `vs_code` = excluded.vs_code, `vs_last`=:time', [
                     ':email' => $email, 
                     ':code' => $code, 
 					':time' => date('Y-m-d H:i:s'), 
@@ -269,7 +269,7 @@ class Data extends BaseClass
 			return (false);
 		} else {
             // visitor blocked?
-            $ck = $this->queryAll('SELECT vb_email FROM ' . $this->conf['databasePrefix'] . 'visitorsblocked WHERE vb_email=:em', [
+            $ck = $this->queryAll('SELECT `vb_email` FROM `' . $this->conf['databasePrefix'] . 'visitorsblocked` WHERE `vb_email`=:em', [
                 ':em' => $email, 
             ]);
             if (count($ck) > 0) {
@@ -277,7 +277,7 @@ class Data extends BaseClass
                 return (false);
             } else {
                 // check code
-                $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'visitors WHERE vs_email=:email AND vs_code=:code AND vs_last>:limit', [
+                $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'visitors` WHERE `vs_email`=:email AND `vs_code`=:code AND `vs_last`>:limit', [
                     ':email' => $email, 
                     ':code' => $code, 
                     ':limit' => date('Y-m-d H:i:s', strtotime('-5hours')), 
@@ -286,11 +286,11 @@ class Data extends BaseClass
                     // code not found
                     return (false);
                 } else {
-                    $key = md5($this->randSring(16));
-                    $this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'visitors SET vs_key=:key WHERE vs_email=:email', [
+                    $key = md5($this->randString(16));
+                    $this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'visitors` SET `vs_key`=:key WHERE `vs_email`=:email', [
                         ':key' => $key, 
                         ':email' => $email, 
-                    ], 'UPDATE ' . $this->conf['databasePrefix'] . 'visitors SET vs_key=:key, vs_last=:time WHERE vs_email=:email', [
+                    ], 'UPDATE `' . $this->conf['databasePrefix'] . 'visitors` SET `vs_key`=:key, `vs_last`=:time WHERE `vs_email`=:email', [
                         ':key' => $key, 
 						':time' => date('Y-m-d H:i:s'), 
                         ':email' => $email, 
@@ -314,7 +314,7 @@ class Data extends BaseClass
 			return (false);
 		} else {
             // visitor blocked?
-            $ck = $this->queryAll('SELECT vb_email FROM ' . $this->conf['databasePrefix'] . 'visitorsblocked WHERE vb_email=:em', [
+            $ck = $this->queryAll('SELECT vb_email FROM `' . $this->conf['databasePrefix'] . 'visitorsblocked` WHERE `vb_email`=:em', [
                 ':em' => $email, 
             ]);
             if (count($ck) > 0) {
@@ -322,14 +322,14 @@ class Data extends BaseClass
                 return (false);
             } else {
 				// visitor exists?
-				$ck = $this->queryAll('SELECT vs_key FROM ' . $this->conf['databasePrefix'] . 'visitors WHERE vs_email=:email', [
+				$ck = $this->queryAll('SELECT vs_key FROM `' . $this->conf['databasePrefix'] . 'visitors` WHERE `vs_email`=:email', [
                     ':email' => $email, 
                 ]);
 				if (count($ck) > 0) {
 					// correct login key?
 					if ($key == md5($email . $ck[0]['vs_key'])) {
 						// register login
-						$this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'visitors SET vs_last=:last WHERE vs_email=:email', [
+						$this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'visitors` SET `vs_last`=:last WHERE `vs_email`=:email', [
 							':last' => date('Y-m-d H:i:s'), 
 							':email' => $email, 
 						]);
@@ -358,7 +358,7 @@ class Data extends BaseClass
 			return ([ ]);
 		} else {
             // visitor blocked?
-            $ck = $this->queryAll('SELECT vb_email FROM ' . $this->conf['databasePrefix'] . 'visitorsblocked WHERE vb_email=:em', [
+            $ck = $this->queryAll('SELECT vb_email FROM `' . $this->conf['databasePrefix'] . 'visitorsblocked` WHERE `vb_email`=:em', [
                 ':em' => $email, 
             ]);
             if (count($ck) > 0) {
@@ -366,7 +366,7 @@ class Data extends BaseClass
                 return ([ ]);
             } else {
                 // check groups
-                $ck = $this->queryAll('SELECT va_group FROM ' . $this->conf['databasePrefix'] . 'visitorassoc WHERE va_visitor=:email GROUP BY va_group', [
+                $ck = $this->queryAll('SELECT va_group FROM `' . $this->conf['databasePrefix'] . 'visitorassoc` WHERE `va_visitor`=:email GROUP BY `va_group`', [
                     ':email' => $email, 
                 ]);
                 $groups = [ ];
@@ -388,7 +388,7 @@ class Data extends BaseClass
 			return(null);
 		} else {
 			if ($visitor) {
-				$ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'visitors WHERE vs_email=:email', [
+				$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'visitors` WHERE `vs_email`=:email', [
 					':email' => $email, 
 				]);
 				if (count($ck) == 0) {
@@ -404,7 +404,7 @@ class Data extends BaseClass
 					return ($this->user);
 				}
 			} else {
-				$ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:email', [
+				$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:email', [
 					':email' => $email, 
 				]);
 				if (count($ck) == 0) {
@@ -434,11 +434,11 @@ class Data extends BaseClass
 			return(null);
 		} else {
 			if ($visitor) {
-				$ck = $this->queryAll('SELECT vs_key AS "key" FROM ' . $this->conf['databasePrefix'] . 'visitors WHERE vs_email=:email', [
+				$ck = $this->queryAll('SELECT `vs_key` AS "key" FROM `' . $this->conf['databasePrefix'] . 'visitors` WHERE `vs_email`=:email', [
 					':email' => $email, 
 				]);	
 			} else {
-				$ck = $this->queryAll('SELECT us_key AS "key" FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:email', [
+				$ck = $this->queryAll('SELECT `us_key` AS "key" FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:email', [
 					':email' => $email, 
 				]);	
 			}
@@ -460,14 +460,14 @@ class Data extends BaseClass
 	public function userList($user) {
 		$list = [ ];
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT us_level FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em', [':em'=>$user]);
+			$ck = $this->queryAll('SELECT `us_level` FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em', [':em'=>$user]);
 			if (count($ck) > 0) {
 				if ($ck[0]['us_level'] == 0) {
 					// system admin
-					$ck = $this->queryAll('SELECT us_email, us_level FROM ' . $this->conf['databasePrefix'] . 'users where us_email!=:own AND us_email!=:single', [ ':own' => $user, ':single' => 'single' ]);
+					$ck = $this->queryAll('SELECT `us_email`, `us_level` FROM `' . $this->conf['databasePrefix'] . 'users` where `us_email`!=:own AND `us_email`!=:single', [ ':own' => $user, ':single' => 'single' ]);
 				} else if ($ck[0]['us_level'] <= 50) {
 					// editors
-					$ck = $this->queryAll('SELECT us_email, us_level FROM ' . $this->conf['databasePrefix'] . 'users where us_email!=:own AND us_email!=:single AND us_level>=:lv', [ ':own' => $user, ':single' => 'single', ':lv' => $ck[0]['us_level'] ]);
+					$ck = $this->queryAll('SELECT `us_email`, `us_level` FROM `' . $this->conf['databasePrefix'] . 'users` where `us_email`!=:own AND `us_email`!=:single AND `us_level`>=:lv', [ ':own' => $user, ':single' => 'single', ':lv' => $ck[0]['us_level'] ]);
 				} else {
 					// authors (can't manage users)
 					$ck = [ ];
@@ -497,7 +497,7 @@ class Data extends BaseClass
 	public function createUser($current, $email, $pass, $level) {
 		// check current user
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT us_level FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em', [':em' => $current]);
+			$ck = $this->queryAll('SELECT `us_level` FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em', [':em' => $current]);
 			if (count($ck) == 0) {
 				// user not found
 				return (3);
@@ -505,7 +505,7 @@ class Data extends BaseClass
 				// current level
 				$curlevel = (int)$ck[0]['us_level'];
 				// new user already exists?
-				$ck = $this->queryAll('SELECT us_level FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em', [':em' => $email]);
+				$ck = $this->queryAll('SELECT `us_level` FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em', [':em' => $email]);
 				if (count($ck) > 0) {
 					return (1);
 				} else {
@@ -516,7 +516,7 @@ class Data extends BaseClass
 						// adjust level?
 						if ($level < $curlevel) $level = $curlevel;
 						// create user
-						$this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'users (us_email, us_pass, us_passtemp, us_key, us_level) VALUES (:em, :pass, :tpass, :key, :lvl)', [
+						$this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'users` (`us_email`, `us_pass`, `us_passtemp`, `us_key`, `us_level`) VALUES (:em, :pass, :tpass, :key, :lvl)', [
 							':em' => $email, 
 							':pass' => md5($pass), 
 							':tpass' => '', 
@@ -552,14 +552,14 @@ class Data extends BaseClass
 				// same user: can't remove
 				return (2);
 			} else {
-				$ck = $this->queryAll('SELECT us_level FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em', [':em' => $current]);
+				$ck = $this->queryAll('SELECT `us_level` FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em', [':em' => $current]);
 				if (count($ck) == 0) {
 					// user not found
 					return (3);
 				} else {
 					// check removed user level
 					$curlvl = (int)$ck[0]['us_level'];
-					$ck = $this->queryAll('SELECT us_level FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em', [':em' => $email]);
+					$ck = $this->queryAll('SELECT `us_level` FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em', [':em' => $email]);
 					if (count($ck) == 0) {
 						// account not found
 						return (4);
@@ -568,7 +568,7 @@ class Data extends BaseClass
 						return (5);
 					} else {
 						// remove user
-						$this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em LIMIT 1', [':em' => $email], 'DELETE FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em');
+						$this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em LIMIT 1', [':em' => $email], 'DELETE FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em');
 						return (0);
 					}
 				}
@@ -599,14 +599,14 @@ class Data extends BaseClass
 				// same user: can't change
 				return (2);
 			} else {
-				$ck = $this->queryAll('SELECT us_level FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em', [':em' => $current]);
+				$ck = $this->queryAll('SELECT `us_level` FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em', [':em' => $current]);
 				if (count($ck) == 0) {
 					// user not found
 					return (3);
 				} else {
 					// check user level
 					$curlvl = (int)$ck[0]['us_level'];
-					$ck = $this->queryAll('SELECT us_level FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em', [':em' => $email]);
+					$ck = $this->queryAll('SELECT `us_level` FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em', [':em' => $email]);
 					if (count($ck) == 0) {
 						// account not found
 						return (4);
@@ -615,10 +615,10 @@ class Data extends BaseClass
 						return (5);
 					} else {
 						// set user password
-						$this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'users SET us_passtemp=:pass WHERE us_email=:em', [
+						$this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'users` SET `us_passtemp`=:pass WHERE `us_email`=:em', [
 							':em' => $email, 
 							':pass' => md5($pass), 
-						], 'UPDATE ' . $this->conf['databasePrefix'] . 'users SET us_passtemp=:pass, us_updated=:time WHERE us_email=:em', [
+						], 'UPDATE `' . $this->conf['databasePrefix'] . 'users` SET `us_passtemp`=:pass, `us_updated`=:time WHERE `us_email`=:em', [
 							':pass' => md5($pass), 
 							':time' => date('Y-m-d H:i:s'), 
 							':em' => $email, 
@@ -639,7 +639,7 @@ class Data extends BaseClass
      */
     public function version() {
         $version = 1;
-        $ck = $this->queryAll('SELECT cf_value FROM ' . $this->conf['databasePrefix'] . 'config WHERE cf_key=:ver', [':ver' => 'dbVersion']);
+        $ck = $this->queryAll('SELECT `cf_value` FROM `' . $this->conf['databasePrefix'] . 'config` WHERE `cf_key`=:ver', [':ver' => 'dbVersion']);
         if (count($ck) > 0) $version = $ck[0]['cf_value'];
         return ($version);
     }
@@ -651,12 +651,12 @@ class Data extends BaseClass
 	 */
 	public function indexFonts($movie) {
 		$fonts = [ ];
-		$ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'fonts');
+		$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'fonts`');
 		foreach ($ck as $v) {
 			$fonts[$v['fn_name']] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("' . $this->conf['path'] . 'font/' . $v['fn_file'] . '"); }';
 		}
 		if ($movie != '') {
-			$ck = $this->queryAll('SELECT mv_fonts FROM ' . $this->conf['databasePrefix'] . 'movies WHERE mv_id=:id', [':id' => $movie]);
+			$ck = $this->queryAll('SELECT `mv_fonts` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id' => $movie]);
 			if (count($ck) > 0) {
 				if ($ck[0]['mv_fonts'] != '') {
 					$json = json_decode(gzdecode(base64_decode($ck[0]['mv_fonts'])), true);
@@ -681,7 +681,7 @@ class Data extends BaseClass
 	 */
 	public function pluginIndex() {
 		$pl = [ ];
-		$ck = $this->queryAll('SELECT pc_id, pc_file FROM ' . $this->conf['databasePrefix'] . 'pluginconfig WHERE pc_active=:ac AND pc_index=:in', [
+		$ck = $this->queryAll('SELECT `pc_id`, `pc_file` FROM `' . $this->conf['databasePrefix'] . 'pluginconfig` WHERE `pc_active`=:ac AND `pc_index`=:in', [
 			':ac' => '1', 
 			':in' => '1', 
 		]);
@@ -695,7 +695,7 @@ class Data extends BaseClass
 	 */
 	public function pluginWs() {
 		$pl = [ ];
-		$ck = $this->queryAll('SELECT pc_id, pc_file FROM ' . $this->conf['databasePrefix'] . 'pluginconfig WHERE pc_active=:ac AND pc_ws=:ws', [
+		$ck = $this->queryAll('SELECT `pc_id`, `pc_file` FROM `' . $this->conf['databasePrefix'] . 'pluginconfig` WHERE `pc_active`=:ac AND `pc_ws`=:ws', [
 			':ac' => '1', 
 			':ws' => '1', 
 		]);
@@ -709,7 +709,7 @@ class Data extends BaseClass
      */
     public function checkCORS() {
         $list = [ ];
-        $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'cors');
+        $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'cors`');
         foreach ($ck as $v) $list[] = mb_strtolower($this->slashUrl($v['cr_domain']));
         return ($list);
     }
@@ -720,7 +720,7 @@ class Data extends BaseClass
 	 */
 	public function launcherLogin() {
 		$key = md5('tilbuci'.time());
-		if ($this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'users (us_email, us_pass, us_passtemp, us_key, us_level, us_updated) VALUES (:em, :pass, :tpass, :key, :lvl, :time) ON CONFLICT(us_email) DO UPDATE SET us_key = excluded.us_key, us_updated = excluded.us_updated', [
+		if ($this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'users` (`us_email`, `us_pass`, `us_passtemp`, `us_key`, `us_level`, `us_updated`) VALUES (:em, :pass, :tpass, :key, :lvl, :time) ON CONFLICT(`us_email`) DO UPDATE SET `us_key` = excluded.us_key, `us_updated` = excluded.us_updated', [
 			':em' => 'single', 
 			':pass' => '', 
 			':tpass' => '', 
@@ -739,7 +739,7 @@ class Data extends BaseClass
 	 * @return string the login key or empty string on error
 	 */
 	public function launcherKey() {
-		$ck = $this->queryAll('SELECT us_key FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em', [':em'=>'single']);
+		$ck = $this->queryAll('SELECT us_key FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em', [':em'=>'single']);
 		if (count($ck) == 0) {
 			return ('');
 		} else {

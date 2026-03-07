@@ -104,7 +104,7 @@ if (is_file('player.json')) {
 if ($mode != 'editor') {
 	if ($movie != '') {
 		$link .= '?mv='.urlencode($movie);
-        $ck = $data->queryAll('SELECT mv_title, mv_about, mv_tags, mv_favicon, mv_image FROM ' . $data->conf['databasePrefix'] . 'movies WHERE mv_id=:mv', [':mv'=>$movie]);
+        $ck = $data->queryAll('SELECT `mv_title`, `mv_about`, `mv_tags`, `mv_favicon`, `mv_image` FROM `' . $data->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:mv', [':mv'=>$movie]);
         if (count($ck) > 0) {
             $title = $ck[0]['mv_title'];
             $about = $ck[0]['mv_about'];
@@ -114,7 +114,7 @@ if ($mode != 'editor') {
         }
 		if ($scene != '') {
 			$link .= '&sc='.urlencode($scene);
-            $ck = $data->queryAll('SELECT sc_title, sc_about, sc_image FROM ' . $data->conf['databasePrefix'] . 'scenes WHERE sc_movie=:mv AND sc_id=:id', [':mv'=>$movie, ':id'=>$scene]);
+            $ck = $data->queryAll('SELECT `sc_title`, `sc_about`, `sc_image` FROM `' . $data->conf['databasePrefix'] . 'scenes` WHERE `sc_movie`=:mv AND `sc_id`=:id', [':mv'=>$movie, ':id'=>$scene]);
             if (count($ck) > 0) {
                 $title = $ck[0]['sc_title'];
                 if ($ck[0]['sc_about'] != '') $about = $ck[0]['sc_about'];
@@ -124,7 +124,7 @@ if ($mode != 'editor') {
 		$cssmovie = $movie;
 	} else {
 		$movie = $json['start'];
-		$ck = $data->queryAll('SELECT mv_title, mv_about, mv_tags, mv_favicon, mv_image FROM ' . $data->conf['databasePrefix'] . 'movies WHERE mv_id=:mv', [':mv'=>$movie]);
+		$ck = $data->queryAll('SELECT `mv_title`, `mv_about`, `mv_tags`, `mv_favicon`, `mv_image` FROM `' . $data->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:mv', [':mv'=>$movie]);
         if (count($ck) > 0) {
             $title = $ck[0]['mv_title'];
             $about = $ck[0]['mv_about'];

@@ -42,8 +42,8 @@ class WindowSetup extends PopupWindow {
         // creating window
         super(ac, Global.ln.get('window-setup-title'), 900, InterfaceFactory.pickValue(560, 640), true, true, true);
 
-        // user account (only on multiple user mode)
-        if (!Global.singleUser) {
+        // user account (only on multiple user mode and not hosted)
+        if (!Global.singleUser) if (Global.host == '') {
             this.addForm(Global.ln.get('window-setup-user-title'), this.ui.forge('form-user', [
                 { tp: 'Label', id: 'user-pass', tx: Global.ln.get('window-setup-user-pass'), vr: '' }, 
                 { tp: 'TInput', id: 'user-pass', tx: '', vr: '' }, 
@@ -122,36 +122,38 @@ class WindowSetup extends PopupWindow {
             ]));
             //this.ui.labels['renderabout'].wordWrap = true;
 
-            // email
-            this.addForm(Global.ln.get('window-setup-email-title'), this.ui.forge('form-email', [
-                { tp: 'Label', id: 'email-sender', tx: Global.ln.get('window-setup-email-sender'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'TInput', id: 'email-sender', tx: '', vr: '' }, 
-                { tp: 'Label', id: 'email-email', tx: Global.ln.get('window-setup-email-email'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'TInput', id: 'email-email', tx: '', vr: '' }, 
-                { tp: 'Label', id: 'email-server', tx: Global.ln.get('window-setup-email-server'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'TInput', id: 'email-server', tx: '', vr: '' }, 
-                { tp: 'Label', id: 'email-user', tx: Global.ln.get('window-setup-email-user'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'TInput', id: 'email-user', tx: '', vr: '' }, 
-                { tp: 'Label', id: 'email-password', tx: Global.ln.get('window-setup-email-password'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'TInput', id: 'email-password', tx: '', vr: '' }, 
-                { tp: 'Label', id: 'email-port', tx: Global.ln.get('window-setup-email-port'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'TInput', id: 'email-port', tx: '', vr: '' }, 
-                { tp: 'Label', id: 'email-security', tx: Global.ln.get('window-setup-email-security'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'Select', id: 'email-security', vl: [
-                        { text: "SSL", value: "ssl" }, 
-                        { text: "TLS", value: "tcp" }, 
-                        { text: "None", value: "" }, 
-                    ], sl: 'ssl' }, 
-                { tp: 'Spacer', id: 'email-button', ht: 10, ln: false }, 
-                { tp: 'Button', id: 'email-save', tx: Global.ln.get('window-setup-email-save'), ac: this.onEmailSave }, 
-                { tp: 'Spacer', id: 'email-end', ht: 10, ln: false }, 
-            ]));
-            this.ui.inputs['email-password'].displayAsPassword = true;
-            this.ui.createDescription('email-codeabout', Global.ln.get('window-setup-email-codeabout'));
-            this.ui.createTInput('email-code');
-            this.ui.createButton('email-codebutton', Global.ln.get('window-setup-email-codecheck'), this.checkEmailCode);
-            this.ui.createSpacer('email-codespace', 20, true);
-            this.ui.createDescription('email-codevalid', Global.ln.get('window-setup-email-codevalid'));
+            // email (not on hosted installations)
+            if (Global.host == '') {
+                this.addForm(Global.ln.get('window-setup-email-title'), this.ui.forge('form-email', [
+                    { tp: 'Label', id: 'email-sender', tx: Global.ln.get('window-setup-email-sender'), vr: Label.VARIANT_DETAIL }, 
+                    { tp: 'TInput', id: 'email-sender', tx: '', vr: '' }, 
+                    { tp: 'Label', id: 'email-email', tx: Global.ln.get('window-setup-email-email'), vr: Label.VARIANT_DETAIL }, 
+                    { tp: 'TInput', id: 'email-email', tx: '', vr: '' }, 
+                    { tp: 'Label', id: 'email-server', tx: Global.ln.get('window-setup-email-server'), vr: Label.VARIANT_DETAIL }, 
+                    { tp: 'TInput', id: 'email-server', tx: '', vr: '' }, 
+                    { tp: 'Label', id: 'email-user', tx: Global.ln.get('window-setup-email-user'), vr: Label.VARIANT_DETAIL }, 
+                    { tp: 'TInput', id: 'email-user', tx: '', vr: '' }, 
+                    { tp: 'Label', id: 'email-password', tx: Global.ln.get('window-setup-email-password'), vr: Label.VARIANT_DETAIL }, 
+                    { tp: 'TInput', id: 'email-password', tx: '', vr: '' }, 
+                    { tp: 'Label', id: 'email-port', tx: Global.ln.get('window-setup-email-port'), vr: Label.VARIANT_DETAIL }, 
+                    { tp: 'TInput', id: 'email-port', tx: '', vr: '' }, 
+                    { tp: 'Label', id: 'email-security', tx: Global.ln.get('window-setup-email-security'), vr: Label.VARIANT_DETAIL }, 
+                    { tp: 'Select', id: 'email-security', vl: [
+                            { text: "SSL", value: "ssl" }, 
+                            { text: "TLS", value: "tcp" }, 
+                            { text: "None", value: "" }, 
+                        ], sl: 'ssl' }, 
+                    { tp: 'Spacer', id: 'email-button', ht: 10, ln: false }, 
+                    { tp: 'Button', id: 'email-save', tx: Global.ln.get('window-setup-email-save'), ac: this.onEmailSave }, 
+                    { tp: 'Spacer', id: 'email-end', ht: 10, ln: false }, 
+                ]));
+                this.ui.inputs['email-password'].displayAsPassword = true;
+                this.ui.createDescription('email-codeabout', Global.ln.get('window-setup-email-codeabout'));
+                this.ui.createTInput('email-code');
+                this.ui.createButton('email-codebutton', Global.ln.get('window-setup-email-codecheck'), this.checkEmailCode);
+                this.ui.createSpacer('email-codespace', 20, true);
+                this.ui.createDescription('email-codevalid', Global.ln.get('window-setup-email-codevalid'));
+            }
 
             // fonts
             var fnts:Array<Dynamic> = [ ];
@@ -169,15 +171,17 @@ class WindowSetup extends PopupWindow {
             ]));
             this.ui.inputs['font-file'].enabled = false;
 
-            // update
-            this.addForm(Global.ln.get('window-setup-update-title'), this.ui.forge('form-update', [
-                { tp: 'Label', id: 'update-about', tx: Global.ln.get('window-setup-update-about'), vr: '' }, 
-                { tp: 'Spacer', id: 'update-about', ht: 20, ln: false }, 
-                { tp: 'Button', id: 'update-check', tx: Global.ln.get('window-setup-update-check'), ac: this.onRelase }, 
-                { tp: 'Spacer', id: 'update-check', ht: 20, ln: false }, 
-                { tp: 'Button', id: 'update-upload', tx: Global.ln.get('window-setup-update-upload'), ac: this.onSelectUpdate }
-            ]));
-            this.ui.labels['update-about'].wordWrap = true;
+            // update (not on hosted installations)
+            if (Global.host == '') {
+                this.addForm(Global.ln.get('window-setup-update-title'), this.ui.forge('form-update', [
+                    { tp: 'Label', id: 'update-about', tx: Global.ln.get('window-setup-update-about'), vr: '' }, 
+                    { tp: 'Spacer', id: 'update-about', ht: 20, ln: false }, 
+                    { tp: 'Button', id: 'update-check', tx: Global.ln.get('window-setup-update-check'), ac: this.onRelase }, 
+                    { tp: 'Spacer', id: 'update-check', ht: 20, ln: false }, 
+                    { tp: 'Button', id: 'update-upload', tx: Global.ln.get('window-setup-update-upload'), ac: this.onSelectUpdate }
+                ]));
+                this.ui.labels['update-about'].wordWrap = true;
+            }
         }
 
         // about form
@@ -225,10 +229,10 @@ class WindowSetup extends PopupWindow {
     **/
     override public function acStart():Void {
         if (Global.userLevel == 0) {
-            Global.ws.send('Email/GetConfig', [ ], onEmailSettings);
+            if (Global.host == '') Global.ws.send('Email/GetConfig', [ ], onEmailSettings);
             Global.ws.send('Movie/SetList', [ ], onMovieList);
         }
-        if (!Global.singleUser && (Global.ws.level <= 50)) Global.ws.send('User/List', [ ], onUserList);
+        if (!Global.singleUser && (Global.ws.level <= 50)) if (Global.host == '') Global.ws.send('User/List', [ ], onUserList);
     }
 
     /**
