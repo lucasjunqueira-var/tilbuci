@@ -53,7 +53,7 @@ class Visitor extends Data
      */
     public function listVisitors($user, $filter) {
         // only admin users can list visitors
-        $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em AND us_level=:zero', [
+        $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:zero', [
             ':em' => $user, 
             ':zero' => '0', 
         ]);
@@ -62,14 +62,14 @@ class Visitor extends Data
         } else {
             $this->list = [ ];
             if ($filter == '') {
-                $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'visitors ORDER BY vs_email ASC');
+                $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'visitors` ORDER BY `vs_email` ASC');
             } else {
-                $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'visitors WHERE vs_email LIKE :filt ORDER BY vs_email ASC', [
+                $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'visitors` WHERE `vs_email` LIKE :filt ORDER BY `vs_email` ASC', [
                     ':filt' => '%' . $filter . '%', 
                 ]);
             }
             foreach ($ck as $v) {
-                $ckb = $this->queryAll('SELECT vb_email FROM ' . $this->conf['databasePrefix'] . 'visitorsblocked WHERE vb_email=:em', [
+                $ckb = $this->queryAll('SELECT `vb_email` FROM `' . $this->conf['databasePrefix'] . 'visitorsblocked` WHERE `vb_email`=:em', [
                     ':em' => $v['vs_email'], 
                 ]);
                 $this->list[] = [
@@ -81,9 +81,9 @@ class Visitor extends Data
                 ];
             }
             $this->groups = [ ];
-            $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'visitorgroups ORDER BY vg_name ASC');
+            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'visitorgroups` ORDER BY `vg_name` ASC');
             foreach ($ck as $v) {
-                $ckt = $this->queryAll('SELECT COUNT(*) AS TOTAL FROM ' . $this->conf['databasePrefix'] . 'visitorassoc WHERE va_group=:id GROUP BY va_group', [':id'=>$v['vg_id']]);
+                $ckt = $this->queryAll('SELECT COUNT(*) AS TOTAL FROM `' . $this->conf['databasePrefix'] . 'visitorassoc` WHERE `va_group`=:id GROUP BY `va_group`', [':id'=>$v['vg_id']]);
                 $this->groups[] = [
                     'id' => $v['vg_id'], 
                     'name' => $v['vg_name'], 
@@ -91,13 +91,13 @@ class Visitor extends Data
                 ];
             }
             $this->movies = [ ];
-            $ck = $this->queryAll('SELECT mv_id, mv_title FROM ' . $this->conf['databasePrefix'] . 'movies ORDER BY mv_title ASC');
+            $ck = $this->queryAll('SELECT `mv_id`, `mv_title` FROM `' . $this->conf['databasePrefix'] . 'movies` ORDER BY `mv_title` ASC');
             foreach ($ck as $v) $this->movies[] = [
                 'id' => $v['mv_id'], 
                 'title' => $v['mv_title'], 
             ];
             $this->cors = [ ];
-            $ck = $this->queryAll('SELECT cr_domain FROM ' . $this->conf['databasePrefix'] . 'cors');
+            $ck = $this->queryAll('SELECT `cr_domain` FROM `' . $this->conf['databasePrefix'] . 'cors`');
             foreach ($ck as $v) $this->cors[] = $v['cr_domain'];
             return (true);
         }
@@ -111,7 +111,7 @@ class Visitor extends Data
      */
     public function selectVisitor($user, $email) {
         // only admin users can list visitors
-        $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em AND us_level=:zero', [
+        $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:zero', [
             ':em' => $user, 
             ':zero' => '0', 
         ]);
@@ -119,11 +119,11 @@ class Visitor extends Data
             return (false);
         } else {
             $this->list = [ ];
-            $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'visitors WHERE vs_email=:em', [
+            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'visitors` WHERE `vs_email`=:em', [
                 ':em' => $email, 
             ]);
             if (count($ck) > 0) {
-                $ckb = $this->queryAll('SELECT vb_email FROM ' . $this->conf['databasePrefix'] . 'visitorsblocked WHERE vb_email=:em', [
+                $ckb = $this->queryAll('SELECT `vb_email` FROM `' . $this->conf['databasePrefix'] . 'visitorsblocked` WHERE `vb_email`=:em', [
                     ':em' => $ck[0]['vs_email'], 
                 ]);
                 $this->selected = [
@@ -137,12 +137,12 @@ class Visitor extends Data
                     'blocked' => (count($ckb) > 0), 
                 ];
                 $movies = [ ];
-                $ckst = $this->queryAll('SELECT vs_movie, COUNT(*) as TOTAL FROM ' . $this->conf['databasePrefix'] . 'visitorstate WHERE vs_user=:em GROUP BY vs_movie', [ ':em' => $email ]);
+                $ckst = $this->queryAll('SELECT `vs_movie`, COUNT(*) as TOTAL FROM `' . $this->conf['databasePrefix'] . 'visitorstate` WHERE `vs_user`=:em GROUP BY `vs_movie`', [ ':em' => $email ]);
                 foreach ($ckst as $st) {
                     $this->selected['states'] += $st['TOTAL'];
                     if (!in_array($st['vs_movie'], $movies)) $movies[] = $st['vs_movie'];
                 }
-                $ckdt = $this->queryAll('SELECT vd_movie, COUNT(*) as TOTAL FROM ' . $this->conf['databasePrefix'] . 'visitordata WHERE vd_user=:em GROUP BY vd_movie', [ ':em' => $email ]);
+                $ckdt = $this->queryAll('SELECT `vd_movie`, COUNT(*) as TOTAL FROM `' . $this->conf['databasePrefix'] . 'visitordata` WHERE `vd_user`=:em GROUP BY `vd_movie`', [ ':em' => $email ]);
                 foreach ($ckdt as $dt) {
                     $this->selected['data'] += $dt['TOTAL'];
                     if (!in_array($dt['vd_movie'], $movies)) $movies[] = $dt['vd_movie'];
@@ -163,7 +163,7 @@ class Visitor extends Data
      */
     public function blockVisitor($user, $email) {
         // only admin users can list visitors
-        $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em AND us_level=:zero', [
+        $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:zero', [
             ':em' => $user, 
             ':zero' => '0', 
         ]);
@@ -171,24 +171,24 @@ class Visitor extends Data
             return (false);
         } else {
             $this->list = [ ];
-            $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'visitors WHERE vs_email=:em', [
+            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'visitors` WHERE `vs_email`=:em', [
                 ':em' => $email, 
             ]);
             if (count($ck) > 0) {
-                $ckb = $this->queryAll('SELECT vb_email FROM ' . $this->conf['databasePrefix'] . 'visitorsblocked WHERE vb_email=:em', [
+                $ckb = $this->queryAll('SELECT `vb_email` FROM `' . $this->conf['databasePrefix'] . 'visitorsblocked` WHERE `vb_email`=:em', [
                     ':em' => $ck[0]['vs_email'], 
                 ]);
                 if (count($ckb) > 0) {
                     // release
-                    $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'visitorsblocked WHERE vb_email=:em LIMIT 1', [
+                    $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'visitorsblocked` WHERE `vb_email`=:em LIMIT 1', [
                         ':em' => $ck[0]['vs_email'], 
-                    ], 'DELETE FROM ' . $this->conf['databasePrefix'] . 'visitorsblocked WHERE vb_email=:em');
+                    ], 'DELETE FROM `' . $this->conf['databasePrefix'] . 'visitorsblocked` WHERE `vb_email`=:em');
                 } else {
                     // block
-                    $this->execute('INSERT IGNORE INTO ' . $this->conf['databasePrefix'] . 'visitorsblocked (vb_email, vb_admin) VALUES (:em, :adm)', [
+                    $this->execute('INSERT IGNORE INTO `' . $this->conf['databasePrefix'] . 'visitorsblocked` (`vb_email`, `vb_admin`) VALUES (:em, :adm)', [
                         ':em' => $ck[0]['vs_email'], 
                         ':adm' => $user,
-                    ], 'INSERT OR IGNORE INTO ' . $this->conf['databasePrefix'] . 'visitorsblocked (vb_email, vb_admin) VALUES (:em, :adm)');
+                    ], 'INSERT OR IGNORE INTO `' . $this->conf['databasePrefix'] . 'visitorsblocked` (`vb_email`, `vb_admin`) VALUES (:em, :adm)');
                 }
                 return (true);
             } else {
@@ -205,26 +205,26 @@ class Visitor extends Data
      */
     public function removeVisitor($user, $email) {
         // only admin users can list visitors
-        $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em AND us_level=:zero', [
+        $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:zero', [
             ':em' => $user, 
             ':zero' => '0', 
         ]);
         if (count($ck) == 0) {
             return (false);
         } else {
-            $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'visitors WHERE vs_email=:em', [
+            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'visitors` WHERE `vs_email`=:em', [
                 ':em' => $email, 
             ]);
-            $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'visitorsblocked WHERE vb_email=:em', [
+            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'visitorsblocked` WHERE `vb_email`=:em', [
                 ':em' => $email, 
             ]);
-            $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'visitorstate WHERE vs_user=:em', [
+            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'visitorstate` WHERE `vs_user`=:em', [
                 ':em' => $email, 
             ]);
-            $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'visitordata WHERE vd_user=:em', [
+            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'visitordata` WHERE `vd_user`=:em', [
                 ':em' => $email, 
             ]);
-            $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'visitorassoc WHERE va_visitor=:em', [
+            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'visitorassoc` WHERE `va_visitor`=:em', [
                 ':em' => $email, 
             ]);
             return (true);
@@ -239,20 +239,20 @@ class Visitor extends Data
      */
     public function createGroup($user, $name) {
         // only admin users can create groups
-        $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em AND us_level=:zero', [
+        $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:zero', [
             ':em' => $user, 
             ':zero' => '0', 
         ]);
         if (count($ck) == 0) {
             return (false);
         } else {
-            $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'visitorgroups WHERE vg_name=:nm', [
+            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'visitorgroups` WHERE `vg_name`=:nm', [
                ':nm' => $name, 
             ]);
             if (count($ck) > 0) {
                 return (false);
             } else {
-                $this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'visitorgroups (vg_name) VALUES (:nm)', [
+                $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'visitorgroups` (`vg_name`) VALUES (:nm)', [
                    ':nm' => $name, 
                 ]);
                 return (true);
@@ -269,21 +269,21 @@ class Visitor extends Data
      */
     public function removeGroup($user, $id, $name) {
         // only admin users can remove groups
-        $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em AND us_level=:zero', [
+        $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:zero', [
             ':em' => $user, 
             ':zero' => '0', 
         ]);
         if (count($ck) == 0) {
             return (false);
         } else {
-            $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'visitorgroups WHERE vg_name=:nm and vg_id=:id', [
+            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'visitorgroups` WHERE `vg_name`=:nm and `vg_id`=:id', [
                 ':nm' => $name, 
                 ':id' => $id, 
             ]);
             if (count($ck) == 0) {
                 return (false);
             } else {
-                $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'visitorgroups WHERE vg_name=:nm and vg_id=:id', [
+                $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'visitorgroups` WHERE `vg_name`=:nm and `vg_id`=:id', [
                     ':nm' => $name, 
                     ':id' => $id, 
                 ]);
@@ -301,14 +301,14 @@ class Visitor extends Data
      */
     public function showGroup($user, $id, $name) {
         // only admin users can list groups
-        $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em AND us_level=:zero', [
+        $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:zero', [
             ':em' => $user, 
             ':zero' => '0', 
         ]);
         if (count($ck) == 0) {
             return (false);
         } else {
-            $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'visitorgroups WHERE vg_name=:nm and vg_id=:id', [
+            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'visitorgroups` WHERE `vg_name`=:nm and `vg_id`=:id', [
                 ':nm' => $name, 
                 ':id' => $id, 
             ]);
@@ -320,7 +320,7 @@ class Visitor extends Data
                     'name' => $ck[0]['vg_name'], 
                     'visitors' => [ ], 
                 ];
-                $ck = $this->queryAll('SELECT va_visitor FROM ' . $this->conf['databasePrefix'] . 'visitorassoc WHERE va_group=:id ORDER BY va_visitor ASC', [ ':id' => $id ]);
+                $ck = $this->queryAll('SELECT `va_visitor` FROM `' . $this->conf['databasePrefix'] . 'visitorassoc` WHERE `va_group`=:id ORDER BY `va_visitor` ASC', [ ':id' => $id ]);
                 foreach ($ck as $v) $this->groups['visitors'][] = $v['va_visitor'];
                 return (true);
             }
@@ -337,26 +337,26 @@ class Visitor extends Data
      */
     public function addGroupVisitor($user, $id, $name, $visitor) {
         // only admin users can list groups
-        $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em AND us_level=:zero', [
+        $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:zero', [
             ':em' => $user, 
             ':zero' => '0', 
         ]);
         if (count($ck) == 0) {
             return (false);
         } else {
-            $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'visitorgroups WHERE vg_name=:nm and vg_id=:id', [
+            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'visitorgroups` WHERE `vg_name`=:nm and `vg_id`=:id', [
                 ':nm' => $name, 
                 ':id' => $id, 
             ]);
             if (count($ck) == 0) {
                 return (false);
             } else {
-                $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'visitorassoc WHERE va_visitor=:vs AND va_group=:id', [
+                $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'visitorassoc` WHERE `va_visitor`=:vs AND `va_group`=:id', [
                     ':vs' => $visitor, 
                     ':id' => $id, 
                 ]);
                 if (count($ck) == 0) {
-                    $this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'visitorassoc (va_visitor, va_group) VALUES (:vs, :id)', [
+                    $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'visitorassoc` (`va_visitor`, `va_group`) VALUES (:vs, :id)', [
                         ':vs' => $visitor, 
                         ':id' => $id, 
                     ]);
@@ -366,7 +366,7 @@ class Visitor extends Data
                     'name' => $name, 
                     'visitors' => [ ], 
                 ];
-                $ck = $this->queryAll('SELECT va_visitor FROM ' . $this->conf['databasePrefix'] . 'visitorassoc WHERE va_group=:id ORDER BY va_visitor ASC', [ ':id' => $id ]);
+                $ck = $this->queryAll('SELECT `va_visitor` FROM `' . $this->conf['databasePrefix'] . 'visitorassoc` WHERE `va_group`=:id ORDER BY `va_visitor` ASC', [ ':id' => $id ]);
                 foreach ($ck as $v) $this->groups['visitors'][] = $v['va_visitor'];
                 return (true);
             }
@@ -383,25 +383,25 @@ class Visitor extends Data
      */
     public function changeGroupName($user, $id, $name, $new) {
         // only admin users can list groups
-        $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em AND us_level=:zero', [
+        $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:zero', [
             ':em' => $user, 
             ':zero' => '0', 
         ]);
         if (count($ck) == 0) {
             return (false);
         } else {
-            $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'visitorgroups WHERE vg_name=:nm and vg_id=:id', [
+            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'visitorgroups` WHERE `vg_name`=:nm and `vg_id`=:id', [
                 ':nm' => $name, 
                 ':id' => $id, 
             ]);
             if (count($ck) == 0) {
                 return (false);
             } else {
-                $this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'visitorgroups SET vg_name=:new WHERE vg_name=:nm and vg_id=:id', [
+                $this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'visitorgroups` SET `vg_name`=:new WHERE `vg_name`=:nm and `vg_id`=:id', [
                     ':new' => $new, 
                     ':nm' => $name, 
                     ':id' => $id, 
-                ], 'UPDATE ' . $this->conf['databasePrefix'] . 'visitorgroups SET vg_name=:new, vg_updated=:time WHERE vg_name=:nm and vg_id=:id', [
+                ], 'UPDATE `' . $this->conf['databasePrefix'] . 'visitorgroups` SET `vg_name`=:new, `vg_updated`=:time WHERE `vg_name`=:nm and `vg_id`=:id', [
                     ':new' => $new, 
                     ':time' => date('Y-m-d H:i:s'), 
                     ':nm' => $name, 
@@ -422,21 +422,21 @@ class Visitor extends Data
      */
     public function removeGroupVisitor($user, $id, $name, $visitor) {
         // only admin users can list groups
-        $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em AND us_level=:zero', [
+        $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:zero', [
             ':em' => $user, 
             ':zero' => '0', 
         ]);
         if (count($ck) == 0) {
             return (false);
         } else {
-            $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'visitorgroups WHERE vg_name=:nm and vg_id=:id', [
+            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'visitorgroups` WHERE `vg_name`=:nm and `vg_id`=:id', [
                 ':nm' => $name, 
                 ':id' => $id, 
             ]);
             if (count($ck) == 0) {
                 return (false);
             } else {
-                $ck = $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'visitorassoc WHERE va_visitor=:vs AND va_group=:id', [
+                $ck = $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'visitorassoc` WHERE `va_visitor`=:vs AND `va_group`=:id', [
                     ':vs' => $visitor, 
                     ':id' => $id, 
                 ]);
@@ -445,7 +445,7 @@ class Visitor extends Data
                     'name' => $name, 
                     'visitors' => [ ], 
                 ];
-                $ck = $this->queryAll('SELECT va_visitor FROM ' . $this->conf['databasePrefix'] . 'visitorassoc WHERE va_group=:id ORDER BY va_visitor ASC', [ ':id' => $id ]);
+                $ck = $this->queryAll('SELECT `va_visitor` FROM `' . $this->conf['databasePrefix'] . 'visitorassoc` WHERE `va_group`=:id ORDER BY `va_visitor` ASC', [ ':id' => $id ]);
                 foreach ($ck as $v) $this->groups['visitors'][] = $v['va_visitor'];
                 return (true);
             }
@@ -459,7 +459,7 @@ class Visitor extends Data
      */
     public function accessInfo($movie) {
         // movie exists?
-        $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'movies WHERE mv_id=:id', [
+        $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [
             ':id' => $movie,  
         ]);
         if (count($ck) == 0) {
@@ -467,14 +467,14 @@ class Visitor extends Data
         } else {
             $this->list = [ ];
             $this->groups = [ ];
-            $ck = $this->queryAll('SELECT mv_id, mv_title FROM ' . $this->conf['databasePrefix'] . 'movies WHERE mv_id!=:id ORDER BY mv_title ASC', [
+            $ck = $this->queryAll('SELECT `mv_id`, `mv_title` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`!=:id ORDER BY `mv_title` ASC', [
                 ':id' => $movie,  
             ]);
             foreach ($ck as $v) $this->list[] = [
                 'id' => $v['mv_id'], 
                 'title' => $v['mv_title'], 
             ];
-            $ck = $this->queryAll('SELECT vg_id, vg_name FROM ' . $this->conf['databasePrefix'] . 'visitorgroups ORDER BY vg_name ASC');
+            $ck = $this->queryAll('SELECT `vg_id`, `vg_name` FROM `' . $this->conf['databasePrefix'] . 'visitorgroups` ORDER BY `vg_name` ASC');
             foreach ($ck as $v) $this->groups[] = [
                 'id' => $v['vg_id'], 
                 'name' => $v['vg_name'], 
@@ -491,13 +491,13 @@ class Visitor extends Data
      */
     public function allowMovie($movie, $visitor) {
         // does the visitor account exist?
-        $ck = $this->queryAll('SELECT vs_email FROM ' . $this->conf['databasePrefix'] . 'visitors WHERE vs_email=:em', [ ':em' => $visitor ]);
+        $ck = $this->queryAll('SELECT `vs_email` FROM `' . $this->conf['databasePrefix'] . 'visitors` WHERE `vs_email`=:em', [ ':em' => $visitor ]);
         if (count($ck) == 0) {
             // no visitor account
             return (false);
         } else {
             // does the movie exist?
-            $ck = $this->queryAll('SELECT mv_vsgroups FROM ' . $this->conf['databasePrefix'] . 'movies WHERE mv_id=:mv', [ ':mv' => $movie ]);
+            $ck = $this->queryAll('SELECT `mv_vsgroups` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:mv', [ ':mv' => $movie ]);
             if (count($ck) == 0) {
                 // no movie
                 return (false);
@@ -508,7 +508,7 @@ class Visitor extends Data
                     $found = false;
                     foreach ($groups as $gr) {
                         if (!$found) {
-                            $ckg = $this->queryAll('SELECT va_id FROM ' . $this->conf['databasePrefix'] . 'visitorassoc WHERE va_visitor=:em AND va_group=:gr', [
+                            $ckg = $this->queryAll('SELECT `va_id` FROM `' . $this->conf['databasePrefix'] . 'visitorassoc` WHERE `va_visitor`=:em AND `va_group`=:gr', [
                                 ':em' => $visitor, 
                                 ':gr' => $gr, 
                             ]);
@@ -533,7 +533,7 @@ class Visitor extends Data
      */
     public function exportEvents($user, $movie, $name) {
         // only admin users can export events
-        $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em AND us_level=:zero', [
+        $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:zero', [
             ':em' => $user, 
             ':zero' => '0', 
         ]);
@@ -564,7 +564,7 @@ class Visitor extends Data
                 $cols[] = 'ev_name=:nm';
                 $vals[':nm'] = $name;
             }
-            $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'events ' . ((count($cols) > 0) ? 'WHERE ' . implode(' AND ', $cols) . ' ' : ' ') . 'ORDER BY ev_id ASC', $vals);
+            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'events` ' . ((count($cols) > 0) ? 'WHERE ' . implode(' AND ', $cols) . ' ' : ' ') . 'ORDER BY `ev_id` ASC', $vals);
             foreach ($ck as $v) {
                 $content[] = implode(';', [
                     $v['ev_date'], 
@@ -594,7 +594,7 @@ class Visitor extends Data
      */
     public function removeEvents($user, $movie, $name, $date) {
         // only admin users can export events
-        $ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'users WHERE us_email=:em AND us_level=:zero', [
+        $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:zero', [
             ':em' => $user, 
             ':zero' => '0', 
         ]);
@@ -611,7 +611,7 @@ class Visitor extends Data
                 $cols[] = 'ev_name=:nm';
                 $vals[':nm'] = $name;
             }
-            $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'events WHERE ' . implode(' AND ', $cols), $vals);
+            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'events` WHERE ' . implode(' AND ', $cols), $vals);
             return (true);
         }
     }

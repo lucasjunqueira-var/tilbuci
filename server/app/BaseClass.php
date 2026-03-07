@@ -40,11 +40,25 @@ class BaseClass
 	public function __construct() {
 		global $gconf;
 		$this->conf = $gconf;
-		if ($this->conf['databaseServ'] == 'sqlite') {
+		if (!isset($this->conf['databasePrefix'])) $this->conf['databasePrefix'] = '';
+		if (!isset($this->conf['host'])) $this->conf['host'] = '';		
+		if ($this->conf['host'] == 'WordPress') {
+			// avoid $_POST addslashes
+			$postOri = [ ];
+			foreach ($_POST as $k => $v) $postOri[$k] = $v;
+			// getting $wpdb reference
+			require_once('../../../../../../wp-load.php');
+			global $wpdb;
+			$this->db = $wpdb;
+			$this->error = 0;
+			// restoring original $_POST
+			$_POST = [ ];
+			foreach ($postOri as $k => $v) $_POST[$k] = $v;
+		} else if ($this->conf['databaseServ'] == 'sqlite') {
 			try {    
 				$this->db = new PDO('sqlite:../movie/tilbuci.sqlite');
-				$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			} catch (Exception $e) {
+				$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_Throwable);
+			} catch (Throwable $e) {
 				$this->db = null;
 				$this->error = -6;
 			}
@@ -52,12 +66,11 @@ class BaseClass
 			try {
 				$this->db = new PDO('mysql:host=' . $this->conf['databaseServ'] . (($this->conf['databasePort'] != '') ? (':' . $this->conf['databasePort']) : '') . ';dbname=' . $this->conf['databaseName'] . ';charset=utf8', $this->conf['databaseUser'], ($this->conf['databasePass'] == '' ? '' : base64_decode($this->conf['databasePass'])));
 				$this->error = 0;
-			} catch(Exception $e) {
+			} catch(Throwable $e) {
 				$this->db = null;
 				$this->error = -6;
 			}
 		}
-		if (!isset($this->conf['databasePrefix'])) $this->conf['databasePrefix'] = '';
 	}
 	
 	/**
@@ -137,7 +150,7 @@ class BaseClass
 	 * @param int $size the rand string length
 	 * @return string the random string
 	 */
-	public function randSring($size) {
+	public function randString($size) {
 		$chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		$length = strlen($chars);
 		$rand = '';
@@ -169,15 +182,23 @@ class BaseClass
 		if (is_null($this->db)) {
 			return([]);
 		} else {
-			// sqlite?
-			if ($this->conf['databaseServ'] == 'sqlite') {
-				if ($querylite != '') $query = $querylite;
-				if (!is_null($valueslite)) $values = $valueslite;
+			// wordpress ($this->db is actually $wpdb)?
+			if ($this->conf['host'] == 'WordPress') {
+				list($convertedQuery, $convertedValues) = $this->convertPlaceholders($query, $values);
+				$ret = $this->db->get_results($this->db->prepare($convertedQuery, $convertedValues), ARRAY_A);
+				return ($ret);
+			} else {
+				// sqlite?
+				if ($this->conf['databaseServ'] == 'sqlite') {
+					if ($querylite != '') $query = $querylite;
+					if (!is_null($valueslite)) $values = $valueslite;
+				}
+				// run query
+				$sth = $this->db->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+				$sth->execute($values);
+				$ret = $sth->fetchAll(PDO::FETCH_ASSOC);
+				return($ret);
 			}
-			// run query
-			$sth = $this->db->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-			$sth->execute($values);
-			return($sth->fetchAll());
 		}
 	}
 	
@@ -195,15 +216,45 @@ class BaseClass
 		if (is_null($this->db)) {
 			return(false);
 		} else {
-			// sqlite?
-			if ($this->conf['databaseServ'] == 'sqlite') {
-				if ($querylite != '') $query = $querylite;
-				if (!is_null($valueslite)) $values = $valueslite;
+			// wordpress ($this->db is actually $wpdb)?
+			if ($this->conf['host'] == 'WordPress') {
+				list($convertedQuery, $convertedValues) = $this->convertPlaceholders($query, $values);
+				return ($this->db->query($this->db->prepare($convertedQuery, $convertedValues)) !== false);
+			} else {
+				// sqlite?
+				if ($this->conf['databaseServ'] == 'sqlite') {
+					if ($querylite != '') $query = $querylite;
+					if (!is_null($valueslite)) $values = $valueslite;
+				}
+				// run query
+				$sth = $this->db->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+				return($sth->execute($values));
 			}
-			// run query
-			$sth = $this->db->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-			return($sth->execute($values));
 		}
+	}
+	
+	/**
+	 * Converts query placeholders from PDO ": format" to a suitable one for $wpdb->prepare.
+	 * @param	string			the original query
+	 * @param	array			original placeholders
+	 * @return	string,array	converted query and pleceholder values
+	 */
+	public function convertPlaceholders($sql, $params) 
+	{
+		$values = [];
+		foreach ($params as $placeholder => $value) {
+			if (is_int($value)) {
+				$replacement = '%d';
+			} elseif (is_float($value)) {
+				$replacement = '%f';
+			} else {
+				$replacement = '%s';
+			}
+			$pattern = '/'.preg_quote($placeholder, '/').'\b/';
+			$sql = preg_replace($pattern, $replacement, $sql, 1);
+			$values[] = $value;
+		}
+		return [$sql, $values];
 	}
 	
 	/**
@@ -235,7 +286,11 @@ class BaseClass
 	{
 		// connected?
 		if (!is_null($this->db)) {
-			return($this->db->lastInsertId());
+			if ($this->conf['host'] == 'WordPress') {
+				return($this->db->insert_id);
+			} else {
+				return($this->db->lastInsertId());
+			}
 		} else {
 			return (null);
 		}
@@ -249,8 +304,8 @@ class BaseClass
 	 */
 	public function setConfig($key, $value) {
 		if (!is_null($this->db)) {
-			$this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'config WHERE cf_key=:key', [':key' => $key]);
-			return($this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'config (cf_key, cf_value) VALUES (:key, :value)', [
+			$this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'config` WHERE `cf_key`=:key', [':key' => $key]);
+			return($this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'config` (`cf_key`, `cf_value`) VALUES (:key, :value)', [
 				':key' => $key, 
 				':value' => $value, 
 			]));
@@ -266,7 +321,7 @@ class BaseClass
 	 */
 	public function getConfig($key) {
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT cf_value FROM ' . $this->conf['databasePrefix'] . 'config WHERE cf_key=:key', [':key' => $key]);
+			$ck = $this->queryAll('SELECT `cf_value` FROM `' . $this->conf['databasePrefix'] . 'config` WHERE `cf_key`=:key', [':key' => $key]);
 			if (count($ck) == 0) {
 				return (false);
 			} else {
@@ -284,7 +339,7 @@ class BaseClass
 	 */
 	public function clearConfig($key) {
 		if (!is_null($this->db)) {
-			return($this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'config WHERE cf_key=:key', [':key' => $key]));
+			return($this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'config` WHERE `cf_key`=:key', [':key' => $key]));
 		} else {
 			return (false);
 		}

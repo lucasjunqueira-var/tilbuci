@@ -76,7 +76,7 @@ class WSEmail extends Webservice
 				// setting language
 				$this->loadLang($this->req['lang']);
 				// creating confimation code and messages
-				$code = $this->randSring(6);
+				$code = $this->randString(6);
 				$text = str_replace('[CODE]', $code, $this->getLang('setting-email-msgtext'));
 				$html = str_replace('[CODE]', $code, $this->getLang('setting-email-msghtml'));
 				// validating settings

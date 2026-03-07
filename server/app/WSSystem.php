@@ -92,8 +92,8 @@ class WSSystem extends Webservice
 		$mailer = new Mailer;
 		// available fonts
 		$fonts = [ ];
-		$ck = $this->data->queryAll('SELECT * FROM ' . $this->data->conf['databasePrefix'] . 'fonts');
-		foreach ($ck as $val) $fonts[] = [ 'n' => $val['fn_name'], 'v' => $val['fn_file'] ];
+		$ck = $this->data->queryAll('SELECT * FROM `' . $this->data->conf['databasePrefix'] . 'fonts`');
+		foreach ($ck as $val) $fonts[] = [ 'n' => $val['fn_name'], 'v' => $val['fn_file'] ];		
 		// return the configuration
 		$this->returnRequest([
 			'e' => $er, 
@@ -104,6 +104,7 @@ class WSSystem extends Webservice
 			'autouser' => $autouser, 
 			'autokey' => $autokey, 
 			'autolevel' => $autolevel,
+			'host' => $this->conf['host'], 
 		]);
 	}
 	

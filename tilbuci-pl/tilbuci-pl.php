@@ -1,16 +1,22 @@
 <?php
 /**
  * Plugin Name: TilBuci
- * Plugin URI: https://github.com/lucasjunqueira-var/tilbuci
+ * Plugin URI: https://plugin.tilbuci.com.br/
  * Description: Integrate TilBuci interactive content creation tool into WordPress.
  * Version: 21.0.0
  * Author: Lucas Junqueira
  * License: MPL-2.0
- * License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * License URI: https://mozilla.org/MPL/2.0/
  * Text Domain: tilbuci-pl
  * Requires at least: 6.7.2
  * Tested up to: 6.9.1
  * Requires PHP: 8.1
+ */
+
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 // Prevent direct access
@@ -19,7 +25,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('TILBUCI_WP_VERSION', '20.0.0');
+define('TILBUCI_WP_VERSION', '21.0.0');
 define('TILBUCI_WP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('TILBUCI_WP_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('TILBUCI_WP_BASENAME', plugin_basename(__FILE__));

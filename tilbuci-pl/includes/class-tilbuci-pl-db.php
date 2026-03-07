@@ -5,6 +5,12 @@
  * @package TilBuci_WP
  */
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 // Prevent direct access
 if (!defined('ABSPATH')) {
     exit;
@@ -24,7 +30,7 @@ class TilBuci_WP_DB {
         // Create tables using dbDelta (WordPress recommended method)
         self::create_tables_with_dbdelta();
 
-        // Check if dbVersion record exists in tilbuci_config table (as per specification)
+        // Check if dbVersion record exists in tilbuci_config table
         $table_prefix = $wpdb->prefix;
         $config_table = $table_prefix . 'tilbuci_config';
         $db_version_exists = $wpdb->get_var($wpdb->prepare(
@@ -223,7 +229,7 @@ class TilBuci_WP_DB {
     }
 
     /**
-     * Execute SQL file from tilbuci directory (as per specification)
+     * Execute SQL file from tilbuci directory 
      *
      * @param string $filename SQL file name (tables.sql or data.sql)
      */

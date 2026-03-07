@@ -291,7 +291,7 @@ class Media extends BaseClass
 					} else {
                         // remove strings file record?
                         if ($type == 'strings') {
-                            $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'strings WHERE st_movie=:mv AND st_file=:fl', [
+                            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'strings` WHERE `st_movie`=:mv AND `st_file`=:fl', [
                                 ':mv' => $movie, 
                                 ':fl' => str_replace(['.json', ' '], '', mb_strtolower($name)), 
                             ]);
@@ -322,7 +322,7 @@ class Media extends BaseClass
 		$check = true;
 		while ($check) {
 			$id = substr($id, 0, 32);
-			$ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'collections WHERE cl_id=:id AND cl_movie=:mv', [
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'collections` WHERE `cl_id`=:id AND `cl_movie`=:mv', [
 				':id' => $id, 
 				':mv' => $movie, 
 			]);
@@ -333,7 +333,7 @@ class Media extends BaseClass
 			}
 		}
 		// create the collection
-		$this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'collections (cl_uid, cl_id, cl_movie, cl_title) VALUES (:uid, :id, :mv, :tt)', [
+		$this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'collections` (`cl_uid`, `cl_id`, `cl_movie`, `cl_title`) VALUES (:uid, :id, :mv, :tt)', [
 			':uid' => substr(($movie.$id), 0, 64), 
 			':id' => $id, 
 			':mv' => $movie, 
@@ -351,7 +351,7 @@ class Media extends BaseClass
 	public function listCollections($movie) {
 		// checks available collections
 		$this->dlist = [ ];
-		$ck = $this->queryAll('SELECT c.*, (SELECT COUNT(*) FROM ' . $this->conf['databasePrefix'] . 'assets a WHERE a.at_collection=c.cl_uid) AS NUMASSETS FROM ' . $this->conf['databasePrefix'] . 'collections c WHERE c.cl_movie=:mv ORDER BY c.cl_title ASC', [ ':mv' => $movie ]);
+		$ck = $this->queryAll('SELECT c.*, (SELECT COUNT(*) FROM `' . $this->conf['databasePrefix'] . 'assets` a WHERE a.`at_collection`=c.`cl_uid`) AS NUMASSETS FROM `' . $this->conf['databasePrefix'] . 'collections` c WHERE c.`cl_movie`=:mv ORDER BY c.`cl_title` ASC', [ ':mv' => $movie ]);
 		foreach ($ck as $v) {
 			if ($v['NUMASSETS'] > 0) {
 				$this->dlist[] = [
@@ -377,7 +377,7 @@ class Media extends BaseClass
 		$this->dlist = [ ];
         // get all used collections
         $used = [ ];
-        $ck = $this->queryAll('SELECT sc_id, sc_collections FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_movie=:mv AND sc_published=:pub', [ ':mv' => $movie, ':pub' => '1' ]);
+        $ck = $this->queryAll('SELECT `sc_id`, `sc_collections` FROM `' . $this->conf['databasePrefix'] . 'scenes` WHERE `sc_movie`=:mv AND `sc_published`=:pub', [ ':mv' => $movie, ':pub' => '1' ]);
         foreach ($ck as $v) {
 			if (is_null($v['sc_collections'])) $v['sc_collections'] = '';
             $exp = explode(',', $v['sc_collections']);
@@ -386,7 +386,7 @@ class Media extends BaseClass
                     if (!in_array(trim($col), $used)) $used[] = trim($col);
                 }
             }
-            $ckult = $this->queryAll('SELECT sc_collections FROM ' . $this->conf['databasePrefix'] . 'scenes WHERE sc_movie=:mv AND sc_id=:id ORDER BY sc_uid DESC LIMIT 1', [ ':mv' => $movie, ':id' => $v['sc_id'] ]);
+            $ckult = $this->queryAll('SELECT `sc_collections` FROM `' . $this->conf['databasePrefix'] . 'scenes` WHERE `sc_movie`=:mv AND `sc_id`=:id ORDER BY `sc_uid` DESC LIMIT 1', [ ':mv' => $movie, ':id' => $v['sc_id'] ]);
             if (count($ckult) > 0) {
 				if (is_null($ckult[0]['sc_collections'])) $ckult[0]['sc_collections'] = '';
                 $exp = explode(',', $ckult[0]['sc_collections']);
@@ -397,7 +397,7 @@ class Media extends BaseClass
                 }
             }
         }
-		$ck = $this->queryAll('SELECT c.*, (SELECT COUNT(*) FROM ' . $this->conf['databasePrefix'] . 'assets a WHERE a.at_collection=c.cl_uid) AS NUMASSETS FROM ' . $this->conf['databasePrefix'] . 'collections c WHERE c.cl_movie=:mv ORDER BY c.cl_title ASC', [ ':mv' => $movie ]);
+		$ck = $this->queryAll('SELECT c.*, (SELECT COUNT(*) FROM `' . $this->conf['databasePrefix'] . 'assets` a WHERE a.`at_collection`=c.`cl_uid`) AS NUMASSETS FROM `' . $this->conf['databasePrefix'] . 'collections` c WHERE c.`cl_movie`=:mv ORDER BY c.`cl_title` ASC', [ ':mv' => $movie ]);
 		foreach ($ck as $v) {
 			if (!in_array($v['cl_id'], $used)) {
 				$this->dlist[] = [
@@ -421,7 +421,7 @@ class Media extends BaseClass
 	public function listCollectionsFull($movie) {
 		// checks available collections
 		$this->dlist = [ ];
-		$ck = $this->queryAll('SELECT c.*, (SELECT COUNT(*) FROM ' . $this->conf['databasePrefix'] . 'assets a WHERE a.at_collection=c.cl_uid) AS NUMASSETS FROM ' . $this->conf['databasePrefix'] . 'collections c WHERE c.cl_movie=:mv ORDER BY c.cl_title ASC', [ ':mv' => $movie ]);
+		$ck = $this->queryAll('SELECT c.*, (SELECT COUNT(*) FROM `' . $this->conf['databasePrefix'] . 'assets` a WHERE a.`at_collection`=c.`cl_uid`) AS NUMASSETS FROM `' . $this->conf['databasePrefix'] . 'collections` c WHERE c.`cl_movie`=:mv ORDER BY c.`cl_title` ASC', [ ':mv' => $movie ]);
 		foreach ($ck as $v) {
 			if ($v['NUMASSETS'] > 0) {
                 $item = [
@@ -430,10 +430,10 @@ class Media extends BaseClass
                     'title' => $v['cl_title'],
                     'assets' => [ ], 
                 ];
-                $cka = $this->queryAll('SELECT at_id, at_name, at_type, at_file1, at_file2, at_file3, at_file4, at_file5 FROM ' . $this->conf['databasePrefix'] . 'assets WHERE at_collection=:col AND FIND_IN_SET(at_type, :types) ORDER BY at_order ASC', [
+                $cka = $this->queryAll('SELECT `at_id`, `at_name`, `at_type`, `at_file1`, `at_file2`, `at_file3`, `at_file4`, `at_file5` FROM `' . $this->conf['databasePrefix'] . 'assets` WHERE `at_collection`=:col AND FIND_IN_SET(`at_type`, :types) ORDER BY `at_order` ASC', [
 					':col' => $v['cl_uid'], 
                     ':types' => 'audio,html,picture,spritemap,video', 
-                ], "SELECT at_id, at_name, at_type, at_file1, at_file2, at_file3, at_file4, at_file5 FROM ' . $this->conf['databasePrefix'] . 'assets WHERE at_collection = :col AND at_type IN ('audio','html','picture','spritemap','video') ORDER BY at_order ASC", [
+                ], "SELECT `at_id`, `at_name`, `at_type`, `at_file1`, `at_file2`, `at_file3`, `at_file4`, `at_file5` FROM `' . $this->conf['databasePrefix'] . 'assets` WHERE `at_collection` = :col AND `at_type` IN ('audio','html','picture','spritemap','video') ORDER BY `at_order` ASC", [
 					':col' => $v['cl_uid'], 
 				]);
                 $astok = false;
@@ -464,7 +464,7 @@ class Media extends BaseClass
 	public function listColAssets($uid) {
 		// checks available collections
 		$this->dlist = [ ];
-		$ck = $this->queryAll('SELECT * FROM ' . $this->conf['databasePrefix'] . 'assets WHERE at_collection=:cl ORDER BY at_order ASC', [ ':cl' => $uid ]);
+		$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'assets` WHERE `at_collection`=:cl ORDER BY `at_order` ASC', [ ':cl' => $uid ]);
 		foreach ($ck as $v) $this->dlist[] = [
 			'uid' => $v['at_uid'], 
 			'id' => $v['at_id'], 
@@ -497,15 +497,15 @@ class Media extends BaseClass
 			if (!is_dir($dir)) {
 				return (false);
 			} else {
-                $this->execute('UPDATE ' . $this->conf['databasePrefix'] . 'movies SET mv_strings=:st WHERE mv_id=:id', [
+                $this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET `mv_strings`=:st WHERE `mv_id`=:id', [
                     ':st' => base64_encode(gzencode($strings)), 
                     ':id' => $movie, 
-                ], 'UPDATE ' . $this->conf['databasePrefix'] . 'movies SET mv_strings=:st, mv_updated=:time WHERE mv_id=:id', [
+                ], 'UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET `mv_strings`=:st, `mv_updated`=:time WHERE `mv_id`=:id', [
                     ':st' => base64_encode(gzencode($strings)), 
 					':time' => date('Y-m-d H:i:s'), 
                     ':id' => $movie, 
                 ]);
-                $ck = $this->queryAll('SELECT mv_encrypted FROM ' . $this->conf['databasePrefix'] . 'movies WHERE mv_id=:mv', [':mv' => $movie]);
+                $ck = $this->queryAll('SELECT `mv_encrypted` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:mv', [':mv' => $movie]);
                 if (count($ck) != 0) {
                     if ($ck[0]['mv_encrypted'] == '1') {
                         file_put_contents($dir.'strings.json', $this->encryptTBFile($movie, $strings));
@@ -620,10 +620,10 @@ class Media extends BaseClass
      * @param   string  $col    the collection id
 	 */
 	public function removeCollection($movie, $col) {
-        $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'assets WHERE at_collection=:id', [
+        $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'assets` WHERE `at_collection`=:id', [
             ':id' => $movie . $col, 
         ]);
-        $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'collections WHERE cl_uid=:id', [
+        $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'collections` WHERE `cl_uid`=:id', [
             ':id' => $movie . $col, 
         ]);
         if (is_file('../movie/' . $movie . '.movie/collection/' . $col . '.json')) {
@@ -641,17 +641,17 @@ class Media extends BaseClass
             $name = substr(str_replace(['.json', ' '], '', mb_strtolower($fname)), 0, 128);
             $content = file_get_contents('../movie/' . $movie . '.movie/media/strings/' . $fname);
             if ($content !== false) {
-                $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'strings WHERE st_movie=:mv AND st_file=:fl', [
+                $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'strings` WHERE `st_movie`=:mv AND `st_file`=:fl', [
                     ':mv' => $movie, 
                     ':fl' => $name, 
                 ]);
-                $this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'strings (st_movie, st_file, st_content) VALUES (:mv, :fl, :cont)', [
+                $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'strings` (`st_movie`, `st_file`, `st_content`) VALUES (:mv, :fl, :cont)', [
                     ':mv' => $movie, 
                     ':fl' => $name, 
                     ':cont' => base64_encode(gzencode($content)), 
                 ]);
                 @unlink('../movie/' . $movie . '.movie/media/strings/' . $fname);
-                $ck = $this->queryAll('SELECT mv_encrypted FROM ' . $this->conf['databasePrefix'] . 'movies WHERE mv_id=:mv', [':mv' => $movie]);
+                $ck = $this->queryAll('SELECT mv_encrypted FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:mv', [':mv' => $movie]);
                 if (count($ck) == 0) {
                     file_put_contents(('../movie/' . $movie . '.movie/media/strings/'.$name.'.json'), $content);
                 } else {
@@ -675,17 +675,17 @@ class Media extends BaseClass
             $name = substr(str_replace(['.json', ' '], '', mb_strtolower($fname)), 0, 128);
             $content = file_get_contents('../movie/' . $movie . '.movie/media/snippets/' . $fname);
             if ($content !== false) {
-                $this->execute('DELETE FROM ' . $this->conf['databasePrefix'] . 'snippets WHERE sn_movie=:mv AND sn_file=:fl', [
+                $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'snippets` WHERE `sn_movie`=:mv AND `sn_file`=:fl', [
                     ':mv' => $movie, 
                     ':fl' => $name, 
                 ]);
-                $this->execute('INSERT INTO ' . $this->conf['databasePrefix'] . 'snippets (sn_movie, sn_file, sn_content) VALUES (:mv, :fl, :cont)', [
+                $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'snippets` (`sn_movie`, `sn_file`, `sn_content`) VALUES (:mv, :fl, :cont)', [
                     ':mv' => $movie, 
                     ':fl' => $name, 
                     ':cont' => base64_encode(gzencode($content)), 
                 ]);
                 @unlink('../movie/' . $movie . '.movie/media/snippets/' . $fname);
-                $ck = $this->queryAll('SELECT mv_encrypted FROM ' . $this->conf['databasePrefix'] . 'movies WHERE mv_id=:mv', [':mv' => $movie]);
+                $ck = $this->queryAll('SELECT `mv_encrypted` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:mv', [':mv' => $movie]);
                 if (count($ck) == 0) {
                     file_put_contents(('../movie/' . $movie . '.movie/media/snippets/'.$name.'.json'), $content);
                 } else {

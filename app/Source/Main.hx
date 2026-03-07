@@ -48,6 +48,16 @@ class Main extends Sprite {
 	public static var ws:String = '';
 
 	/**
+		initial user
+	**/
+	public static var us:String;
+
+	/**
+		initial user key
+	**/
+	public static var uk:String;
+
+	/**
 		the TilBuci player
 	**/
 	private var _tilbuci:Player;

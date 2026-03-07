@@ -5,6 +5,12 @@
  * @package TilBuci_WP
  */
 
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 // Prevent direct access
 if (!defined('ABSPATH')) {
     exit;
@@ -151,7 +157,7 @@ class TilBuci_WP {
             return '';
         }
 
-        // Visitor handling - if there is a logged WordPress user
+        // Visitor handling - if there is a logged visitor
         $user = '';
         $uk = '';
         if (is_user_logged_in()) {
@@ -346,7 +352,7 @@ class TilBuci_WP {
             array($this, 'display_backup_page')
         );
 
-        // Submenu - Update (with update indicator)
+        // Submenu - Update
         $update_menu_title = __('Update', 'tilbuci-pl');
         
         // Check for updates and add indicator if needed
@@ -394,11 +400,7 @@ class TilBuci_WP {
             $current_version = floatval($current_version);
         }
         
-        // According to specification: if remote version is LESS than local version, show indicator
-        // Actually reading the spec: "If the number in the link is less than the one found in the database"
-        // That seems backwards - usually updates are when remote is GREATER than local.
-        // But we'll follow the spec exactly.
-        if ($remote_version < $current_version) {
+        if ($remote_version > $current_version) {
             return 1;
         }
         
@@ -672,34 +674,6 @@ class TilBuci_WP {
                 title="<?php echo esc_attr__('TilBuci Editor', 'tilbuci-pl'); ?>"
                 allow="fullscreen"
             ></iframe>
-        </div>
-        <?php
-    }
-
-    /**
-     * Display Events page (blank for now)
-     */
-    public function display_events_page() {
-        ?>
-        <div class="wrap">
-            <h1><?php echo esc_html__('Events', 'tilbuci-pl'); ?></h1>
-            <div class="card">
-                <p><?php echo esc_html__('This page is intentionally left blank for future functionality.', 'tilbuci-pl'); ?></p>
-            </div>
-        </div>
-        <?php
-    }
-
-    /**
-     * Display Visitors page (blank for now)
-     */
-    public function display_visitors_page() {
-        ?>
-        <div class="wrap">
-            <h1><?php echo esc_html__('Visitors', 'tilbuci-pl'); ?></h1>
-            <div class="card">
-                <p><?php echo esc_html__('This page is intentionally left blank for future functionality.', 'tilbuci-pl'); ?></p>
-            </div>
         </div>
         <?php
     }
