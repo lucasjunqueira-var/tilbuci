@@ -49,6 +49,9 @@ class TilBuci_WP_DB {
         // Update editor.json and player.json files
         self::update_json_files();
 
+        // Restore previous data from backup folder (data.sql and zip files)
+        self::restore_previous_data();
+
         // Add plugin version option
         add_option('tilbuci_wp_version', TILBUCI_WP_VERSION);
     }
@@ -103,6 +106,160 @@ class TilBuci_WP_DB {
 
         // Remove plugin version option
         delete_option('tilbuci_wp_version');
+    }
+
+    /**
+     * Restore previous data from backup folder (data.sql and zip files)
+     * Should be called during plugin activation after tables are created
+     */
+    public static function restore_previous_data() {
+        global $wpdb;
+        
+        // Ensure uploads/tilbuci directory exists
+        $upload_dir = wp_upload_dir();
+        $backup_dir = trailingslashit($upload_dir['basedir']) . 'tilbuci/';
+        
+        if (!is_dir($backup_dir)) {
+            // No backup directory, nothing to restore
+            return;
+        }
+        
+        // 1. Restore data.sql if exists
+        $data_sql_file = $backup_dir . 'data.sql';
+        if (file_exists($data_sql_file)) {
+            self::restore_data_sql($data_sql_file);
+        }
+        
+        // 2. Restore zip files (movie backups)
+        $zip_files = glob($backup_dir . '*.zip');
+        foreach ($zip_files as $zip_file) {
+            self::restore_movie_zip($zip_file);
+        }
+    }
+
+    /**
+     * Restore database from data.sql backup file
+     *
+     * @param string $sql_file Path to data.sql file
+     */
+    private static function restore_data_sql($sql_file) {
+        global $wpdb;
+        
+        $sql_content = file_get_contents($sql_file);
+        if ($sql_content === false) {
+            return;
+        }
+        
+        // Replace {PR} placeholder with actual table prefix
+        $table_prefix = $wpdb->prefix;
+        $sql_content = str_replace('{PR}', $table_prefix, $sql_content);
+        
+        // Split SQL statements by semicolon, handling multi-line statements
+        // First normalize line endings
+        $sql_content = str_replace(["\r\n", "\r"], "\n", $sql_content);
+        
+        // Remove SQL comments (-- comment)
+        $sql_content = preg_replace('/--.*$/m', '', $sql_content);
+        
+        // Split SQL statements by semicolon, being careful with semicolons inside strings
+        // Simple approach: split by semicolon at line end or followed by whitespace and newline
+        $statements = preg_split('/;(?=\s*\n|$)/', $sql_content);
+        
+        // Group INSERT statements by table
+        $inserts_by_table = [];
+        
+        foreach ($statements as $stmt) {
+            $stmt = trim($stmt);
+            if (empty($stmt)) {
+                continue;
+            }
+            
+            // Skip lines that are just table names (e.g., "tb_tilbuci_assets;")
+            if (preg_match('/^[a-z_]+$/i', $stmt)) {
+                continue;
+            }
+            
+            // Skip CREATE TABLE statements entirely
+            if (stripos($stmt, 'CREATE TABLE') === 0) {
+                continue;
+            }
+            
+            // Skip TRUNCATE TABLE statements (we'll handle truncation ourselves)
+            if (stripos($stmt, 'TRUNCATE TABLE') === 0) {
+                continue;
+            }
+            
+            // Process INSERT INTO statements
+            if (stripos($stmt, 'INSERT INTO') === 0) {
+                // Extract table name with backticks
+                if (preg_match('/INSERT INTO\s+`([^`]+)`/i', $stmt, $matches)) {
+                    $table_name = $matches[1];
+                } elseif (preg_match('/INSERT INTO\s+([^\s\(]+)/i', $stmt, $matches)) {
+                    $table_name = $matches[1];
+                } else {
+                    continue;
+                }
+                
+                // Check if it's a tilbuci table
+                if (strpos($table_name, 'tilbuci_') !== false) {
+                    if (!isset($inserts_by_table[$table_name])) {
+                        $inserts_by_table[$table_name] = [];
+                    }
+                    // Ensure statement ends with semicolon
+                    if (substr($stmt, -1) !== ';') {
+                        $stmt .= ';';
+                    }
+                    $inserts_by_table[$table_name][] = $stmt;
+                }
+            }
+        }
+        
+        // For each table, truncate once then execute all INSERTs
+        foreach ($inserts_by_table as $table_name => $inserts) {
+            // Truncate table (clear existing data)
+            $wpdb->query($wpdb->prepare("TRUNCATE TABLE %i", $table_name));
+            
+            // Execute all INSERTs for this table
+            foreach ($inserts as $insert_stmt) {
+                $result = $wpdb->query($insert_stmt);
+                // Optional: log errors for debugging
+                if ($result === false) {
+                    error_log("Failed to execute SQL for table $table_name: " . $wpdb->last_error . " - Statement: " . substr($insert_stmt, 0, 200));
+                }
+            }
+        }
+    }
+
+    /**
+     * Restore movie from zip backup file
+     *
+     * @param string $zip_file Path to zip file
+     */
+    private static function restore_movie_zip($zip_file) {
+        $plugin_dir = dirname(dirname(__FILE__));
+        $movie_base = $plugin_dir . '/tilbuci/public/movie/';
+        
+        // Extract movie ID from filename (e.g., "123.zip" -> "123")
+        $filename = basename($zip_file, '.zip');
+        
+        // Create movie folder
+        $movie_folder = $movie_base . $filename . '.movie/';
+        
+        if (!is_dir($movie_folder)) {
+            wp_mkdir_p($movie_folder);
+        }
+        
+        // Check if ZipArchive is available
+        if (!class_exists('ZipArchive')) {
+            return;
+        }
+        
+        $zip = new ZipArchive();
+        if ($zip->open($zip_file) === TRUE) {
+            // Extract all contents to movie folder
+            $zip->extractTo($movie_folder);
+            $zip->close();
+        }
     }
 
     /**

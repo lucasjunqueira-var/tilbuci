@@ -36,6 +36,41 @@ class TilBuci_WP {
     }
 
     /**
+     * Get backup directory path
+     *
+     * @return string Path to backup directory
+     */
+    private function get_backup_dir() {
+        $upload_dir = wp_upload_dir();
+        $backup_dir = trailingslashit($upload_dir['basedir']) . 'tilbuci/';
+        return $backup_dir;
+    }
+
+    /**
+     * Get backup directory URL
+     *
+     * @return string URL to backup directory
+     */
+    private function get_backup_url() {
+        $upload_dir = wp_upload_dir();
+        $backup_url = trailingslashit($upload_dir['baseurl']) . 'tilbuci/';
+        return $backup_url;
+    }
+
+    /**
+     * Ensure backup directory exists
+     *
+     * @return bool True if directory exists or was created successfully
+     */
+    private function ensure_backup_dir() {
+        $backup_dir = $this->get_backup_dir();
+        if (!is_dir($backup_dir)) {
+            return wp_mkdir_p($backup_dir);
+        }
+        return true;
+    }
+
+    /**
      * Run the plugin
      */
     public function run() {
@@ -559,7 +594,12 @@ class TilBuci_WP {
     public function display_tilbuci_page() {
         global $wpdb;
         
-        // Check and update plugin version before proceeding (as per specification)
+        // 1 in 5 chance of executing backup function when this submenu page loads
+        if (mt_rand(1, 5) === 1) {
+            $this->create_movie_backups();
+        }
+        
+        // Check and update plugin version before proceeding
         require_once dirname(__FILE__) . '/class-tilbuci-pl-db.php';
         TilBuci_WP_DB::check_and_update_version();
         
@@ -684,19 +724,23 @@ class TilBuci_WP {
     public function create_movie_backups() {
         global $wpdb;
         
+        // First, create database backup (data.sql)
+        $this->create_database_backup();
+        
         $table_name = $wpdb->prefix . 'tilbuci_movies';
         $movie_ids = $wpdb->get_col($wpdb->prepare(
-            "SELECT %i FROM %i", 
+            "SELECT %i FROM %i",
             'mv_id', $table_name
         ));
         
         $plugin_dir = dirname(dirname(__FILE__)) . '/tilbuci/';
         $movie_base = $plugin_dir . 'public/movie/';
-        $backup_dir = $plugin_dir . 'backup/';
+        $backup_dir = $this->get_backup_dir();
         
         // Ensure backup directory exists
-        if (!is_dir($backup_dir)) {
-            wp_mkdir_p($backup_dir);
+        if (!$this->ensure_backup_dir()) {
+            // debug only: error_log('TilBuci WP: Failed to create backup directory.');
+            return 0;
         }
         
         $backup_created = 0;
@@ -744,6 +788,77 @@ class TilBuci_WP {
     }
 
     /**
+     * Create database backup file (data.sql) with INSERT commands for all tilbuci_ tables
+     *
+     * @return bool True if backup was created successfully
+     */
+    public function create_database_backup() {
+        global $wpdb;
+        
+        // Ensure backup directory exists
+        if (!$this->ensure_backup_dir()) {
+            // debug only: error_log('TilBuci WP: Failed to create backup directory.');
+            return false;
+        }
+        
+        $backup_dir = $this->get_backup_dir();
+        $sql_file = $backup_dir . 'data.sql';
+        
+        // Get all tables with tilbuci_ prefix (including WordPress prefix)
+        $tables = $wpdb->get_col($wpdb->prepare("SHOW TABLES LIKE %s", '%tilbuci_%'));
+        
+        if (empty($tables)) {
+            // No tables found, create empty file or return false
+            file_put_contents($sql_file, "-- No tilbuci_ tables found in database\n");
+            return true;
+        }
+        
+        $sql_content = "";
+        
+        foreach ($tables as $table) {
+            // Get table structure (SHOW CREATE TABLE)
+            $create_table = $wpdb->get_var($wpdb->prepare("SHOW CREATE TABLE %i", $table));
+            if ($create_table) {
+                // Extract CREATE TABLE statement (second column)
+                if (is_array($create_table)) {
+                    $create_table = $create_table[1];
+                }
+                $sql_content .= "--\n-- Table structure for table `$table`\n--\n";
+                $sql_content .= $create_table . ";\n\n";
+            }
+            
+            // Get all rows from table
+            $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i", $table), ARRAY_A);
+            
+            if (!empty($rows)) {
+                $sql_content .= "--\n-- Dumping data for table `$table`\n--\n";
+                
+                foreach ($rows as $row) {
+                    // Escape values
+                    $escaped_values = array();
+                    foreach ($row as $value) {
+                        if (is_null($value)) {
+                            $escaped_values[] = 'NULL';
+                        } else {
+                            $escaped_values[] = "'" . $wpdb->_real_escape($value) . "'";
+                        }
+                    }
+                    
+                    $columns = implode('`, `', array_keys($row));
+                    $values = implode(', ', $escaped_values);
+                    $sql_content .= "INSERT INTO `$table` (`$columns`) VALUES ($values);\n";
+                }
+                $sql_content .= "\n";
+            }
+        }
+        
+        // Write to file
+        $result = file_put_contents($sql_file, $sql_content);
+        
+        return $result !== false;
+    }
+
+    /**
      * Display Backup page with backup creation button and list of existing backups
      */
     public function display_backup_page() {
@@ -763,8 +878,8 @@ class TilBuci_WP {
         }
         
         // Get list of existing backup files
-        $plugin_dir = dirname(dirname(__FILE__)) . '/tilbuci/';
-        $backup_dir = $plugin_dir . 'backup/';
+        $backup_dir = $this->get_backup_dir();
+        $backup_url = $this->get_backup_url();
         $backup_files = array();
         
         if (is_dir($backup_dir)) {
@@ -774,7 +889,7 @@ class TilBuci_WP {
                     'name' => basename($file),
                     'size' => filesize($file),
                     'modified' => filemtime($file),
-                    'url' => plugins_url('tilbuci/backup/' . basename($file), dirname(__FILE__))
+                    'url' => $backup_url . basename($file)
                 );
             }
         }
