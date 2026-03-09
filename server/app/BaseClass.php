@@ -57,7 +57,7 @@ class BaseClass
 		} else if ($this->conf['databaseServ'] == 'sqlite') {
 			try {    
 				$this->db = new PDO('sqlite:../movie/tilbuci.sqlite');
-				$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_Throwable);
+				$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			} catch (Throwable $e) {
 				$this->db = null;
 				$this->error = -6;

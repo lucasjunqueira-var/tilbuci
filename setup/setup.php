@@ -7,12 +7,12 @@
 
 /**
  TilBuci setup script
- Lucas Junqueira, February 2026
+ Lucas Junqueira, March 2026
  **/
 
 // version info
 $version = [
-    'num' => 20, 
+    'num' => 21, 
 ];
 chdir(__DIR__);
 
