@@ -566,6 +566,12 @@ class Player extends Sprite {
                     GlobalPlayer.area.showSecretKeyInput(msg);
                 }
             }
+            // first movie? are there string varibales to set?
+            if (this._firstMovie) {
+                for (k in Main.iniVars.keys()) {
+                    GlobalPlayer.parser.setString(k, Main.iniVars[k]);
+                }
+            }
             // movie start actions
             //if (GlobalPlayer.mode != Player.MODE_EDITOR) if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);
             // warn plugins

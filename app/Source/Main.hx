@@ -29,6 +29,7 @@ import plugins.GoogleAnalyticsPlugin;
 import plugins.OverlayPlugin;
 import plugins.ServerCallPlugin;
 import plugins.SharePlugin;
+import com.tilbuci.statictools.StringStatic;
 
 class Main extends Sprite {
 
@@ -41,6 +42,16 @@ class Main extends Sprite {
 		index scene
 	**/
 	public static var scene:String = '';
+
+	/**
+		initial string variables
+	**/
+	public static var iniVars:Map<String, String> = [ ];
+
+	/**
+		custom movies folder path
+	**/
+	public static var moviePath:String = '';
 
 	/**
 		webservices full url
@@ -87,6 +98,25 @@ class Main extends Sprite {
 		// webservices url set?
 		if (Reflect.hasField(this.loaderInfo.parameters, 'ws')) {
 			Main.ws = Reflect.field(this.loaderInfo.parameters, 'ws');
+		}
+		// initial string variables set?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'vars')) {
+			var b64:String;
+			try {
+				b64 = Base64.decode(Reflect.field(this.loaderInfo.parameters, 'vars')).toString();
+			} catch (e) {
+				b64 = null;
+			}
+			if (b64 != null) {
+				var json:Map<String, Dynamic> = StringStatic.jsonAsMap(b64);
+				for (k in json.keys()) {
+					Main.iniVars[k] = json[k];
+				}
+			}
+		}
+		// movie custom folder ser?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'moviePath')) {
+			Main.moviePath = Reflect.field(this.loaderInfo.parameters, 'moviePath');
 		}
 		// custom decryption method?
 		if (Reflect.hasField(this.loaderInfo.parameters, 'decrypt')) {
@@ -148,6 +178,7 @@ import openfl.display.Shape;
 import openfl.events.Event;
 import openfl.Assets;
 import openfl.display.StageScaleMode;
+import haxe.crypto.Base64;
 
 /** FEATHERSUI **/
 import feathers.layout.AnchorLayout;
@@ -162,6 +193,7 @@ import feathers.core.PopUpManager;
 /** TILBUCI **/
 import com.tilbuci.Player;
 import com.tilbuci.Editor;
+import com.tilbuci.statictools.StringStatic;
 
 /** PLUGINS **/
 import plugins.DebugPlugin;
@@ -197,6 +229,16 @@ class Main extends Application
 		initial user key
 	**/
 	public static var uk:String;
+
+	/**
+		initial string variables
+	**/
+	public static var iniVars:Map<String, String> = [ ];
+
+	/**
+		custom movies folder path
+	**/
+	public static var moviePath:String = '';
 
 	/**
 		the TilBuci player
@@ -236,11 +278,28 @@ class Main extends Application
 				Main.scene = Reflect.field(this.loaderInfo.parameters, 'scene');
 			}
 		}
-
 		if (Reflect.hasField(this.loaderInfo.parameters, 'decrypt')) {
 			DataLoader.customDecrypt = Reflect.field(this.loaderInfo.parameters, 'decrypt');
 		}
-
+		// initial string variables set?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'vars')) {
+			var b64:String;
+			try {
+				b64 = Base64.decode(Reflect.field(this.loaderInfo.parameters, 'vars')).toString();
+			} catch (e) {
+				b64 = null;
+			}
+			if (b64 != null) {
+				var json:Map<String, Dynamic> = StringStatic.jsonAsMap(b64);
+				for (k in json.keys()) {
+					Main.iniVars[k] = json[k];
+				}
+			}
+		}
+		// movie custom folder ser?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'moviePath')) {
+			Main.moviePath = Reflect.field(this.loaderInfo.parameters, 'moviePath');
+		}
 		if (Reflect.hasField(this.loaderInfo.parameters, 'us') && Reflect.hasField(this.loaderInfo.parameters, 'uk')) {
 			Main.us = Reflect.field(this.loaderInfo.parameters, 'us');
 			Main.uk = Reflect.field(this.loaderInfo.parameters, 'uk');

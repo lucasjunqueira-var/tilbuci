@@ -193,7 +193,10 @@ if ($render == '') {
 		<noscript>This webpage makes extensive use of JavaScript. Please enable JavaScript in your web browser to view this page.</noscript>
 		<div id="openfl-content"></div>
 		<script type="text/javascript">
-			lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "mode" : "<?= $mode ?>", "movie": "<?= $movie ?>", "scene": "<?= $scene ?>" <?= $userlogin ?>} });
+			let params = new URLSearchParams(window.location.search);
+			let vars = params.get("vars");
+			if (vars == null) vars = "";
+			lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "mode" : "<?= $mode ?>", "movie": "<?= $movie ?>", "scene": "<?= $scene ?>", "vars":vars, <?= $userlogin ?>} });
 		</script>
 		<?php
 			// end body plugin area
