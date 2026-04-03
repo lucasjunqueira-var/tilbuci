@@ -151,11 +151,11 @@ class TilBuci_WP {
             return;
         }
 
-        // Register block script
+        // Register block script with wp-block-editor for WordPress 5.2+
         wp_register_script(
             'tilbuci-block',
             TILBUCI_WP_PLUGIN_URL . 'assets/js/block.js',
-            array('wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n'),
+            array('wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n'),
             TILBUCI_WP_VERSION,
             true
         );
@@ -176,6 +176,46 @@ class TilBuci_WP {
                 'height' => array(
                     'type' => 'number',
                     'default' => 56,
+                ),
+                'customVar1' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVal1' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVar2' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVal2' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVar3' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVal3' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVar4' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVal4' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVar5' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVal5' => array(
+                    'type' => 'string',
+                    'default' => '',
                 ),
             ),
         ));
@@ -244,6 +284,27 @@ class TilBuci_WP {
         // Append user parameters if user is logged in
         if (!empty($user) && !empty($uk)) {
             $iframe_url .= '&us=' . urlencode($user) . '&uk=' . $uk;
+        }
+        
+        // Append custom variables as Base64-encoded JSON
+        $custom_vars = array();
+        for ($i = 1; $i <= 5; $i++) {
+            $var_key = 'customVar' . $i;
+            $val_key = 'customVal' . $i;
+            if (isset($attributes[$var_key]) && isset($attributes[$val_key])) {
+                $var = sanitize_text_field($attributes[$var_key]);
+                $val = sanitize_text_field($attributes[$val_key]);
+                if ($var !== '' && $val !== '') {
+                    $custom_vars[$var] = $val;
+                }
+            }
+        }
+        
+        // If any custom variables are defined, add them as Base64-encoded JSON
+        if (!empty($custom_vars)) {
+            $json_vars = json_encode($custom_vars);
+            $base64_vars = base64_encode($json_vars);
+            $iframe_url .= '&vars=' . urlencode($base64_vars);
         }
         
         // Get display settings

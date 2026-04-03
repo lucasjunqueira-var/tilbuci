@@ -1,5 +1,5 @@
 INSERT INTO `{PR}tilbuci_config` (`cf_key`, `cf_value`) VALUES
-	('dbVersion', '21'),
+	('dbVersion', '20'),
 	('fpsMode', '30'),
 	('renderMode', 'webgl'),
 	('shareMode', 'scene');
