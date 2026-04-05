@@ -7,6 +7,7 @@
  package com.tilbuci.display;
 
 /** OPENFL **/
+import motion.easing.Linear;
 import openfl.filters.GlowFilter;
 import openfl.Assets;
 import openfl.display.Bitmap;
@@ -478,18 +479,33 @@ class InstanceImage extends Sprite {
                 this._desc.textAlign
             );
             this._imCurrent.setTextSize(this._desc.width, this._desc.height);
-            // simple property transformations
-            Actuate.tween(this, GlobalPlayer.mdata.time, {
-                x: this._desc.x, 
-                y: this._desc.y, 
-                width: this._multSize.x * this._desc.width, 
-                height: this._multSize.y * this._desc.height,
-                alpha: this._desc.alpha, 
-                rotation: this._desc.rotation
-            }).smartRotation().autoVisible(false);
-
+            // focus mode?
+            if (GlobalPlayer.focusMode) {
+                // simple property transformations
+                Actuate.tween(this, 3, {
+                    x: this._desc.x, 
+                    y: this._desc.y, 
+                    width: this._multSize.x * this._desc.width, 
+                    height: this._multSize.y * this._desc.height,
+                    alpha: this._desc.alpha, 
+                    rotation: this._desc.rotation
+                }).smartRotation().autoVisible(false).ease(Linear.easeNone);
+                // sound and color transformations
+                Actuate.transform(this, 3).color(Std.parseInt(this._desc.color), this._desc.colorAlpha).ease(Linear.easeNone);
+            } else {
+                // simple property transformations
+                Actuate.tween(this, GlobalPlayer.mdata.time, {
+                    x: this._desc.x, 
+                    y: this._desc.y, 
+                    width: this._multSize.x * this._desc.width, 
+                    height: this._multSize.y * this._desc.height,
+                    alpha: this._desc.alpha, 
+                    rotation: this._desc.rotation
+                }).smartRotation().autoVisible(false);
+                // sound and color transformations
+                Actuate.transform(this, GlobalPlayer.mdata.time).color(Std.parseInt(this._desc.color), this._desc.colorAlpha);
+            }
             // sound and color transformations
-            Actuate.transform(this, GlobalPlayer.mdata.time).color(Std.parseInt(this._desc.color), this._desc.colorAlpha);
             this._imOther.stopSound();
             this._imCurrent.stopSound();
             this._imCurrent.iterateSound(this._desc.volume, this._desc.pan);
@@ -595,13 +611,24 @@ class InstanceImage extends Sprite {
                     endY = screenH / 2;
                     endAlpha = 0;
             }
-            Actuate.tween(this, GlobalPlayer.mdata.time, {
-                x: endX, 
-                y: endY, 
-                width: endW, 
-                height: endH,
-                alpha: endAlpha
-            }).autoVisible(false);
+            if (GlobalPlayer.focusMode) {
+                Actuate.tween(this, 3, {
+                    x: endX, 
+                    y: endY, 
+                    width: endW, 
+                    height: endH,
+                    alpha: endAlpha
+                }).autoVisible(false).ease(Linear.easeNone);
+            } else {
+                Actuate.tween(this, GlobalPlayer.mdata.time, {
+                    x: endX, 
+                    y: endY, 
+                    width: endW, 
+                    height: endH,
+                    alpha: endAlpha
+                }).autoVisible(false);
+            }
+            
             this.pause();
         }
 
@@ -896,8 +923,14 @@ class InstanceImage extends Sprite {
                     this._imCurrent.x = this._imOther.x = this._imCurrent.y = this._imOther.y = 0;
                     this._imCurrent.alpha = 0;
                     this._imOther.alpha = 1;
-                    Actuate.tween(this._imCurrent, GlobalPlayer.movie.collections[this._data.collection].time, { alpha: 1 });
-                    Actuate.tween(this._imOther, GlobalPlayer.movie.collections[this._data.collection].time, { alpha: 0 });
+                    if (GlobalPlayer.focusMode) {
+                        Actuate.tween(this._imCurrent, 3, { alpha: 1 }).ease(Linear.easeNone);
+                        Actuate.tween(this._imOther, 3, { alpha: 0 }).ease(Linear.easeNone);
+                    } else {
+                        Actuate.tween(this._imCurrent, GlobalPlayer.movie.collections[this._data.collection].time, { alpha: 1 });
+                        Actuate.tween(this._imOther, GlobalPlayer.movie.collections[this._data.collection].time, { alpha: 0 });
+                    }
+                    
                 case 'right':
                     this._multSize.x = 1;//2;
                     this._multSize.y = 1;
@@ -906,8 +939,13 @@ class InstanceImage extends Sprite {
                     this._imCurrent.y = this._imOther.y = 0;
                     this._imCurrent.alpha = 1;
                     this._imOther.alpha = 1;
-                    Actuate.tween(this._imCurrent, GlobalPlayer.movie.collections[this._data.collection].time, { x: 0 });
-                    Actuate.tween(this._imOther, GlobalPlayer.movie.collections[this._data.collection].time, { x: -this._imCurrent.width });
+                    if (GlobalPlayer.focusMode) {
+                        Actuate.tween(this._imCurrent, 3, { x: 0 }).ease(Linear.easeNone);
+                        Actuate.tween(this._imOther, 3, { x: -this._imCurrent.width }).ease(Linear.easeNone);
+                    } else {
+                        Actuate.tween(this._imCurrent, GlobalPlayer.movie.collections[this._data.collection].time, { x: 0 });
+                        Actuate.tween(this._imOther, GlobalPlayer.movie.collections[this._data.collection].time, { x: -this._imCurrent.width });
+                    }
                 case 'left':
                     this._multSize.x = 1;//2;
                     this._multSize.y = 1;
@@ -916,8 +954,13 @@ class InstanceImage extends Sprite {
                     this._imCurrent.y = this._imOther.y = 0;
                     this._imCurrent.alpha = 1;
                     this._imOther.alpha = 1;
-                    Actuate.tween(this._imCurrent, GlobalPlayer.movie.collections[this._data.collection].time, { x: 0 });
-                    Actuate.tween(this._imOther, GlobalPlayer.movie.collections[this._data.collection].time, { x: this._imCurrent.width });
+                    if (GlobalPlayer.focusMode) {
+                        Actuate.tween(this._imCurrent, 3, { x: 0 }).ease(Linear.easeNone);
+                        Actuate.tween(this._imOther, 3, { x: this._imCurrent.width }).ease(Linear.easeNone);
+                    } else {
+                        Actuate.tween(this._imCurrent, GlobalPlayer.movie.collections[this._data.collection].time, { x: 0 });
+                        Actuate.tween(this._imOther, GlobalPlayer.movie.collections[this._data.collection].time, { x: this._imCurrent.width });
+                    }
                 case 'top':
                     this._multSize.x = 1;
                     this._multSize.y = 1;//2;
@@ -926,8 +969,13 @@ class InstanceImage extends Sprite {
                     this._imCurrent.x = this._imOther.x = 0;
                     this._imCurrent.alpha = 1;
                     this._imOther.alpha = 1;
-                    Actuate.tween(this._imCurrent, GlobalPlayer.movie.collections[this._data.collection].time, { y: 0 });
-                    Actuate.tween(this._imOther, GlobalPlayer.movie.collections[this._data.collection].time, { y: this._imCurrent.height });
+                    if (GlobalPlayer.focusMode) {
+                        Actuate.tween(this._imCurrent, 3, { y: 0 }).ease(Linear.easeNone);
+                        Actuate.tween(this._imOther, 3, { y: this._imCurrent.height }).ease(Linear.easeNone);
+                    } else {
+                        Actuate.tween(this._imCurrent, GlobalPlayer.movie.collections[this._data.collection].time, { y: 0 });
+                        Actuate.tween(this._imOther, GlobalPlayer.movie.collections[this._data.collection].time, { y: this._imCurrent.height });
+                    }
                 case 'bottom':
                     this._multSize.x = 1;
                     this._multSize.y = 1;//2;
@@ -936,8 +984,13 @@ class InstanceImage extends Sprite {
                     this._imCurrent.x = this._imOther.x = 0;
                     this._imCurrent.alpha = 1;
                     this._imOther.alpha = 1;
-                    Actuate.tween(this._imCurrent, GlobalPlayer.movie.collections[this._data.collection].time, { y: 0 });
-                    Actuate.tween(this._imOther, GlobalPlayer.movie.collections[this._data.collection].time, { y: -this._imCurrent.height });
+                    if (GlobalPlayer.focusMode) {
+                        Actuate.tween(this._imCurrent, 3, { y: 0 }).ease(Linear.easeNone);
+                        Actuate.tween(this._imOther, 3, { y: -this._imCurrent.height }).ease(Linear.easeNone);
+                    } else {
+                        Actuate.tween(this._imCurrent, GlobalPlayer.movie.collections[this._data.collection].time, { y: 0 });
+                        Actuate.tween(this._imOther, GlobalPlayer.movie.collections[this._data.collection].time, { y: -this._imCurrent.height });
+                    }
                 default:
                     // no transition
                     this._multSize.x = this._multSize.y = 1;
@@ -1334,6 +1387,17 @@ class InstanceImage extends Sprite {
             return(GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._name].playOnLoad);
         } else {
             return (false);
+        }
+    }
+
+    /**
+        Instance always on focus?
+    **/
+    public function focus():Bool {
+        if (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf].exists(this._name)) {
+            return(GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._name].focus);
+        } else {
+            return (true);
         }
     }
 

@@ -7,6 +7,8 @@
  package com.tilbuci;
 
 /** HAXE **/
+import openfl.filters.ShaderFilter;
+import com.tilbuci.shaders.DeuteranopiaShader;
 import openfl.ui.MultitouchInputMode;
 import openfl.ui.Multitouch;
 import com.tilbuci.player.Joystick;
@@ -572,6 +574,7 @@ class Player extends Sprite {
                     GlobalPlayer.parser.setString(k, Main.iniVars[k]);
                 }
             }
+
             // movie start actions
             //if (GlobalPlayer.mode != Player.MODE_EDITOR) if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);
             // warn plugins

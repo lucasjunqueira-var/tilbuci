@@ -49,6 +49,11 @@ class InstanceData {
     public var playOnLoad:Bool = true;
 
     /**
+        keep focus on instance?
+    **/
+    public var focus:Bool = true;
+
+    /**
         horizontal instance description
     **/
     public var horizontal:InstanceDesc;
@@ -103,6 +108,9 @@ class InstanceData {
         } else {
             this.timedAc = [ ];
         }
+        if (this.ok && Reflect.hasField(data, 'focus')) {
+            this.focus = Reflect.field(data, 'focus');
+        } else this.focus = true;
     }
 
     /**
@@ -135,6 +143,7 @@ class InstanceData {
             actionover: this.actionover, 
             timedac: tmac, 
             play: this.playOnLoad, 
+            focus: this.focus, 
             horizontal: this.horizontal.toObject(), 
             vertical: this.vertical.toObject()
         });

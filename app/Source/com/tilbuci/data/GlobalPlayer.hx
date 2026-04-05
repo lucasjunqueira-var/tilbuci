@@ -64,6 +64,28 @@ class GlobalPlayer {
     public static var fps:String = 'free';
 
     /**
+        available global shaders
+    **/
+    public static var shaders:Array<String> = [
+        'none', 
+        'deuteranotopia', 
+        'protonatopia', 
+        'tritanotopia', 
+        'contrast', 
+        'grayscale',
+    ];
+
+    /**
+        current global shader
+    **/
+    public static var currentShader:Int = 0;
+
+    /**
+        running in focus mode?
+    **/
+    public static var focusMode:Bool = false;
+
+    /**
         build information
     **/
     public static var build:BuildInfo = null;

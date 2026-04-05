@@ -46,6 +46,8 @@ class WindowBlockEdit extends PopupWindow {
 
     private var _mnPlacement:Array<Dynamic> = [ ];
 
+    private var _aShaders:Array<Dynamic> = [ ];
+
     /**
         Constructor.
         @param  ac  the menu action mehtod
@@ -86,6 +88,14 @@ class WindowBlockEdit extends PopupWindow {
             { text: Global.ln.get('placement-bottomleft'), value: 'bottomleft'},
             { text: Global.ln.get('placement-bottomright'), value: 'bottomright'},
             { text: Global.ln.get('placement-absolute'), value: 'absolute'},
+        ];
+        this._aShaders = [
+            { text: Global.ln.get('sharders-none'), value: 'none'},
+            { text: Global.ln.get('sharders-deuteranotopia'), value: 'deuteranotopia'},
+            { text: Global.ln.get('sharders-protonatopia'), value: 'protonatopia'},
+            { text: Global.ln.get('sharders-tritanotopia'), value: 'tritanotopia'},
+            { text: Global.ln.get('sharders-contrast'), value: 'contrast'},
+            { text: Global.ln.get('sharders-grayscale'), value: 'grayscale'},
         ];
 
         // custom elements
@@ -270,6 +280,10 @@ class WindowBlockEdit extends PopupWindow {
                         this.ui.containers['paramleft'].addChild(this.ui.hcontainers['param-'+i]);
                     case 'placement':
                         this.ui.setSelectOptions(('param-'+i), this._mnPlacement);
+                        //this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
+                        this.ui.containers['paramleft'].addChild(this.ui.hcontainers['param-'+i]);
+                    case 'shader':
+                        this.ui.setSelectOptions(('param-'+i), this._aShaders);
                         //this.ui.containers['paramleft'].addChild(this.ui.selects['param-'+i]);
                         this.ui.containers['paramleft'].addChild(this.ui.hcontainers['param-'+i]);
                     default:

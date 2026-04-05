@@ -34,6 +34,8 @@ class ActionInfo {
 
     private var _mnPlacement:Map<String, String> = [ ];
 
+    private var _aShaders:Map<String, String> = [ ];
+
     public function new() {
 
         // select values
@@ -69,6 +71,14 @@ class ActionInfo {
             'bottomleft' => Global.ln.get('placement-bottomleft'), 
             'bottomright' => Global.ln.get('placement-bottomright'), 
             'absolute' => Global.ln.get('placement-absolute'), 
+        ];
+        this._aShaders = [
+            'none' => Global.ln.get('sharders-none'), 
+            'deuteranotopia' => Global.ln.get('sharders-deuteranotopia'), 
+            'protonatopia' => Global.ln.get('sharders-protonatopia'), 
+            'tritanotopia' => Global.ln.get('sharders-tritanotopia'), 
+            'contrast' => Global.ln.get('sharders-contrast'), 
+            'grayscale' => Global.ln.get('sharders-grayscale'), 
         ];
         
         // movie and scene
@@ -1182,9 +1192,6 @@ class ActionInfo {
                     { t: 'i', n: Global.ln.get('acinfo-battlesetoppo-p3'), v: '' }, 
                     { t: 'i', n: Global.ln.get('acinfo-battlesetoppo-p4'), v: '' }, 
                 ], e: [ ] },
-
-
-
                 { n: Global.ln.get('acinfo-diagloadgroup'), a: 'dialogue.loadgroup', p: [
                     { t: 's', n: Global.ln.get('acinfo-diagloadgroup-p1'), v: '' }, 
                 ], e: [ 'success', 'error' ] }, 
@@ -1196,6 +1203,20 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-diaglast'), a: 'dialogue.last', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-diagfirst'), a: 'dialogue.first', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-diagclose'), a: 'dialogue.close', p: [ ], e: [ ] }, 
+            ]
+        ));
+
+        // accessibility
+        this.groups.push(new ActionInfoGroup(
+            Global.ln.get('window-acbaccesibility-title'), 
+            [
+                { n: Global.ln.get('acinfo-accesschangeshader'), a: 'accessibility.changeshader', p: [ ], e: [ ] },
+                { n: Global.ln.get('acinfo-accesssetshader'), a: 'accessibility.setshader', p: [
+                    { t: 's', n: Global.ln.get('acinfo-accesssetshader-p1'), v: 'shader' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-accessfocuson'), a: 'accessibility.focuson', p: [ ], e: [ ] },
+                { n: Global.ln.get('acinfo-accessfocusoff'), a: 'accessibility.focusoff', p: [ ], e: [ ] },
+                { n: Global.ln.get('acinfo-accessfocusswitch'), a: 'accessibility.focusswitch', p: [ ], e: [ ] },
             ]
         ));
 
@@ -1337,6 +1358,12 @@ class ActionInfo {
                                     } else {
                                         ps.push(pr[i]);
                                     }
+                                } else if (gr.actions[ac].p[i].v == 'shader') {
+                                    if (this._aShaders.exists(pr[i])) {
+                                        ps.push(this._aShaders[pr[i]]);
+                                    } else {
+                                        ps.push(pr[i]);
+                                    }
                                 } else if (gr.actions[ac].p[i].v == 'placement') {
                                     if (this._mnPlacement.exists(pr[i])) {
                                         ps.push(this._mnPlacement[pr[i]]);
@@ -1380,6 +1407,12 @@ class ActionInfo {
                 case 'navigation':
                     if (this._scDirections.exists(val)) {
                         ret += this._scDirections[val];
+                    } else {
+                        ret += val;
+                    }
+                case 'shader':
+                    if (this._aShaders.exists(val)) {
+                        ret += this._aShaders[val];
                     } else {
                         ret += val;
                     }

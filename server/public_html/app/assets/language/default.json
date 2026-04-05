@@ -161,6 +161,7 @@
 	"rightbar-media-removecheck": "Are you sure you want to remove this instance?",
 	"rightbar-media-precachecheck": "Are you sure you want to set the instance as a precache?",
 	"rightbar-media-playonload": "Start playing",
+	"rightbar-media-focus": "Keep focus",
 	"rightbar-media-noid": "You must provide a name with at least 3 characters for the instance.",
 	"rightbar-media-idtaken": "The name given is already taken by another instance.",
 	
@@ -1825,6 +1826,20 @@
 	"acinfo-runifdataexist-p1": "variables file name",
 	"acinfo-startkiosk": "start kiosk mode", 
 	"acinfo-endkiosk": "end kiosk mode", 
+	
+	"window-acbaccesibility-title": "Accessibility",
+	"acinfo-accesschangeshader": "load the next accessibility filter",
+	"sharders-none": "none", 
+	"sharders-deuteranotopia": "deuteranotopia", 
+	"sharders-protonatopia": "protonatopia", 
+	"sharders-tritanotopia": "tritanotopia", 
+	"sharders-contrast": "contrast", 
+	"sharders-grayscale": "grayscale", 
+	"acinfo-accesssetshader": "set the accessibility filter", 
+	"acinfo-accesssetshader-p1": "the filter to use", 
+	"acinfo-accessfocuson": "turn on focus mode",
+	"acinfo-accessfocusoff": "turn off focus mode",
+	"acinfo-accessfocusswitch": "switch focus mode",
 	
 	"window-acbcontraptions-title": "Contraptions", 
 	"acinfo-showmenu": "show menu", 

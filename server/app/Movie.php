@@ -1506,7 +1506,7 @@ class Movie extends BaseClass
                                                             ]);
                                                             $kfid = $this->insertID();
                                                             foreach ($kf as $kin => $vin) {
-                                                                $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instances` (`in_keyframe`, `in_name`, `in_collection`, `in_asset`, `in_action`, `in_play`, `in_actionover`, `in_timedac`) VALUES (:in_keyframe, :in_name, :in_collection, :in_asset, :in_action, :in_play, :in_actionover, :in_timedac)', [
+                                                                $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instances` (`in_keyframe`, `in_name`, `in_collection`, `in_asset`, `in_action`, `in_play`, `in_actionover`, `in_timedac` , `in_focus`) VALUES (:in_keyframe, :in_name, :in_collection, :in_asset, :in_action, :in_play, :in_actionover, :in_timedac, :in_focus)', [
                                                                     ':in_keyframe' => $kfid, 
                                                                     ':in_name' => $kin, 
                                                                     ':in_collection' => $vin['collection'], 
@@ -1515,6 +1515,7 @@ class Movie extends BaseClass
                                                                     ':in_play' => $vin['play'] == true ? '1' : '0', 
                                                                     ':in_actionover' => (isset($vin['actionover']) ? ($vin['actionover'] == '' ? '' : base64_encode(gzencode($vin['actionover']))) : ''), 
                                                                     ':in_timedac' => (isset($vin['timedac']) ? ($vin['timedac'] == '' ? '' : base64_encode(gzencode($vin['timedac']))) : ''), 
+                                                                    ':in_focus' => $vin['focus'] == true ? '1' : '0', 
                                                                 ]);
                                                                 $inid = $this->insertID();
                                                                 $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instancedesc` (`id_instance`, `id_position`, `id_order`, `id_x`, `id_y`, `id_alpha`, `id_width`, `id_height`, `id_rotation`, `id_visible`, `id_color`, `id_coloralpha`, `id_volume`, `id_pan`, `id_blur`, `id_dropshadow`, `id_textfont`, `id_textsize`, `id_textcolor`, `id_textbold`, `id_textitalic`, `id_textleading`, `id_textspacing`, `id_textbackground`, `id_textalign`, `id_glow`, `id_blend`) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign, :glow, :blend)', [
