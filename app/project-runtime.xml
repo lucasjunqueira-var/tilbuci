@@ -6,7 +6,7 @@
 
 	<source path="Source" />
 	<haxelib name="openfl" />
-	<assets path="assetsrt" rename="assetsrt" />
+	<!--<assets path="assetsrt" rename="assetsrt" />-->
 
 	<!-- libs required by TilBuci -->
 	<haxelib name="actuate" />
@@ -14,9 +14,9 @@
 	<haxelib name="crypto" />
 	
 	<!-- assets required by TilBuci -->
-	<assets id="btClose" path="assetsrt/btClose.png"/>
+	<!--<assets id="btClose" path="assetsrt/btClose.png"/>
 	<assets id="btOk" path="assetsrt/btOk.png"/>
-	<assets id="icTarget" path="assetsrt/icTarget.png"/>
+	<assets id="icTarget" path="assetsrt/icTarget.png"/>-->
 
 	<!-- javascript externs -->
 	<dependency path="Externs/browser.js" embed="true" />

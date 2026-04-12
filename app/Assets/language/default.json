@@ -2679,6 +2679,16 @@
 	"tooltip-playercontrols-right": "next keyframe", 
 	"tooltip-playercontrols-actions": "testing actions", 
 	"tooltip-playercontrols-play": "start test", 
+	"tooltip-playercontrols-color": "change accessibility color display", 
+	"tooltip-playercontrols-focus": "change accessibility focus mode", 
+	"tooltip-accessibility-focuson": "focus mode on", 
+	"tooltip-accessibility-focusoff": "focus mode off", 
+	"tooltip-accessibility-deuteranotopia": "deuteranotopia mode", 
+	"tooltip-accessibility-protonatopia": "protonatopia mode", 
+	"tooltip-accessibility-tritanotopia": "tritanotopia mode", 
+	"tooltip-accessibility-contrast": "high contrast mode", 
+	"tooltip-accessibility-grayscale": "grayscale mode", 
+	"tooltip-accessibility-none": "no color correction", 
 
     "login-welcome": "Welcome to TilBuci! Please use the form below to enter the editor."
 }

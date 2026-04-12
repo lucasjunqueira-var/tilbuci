@@ -11,7 +11,8 @@ import feathers.skins.RectangleSkin;
 import haxe.Timer;
 
 /** OPENFL **/
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import openfl.display.Bitmap;
 
 /** FEATHERS UI **/

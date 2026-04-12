@@ -10,7 +10,8 @@ package com.tilbuci.player;
 import com.tilbuci.display.PictureImage;
 import haxe.Timer;
 import com.tilbuci.data.GlobalPlayer;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import openfl.display.Bitmap;
 import openfl.display.Sprite;
 

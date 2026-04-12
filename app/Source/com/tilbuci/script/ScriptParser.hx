@@ -3044,14 +3044,17 @@ class ScriptParser {
                     case 'accessibility.focuson':
                         GlobalPlayer.focusMode = true;
                         GlobalPlayer.area.setFocus();
+                        GlobalPlayer.contraptions.setFocus();
                         return (true);
                     case 'accessibility.focusooff':
                         GlobalPlayer.focusMode = false;
                         GlobalPlayer.area.setFocus();
+                        GlobalPlayer.contraptions.setFocus();
                         return (true);
                     case 'accessibility.focusswitch':
                         GlobalPlayer.focusMode = !GlobalPlayer.focusMode;
                         GlobalPlayer.area.setFocus();
+                        GlobalPlayer.contraptions.setFocus();
                         return (true);
 
                     // timers

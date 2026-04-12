@@ -7,7 +7,8 @@
  package com.tilbuci.data;
 
 /** OPENFL **/
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 
 /** TILBUCI **/
 import com.tilbuci.statictools.StringStatic;

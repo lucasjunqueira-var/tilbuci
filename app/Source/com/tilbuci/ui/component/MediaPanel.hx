@@ -8,7 +8,8 @@
 
 
 import com.tilbuci.statictools.StringStatic;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import openfl.display.Bitmap;
 import com.tilbuci.display.InstanceImage;
 import haxe.macro.Expr.Catch;

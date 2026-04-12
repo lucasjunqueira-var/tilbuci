@@ -7,6 +7,8 @@
  package com.tilbuci.contraptions;
 
 /** OPENFL **/
+import com.tilbuci.shaders.UnfocusShader;
+import openfl.filters.ShaderFilter;
 import com.tilbuci.statictools.SpriteStatic;
 import openfl.text.TextFormat;
 import openfl.text.TextField;
@@ -93,6 +95,11 @@ class InventoryContraption extends Sprite {
                 this._hbitmap.height = GlobalPlayer.mdata.screen.small;
                 this._cbitmap.x = this._hbitmap.width - this._cbitmap.width;
                 this._hbitmap.visible = true;
+                if (GlobalPlayer.focusMode) {
+                    this._hbitmap.filters = [ new ShaderFilter(new UnfocusShader()) ];
+                } else {
+                    this._hbitmap.filters = [ ];
+                }
             } else {
                 this.addChild(this._vbitmap);
                 this._vbitmap.x = this._vbitmap.y = 0;
@@ -100,6 +107,11 @@ class InventoryContraption extends Sprite {
                 this._vbitmap.height = GlobalPlayer.mdata.screen.big;
                 this._cbitmap.x = this._vbitmap.width - this._cbitmap.width;
                 this._vbitmap.visible = true;
+                if (GlobalPlayer.focusMode) {
+                    this._vbitmap.filters = [ new ShaderFilter(new UnfocusShader()) ];
+                } else {
+                    this._vbitmap.filters = [ ];
+                }
             }
             for (r in this._rows) this.addChild(r);
             this._cbitmap.y = 0;

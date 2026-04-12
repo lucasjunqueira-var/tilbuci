@@ -1,0 +1,500 @@
+<?php
+/**
+ * Main plugin class
+ *
+ * @package TilBuci_WP
+ */
+
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+/**
+ * Main TilBuci_WP class
+ */
+class TilBuci_WP {
+
+    /**
+     * Plugin version
+     *
+     * @var string
+     */
+    private $version;
+
+    /**
+     * Flag indicating if a TilBuci block has been rendered on the page
+     *
+     * @var bool
+     */
+    private static $block_rendered = false;
+
+    /**
+     * Flag indicating if the first TilBuci block has been rendered (to prevent multiple blocks)
+     *
+     * @var bool
+     */
+    private static $first_block_rendered = false;
+
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        $this->version = TILBUCI_WP_VERSION;
+        // Detect if TilBuci block is present in the content before head output
+        add_action('wp', array($this, 'detect_tilbuci_block_in_content'));
+        // Add action to output scripts in head if block is rendered
+        add_action('wp_head', array($this, 'maybe_output_tilbuci_scripts'), 99);
+    }
+
+    /**
+     * Detect if TilBuci block is present in the current post content
+     * Sets the block_rendered flag if found.
+     */
+    public function detect_tilbuci_block_in_content() {
+        // Only run for singular posts/pages
+        if (!is_singular()) {
+            return;
+        }
+
+        global $post;
+        if (!$post || !isset($post->post_content)) {
+            return;
+        }
+
+        // Check for TilBuci block by its block name
+        if (has_block('tilbuci-pl/tilbuci-block', $post)) {
+            self::$block_rendered = true;
+            return;
+        }
+
+        // Also check for classic shortcode as fallback
+        if (has_shortcode($post->post_content, 'tilbuci')) {
+            self::$block_rendered = true;
+        }
+    }
+
+    /**
+     * Get backup directory path
+     *
+     * @return string Path to backup directory
+     */
+    private function get_backup_dir() {
+        $upload_dir = wp_upload_dir();
+        $backup_dir = trailingslashit($upload_dir['basedir']) . 'tilbuci/';
+        return $backup_dir;
+    }
+
+    /**
+     * Get backup directory URL
+     *
+     * @return string URL to backup directory
+     */
+    private function get_backup_url() {
+        $upload_dir = wp_upload_dir();
+        $backup_url = trailingslashit($upload_dir['baseurl']) . 'tilbuci/';
+        return $backup_url;
+    }
+
+    /**
+     * Ensure backup directory exists
+     *
+     * @return bool True if directory exists or was created successfully
+     */
+    private function ensure_backup_dir() {
+        $backup_dir = $this->get_backup_dir();
+        if (!is_dir($backup_dir)) {
+            return wp_mkdir_p($backup_dir);
+        }
+        return true;
+    }
+
+    /**
+     * Run the plugin
+     */
+    public function run() {
+        $this->load_dependencies();
+        $this->set_locale();
+        $this->define_admin_hooks();
+        $this->define_public_hooks();
+        $this->register_shortcodes();
+        $this->register_blocks();
+        $this->register_rest_routes();
+    }
+
+    /**
+     * Load required dependencies
+     */
+    private function load_dependencies() {
+        // Dependencies are already loaded in the main plugin file
+    }
+
+    /**
+     * Set locale for internationalization
+     */
+    private function set_locale() {
+        add_action('plugins_loaded', array($this, 'load_plugin_textdomain'));
+    }
+
+    /**
+     * Load plugin text domain
+     */
+    public function load_plugin_textdomain() {
+        /* debug only
+        load_plugin_textdomain(
+            'tilbuci-pl',
+            false,
+            dirname(TILBUCI_WP_BASENAME) . '/languages/'
+        ); */
+    }
+
+    /**
+     * Register admin hooks
+     */
+    private function define_admin_hooks() {
+        if (is_admin()) {
+            add_action('admin_menu', array($this, 'add_admin_menu'));
+            add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
+        }
+    }
+
+    /**
+     * Register public hooks
+     */
+    private function define_public_hooks() {
+        add_action('wp_enqueue_scripts', array($this, 'enqueue_public_scripts'));
+    }
+
+    /**
+     * Register shortcodes
+     */
+    private function register_shortcodes() {
+        // Shortcode registration is handled by TilBuci_WP_Shortcode class
+    }
+
+    /**
+     * Register Gutenberg blocks
+     */
+    private function register_blocks() {
+        // Block registration will be handled by TilBuci_WP_Blocks class
+        // For now, we'll add an action to init block registration
+        add_action('init', array($this, 'register_tilbuci_block'));
+    }
+
+    /**
+     * Register TilBuci Gutenberg block
+     */
+    public function register_tilbuci_block() {
+        // Check if Gutenberg is active
+        if (!function_exists('register_block_type')) {
+            return;
+        }
+
+        // Register block script with wp-block-editor for WordPress 5.2+
+        wp_register_script(
+            'tilbuci-block',
+            TILBUCI_WP_PLUGIN_URL . 'assets/js/block.js',
+            array('wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n'),
+            TILBUCI_WP_VERSION,
+            true
+        );
+
+        // Register block
+        register_block_type('tilbuci-pl/tilbuci-block', array(
+            'editor_script' => 'tilbuci-block',
+            'render_callback' => array($this, 'render_tilbuci_block'),
+            'attributes' => array(
+                'movieId' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'fullScreen' => array(
+                    'type' => 'boolean',
+                    'default' => false,
+                ),
+                'height' => array(
+                    'type' => 'number',
+                    'default' => 56,
+                ),
+                'customVar1' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVal1' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVar2' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVal2' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVar3' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVal3' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVar4' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVal4' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVar5' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+                'customVal5' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
+            ),
+        ));
+    }
+
+    /**
+     * Render TilBuci block on frontend
+     */
+    public function render_tilbuci_block($attributes) {
+        $movie_id = isset($attributes['movieId']) ? sanitize_text_field($attributes['movieId']) : '';
+        
+        // If no movie is selected, don't display anything to visitors
+        if (empty($movie_id)) {
+            return '';
+        }
+
+        // Check if this is the first block to be rendered
+        if (self::$first_block_rendered) {
+            // Already rendered a block, return empty string for subsequent blocks
+            return '';
+        }
+
+        // Mark that we've rendered the first block
+        self::$first_block_rendered = true;
+
+        // Visitor handling - if there is a logged visitor
+        $user = '';
+        $uk = '';
+        if (is_user_logged_in()) {
+            global $wpdb;
+            
+            // 1. Get user value (email or login)
+            $current_user = wp_get_current_user();
+            $user = $current_user->user_email;
+            if (empty($user)) {
+                $user = $current_user->user_login;
+            }
+            
+            // 2. Generate random key using MD5
+            $key = md5(wp_generate_password(32, true, true));
+            
+            // 3. Insert or update visitor record
+            $visitors_table = $wpdb->prefix . 'tilbuci_visitors';
+            $wpdb->query($wpdb->prepare(
+                "INSERT INTO %i (%i, %i, %i) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE %i=VALUES(%i)",
+                $visitors_table, 'vs_email', 'vs_key', 'vs_code', $user, $key, 'A1B2C3', 'vs_key', 'vs_key'
+            ));
+            
+            // 4. Check if user is associated with group 1
+            $visitorassoc_table = $wpdb->prefix . 'tilbuci_visitorassoc';
+            $existing_assoc = $wpdb->get_var($wpdb->prepare(
+                "SELECT %i FROM %i WHERE %i=%s AND %i=%d",
+                'va_id', $visitorassoc_table, 'va_visitor', $user, 'va_group', 1
+            ));
+            
+            // 5. If not associated, insert association
+            if (empty($existing_assoc)) {
+                $wpdb->insert(
+                    $visitorassoc_table,
+                    array(
+                        'va_visitor' => $user,
+                        'va_group' => 1
+                    ),
+                    array('%s', '%d')
+                );
+            }
+            
+            // Calculate uk parameter for iframe URL (MD5 of user + key)
+            $uk = md5($user . $key);
+        }
+
+        $site_url = get_option('siteurl');
+        $movie_path = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/app/';
+        
+        // Build custom variables as Base64-encoded JSON
+        $custom_vars = array();
+        for ($i = 1; $i <= 5; $i++) {
+            $var_key = 'customVar' . $i;
+            $val_key = 'customVal' . $i;
+            if (isset($attributes[$var_key]) && isset($attributes[$val_key])) {
+                $var = sanitize_text_field($attributes[$var_key]);
+                $val = sanitize_text_field($attributes[$val_key]);
+                if ($var !== '' && $val !== '') {
+                    $custom_vars[$var] = $val;
+                }
+            }
+        }
+        
+        // Encode custom variables to Base64
+        $vars_base64 = '';
+        if (!empty($custom_vars)) {
+            $json_vars = json_encode($custom_vars);
+            $vars_base64 = base64_encode($json_vars);
+        }
+
+        // Get display settings
+        $full_screen = isset($attributes['fullScreen']) ? $attributes['fullScreen'] : false;
+        $height_percentage = isset($attributes['height']) ? intval($attributes['height']) : 56;
+        
+        // Ensure height percentage is between 0 and 100
+        if ($height_percentage < 0) $height_percentage = 0;
+        if ($height_percentage > 100) $height_percentage = 100;
+
+        // Start output
+        $output = '';
+        
+        // Add full screen CSS if needed
+        if ($full_screen) {
+            $output .= '<style id="tilbuci-full-screen-styles">';
+            $output .= 'body { background-color: #000000 !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }';
+            $output .= 'body > *:not(#TilBuciArea) { display: none !important; }';
+            $output .= '#TilBuciArea { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999999; margin: 0; padding: 0; overflow: hidden; background: #000; }';
+            $output .= '#openfl-content { width: 100%; height: 100%; background: #000000; }';
+            $output .= '</style>';
+        } else {
+            // Normal mode - calculate height based on percentage
+            $output .= '<style id="tilbuci-normal-styles">';
+            $output .= '#TilBuciArea { margin: 0; padding: 0; width: 100%; overflow: hidden; background: #000000; }';
+            $output .= '#openfl-content { background: #000000; width: 100%; }';
+            $output .= '</style>';
+            
+            // Add JavaScript for height calculation
+            $output .= '<script>';
+            $output .= '(function() {';
+            $output .= '    var tilbuciArea = document.getElementById("TilBuciArea");';
+            $output .= '    var openflContent = document.getElementById("openfl-content");';
+            $output .= '    if (tilbuciArea && openflContent) {';
+            $output .= '        function updateHeight() {';
+            $output .= '            var width = tilbuciArea.offsetWidth;';
+            $output .= '            var height = (width * ' . $height_percentage . ') / 100;';
+            $output .= '            tilbuciArea.style.height = height + "px";';
+            $output .= '            openflContent.style.height = height + "px";';
+            $output .= '        }';
+            $output .= '        if (document.readyState === "loading") {';
+            $output .= '            document.addEventListener("DOMContentLoaded", function() {';
+            $output .= '                updateHeight();';
+            $output .= '                window.addEventListener("resize", updateHeight);';
+            $output .= '            });';
+            $output .= '        } else {';
+            $output .= '            updateHeight();';
+            $output .= '            window.addEventListener("resize", updateHeight);';
+            $output .= '        }';
+            $output .= '    }';
+            $output .= '})();';
+            $output .= '</script>';
+        }
+
+        // Build the HTML structure as per template
+        $output .= '<div id="TilBuciArea">';
+        $output .= '    <noscript>';
+        $output .= '        <div style="color: #fff; text-align: center; padding: 20px;">';
+        $output .= '            <p>' . esc_html__('JavaScript is required to view this content.', 'tilbuci-pl') . '</p>';
+        $output .= '        </div>';
+        $output .= '    </noscript>';
+        $output .= '    <div id="openfl-content"></div>';
+        $output .= '    <script>';
+        $output .= '        lime.embed({';
+        $output .= '            moviePath: "' . esc_js($movie_path) . '",';
+        $output .= '            mode: "player",';
+        $output .= '            movie: "' . esc_js($movie_id) . '",';
+        $output .= '            scene: "",';
+        
+        // Add vars parameter if custom variables exist
+        if (!empty($vars_base64)) {
+            $output .= '            vars: "' . esc_js($vars_base64) . '",';
+        }
+        
+        // Add user login parameters if user is logged in
+        if (!empty($user) && !empty($uk)) {
+            $output .= '            user: "' . esc_js($user) . '",';
+            $output .= '            key: "' . esc_js($uk) . '",';
+        }
+        
+        $output .= '            target: "openfl-content"';
+        $output .= '        });';
+        $output .= '    </script>';
+        $output .= '    <div id="embed_area" style="position: absolute; left: 0; top: 0; display: none; padding: 0; width: 100%; height: 100%; box-sizing: content-box; margin: 0; border: none; overflow: hidden; background-color: transparent;">';
+        $output .= '        <iframe id="embed_frame" style="display: none; padding: 0; box-sizing: content-box; margin: 0; border: none; width: 100%; height: 100%; background-color: transparent;"></iframe>';
+        $output .= '    </div>';
+        $output .= '</div>';
+
+        return $output;
+    }
+
+    /**
+     * Add admin menu
+     */
+    public function add_admin_menu() {
+        // Main menu - TilBuci
+        add_menu_page(
+            __('TilBuci', 'tilbuci-pl'),
+            __('TilBuci', 'tilbuci-pl'),
+            'manage_options',
+            'tilbuci-pl',
+            array($this, 'display_tilbuci_page'),
+            'dashicons-pets',
+            30
+        );
+
+        // Submenu - TilBuci (same as main menu, but ensures it appears as first submenu)
+        add_submenu_page(
+            'tilbuci-pl',
+            __('TilBuci', 'tilbuci-pl'),
+            __('TilBuci', 'tilbuci-pl'),
+            'manage_options',
+            'tilbuci-pl',
+            array($this, 'display_tilbuci_page')
+        );
+
+        // Submenu - Backup
+        add_submenu_page(
+            'tilbuci-pl',
+            __('Backup', 'tilbuci-pl'),
+            __('Backup', 'tilbuci-pl'),
+            'manage_options',
+            'tilbuci-pl-backup',
+            array($this, 'display_backup_page')
+        );
+
+        // Submenu - Update
+        $update_menu_title = __('Update', 'tilbuci-pl');
+        
+        // Check for updates and add indicator if needed
+        $update_count = $this->check_for_updates();
+        if ($update_count > 0) {
+            $update_menu_title .= ' <span class="update-plugins count-' . $update_count . '"><span class="update-count">' . $update_count . '</span></span>';
+        }
+        
+        add_submenu_page(
+            'tilbuci-pl',
+            __('Update', 'tilbuci-pl'),
+            $update_menu_title,
+            'manage_options',
+            'tilbuci-pl-version',
+            array($this, 'display_version_page')
+        );
+    }

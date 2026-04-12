@@ -1,0 +1,25 @@
+{
+    "server": true,
+    "base":"http://localhost/tilbuciwp/wp-content/plugins/tilbuci-pl/tilbuci/public/",
+    "ws":"http://localhost/tilbuciwp/wp-content/plugins/tilbuci-pl/tilbuci/public/ws/",
+    "font":"http://localhost/tilbuciwp/wp-content/plugins/tilbuci-pl/tilbuci/public/font/",
+    "systemfonts": [{
+            "name": "Averia Serif GWF",
+            "file": "averiaserifgwf.woff2"
+        }, {
+            "name": "Liberation Serif",
+            "file": "liberationserif.woff2"
+        }, {
+            "name": "Libra Sans",
+            "file": "librasans.woff2"
+        }, {
+            "name": "Roboto Sans",
+            "file": "roboto.woff2"
+        }
+    ],
+    "start": "",
+    "render": "webgl",
+    "share": "scene",
+    "fps": "free",
+    "secret": "dbfa29a53f4b366c1b8e9ae0402439e3"
+}

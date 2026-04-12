@@ -20,7 +20,8 @@ import feathers.layout.AnchorLayout;
 import openfl.events.Event;
 import openfl.display.DisplayObject;
 import openfl.display.Bitmap;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 
 /** FEATHERS UI **/
 import feathers.layout.AnchorLayoutData;

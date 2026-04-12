@@ -1,0 +1,12 @@
+{
+    "base":"http://localhost/tilbuciwp/wp-content/plugins/tilbuci-pl/tilbuci/public/editor/",
+    "player":"http://localhost/tilbuciwp/wp-content/plugins/tilbuci-pl/tilbuci/public/",
+    "ws":"http://localhost/tilbuciwp/wp-content/plugins/tilbuci-pl/tilbuci/public/ws/",
+    "font":"http://localhost/tilbuciwp/wp-content/plugins/tilbuci-pl/tilbuci/public/font/",
+    "secret": "dbfa29a53f4b366c1b8e9ae0402439e3",
+    "language": [{
+            "name": "English",
+            "file": "default"
+        }
+    ]
+}

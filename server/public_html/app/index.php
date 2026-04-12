@@ -196,7 +196,7 @@ if ($render == '') {
 			let params = new URLSearchParams(window.location.search);
 			let vars = params.get("vars");
 			if (vars == null) vars = "";
-			lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "mode" : "<?= $mode ?>", "movie": "<?= $movie ?>", "scene": "<?= $scene ?>", "vars":vars, <?= $userlogin ?>} });
+			lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "assets": "http://tilbuci/app/", "moviePath": "", "mode" : "<?= $mode ?>", "movie": "<?= $movie ?>", "scene": "<?= $scene ?>", "vars":vars <?= $userlogin ?>} });
 		</script>
 		<?php
 			// end body plugin area

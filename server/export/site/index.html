@@ -43,7 +43,7 @@
 			let params = new URLSearchParams(window.location.search);
 			let vars = params.get("vars");
 			if (vars == null) vars = "";
-            lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "movie": "[SITEMOVIE]", "scene": "[SITESCENE]", "vars":vars, "ws": "[SITEWS]" [PARAMEXTRA] } });
+            lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "mode": "player", "movie": "[SITEMOVIE]", "scene": "[SITESCENE]", "vars":vars, "ws": "[SITEWS]" [PARAMEXTRA] } });
         </script>
         [SITEPLUGINEND]
         <div id="embed_area"><iframe id="embed_frame" width="0" height="0" src="" frameborder="0"></iframe></div>

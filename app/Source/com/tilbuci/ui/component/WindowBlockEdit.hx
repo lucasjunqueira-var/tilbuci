@@ -14,7 +14,8 @@ import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.data.GlobalPlayer;
 import openfl.events.Event;
 import openfl.display.Stage;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 
 /** FEATHERS UI **/
 import feathers.controls.Label;

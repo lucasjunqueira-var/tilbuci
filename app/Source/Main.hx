@@ -54,6 +54,11 @@ class Main extends Sprite {
 	public static var moviePath:String = '';
 
 	/**
+		assets folder path
+	**/
+	public static var assetsPath:String = '';
+
+	/**
 		webservices full url
 	**/
 	public static var ws:String = '';
@@ -114,9 +119,13 @@ class Main extends Sprite {
 				}
 			}
 		}
-		// movie custom folder ser?
+		// movie custom folder set?
 		if (Reflect.hasField(this.loaderInfo.parameters, 'moviePath')) {
 			Main.moviePath = Reflect.field(this.loaderInfo.parameters, 'moviePath');
+		}
+		// assets custom folder set?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'assets')) {
+			Main.assetsPath = Reflect.field(this.loaderInfo.parameters, 'assets');
 		}
 		// custom decryption method?
 		if (Reflect.hasField(this.loaderInfo.parameters, 'decrypt')) {
@@ -169,8 +178,6 @@ import openfl.ui.Keyboard;
 import openfl.events.KeyboardEvent;
 import com.tilbuci.event.TilBuciEvent;
 import openfl.text.Font;
-import openfl.text.TextFormat;
-import openfl.text.TextField;
 import com.tilbuci.data.GlobalPlayer;
 import haxe.Timer;
 import openfl.display.LoaderInfo;
@@ -241,6 +248,11 @@ class Main extends Application
 	public static var moviePath:String = '';
 
 	/**
+		assets folder path
+	**/
+	public static var assetsPath:String = '';
+
+	/**
 		the TilBuci player
 	**/
 	private var _player:Player;
@@ -296,9 +308,13 @@ class Main extends Application
 				}
 			}
 		}
-		// movie custom folder ser?
+		// movie custom folder set?
 		if (Reflect.hasField(this.loaderInfo.parameters, 'moviePath')) {
 			Main.moviePath = Reflect.field(this.loaderInfo.parameters, 'moviePath');
+		}
+		// assets custom folder set?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'assets')) {
+			Main.assetsPath = Reflect.field(this.loaderInfo.parameters, 'assets');
 		}
 		if (Reflect.hasField(this.loaderInfo.parameters, 'us') && Reflect.hasField(this.loaderInfo.parameters, 'uk')) {
 			Main.us = Reflect.field(this.loaderInfo.parameters, 'us');
@@ -332,7 +348,7 @@ class Main extends Application
 	private function onStage(evt:Event = null):Void {
 		if (this.hasEventListener(Event.ADDED_TO_STAGE)) this.removeEventListener(Event.ADDED_TO_STAGE, this.onStage);
 		if (Main.mode == 'editor') {
-			this._editor = new Editor('editor.json');
+			this._editor = new Editor(Main.assetsPath + 'editor.json');
 			this._editor.registerPlugin(new DebugPlugin());
 			this._editor.registerPlugin(new SharePlugin());
 			this._editor.registerPlugin(new GoogleAnalyticsPlugin());
@@ -342,7 +358,7 @@ class Main extends Application
 		} else {
 			this.stage.scaleMode = StageScaleMode.NO_SCALE;
 			Main.mode = 'player';
-			this._player = new Player('player.json', Player.MODE_PLAYER, Player.ORIENTATION_LANDSCAPE);
+			this._player = new Player(Main.assetsPath +'player.json', Player.MODE_PLAYER, Player.ORIENTATION_LANDSCAPE);
 			this._player.registerPlugin(new DebugPlugin());
 			this._player.registerPlugin(new SharePlugin());
 			this._player.registerPlugin(new GoogleAnalyticsPlugin());

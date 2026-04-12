@@ -1506,7 +1506,7 @@ class Movie extends BaseClass
                                                             ]);
                                                             $kfid = $this->insertID();
                                                             foreach ($kf as $kin => $vin) {
-                                                                $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instances` (`in_keyframe`, `in_name`, `in_collection`, `in_asset`, `in_action`, `in_play`, `in_actionover`, `in_timedac`, `in_focus`) VALUES (:in_keyframe, :in_name, :in_collection, :in_asset, :in_action, :in_play, :in_actionover, :in_timedac, :in_focus)', [
+                                                                $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instances` (`in_keyframe`, `in_name`, `in_collection`, `in_asset`, `in_action`, `in_play`, `in_actionover`, `in_timedac` , `in_focus`) VALUES (:in_keyframe, :in_name, :in_collection, :in_asset, :in_action, :in_play, :in_actionover, :in_timedac, :in_focus)', [
                                                                     ':in_keyframe' => $kfid, 
                                                                     ':in_name' => $kin, 
                                                                     ':in_collection' => $vin['collection'], 

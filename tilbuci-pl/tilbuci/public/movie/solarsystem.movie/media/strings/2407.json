@@ -1,0 +1,17 @@
+{
+    "transactional": [],
+    "financial": [],
+    "cashouts": [],
+    "balances": [{
+            "estabelecimento": 114023626,
+            "tipo_evento": 7,
+            "data_movimentacao": "2025-07-24",
+            "valor_saldo": 0
+        }, {
+            "estabelecimento": 114023626,
+            "tipo_evento": 8,
+            "data_movimentacao": "2025-07-24",
+            "valor_saldo": 0
+        }
+    ]
+}

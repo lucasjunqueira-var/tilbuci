@@ -111,7 +111,6 @@ CREATE TABLE IF NOT EXISTS `{PR}tilbuci_instances` (
   `in_play` tinyint(4) NOT NULL DEFAULT 1,
   `in_actionover` text DEFAULT NULL,
   `in_timedac` mediumtext DEFAULT NULL,
-  `in_focus` tinyint(4) NOT NULL DEFAULT 1,
   PRIMARY KEY (`in_id`),
   KEY `in_keyframe` (`in_keyframe`)
 );

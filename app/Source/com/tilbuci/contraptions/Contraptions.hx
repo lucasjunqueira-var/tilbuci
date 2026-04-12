@@ -6,6 +6,8 @@
 
  package com.tilbuci.contraptions;
 
+import com.tilbuci.shaders.UnfocusShader;
+import openfl.filters.ShaderFilter;
 import com.tilbuci.player.MovieArea;
 import openfl.events.MouseEvent;
 import com.tilbuci.display.InstanceImage;
@@ -965,6 +967,11 @@ class Contraptions {
             this._coverOverlay.addChild(this.covers[name].getCover());
             this._coverOverlay.mouseEnabled = this.covers[name].holdClick;
             this._coverOverlay.visible = true;
+            if (GlobalPlayer.focusMode) {
+                this._coverOverlay.filters = [ new ShaderFilter(new UnfocusShader()) ];
+            } else {
+                this._coverOverlay.filters = [ ];
+            }
             return (true);
         } else {
             return (false);
@@ -984,6 +991,11 @@ class Contraptions {
             this._backgroundOverlay.removeChildren();
             this._backgroundOverlay.addChild(this.backgrounds[name].getCover());
             this._backgroundOverlay.visible = true;
+            if (GlobalPlayer.focusMode) {
+                this._backgroundOverlay.filters = [ new ShaderFilter(new UnfocusShader()) ];
+            } else {
+                this._backgroundOverlay.filters = [ ];
+            }
             return (true);
         } else {
             return (false);
@@ -995,6 +1007,24 @@ class Contraptions {
         this._backgroundOverlay.removeChildren();
         this._backgroundOverlay.visible = false;
         this._backgroundOverlay.mouseEnabled = false;
+    }
+
+    public function setFocus():Void {
+        if (GlobalPlayer.focusMode) {
+            if (this._backgroundOverlay.visible) {
+                this._backgroundOverlay.filters = [ new ShaderFilter(new UnfocusShader()) ];
+            }
+            if (this._coverOverlay.visible) {
+                this._coverOverlay.filters = [ new ShaderFilter(new UnfocusShader()) ];
+            }
+        } else {
+            if (this._backgroundOverlay.visible) {
+                this._backgroundOverlay.filters = [ ];
+            }
+            if (this._coverOverlay.visible) {
+                this._coverOverlay.filters = [ ];
+            }
+        }
     }
 
     public function hideForm():Void {

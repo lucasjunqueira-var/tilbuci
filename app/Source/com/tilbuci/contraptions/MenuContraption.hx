@@ -7,6 +7,8 @@
  package com.tilbuci.contraptions;
 
 /** OPENFL **/
+import com.tilbuci.shaders.UnfocusShader;
+import openfl.filters.ShaderFilter;
 import openfl.geom.Point;
 import com.tilbuci.display.PictureImage;
 import com.tilbuci.data.GlobalPlayer;
@@ -67,6 +69,11 @@ class MenuContraption extends Sprite {
                 this.addChild(this._buttons[i]);
             }
             this._ac = ac;
+            if (GlobalPlayer.focusMode) {
+                this._bgbitmap.filters = [ new ShaderFilter(new UnfocusShader()) ];
+            } else {
+                this._bgbitmap.filters = [ ];
+            }
         }
         return (this);
     }

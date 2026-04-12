@@ -22,7 +22,8 @@ import feathers.controls.ListView;
 import feathers.controls.TextInput;
 import openfl.display.Sprite;
 import openfl.display.Bitmap;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import openfl.display.Shape;
 
 /** ACTUATE **/

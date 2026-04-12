@@ -28,19 +28,19 @@
 	<dependency path="Externs/overlayplugin.js" embed="true" />
 	
 	<!-- assets path -->
-	<assets path="assets" rename="assets" />
+	<!--<assets path="assets" rename="assets" />-->
 
 	<!-- build info -->
-	<assets id="buildInfo" path="assets/build.json"/>
+	<!--<assets id="buildInfo" path="assets/build.json"/>-->
 
 	<!-- license -->
-	<assets id="license" path="assets/license.html"/>
+	<!--<assets id="license" path="assets/license.html"/>-->
 
 	<!-- language assets -->
-	<assets id="langDefault" path="assets/language/default.json"/>
+	<!--<assets id="langDefault" path="assets/language/default.json"/>-->
 
 	<!-- graphic assets -->
-	<assets id="buci" path="assets/icons/buci.png"/>
+	<!--<assets id="buci" path="assets/icons/buci.png"/>
 	<assets id="tilBuci01" path="assets/icons/tilBuci01.png"/>
 	<assets id="tilBuci02" path="assets/icons/tilBuci02.png"/>
 	<assets id="tilBuci03" path="assets/icons/tilBuci03.png"/>
@@ -91,6 +91,8 @@
 	<assets id="btFullscreen" path="assets/icons/btFullscreen.png"/>
 	<assets id="btWorkspace" path="assets/icons/btWorkspace.png"/>
 	<assets id="btScreen" path="assets/icons/btScreen.png"/>
+	<assets id="btFocus" path="assets/icons/btFocus.png"/>
+	<assets id="btColors" path="assets/icons/btColors.png"/>
 	<assets id="btOpenfile" path="assets/icons/btOpenfile.png"/>
 	<assets id="btCopy" path="assets/icons/btCopy.png"/>
 	<assets id="btPaste" path="assets/icons/btPaste.png"/>
@@ -144,5 +146,5 @@
 	<assets id="btCompress" path="assets/icons/btCompress.png"/>	
 	<assets id="btNotes" path="assets/icons/btNotes.png"/>
 	<assets id="btLock" path="assets/icons/btLock.png"/>
-	<assets id="icTarget" path="assets/icons/icTarget.png"/>
+	<assets id="icTarget" path="assets/icons/icTarget.png"/>-->
 </project>

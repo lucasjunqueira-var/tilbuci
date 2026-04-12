@@ -13,7 +13,8 @@ import com.tilbuci.narrative.DialogueLineNarrative;
 import com.tilbuci.narrative.DialogueNarrative;
 import com.tilbuci.narrative.DialogueFolderNarrative;
 import com.tilbuci.statictools.StringStatic;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import openfl.events.Event;
 import openfl.display.Stage;
 

@@ -13,7 +13,8 @@ import feathers.layout.VerticalLayout;
 import feathers.controls.Label;
 import feathers.skins.RectangleSkin;
 import feathers.controls.Panel;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 
 import com.tilbuci.ui.component.BlockArea;
 import com.tilbuci.data.Global;

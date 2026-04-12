@@ -9,7 +9,8 @@
 /** OPENFL **/
 import com.tilbuci.contraptions.DflowContraption;
 import com.tilbuci.statictools.StringStatic;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import openfl.events.Event;
 import openfl.display.Stage;
 import openfl.display.Bitmap;

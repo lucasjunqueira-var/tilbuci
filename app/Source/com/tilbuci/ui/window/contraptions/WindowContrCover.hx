@@ -10,7 +10,8 @@
 import com.tilbuci.ui.base.InterfaceFactory;
 import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.contraptions.CoverContraption;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import openfl.display.Bitmap;
 import openfl.events.Event;
 import openfl.display.Stage;

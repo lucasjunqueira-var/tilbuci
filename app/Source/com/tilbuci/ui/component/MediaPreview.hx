@@ -9,7 +9,8 @@
 /** FEATHRES UI **/
 import com.tilbuci.display.SpritemapImage;
 import feathers.events.TriggerEvent;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import openfl.display.Bitmap;
 import feathers.controls.Button;
 import com.tilbuci.data.Global;

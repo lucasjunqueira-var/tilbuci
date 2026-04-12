@@ -29,10 +29,55 @@ class TilBuci_WP {
     private $version;
 
     /**
+     * Flag indicating if a TilBuci block has been rendered on the page
+     *
+     * @var bool
+     */
+    private static $block_rendered = false;
+
+    /**
+     * Flag indicating if the first TilBuci block has been rendered on the page
+     *
+     * @var bool
+     */
+    private static $first_block_rendered = false;
+
+    /**
      * Constructor
      */
     public function __construct() {
         $this->version = TILBUCI_WP_VERSION;
+        // Detect if TilBuci block is present in the content before head output
+        add_action('wp', array($this, 'detect_tilbuci_block_in_content'));
+        // Add action to output scripts in head if block is rendered
+        add_action('wp_head', array($this, 'maybe_output_tilbuci_scripts'), 99);
+    }
+
+    /**
+     * Detect if TilBuci block is present in the current post content
+     * Sets the block_rendered flag if found.
+     */
+    public function detect_tilbuci_block_in_content() {
+        // Only run for singular posts/pages
+        if (!is_singular()) {
+            return;
+        }
+
+        global $post;
+        if (!$post || !isset($post->post_content)) {
+            return;
+        }
+
+        // Check for TilBuci block by its block name
+        if (has_block('tilbuci-pl/tilbuci-block', $post)) {
+            self::$block_rendered = true;
+            return;
+        }
+
+        // Also check for classic shortcode as fallback
+        if (has_shortcode($post->post_content, 'tilbuci')) {
+            self::$block_rendered = true;
+        }
     }
 
     /**
@@ -301,6 +346,7 @@ class TilBuci_WP {
         }
         
         // If any custom variables are defined, add them as Base64-encoded JSON
+        $base64_vars = '';
         if (!empty($custom_vars)) {
             $json_vars = json_encode($custom_vars);
             $base64_vars = base64_encode($json_vars);
@@ -315,41 +361,54 @@ class TilBuci_WP {
         if ($height_percentage < 0) $height_percentage = 0;
         if ($height_percentage > 100) $height_percentage = 100;
         
-        // Start output
-        $output = '';
+        // Only render the first TilBuci block on the page
+        if (self::$first_block_rendered) {
+            return '';
+        }
+        self::$first_block_rendered = true;
+
+        // Prepare placeholders
+        $assets_path = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/app/';
+        $movie_path = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/';
+        $movie = $movie_id;
+        $vars = !empty($custom_vars) ? $base64_vars : '';
         
+        // Build userlogin placeholder if user is logged in
+        $userlogin = '';
+        if (!empty($user) && !empty($uk)) {
+            $userlogin = ', "uk": "' . $uk . '", "us": "' . esc_js($user) . '"';
+        }
+        
+        // Start output
+        $output = '<div id="TilBuciArea">';
+        $output .= '<noscript>This webpage makes extensive use of JavaScript. Please enable JavaScript in your web browser to view this page.</noscript>';
+        $output .= '<div id="openfl-content"></div>';
+        $output .= '<script type="text/javascript">';
+        $output .= 'lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "assets": "' . esc_js($assets_path) . '", "moviePath": "' . esc_js($movie_path) . '", "mode" : "player", "movie": "' . esc_js($movie) . '", "scene": "", "vars": "' . esc_js($vars) . '"' . $userlogin . ' } });';
+        $output .= '</script>';
+        $output .= '<div id="embed_area"><iframe id="embed_frame" width="0" height="0" src="" frameborder="0"></iframe></div>';
+        $output .= '</div>';
+        
+        // Apply full screen settings if enabled
         if ($full_screen) {
-            // Full screen mode - iframe covers entire viewport
-            $output .= '<div class="tilbuci-block-wrapper tilbuci-full-screen-block" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999999; margin: 0; padding: 0; overflow: unset; background: #000;">';
-            $output .= '<iframe src="' . esc_url($iframe_url) . '" ';
-            $output .= 'style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; border: none; margin: 0; padding: 0;" ';
-            $output .= 'title="' . esc_attr__('TilBuci Movie Player', 'tilbuci-pl') . '" ';
-            $output .= 'allowfullscreen></iframe>';
-            $output .= '</div>';
-            
-            // Add global CSS to set black background and ensure block visibility
+            // Add CSS to hide other content and set black background
             $output .= '<style id="tilbuci-full-screen-styles">';
             $output .= 'body { background-color: #000000 !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }';
-            $output .= '.tilbuci-full-screen-block { display: block !important; visibility: visible !important; }';
+            $output .= '#TilBuciArea { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999999; margin: 0; padding: 0; overflow: unset; background: #000; }';
             $output .= '</style>';
             
-            // Add JavaScript to hide other content while preserving the full screen block
+            // Add JavaScript to hide other content
             $output .= '<script>';
             $output .= '(function() {';
-            $output .= '    // Function to hide elements except the full screen block and its necessary parents';
             $output .= '    function hideOtherContent() {';
-            $output .= '        var fullScreenBlock = document.querySelector(".tilbuci-full-screen-block");';
-            $output .= '        if (!fullScreenBlock) return;';
-            $output .= '        ';
-            $output .= '        // Walk up the tree to find all ancestors that need to remain visible';
+            $output .= '        var tilbuciArea = document.getElementById("TilBuciArea");';
+            $output .= '        if (!tilbuciArea) return;';
             $output .= '        var ancestors = [];';
-            $output .= '        var node = fullScreenBlock;';
+            $output .= '        var node = tilbuciArea;';
             $output .= '        while (node && node !== document.body) {';
             $output .= '            ancestors.push(node);';
             $output .= '            node = node.parentNode;';
             $output .= '        }';
-            $output .= '        ';
-            $output .= '        // Hide all children of body except those in the ancestor chain';
             $output .= '        var bodyChildren = document.body.children;';
             $output .= '        for (var i = 0; i < bodyChildren.length; i++) {';
             $output .= '            var child = bodyChildren[i];';
@@ -357,15 +416,7 @@ class TilBuci_WP {
             $output .= '                child.style.display = "none";';
             $output .= '            }';
             $output .= '        }';
-            $output .= '        ';
-            $output .= '        // Also hide any other TilBuci blocks';
-            $output .= '        var otherBlocks = document.querySelectorAll(".tilbuci-block-wrapper:not(.tilbuci-full-screen-block)");';
-            $output .= '        for (var j = 0; j < otherBlocks.length; j++) {';
-            $output .= '            otherBlocks[j].style.display = "none";';
-            $output .= '        }';
             $output .= '    }';
-            $output .= '    ';
-            $output .= '    // Run when DOM is ready';
             $output .= '    if (document.readyState === "loading") {';
             $output .= '        document.addEventListener("DOMContentLoaded", hideOtherContent);';
             $output .= '    } else {';
@@ -374,28 +425,16 @@ class TilBuci_WP {
             $output .= '})();';
             $output .= '</script>';
         } else {
-            // Normal mode - iframe width is 100% of container, height will be calculated via JavaScript
-            $wrapper_style = 'width: 100%; margin: 0 auto;';
-            $iframe_style = 'border: none; width: 100%;';
-            
-            // Create wrapper with data attribute for height percentage
-            $output .= '<div class="tilbuci-block-wrapper" style="' . $wrapper_style . '" data-height-percentage="' . esc_attr($height_percentage) . '">';
-            $output .= '<iframe src="' . esc_url($iframe_url) . '" ';
-            $output .= 'style="' . $iframe_style . '" ';
-            $output .= 'title="' . esc_attr__('TilBuci Movie Player', 'tilbuci-pl') . '" ';
-            $output .= 'allowfullscreen></iframe>';
-            $output .= '</div>';
-            
-            // Add inline JavaScript to calculate height after page load
+            // Normal mode: apply height percentage via JavaScript
             $output .= '<script>';
             $output .= '(function() {';
-            $output .= '    var wrapper = document.currentScript.previousElementSibling;';
-            $output .= '    var iframe = wrapper.querySelector("iframe");';
-            $output .= '    var heightPercentage = parseInt(wrapper.getAttribute("data-height-percentage")) || 60;';
+            $output .= '    var tilbuciArea = document.getElementById("TilBuciArea");';
+            $output .= '    var heightPercentage = ' . $height_percentage . ';';
             $output .= '    function updateHeight() {';
-            $output .= '        var width = iframe.offsetWidth;';
+            $output .= '        if (!tilbuciArea) return;';
+            $output .= '        var width = tilbuciArea.offsetWidth;';
             $output .= '        var height = (width * heightPercentage) / 100;';
-            $output .= '        iframe.style.height = height + "px";';
+            $output .= '        tilbuciArea.style.height = height + "px";';
             $output .= '    }';
             $output .= '    if (document.readyState === "loading") {';
             $output .= '        document.addEventListener("DOMContentLoaded", function() {';
@@ -693,8 +732,8 @@ class TilBuci_WP {
         
         // 5. Create URL for editor
         $site_url = get_option('siteurl');
-        $editor_base_url = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/editor/';
-        $params = '?us=' . urlencode($user) . '&uk=' . md5($user . $key);
+        $editor_base_url = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/app/index.php';
+        $params = '?md=editor&us=' . urlencode($user) . '&uk=' . md5($user . $key);
         $editor_url = $editor_base_url . $params;
         
         // Output minimal HTML with iframe covering entire #wpbody-content area
@@ -1035,6 +1074,49 @@ class TilBuci_WP {
     public function enqueue_public_scripts() {
         // This method is kept for future use if public scripts are needed
         // Currently, TilBuci player scripts are loaded directly from the tilbuci/public directory
+    }
+
+    /**
+     * Output TilBuci scripts in head if a block has been rendered
+     */
+    public function maybe_output_tilbuci_scripts() {
+        if (!self::$block_rendered) {
+            return;
+        }
+
+        // Get version from version.md file
+        $version_file = TILBUCI_WP_PLUGIN_DIR . 'tilbuci/version.md';
+        $version = '1';
+        if (file_exists($version_file)) {
+            $version = trim(file_get_contents($version_file));
+        }
+
+        // Determine PATH (siteurl + /wp-content/plugins/tilbuci-pl/tilbuci/public/app/)
+        $site_url = get_option('siteurl');
+        $path = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/app/';
+        $font_path = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/font/';
+
+        // Output script tags and inline code as per specification
+        //echo '<script type="text/javascript" src="' . esc_url($path . 'TilBuci-min.js?rd=' . $version) . '"></script>' . "\n";
+        echo '<script type="text/javascript" src="' . esc_url($path . 'TilBuci-min.js?rd=' . time()) . '"></script>' . "\n";
+        echo '<script type="text/javascript" src="' . esc_url($path . 'externs.js?rd=' . $version) . '"></script>' . "\n";
+        echo '<script>' . "\n";
+        echo '	window.addEventListener ("touchmove", function (event) { event.preventDefault (); }, { capture: false, passive: false });' . "\n";
+        echo '	if (typeof window.devicePixelRatio != "undefined" && window.devicePixelRatio > 2) {' . "\n";
+        echo '		var meta = document.getElementById ("viewport");' . "\n";
+        echo '		meta.setAttribute ("content", "width=device-width, initial-scale=" + (2 / window.devicePixelRatio) + ", user-scalable=no");' . "\n";
+        echo '	}' . "\n";
+        echo '</script>' . "\n";
+        echo '<style>' . "\n";
+        echo '	@font-face { font-family: "Averia Serif GWF"; src: url("' . esc_url($font_path . 'averiaserifgwf.woff2') . '"); }' . "\n";
+        echo '    @font-face { font-family: "Liberation Serif"; src: url("' . esc_url($font_path . 'liberationserif.woff2') . '"); }' . "\n";
+        echo '    @font-face { font-family: "Libra Sans"; src: url("' . esc_url($font_path . 'librasans.woff2') . '"); }' . "\n";
+        echo '    @font-face { font-family: "Roboto Sans"; src: url("' . esc_url($font_path . 'roboto.woff2') . '"); }' . "\n";
+        echo '	#TilBuciArea { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: #000000; }' . "\n";
+        echo '	#openfl-content { background: #000000; width: 100%; height: 100%; }' . "\n";
+        echo '    #embed_area { position: absolute; left: 0; top: 0; display: none; padding: 0; width: 100%; height: 100%; box-sizing: content-box; margin: 0; border: none; overflow: hidden; background-color: transparent; }' . "\n";
+        echo '    #embed_frame { display: none; padding: 0; box-sizing: content-box; margin: 0; border: none; width: 100%; height: 100%; background-color: transparent; }' . "\n";
+        echo '</style>' . "\n";
     }
 
     /**

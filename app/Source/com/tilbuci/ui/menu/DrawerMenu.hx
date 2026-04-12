@@ -2,7 +2,8 @@ package com.tilbuci.ui.menu;
 
 /** OPENFL **/
 import openfl.display.Bitmap;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 
 /** FEATHERS UI **/
 import feathers.layout.AnchorLayout;

@@ -14,7 +14,8 @@ import feathers.core.FeathersControl;
 import feathers.core.MeasureSprite;
 import com.tilbuci.ui.component.MovieInfoDisplay;
 import openfl.display.Bitmap;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 
 /** FEATHERS UI **/
 import feathers.layout.VerticalLayout;
@@ -103,6 +104,8 @@ class PlayerControls extends VDividedBox {
         var zoomArea:Panel = this.ui.createHArea('left');
         this._controls.addChild(zoomArea);
         this.ui.createIconButton('screen', this.onScreen, new Bitmap(Assets.getBitmapData('btScreen')), null, zoomArea);
+        this.ui.createIconButton('color', this.onColor, new Bitmap(Assets.getBitmapData('btColors')), null, zoomArea);
+        this.ui.createIconButton('focus', this.onFocus, new Bitmap(Assets.getBitmapData('btFocus')), null, zoomArea);
         this.ui.createSpacer('screen', 10, false, zoomArea);
         this.ui.createIconButton('zoom+', this.onZoomP, new Bitmap(Assets.getBitmapData('btZoomP')), null, zoomArea);
         this.ui.createIconButton('zoom-', this.onZoomM, new Bitmap(Assets.getBitmapData('btZoomM')), null, zoomArea);
@@ -126,6 +129,8 @@ class PlayerControls extends VDividedBox {
 
         // tooltips
         this.ui.buttons['screen'].toolTip = Global.ln.get('tooltip-playercontrols-screen');
+        this.ui.buttons['color'].toolTip = Global.ln.get('tooltip-playercontrols-color');
+        this.ui.buttons['focus'].toolTip = Global.ln.get('tooltip-playercontrols-focus');
         this.ui.buttons['zoom+'].toolTip = Global.ln.get('tooltip-playercontrols-zoomp');
         this.ui.buttons['zoom-'].toolTip = Global.ln.get('tooltip-playercontrols-zoomm');
         this.ui.buttons['zoomfit'].toolTip = Global.ln.get('tooltip-playercontrols-zoomfit');
@@ -208,6 +213,33 @@ class PlayerControls extends VDividedBox {
             GlobalPlayer.area.loadKeyframe(GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf], GlobalPlayer.area.currentKf);
             this._player.addChild(this._player.player);
             this.centerPlayer();
+        }
+    }
+
+    /**
+        Change color mode.
+    **/
+    private function onColor(evt:TriggerEvent = null):Void {
+        GlobalPlayer.parser.run('{ "ac": "accessibility.changeshader", "param": [] }');
+        switch (GlobalPlayer.currentShader) {
+            case 1: this._movieInfo.showMsg(Global.ln.get('tooltip-accessibility-deuteranotopia'));
+            case 2: this._movieInfo.showMsg(Global.ln.get('tooltip-accessibility-protonatopia'));
+            case 3: this._movieInfo.showMsg(Global.ln.get('tooltip-accessibility-tritanotopia'));
+            case 4: this._movieInfo.showMsg(Global.ln.get('tooltip-accessibility-contrast'));
+            case 5: this._movieInfo.showMsg(Global.ln.get('tooltip-accessibility-grayscale'));
+            default: this._movieInfo.showMsg(Global.ln.get('tooltip-accessibility-none'));
+        }
+    }
+
+    /**
+        Change focus mode.
+    **/
+    private function onFocus(evt:TriggerEvent = null):Void {
+        GlobalPlayer.parser.run('{ "ac": "accessibility.focusswitch", "param": [] }');
+        if (GlobalPlayer.focusMode) {
+            this._movieInfo.showMsg(Global.ln.get('tooltip-accessibility-focuson'));
+        } else {
+            this._movieInfo.showMsg(Global.ln.get('tooltip-accessibility-focusoff'));
         }
     }
 
