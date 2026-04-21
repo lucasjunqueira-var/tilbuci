@@ -7,6 +7,9 @@
  package com.tilbuci;
 
 /** HAXE **/
+import openfl.text.TextField;
+import openfl.filters.ShaderFilter;
+import com.tilbuci.shaders.DeuteranopiaShader;
 import openfl.ui.MultitouchInputMode;
 import openfl.ui.Multitouch;
 import com.tilbuci.player.Joystick;
@@ -97,6 +100,9 @@ class Player extends Sprite {
     public static inline var MODE_EDPLAYER:String = 'editorplayer';
 
     /** VARIABLES **/
+
+
+    public var label:TextField;
 
     /**
         real width in pixels
@@ -422,6 +428,7 @@ class Player extends Sprite {
             #else
                 GlobalPlayer.share = 'never';
             #end
+            if (Main.moviePath != '') GlobalPlayer.base = Main.moviePath;
             GlobalPlayer.fps = 'free';
             GlobalPlayer.secret = Bytes.ofHex('');
             if (Reflect.hasField(Main, 'ws') && (Reflect.field(Main, 'ws') != '')) {
@@ -473,6 +480,7 @@ class Player extends Sprite {
                 GlobalPlayer.movie = new MovieInfo(this.onMovie, this.onScene);
                 GlobalPlayer.parser = new ScriptParser();
                 GlobalPlayer.parser.eventSend = this.warnListeners;
+                if (Main.moviePath != '') GlobalPlayer.base = Main.moviePath;
                 if (GlobalPlayer.mode == Player.MODE_PLAYER) {
                     if (ld.map.exists('systemfonts')) {
                         var sysfonts:Array<FontInfo> = ld.map['systemfonts'];
@@ -566,6 +574,13 @@ class Player extends Sprite {
                     GlobalPlayer.area.showSecretKeyInput(msg);
                 }
             }
+            // first movie? are there string varibales to set?
+            if (this._firstMovie) {
+                for (k in Main.iniVars.keys()) {
+                    GlobalPlayer.parser.setString(k, Main.iniVars[k]);
+                }
+            }
+
             // movie start actions
             //if (GlobalPlayer.mode != Player.MODE_EDITOR) if (GlobalPlayer.movie.data.acstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.acstart);
             // warn plugins

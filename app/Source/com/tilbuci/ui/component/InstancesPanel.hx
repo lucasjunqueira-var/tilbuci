@@ -19,7 +19,8 @@ import feathers.data.ArrayCollection;
 import com.tilbuci.data.Global;
 import openfl.events.Event;
 import openfl.display.Bitmap;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 
 class InstancesPanel extends DropDownPanel {
 

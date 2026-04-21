@@ -8,7 +8,8 @@
 
 
 import com.tilbuci.statictools.StringStatic;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import openfl.display.Bitmap;
 import com.tilbuci.display.InstanceImage;
 import haxe.macro.Expr.Catch;
@@ -51,6 +52,8 @@ class MediaPanel extends DropDownPanel {
             { tp: 'Button', id: 'asset', tx: Global.ln.get('rightbar-media-asseted'), ac: onAsset }, 
             { tp: 'Label', id: 'playonload', tx: Global.ln.get('rightbar-media-playonload'), vr: '' }, 
             { tp: 'Toggle', id: 'playonload', vl: true }, 
+            { tp: 'Label', id: 'focus', tx: Global.ln.get('rightbar-media-focus'), vr: '' }, 
+            { tp: 'Toggle', id: 'focus', vl: true }, 
             { tp: 'Spacer', id: 'update', ht: 5 }, 
             { tp: 'Button', id: 'update', tx: Global.ln.get('rightbar-media-update'), ac: onUpdate }, 
             { tp: 'Spacer', id: 'cache', ht: 10 }, 
@@ -99,6 +102,7 @@ class MediaPanel extends DropDownPanel {
             this.ui.setSelectValue('asset', this._current.getCurrentStr('asset'));
             this.ui.inputs['name'].text = this._current.getCurrentStr('instance');
             this.ui.toggles['playonload'].selected = GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].playOnLoad;
+            this.ui.toggles['focus'].selected = GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].focus;
             this.ui.containers['properties'].enabled = true;
         }
     }
@@ -109,6 +113,7 @@ class MediaPanel extends DropDownPanel {
         this.ui.setSelectOptions('asset', [ ]);
         this.ui.inputs['name'].text = '';
         this.ui.toggles['playonload'].selected = true;
+        this.ui.toggles['focus'].selected = true;
         this._current = null;
     }
 
@@ -159,6 +164,16 @@ class MediaPanel extends DropDownPanel {
                     GlobalPlayer.area.setCurrentStr('asset', (this.ui.selects['collection'].selectedItem.value + '|:|' + this.ui.selects['asset'].selectedItem.value));
                 }
                 Global.history.addState(Global.ln.get('rightbar-history-instance'));
+                GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].focus = this.ui.toggles['focus'].selected;
+            } else if (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].focus != this.ui.toggles['focus'].selected) {
+                GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].focus = this.ui.toggles['focus'].selected;
+                if (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf].exists(this.ui.inputs['name'].text)) {
+                    GlobalPlayer.area.setCurrentStr('instance', this.ui.inputs['name'].text);
+                }
+                if ((GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].collection != this.ui.selects['collection'].selectedItem.value) || (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].asset != this.ui.selects['asset'].selectedItem.value)) {
+                    GlobalPlayer.area.setCurrentStr('asset', (this.ui.selects['collection'].selectedItem.value + '|:|' + this.ui.selects['asset'].selectedItem.value));
+                }
+                Global.history.addState(Global.ln.get('rightbar-history-instance'));
             } else if ((GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].collection != this.ui.selects['collection'].selectedItem.value) || (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].asset != this.ui.selects['asset'].selectedItem.value)) {
                 GlobalPlayer.area.setCurrentStr('asset', (this.ui.selects['collection'].selectedItem.value + '|:|' + this.ui.selects['asset'].selectedItem.value));
                 if (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf].exists(this.ui.inputs['name'].text)) {
@@ -188,6 +203,7 @@ class MediaPanel extends DropDownPanel {
             if (Global.history.states.length == 0) Global.history.addState(Global.ln.get('rightbar-history-original'));
             GlobalPlayer.area.setCurrentPrecache();
             this.ui.toggles['playonload'].selected = false;
+            this.ui.toggles['focus'].selected = false;
             Global.history.addState(Global.ln.get('rightbar-history-cache'));
         }
     }

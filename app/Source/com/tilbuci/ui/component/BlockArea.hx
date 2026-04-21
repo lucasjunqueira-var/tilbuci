@@ -6,7 +6,8 @@
 
  package com.tilbuci.ui.component;
 
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import com.tilbuci.data.Global;
 import feathers.events.TriggerEvent;
 import openfl.events.MouseEvent;

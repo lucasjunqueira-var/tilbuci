@@ -60,7 +60,7 @@ class StringStatic
     }
 
     /**
-        Created a map (String, Dybamic) from a json-encoded string.
+        Created a map (String, Dynamic) from a json-encoded string.
         @param  data    the json string
         @return the values map
     **/

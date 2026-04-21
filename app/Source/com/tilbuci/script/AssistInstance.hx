@@ -9,7 +9,8 @@
 /** OPENFL **/
 import com.tilbuci.ui.base.InterfaceFactory;
 import openfl.events.Event;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 
 /** FEATHERS UI **/
 import feathers.events.TriggerEvent;

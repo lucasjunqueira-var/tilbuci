@@ -7,6 +7,8 @@
  package com.tilbuci.contraptions;
 
 /** OPENFL **/
+import com.tilbuci.shaders.UnfocusShader;
+import openfl.filters.ShaderFilter;
 import haxe.Timer;
 import com.tilbuci.statictools.SpriteStatic;
 import openfl.text.TextFormat;
@@ -244,6 +246,11 @@ class BattleContraption extends Sprite {
                     (GlobalPlayer.mdata.screen.big / 2) - (1.5 * this._cbitmap.width),
                     GlobalPlayer.mdata.screen.small - this._cbitmap.height - (this.btAtrHeight() * 2)
                 );
+                if (GlobalPlayer.focusMode) {
+                    this._hbitmap.filters = [ new ShaderFilter(new UnfocusShader()) ];
+                } else {
+                    this._hbitmap.filters = [ ];
+                }
             } else {
                 this.addChild(this._vbitmap);
                 this._vbitmap.x = this._vbitmap.y = 0;
@@ -263,7 +270,11 @@ class BattleContraption extends Sprite {
                     this._vbitmap.width - (2 * this._cbitmap.width),
                     (this._vbitmap.height / 2) - (this._cbitmap.height / 2) - (this.btAtrHeight() * 2)
                 );
-
+                if (GlobalPlayer.focusMode) {
+                    this._vbitmap.filters = [ new ShaderFilter(new UnfocusShader()) ];
+                } else {
+                    this._vbitmap.filters = [ ];
+                }
             }
             this._cbitmap.y = 0;
             this.addChild(this._cbitmap);
@@ -306,15 +317,6 @@ class BattleContraption extends Sprite {
             this._player.y = this._cbitmap.height + ((this._cardsize.y - this._player.height) / 2);
             this._opponent.y = ((this._vbitmap.height / 2) + (this._cbitmap.height / 2)) + ((this._cardsize.y - this._opponent.height) / 2);
         }
-
-        /*if (this._playerCurent.width > (this._player.width - (2 * this.btAtrHeight()))) {
-            this._playerCurent.width = this._player.width - (2 * this.btAtrHeight());
-            this._playerCurent.scaleY = this._playerCurent.scaleX;
-        }
-        if (this._opponentCurent.width > (this._opponent.width - (2 * this.btAtrHeight()))) {
-            this._opponentCurent.width = this._opponent.width - (2 * this.btAtrHeight());
-            this._opponentCurent.scaleY = this._opponentCurent.scaleX;
-        }*/
         this._playerCurent.x = this._player.x + ((this._player.width - this._playerCurent.width) / 2);
         this._opponentCurent.x = this._opponent.x + ((this._opponent.width - this._opponentCurent.width) / 2);
     }
@@ -669,6 +671,11 @@ class BattleCard extends Sprite {
             if (this.background.lastMedia != GlobalPlayer.contraptions.bs['bs'].card) {
                 this.background.load(GlobalPlayer.contraptions.bs['bs'].card);
             }
+        }
+        if (GlobalPlayer.focusMode) {
+            this.background.filters = [ new ShaderFilter(new UnfocusShader()) ];
+        } else {
+            this.background.filters = [ ];
         }
     }
 

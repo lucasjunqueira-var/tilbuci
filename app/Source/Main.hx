@@ -29,6 +29,7 @@ import plugins.GoogleAnalyticsPlugin;
 import plugins.OverlayPlugin;
 import plugins.ServerCallPlugin;
 import plugins.SharePlugin;
+import com.tilbuci.statictools.StringStatic;
 
 class Main extends Sprite {
 
@@ -41,6 +42,21 @@ class Main extends Sprite {
 		index scene
 	**/
 	public static var scene:String = '';
+
+	/**
+		initial string variables
+	**/
+	public static var iniVars:Map<String, String> = [ ];
+
+	/**
+		custom movies folder path
+	**/
+	public static var moviePath:String = '';
+
+	/**
+		assets folder path
+	**/
+	public static var assetsPath:String = '';
 
 	/**
 		webservices full url
@@ -87,6 +103,29 @@ class Main extends Sprite {
 		// webservices url set?
 		if (Reflect.hasField(this.loaderInfo.parameters, 'ws')) {
 			Main.ws = Reflect.field(this.loaderInfo.parameters, 'ws');
+		}
+		// initial string variables set?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'vars')) {
+			var b64:String;
+			try {
+				b64 = Base64.decode(Reflect.field(this.loaderInfo.parameters, 'vars')).toString();
+			} catch (e) {
+				b64 = null;
+			}
+			if (b64 != null) {
+				var json:Map<String, Dynamic> = StringStatic.jsonAsMap(b64);
+				for (k in json.keys()) {
+					Main.iniVars[k] = json[k];
+				}
+			}
+		}
+		// movie custom folder set?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'moviePath')) {
+			Main.moviePath = Reflect.field(this.loaderInfo.parameters, 'moviePath');
+		}
+		// assets custom folder set?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'assets')) {
+			Main.assetsPath = Reflect.field(this.loaderInfo.parameters, 'assets');
 		}
 		// custom decryption method?
 		if (Reflect.hasField(this.loaderInfo.parameters, 'decrypt')) {
@@ -139,8 +178,6 @@ import openfl.ui.Keyboard;
 import openfl.events.KeyboardEvent;
 import com.tilbuci.event.TilBuciEvent;
 import openfl.text.Font;
-import openfl.text.TextFormat;
-import openfl.text.TextField;
 import com.tilbuci.data.GlobalPlayer;
 import haxe.Timer;
 import openfl.display.LoaderInfo;
@@ -148,6 +185,7 @@ import openfl.display.Shape;
 import openfl.events.Event;
 import openfl.Assets;
 import openfl.display.StageScaleMode;
+import haxe.crypto.Base64;
 
 /** FEATHERSUI **/
 import feathers.layout.AnchorLayout;
@@ -162,6 +200,7 @@ import feathers.core.PopUpManager;
 /** TILBUCI **/
 import com.tilbuci.Player;
 import com.tilbuci.Editor;
+import com.tilbuci.statictools.StringStatic;
 
 /** PLUGINS **/
 import plugins.DebugPlugin;
@@ -197,6 +236,21 @@ class Main extends Application
 		initial user key
 	**/
 	public static var uk:String;
+
+	/**
+		initial string variables
+	**/
+	public static var iniVars:Map<String, String> = [ ];
+
+	/**
+		custom movies folder path
+	**/
+	public static var moviePath:String = '';
+
+	/**
+		assets folder path
+	**/
+	public static var assetsPath:String = '';
 
 	/**
 		the TilBuci player
@@ -236,11 +290,32 @@ class Main extends Application
 				Main.scene = Reflect.field(this.loaderInfo.parameters, 'scene');
 			}
 		}
-
 		if (Reflect.hasField(this.loaderInfo.parameters, 'decrypt')) {
 			DataLoader.customDecrypt = Reflect.field(this.loaderInfo.parameters, 'decrypt');
 		}
-
+		// initial string variables set?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'vars')) {
+			var b64:String;
+			try {
+				b64 = Base64.decode(Reflect.field(this.loaderInfo.parameters, 'vars')).toString();
+			} catch (e) {
+				b64 = null;
+			}
+			if (b64 != null) {
+				var json:Map<String, Dynamic> = StringStatic.jsonAsMap(b64);
+				for (k in json.keys()) {
+					Main.iniVars[k] = json[k];
+				}
+			}
+		}
+		// movie custom folder set?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'moviePath')) {
+			Main.moviePath = Reflect.field(this.loaderInfo.parameters, 'moviePath');
+		}
+		// assets custom folder set?
+		if (Reflect.hasField(this.loaderInfo.parameters, 'assets')) {
+			Main.assetsPath = Reflect.field(this.loaderInfo.parameters, 'assets');
+		}
 		if (Reflect.hasField(this.loaderInfo.parameters, 'us') && Reflect.hasField(this.loaderInfo.parameters, 'uk')) {
 			Main.us = Reflect.field(this.loaderInfo.parameters, 'us');
 			Main.uk = Reflect.field(this.loaderInfo.parameters, 'uk');
@@ -273,7 +348,7 @@ class Main extends Application
 	private function onStage(evt:Event = null):Void {
 		if (this.hasEventListener(Event.ADDED_TO_STAGE)) this.removeEventListener(Event.ADDED_TO_STAGE, this.onStage);
 		if (Main.mode == 'editor') {
-			this._editor = new Editor('editor.json');
+			this._editor = new Editor(Main.assetsPath + 'editor.json');
 			this._editor.registerPlugin(new DebugPlugin());
 			this._editor.registerPlugin(new SharePlugin());
 			this._editor.registerPlugin(new GoogleAnalyticsPlugin());
@@ -283,7 +358,7 @@ class Main extends Application
 		} else {
 			this.stage.scaleMode = StageScaleMode.NO_SCALE;
 			Main.mode = 'player';
-			this._player = new Player('player.json', Player.MODE_PLAYER, Player.ORIENTATION_LANDSCAPE);
+			this._player = new Player(Main.assetsPath +'player.json', Player.MODE_PLAYER, Player.ORIENTATION_LANDSCAPE);
 			this._player.registerPlugin(new DebugPlugin());
 			this._player.registerPlugin(new SharePlugin());
 			this._player.registerPlugin(new GoogleAnalyticsPlugin());

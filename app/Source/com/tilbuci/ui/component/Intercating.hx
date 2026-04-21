@@ -11,7 +11,8 @@ import feathers.skins.RectangleSkin;
 import haxe.Timer;
 
 /** OPENFL **/
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import openfl.display.Bitmap;
 
 /** FEATHERS UI **/
@@ -46,10 +47,10 @@ class Interacting extends Panel {
         skin.fill = SolidColor(0x000000, 0);
         this.backgroundSkin = skin;
 
-        for (i in 1...5) {
+        for (i in 1...8) {
             var bmp:Bitmap = new Bitmap(Assets.getBitmapData('tilBuci0' + i));
             bmp.smoothing = true;
-            bmp.alpha = 0.8;
+            bmp.alpha = 0.5;
             bmp.x = (150 - bmp.width) / 2;
             bmp.y = (150 - bmp.height) / 2;
             this._icons.push(bmp);

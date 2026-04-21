@@ -7,6 +7,14 @@
  package com.tilbuci.script;
 
 /** TILBUCI **/
+import openfl.filters.BitmapFilter;
+import openfl.filters.ShaderFilter;
+import openfl.display.GraphicsShader;
+import com.tilbuci.shaders.GrayscaleShader;
+import com.tilbuci.shaders.ContrastShader;
+import com.tilbuci.shaders.TritanopiaShader;
+import com.tilbuci.shaders.ProtanopiaShader;
+import com.tilbuci.shaders.DeuteranopiaShader;
 import com.tilbuci.contraptions.SoundContraption;
 import com.tilbuci.statictools.SpriteStatic;
 import com.tilbuci.narrative.BattleCardNarrative;
@@ -3011,6 +3019,50 @@ class ScriptParser {
                         } catch (e) { }
                         return (true);
 
+                    // accessibility
+                    case 'accessibility.setdescription':
+                        if (param.length >= 1) {
+                            return (ExternBrowser.TBB_callDescription(this.parseString(param[0])));
+                        } else {
+                            return (false);
+                        }
+                    case 'accessibility.changeshader':
+                        GlobalPlayer.currentShader++;
+                        if (GlobalPlayer.currentShader >= GlobalPlayer.shaders.length) GlobalPlayer.currentShader = 0;
+                        this.applyPlayerShader(GlobalPlayer.currentShader);
+                        return (true);
+                    case 'accessibility.setshader':
+                        if (param.length >= 1) {
+                            trace ('param ok');
+                            GlobalPlayer.currentShader = 0;
+                            switch (this.parseString(param[0])) {
+                                case 'deuteranotopia': GlobalPlayer.currentShader = 1;
+                                case 'protonatopia': GlobalPlayer.currentShader = 2;
+                                case 'tritanotopia': GlobalPlayer.currentShader = 3;
+                                case 'contrast': GlobalPlayer.currentShader = 4;
+                                case 'grayscale': GlobalPlayer.currentShader = 5;
+                            }
+                            this.applyPlayerShader(GlobalPlayer.currentShader);
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'accessibility.focuson':
+                        GlobalPlayer.focusMode = true;
+                        GlobalPlayer.area.setFocus();
+                        GlobalPlayer.contraptions.setFocus();
+                        return (true);
+                    case 'accessibility.focusooff':
+                        GlobalPlayer.focusMode = false;
+                        GlobalPlayer.area.setFocus();
+                        GlobalPlayer.contraptions.setFocus();
+                        return (true);
+                    case 'accessibility.focusswitch':
+                        GlobalPlayer.focusMode = !GlobalPlayer.focusMode;
+                        GlobalPlayer.area.setFocus();
+                        GlobalPlayer.contraptions.setFocus();
+                        return (true);
+
                     // timers
                     case 'timer.clearall':
                         if (GlobalPlayer.mode == Player.MODE_EDITOR) {
@@ -4715,6 +4767,25 @@ class ScriptParser {
             } catch (e) { }
         }
         this._lastEvent = [ ];
+    }
+
+    private function applyPlayerShader(num:Int):Void {
+        if ((num < GlobalPlayer.shaders.length) && (GlobalPlayer.area.parent != null)) {
+            var filters:Array<BitmapFilter> = [ ];
+            switch (num) {
+                case 1: // deuteranotopia
+                    filters = [ new ShaderFilter(new DeuteranopiaShader()) ];
+                case 2: // protonatopia
+                    filters = [ new ShaderFilter(new ProtanopiaShader()) ];
+                case 3: // tritanotopia
+                    filters = [ new ShaderFilter(new TritanopiaShader()) ];
+                case 4: // contrast
+                    filters = [ new ShaderFilter(new ContrastShader()) ];
+                case 5: // grayscale
+                    filters = [ new ShaderFilter(new GrayscaleShader()) ];
+            }
+            GlobalPlayer.area.parent.filters = filters;
+        }
     }
 
     #if (js && html5)

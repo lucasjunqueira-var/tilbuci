@@ -1,6 +1,6 @@
 <?php
 // launcher version
-$version = 20;
+$version = 22;
 chdir(__DIR__);
 
 // running from launcher?
@@ -12,7 +12,7 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 
 	// interface presets
 	function intHeader($pg) {
-		$bg = 'bgbuci'.sprintf('%02d', rand(1, 5)).'.jpg';
+		global $version;
 		?>
 
 <!DOCTYPE html>
@@ -22,16 +22,62 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 		<title>TilBuci Launcher</title>
 		<style>
 			body, html {
-				padding: 10px;
+				padding: 0 10px 0 5px;
 				margin: 0;
 				box-sizing: border-box;
-				background-color: #666666;
+				background-color: #000000;
 				color: #dadada;
 				font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-				font-size: 20px;
-				background-image: url('launcher/<?= $bg ?>');
+				font-size: 12px;
 				overflow: hidden;
 			}
+			#theartist {
+				position: fixed;
+				bottom: 0;
+				right: 0;
+			}
+			#launcher {
+				position: fixed;
+				left: 10px;
+				bottom: 10px;
+				color: #ffffff;
+				font-size: 12px;
+			}
+			.button {
+				box-sizing: border-box;
+				padding: 5px 10px;
+				border: 2px solid #dadada;
+				width: calc(100% - 290px);
+				cursor: pointer;
+				color: #dadada;
+				font-size: 12px;
+				border-radius: 10px;
+				margin-bottom: 10px;
+				margin-top: 10px;
+				background-color: rgba(255, 255, 255, 0.1);
+			}
+			.button h1 {
+				font-weight: bold;
+				font-size: 16px;
+				margin: 0;
+			}
+			.button:hover {
+				border: 2px solid #ff9900;
+				background-color: rgba(255, 153, 0, 0.25);
+				color: #ffffff;
+			}
+			#title {
+				color: #ffffff;
+				font-weight: bold;
+				font-size: 20px;
+				margin-bottom: 15px;
+				margin-top: 10px;
+			}
+			#title small {
+				font-size: 12px;
+			}
+			
+			
 			#holder {
 				box-sizing: border-box;
 				padding: 20px;
@@ -41,42 +87,15 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 				width: 750px;
 				height: 530px;
 			}
-			#title {
-				color: #ffffff;
-				font-weight: bold;
-				font-size: 30px;
-				margin-bottom: 15px;
-			}
-			#title small {
-				font-size: 15px;
-			}
-			.button {
-				box-sizing: border-box;
-				padding: 5px 10px;
-				border: 2px solid #dadada;
-				width: 100%;
-				cursor: pointer;
-				color: #dadada;
-				font-size: 14px;
-				border-radius: 10px;
-				margin-bottom: 10px;
-				margin-top: 20px;
-				background-color: rgba(255, 255, 255, 0.1);
-			}
-			.button h1 {
-				font-weight: bold;
-				font-size: 18px;
-				margin: 0;
-			}
-			.button:hover {
-				border: 2px solid #ff9900;
-				background-color: rgba(255, 153, 0, 0.25);
-				color: #ffffff;
-			}
+			
+			
+			
 		</style>
 	</head>
 	<body>
-		<div id="holder">
+		<div id="launcher">TilBuci Launcher version <?= $version ?></div>
+		<img src="launcher/theartist.gif" id="theartist" />
+		<!--<div id="holder">-->
 
 		<?php
 	}
@@ -84,7 +103,7 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 	function intFooter($pg) {
 		?>
 
-		</div>
+		<!--</div>-->
 	<body>
 </html>
 
@@ -121,7 +140,7 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 			} else {
 				intHeader($page);
 				?>
-				<div id="title">TilBuci Launcher <small>version <?= $version ?></small></div>
+				<div id="title">Welcome to TilBuci!</div>
 				<div class="button" onclick="api.openwindow('http://localhost:51804/editor/?us=single&uk=<?= $key ?>&cch=true')">
 					<h1>Open TilBuci</h1>
 					Start a new TilBuci workspace.
@@ -156,15 +175,16 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 			intHeader($page);
 			?>
 				<div id="title">Content backup</div>
-				<p>To make a backup of your creations, just open your movies folder and copy all the contents of it. To restore the backup, just overwrite the contents of this folder, but be careful: always restore the contents to the same launcher version (currenlty <?= $version ?>).</p>
-				<p>If you want to transfer a movie to another TilBuci installation, use the exchange functionality in the TilBuci workspace itself.</p>
+				<p>If you want to make a backup of your creations, just open your movies folder and copy all the contents of it. To restore the backup, just overwrite the contents of this folder, but be careful: always restore the contents to the same launcher version (currenlty <?= $version ?>).</p>
+				<p>To transfer a movie to another TilBuci installation, use the exchange functionality in the TilBuci workspace itself.</p>
+				<p>&nbsp;</p>
 				<div class="button" onclick="api.openfolder('movie/')">
 					<h1>Open folder</h1>
 					Open movies folder for backup.
 				</div>
 				<br />
 				<div class="button" onclick="window.location='http://localhost:51804/ws/launcher.php?pg=home'">
-					<h1>Back</h1>
+					<h1>Back to home</h1>
 				</div>
 			<?php
 			intFooter($page);
@@ -174,7 +194,6 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 			intHeader($page);
 			?>
 				<div id="title">Learn TilBuci</div>
-				<p>Check out online information about TilBuci and find out how to create your own content using the software.</p>
 				<div class="button" onclick="api.openbrowser('https://tilbuci.com.br/site/getting-started-with-tilbuci/')">
 					<h1>Getting started</h1>
 					Basic information for beginners.
@@ -193,7 +212,7 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 				</div>
 				<br />
 				<div class="button" onclick="window.location='http://localhost:51804/ws/launcher.php?pg=home'">
-					<h1>Back</h1>
+					<h1>Back to home</h1>
 				</div>
 			<?php
 			intFooter($page);
@@ -210,7 +229,7 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 				</div>
 				<br />
 				<div class="button" onclick="window.location='http://localhost:51804/ws/launcher.php?pg=home'">
-					<h1>Back</h1>
+					<h1>Back to home</h1>
 				</div>
 			<?php
 			intFooter($page);
@@ -220,9 +239,12 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 			intHeader($page);
 			?>
 				<div id="title">About TilBuci</div>
-				<p>TilBuci is a free, open-source tool licensed under the MPL-2.0. It runs as a web tool with features for collective creation. This launcher simplifies use for individual production. For this launcher, the Electron and the static-php-cli projects were used.</p>
+				<p>TilBuci is a free, open-source tool licensed under the MPL-2.0. It runs as a web tool with features for collective creation. This launcher simplifies usage for individual production, but you can also install it on your own server or even use TilBuci as a WordPress plugin. For this launcher, the Electron and the static-php-cli projects were used.</p>
 				<div class="button" onclick="api.openbrowser('https://tilbuci.com.br/')">
 					<h1>TilBuci website</h1>
+				</div>
+				<div class="button" onclick="api.openbrowser('https://plugin.tilbuci.com.br/')">
+					<h1>TilBuci WordPress plugin</h1>
 				</div>
 				<div class="button" onclick="api.openbrowser('https://github.com/lucasjunqueira-var/tilbuci')">
 					<h1>Code repository</h1>
@@ -236,8 +258,9 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 				<div class="button" onclick="api.openbrowser('https://github.com/crazywhalecc/static-php-cli')">
 					<h1>static-php-cli project</h1>
 				</div>
+				<br />
 				<div class="button" onclick="window.location='http://localhost:51804/ws/launcher.php?pg=home'">
-					<h1>Back</h1>
+					<h1>Back to home</h1>
 				</div>
 			<?php
 			intFooter($page);

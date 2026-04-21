@@ -8,7 +8,8 @@
 
 /** OPENFL **/
 import openfl.display.Bitmap;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import openfl.display.StageDisplayState;
 
 /** FEATHERS UI **/

@@ -7,7 +7,8 @@
  package com.tilbuci.ui.component;
 
 import feathers.core.FeathersControl;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import openfl.display.Bitmap;
 import feathers.events.TriggerEvent;
 import feathers.controls.Label;

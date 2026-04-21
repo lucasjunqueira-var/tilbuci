@@ -12,7 +12,8 @@ import feathers.layout.VerticalLayout;
 import feathers.events.TriggerEvent;
 import com.tilbuci.ui.base.HInterfaceContainer;
 import feathers.controls.ScrollContainer;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import com.tilbuci.data.Global;
 
 class ActionArea extends ScrollContainer {

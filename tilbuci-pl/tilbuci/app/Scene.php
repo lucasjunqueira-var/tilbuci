@@ -205,6 +205,7 @@ class Scene extends BaseClass
                         'actionover' => ($vi['in_actionover'] == '' ? '' : gzdecode(base64_decode($vi['in_actionover']))), 
                         'timedac' => ($vi['in_timedac'] == '' ? '' : gzdecode(base64_decode($vi['in_timedac']))), 
 						'play' => $vi['in_play'] == '1', 
+						'focus' => $vi['in_focus'] == '1', 
 						'horizontal' => [
 								'order' => 0, 
 								'x' => 0, 
@@ -629,7 +630,7 @@ class Scene extends BaseClass
 						]);
 						$kid = $this->insertID();
 						foreach ($kf as $kins => $ins) {
-							$this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instances` (`in_keyframe`, `in_name`, `in_collection`, `in_asset`, `in_action`, `in_play`, `in_actionover`, `in_timedac`) VALUES (:keyframe, :name, :collection, :asset, :action, :play, :actionover, :timedac)', [
+							$this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instances` (`in_keyframe`, `in_name`, `in_collection`, `in_asset`, `in_action`, `in_play`, `in_actionover`, `in_timedac`, `in_focus`) VALUES (:keyframe, :name, :collection, :asset, :action, :play, :actionover, :timedac, :focus)', [
 								':keyframe' => $kid, 
 								':name' => $kins, 
 								':collection' => $ins['collection'], 
@@ -638,6 +639,7 @@ class Scene extends BaseClass
 								':play' => $ins['play'] ? '1' : '0', 
                                 ':actionover' => $ins['actionover'] == '' ? '' : base64_encode(gzencode($ins['actionover'])), 
                                 ':timedac' => $ins['timedac'] == '' ? '' : base64_encode(gzencode($ins['timedac'])), 
+								':focus' => $ins['focus'] ? '1' : '0', 
 							]);
 							$iid = $this->insertID();
 							$this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instancedesc` (`id_instance`, `id_position`, `id_order`, `id_x`, `id_y`, `id_alpha`, `id_width`, `id_height`, `id_rotation`, `id_visible`, `id_color`, `id_coloralpha`, `id_volume`, `id_pan`, `id_blur`, `id_dropshadow`, `id_glow`, `id_blend`, `id_textfont`, `id_textsize`, `id_textcolor`, `id_textbold`, `id_textitalic`, `id_textleading`, `id_textspacing`, `id_textbackground`, `id_textalign`) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :glow, :blend,  :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign)', [

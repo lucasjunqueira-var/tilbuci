@@ -13,7 +13,8 @@ import haxe.Timer;
 import com.tilbuci.data.GlobalPlayer;
 import feathers.events.TriggerEvent;
 import openfl.display.Stage;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import openfl.display.Bitmap;
 
 /** FEATHERS UI **/

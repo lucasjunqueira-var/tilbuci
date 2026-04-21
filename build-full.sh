@@ -6,6 +6,7 @@ cd app || { echo "ERROR: app directory not found!"; exit 1; }
 # Define directories
 export_dir="Export/html5/bin/"
 server_dir="../server/public_html/app/"
+assets_dir="../app/"
 
 # Get build timestamp (YYYYMMDDHHMM)
 buildtime=$(date +"%Y%m%d%H%M")
@@ -60,8 +61,8 @@ if [ $build_status -eq 0 ]; then
     fi
 
     # Copy assets, manifest, lib directories recursively
-    if [ -d "${export_dir}assets" ]; then
-        cp -R "${export_dir}assets/." "${server_dir}assets/" 2>/dev/null
+    if [ -d "${assets_dir}assets" ]; then
+        cp -R "${assets_dir}assets/." "${server_dir}assets/" 2>/dev/null
         echo "  assets copied"
     fi
     if [ -d "${export_dir}manifest" ]; then

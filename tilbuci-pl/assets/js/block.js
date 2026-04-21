@@ -8,7 +8,7 @@
     var Placeholder = wp.components.Placeholder;
     var Spinner = wp.components.Spinner;
     var PanelBody = wp.components.PanelBody;
-    var InspectorControls = wp.editor.InspectorControls || wp.blockEditor.InspectorControls;
+    var InspectorControls = wp.blockEditor ? wp.blockEditor.InspectorControls : wp.editor.InspectorControls;
     var withSelect = wp.data.withSelect;
     var useSelect = wp.data.useSelect;
 
@@ -83,13 +83,47 @@
             }, __('No movies found in the database.', 'tilbuci-pl'));
         }
 
-        // cntrols render
-        return [
+        // Helper to generate custom variable controls
+        var customVariables = [];
+        for (var i = 1; i <= 5; i++) {
+            (function (idx) {
+                customVariables.push(
+                    createElement('div', { key: 'custom-var-' + idx, style: { marginBottom: '15px' } },
+                        createElement(TextControl, {
+                            label: __('Variable', 'tilbuci-pl') + ' ' + idx + ' name',
+                            value: attributes['customVar' + idx] || '',
+                            __next40pxDefaultSize: true,
+                            __nextHasNoMarginBottom: true,
+                            onChange: function (value) {
+                                var newAttrs = {};
+                                newAttrs['customVar' + idx] = value;
+                                setAttributes(newAttrs);
+                            }
+                        }),
+                        createElement(TextControl, {
+                            label: __('Variable', 'tilbuci-pl') + ' ' + idx + ' value',
+                            value: attributes['customVal' + idx] || '',
+                            __next40pxDefaultSize: true,
+                            __nextHasNoMarginBottom: true,
+                            onChange: function (value) {
+                                var newAttrs = {};
+                                newAttrs['customVal' + idx] = value;
+                                setAttributes(newAttrs);
+                            }
+                        })
+                    )
+                );
+            })(i);
+        }
+
+        // render
+        return createElement('div', {},
             createElement(InspectorControls, { key: 'inspector' },
                 createElement(PanelBody, { title: __('Display Settings', 'tilbuci-pl'), initialOpen: true },
                     createElement(ToggleControl, {
                         label: __('Full Screen', 'tilbuci-pl'),
                         checked: attributes.fullScreen,
+                        __nextHasNoMarginBottom: true,
                         onChange: function (value) {
                             setAttributes({ fullScreen: value });
                         },
@@ -99,6 +133,8 @@
                         label: __('Height (%)', 'tilbuci-pl'),
                         type: 'number',
                         value: attributes.height,
+                        __next40pxDefaultSize: true,
+                        __nextHasNoMarginBottom: true,
                         onChange: function (value) {
                             var num = parseInt(value, 10);
                             if (!isNaN(num) && num >= 0 && num <= 100) {
@@ -107,19 +143,25 @@
                         },
                         help: __('Percentage of height relative to content display width - the default is 56%, ideal for 16x9 aspect ratio content.', 'tilbuci-pl')
                     })
+                ),
+                createElement(PanelBody, { title: __('Custom Variables', 'tilbuci-pl'), initialOpen: false },
+                    createElement('p', { style: { marginTop: 0 } },
+                        __('You can set up to five string variables to be sent to the loaded TilBuci movie.', 'tilbuci-pl')
+                    ),
+                    customVariables
                 )
             ),
-            createElement('div', { className: 'tilbuci-block-editor', key: 'editor' },
-                createElement(SelectControl, {
-                    label: __('Select a TilBuci movie', 'tilbuci-pl'),
-                    value: attributes.movieId,
-                    options: options,
-                    onChange: function (value) {
-                        setAttributes({ movieId: value });
-                    }
-                })
-            )
-        ];
+            createElement(SelectControl, {
+                label: __('Select a TilBuci movie', 'tilbuci-pl'),
+                value: attributes.movieId,
+                options: options,
+                __next40pxDefaultSize: true,
+                __nextHasNoMarginBottom: true,
+                onChange: function (value) {
+                    setAttributes({ movieId: value });
+                }
+            })
+        );
     };
 
     // block registering
@@ -139,6 +181,46 @@
             height: {
                 type: 'number',
                 default: 56
+            },
+            customVar1: {
+                type: 'string',
+                default: ''
+            },
+            customVal1: {
+                type: 'string',
+                default: ''
+            },
+            customVar2: {
+                type: 'string',
+                default: ''
+            },
+            customVal2: {
+                type: 'string',
+                default: ''
+            },
+            customVar3: {
+                type: 'string',
+                default: ''
+            },
+            customVal3: {
+                type: 'string',
+                default: ''
+            },
+            customVar4: {
+                type: 'string',
+                default: ''
+            },
+            customVal4: {
+                type: 'string',
+                default: ''
+            },
+            customVar5: {
+                type: 'string',
+                default: ''
+            },
+            customVal5: {
+                type: 'string',
+                default: ''
             }
         },
         edit: Edit,

@@ -189,6 +189,10 @@ if exist ws\launcher.php (
     if not exist temp_part2\ws mkdir temp_part2\ws
     copy ws\launcher.php temp_part2\ws\ /Y
 )
+if exist ws\launcher\theartist.gif (
+    if not exist temp_part2\ws\launcher mkdir temp_part2\ws\launcher
+    copy ws\launcher\theartist.gif temp_part2\ws\launcher\ /Y
+)
 
 REM Copy license.txt
 if exist license.txt (

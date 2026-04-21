@@ -161,6 +161,7 @@
 	"rightbar-media-removecheck": "Are you sure you want to remove this instance?",
 	"rightbar-media-precachecheck": "Are you sure you want to set the instance as a precache?",
 	"rightbar-media-playonload": "Start playing",
+	"rightbar-media-focus": "Keep focus",
 	"rightbar-media-noid": "You must provide a name with at least 3 characters for the instance.",
 	"rightbar-media-idtaken": "The name given is already taken by another instance.",
 	
@@ -1826,6 +1827,22 @@
 	"acinfo-startkiosk": "start kiosk mode", 
 	"acinfo-endkiosk": "end kiosk mode", 
 	
+	"window-acbaccesibility-title": "Accessibility",
+	"acinfo-accesschangeshader": "load the next accessibility filter",
+	"sharders-none": "none", 
+	"sharders-deuteranotopia": "deuteranotopia", 
+	"sharders-protonatopia": "protonatopia", 
+	"sharders-tritanotopia": "tritanotopia", 
+	"sharders-contrast": "contrast", 
+	"sharders-grayscale": "grayscale", 
+	"acinfo-accesssetshader": "set the accessibility filter", 
+	"acinfo-accesssetshader-p1": "the filter to use", 
+	"acinfo-accessfocuson": "turn on focus mode",
+	"acinfo-accessfocusoff": "turn off focus mode",
+	"acinfo-accessfocusswitch": "switch focus mode",
+	"acinfo-accesssetdescription": "set the accessibility text", 
+	"acinfo-accesssetdescription-p1": "the text to set", 
+	
 	"window-acbcontraptions-title": "Contraptions", 
 	"acinfo-showmenu": "show menu", 
 	"acinfo-showmenu-p1": "menu layout name", 
@@ -2664,6 +2681,16 @@
 	"tooltip-playercontrols-right": "next keyframe", 
 	"tooltip-playercontrols-actions": "testing actions", 
 	"tooltip-playercontrols-play": "start test", 
+	"tooltip-playercontrols-color": "change accessibility color display", 
+	"tooltip-playercontrols-focus": "change accessibility focus mode", 
+	"tooltip-accessibility-focuson": "focus mode on", 
+	"tooltip-accessibility-focusoff": "focus mode off", 
+	"tooltip-accessibility-deuteranotopia": "deuteranotopia mode", 
+	"tooltip-accessibility-protonatopia": "protonatopia mode", 
+	"tooltip-accessibility-tritanotopia": "tritanotopia mode", 
+	"tooltip-accessibility-contrast": "high contrast mode", 
+	"tooltip-accessibility-grayscale": "grayscale mode", 
+	"tooltip-accessibility-none": "no color correction", 
 
     "login-welcome": "Welcome to TilBuci! Please use the form below to enter the editor."
 }

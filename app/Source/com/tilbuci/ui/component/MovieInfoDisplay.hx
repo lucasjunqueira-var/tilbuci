@@ -14,7 +14,8 @@ import openfl.events.MouseEvent;
 import feathers.layout.RelativePosition;
 import feathers.controls.TextCallout;
 import feathers.events.TriggerEvent;
-import openfl.Assets;
+//import openfl.Assets;
+import com.tilbuci.statictools.Assets;
 import openfl.display.Bitmap;
 import feathers.skins.RectangleSkin;
 import feathers.layout.HorizontalLayout;
@@ -65,7 +66,7 @@ class MovieInfoDisplay extends Panel {
         var lay:HorizontalLayout = new HorizontalLayout();
         lay.gap = 2;
         lay.setPadding(10);
-        lay.horizontalAlign = CENTER;
+        lay.horizontalAlign = RIGHT;
         this.layout = lay;
         var skin:RectangleSkin = new RectangleSkin();
         skin.fill = SolidColor(0x999999);

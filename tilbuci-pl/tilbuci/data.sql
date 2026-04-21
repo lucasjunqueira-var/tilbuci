@@ -1,8 +1,8 @@
 INSERT INTO `{PR}tilbuci_config` (`cf_key`, `cf_value`) VALUES
-	('dbVersion', '21'),
+	('dbVersion', '22'),
 	('fpsMode', '30'),
 	('renderMode', 'webgl'),
-	('shareMode', 'scene');
+	('shareMode', 'never');
 INSERT INTO `{PR}tilbuci_fonts` (`fn_name`, `fn_file`) VALUES
 	('Averia Serif GWF', 'averiaserifgwf.woff2'),
 	('Liberation Serif', 'liberationserif.woff2'),

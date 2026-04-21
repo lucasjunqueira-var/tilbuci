@@ -7,6 +7,8 @@
  package com.tilbuci.player;
 
 /** OPENFL **/
+import com.tilbuci.shaders.UnfocusShader;
+import openfl.filters.ShaderFilter;
 import com.tilbuci.display.MultiSelect;
 import haxe.Timer;
 import com.tilbuci.display.InstanceSelect;
@@ -228,6 +230,11 @@ class MovieArea extends Sprite {
     private var _targetTime:Float = 0.0075;
 
     /**
+        last change on instance focus
+    **/
+    private var _lastfocus:Bool = false;
+
+    /**
         Creator.
         @param  pl   a reference to the player
         @param  bgarea  a reference to the player background
@@ -428,7 +435,7 @@ class MovieArea extends Sprite {
     }
 
     /**
-        Loads a kieyframe and start the interpolation animaton.
+        Loads a keyframe and start the interpolation animaton.
         @param  kf  keyframe information
         @param  num keyframe index
     **/
@@ -479,7 +486,11 @@ class MovieArea extends Sprite {
         }
         if (GlobalPlayer.mode != Player.MODE_EDITOR) {
             this.kfPercent = 0;
-            Actuate.tween(this, GlobalPlayer.mdata.time, { kfPercent: 100 }).onComplete(nextKeyframe);
+            if (GlobalPlayer.focusMode) {
+                Actuate.tween(this, 3, { kfPercent: 100 }).onComplete(nextKeyframe).ease(Linear.easeNone);
+            } else {
+                Actuate.tween(this, GlobalPlayer.mdata.time, { kfPercent: 100 }).onComplete(nextKeyframe);
+            }
         } else {
             this.kfPercent = 100;
         }
@@ -502,6 +513,9 @@ class MovieArea extends Sprite {
                 }
             }
         }
+
+        // focus mode?
+        this.setFocus();
     }
 
     /**
@@ -1852,5 +1866,25 @@ class MovieArea extends Sprite {
     **/
     public function noMouseOver():Void {
         for (inst in this._instances) inst.onMouseOut();
+    }
+
+    /**
+        Set focus mode on all instances.
+    **/
+    public function setFocus():Void {
+        if (GlobalPlayer.focusMode) {
+            for (inst in this._instances) {
+                if (inst.focus()) {
+                    inst.filters = [ ];
+                } else {
+                    inst.filters = [ new ShaderFilter(new UnfocusShader()) ];
+                }
+            }
+        } else if (this._lastfocus) {
+            for (inst in this._instances) {
+                inst.filters = [ ];
+            }
+        }
+        this._lastfocus = GlobalPlayer.focusMode;
     }
 }
