@@ -7,6 +7,7 @@
  package com.tilbuci.ui;
 
 /** OPENFL **/
+import feathers.layout.HorizontalLayoutData;
 import haxe.Timer;
 import com.tilbuci.data.GlobalPlayer;
 import feathers.controls.Panel;
@@ -62,6 +63,13 @@ class PlayerControls extends VDividedBox {
     private var _movieInfo:MovieInfoDisplay;
 
     /**
+        button areas
+    **/
+    private var _displayArea:Panel;
+    private var _zoomArea:Panel;
+    private var _playArea:Panel;
+
+    /**
         re-center timer
     **/
     private var _centerTimer:Timer;
@@ -93,39 +101,38 @@ class PlayerControls extends VDividedBox {
         this._controls = new HDividedBox();
         this._controls.layoutData = AnchorLayoutData.fill();
         var lay:HorizontalLayout = new HorizontalLayout();
-        lay.gap = 10;
+        lay.gap = 5;
         lay.setPadding(10);
         this._controls.layout = lay;
         this._controls.backgroundSkin = bgSkin;
         this._controls.height = this._controls.maxHeight = this._controls.minHeight = 50;
         this.addChild(this._controls);    
         
-        // zoom buttons
-        var zoomArea:Panel = this.ui.createHArea('left');
-        this._controls.addChild(zoomArea);
-        this.ui.createIconButton('screen', this.onScreen, new Bitmap(Assets.getBitmapData('btScreen')), null, zoomArea);
-        this.ui.createIconButton('color', this.onColor, new Bitmap(Assets.getBitmapData('btColors')), null, zoomArea);
-        this.ui.createIconButton('focus', this.onFocus, new Bitmap(Assets.getBitmapData('btFocus')), null, zoomArea);
-        this.ui.createSpacer('screen', 10, false, zoomArea);
-        this.ui.createIconButton('zoom+', this.onZoomP, new Bitmap(Assets.getBitmapData('btZoomP')), null, zoomArea);
-        this.ui.createIconButton('zoom-', this.onZoomM, new Bitmap(Assets.getBitmapData('btZoomM')), null, zoomArea);
-        this.ui.createIconButton('zoomfit', this.centerPlayer, new Bitmap(Assets.getBitmapData('btZoomFit')), null, zoomArea);
-        this.ui.createIconButton('zoom100', this.onZoom100, new Bitmap(Assets.getBitmapData('btZoom100')), null, zoomArea);
+        // display
+        this._displayArea = this.ui.createHArea('left');
+        this._controls.addChild(this._displayArea);
+        this.ui.createIconButton('screen', this.onScreen, new Bitmap(Assets.getBitmapData('btScreen')), null, this._displayArea);
+        this.ui.createSpacer('screen', 10, false, this._displayArea);
+        this.ui.createIconButton('color', this.onColor, new Bitmap(Assets.getBitmapData('btColors')), null, this._displayArea);
+        this.ui.createIconButton('focus', this.onFocus, new Bitmap(Assets.getBitmapData('btFocus')), null, this._displayArea);
         
-        // movie information
+        this._zoomArea = this.ui.createHArea('center');
+        this._controls.addChild(this._zoomArea);
+        this.ui.createIconButton('zoom+', this.onZoomP, new Bitmap(Assets.getBitmapData('btZoomP')), null, this._zoomArea);
+        this.ui.createIconButton('zoom-', this.onZoomM, new Bitmap(Assets.getBitmapData('btZoomM')), null, this._zoomArea);
+        this.ui.createIconButton('zoomfit', this.centerPlayer, new Bitmap(Assets.getBitmapData('btZoomFit')), null, this._zoomArea);
+        this.ui.createIconButton('zoom100', this.onZoom100, new Bitmap(Assets.getBitmapData('btZoom100')), null, this._zoomArea);
+        
+        this._playArea = this.ui.createHArea('left');
+        this._controls.addChild(this._playArea);
+        this.ui.createIconButton('left', this.onLeft, new Bitmap(Assets.getBitmapData('btLeft')), null, this._playArea);
+        this.ui.createLabel('keyframes', '', '', this._playArea);
+        this.ui.createIconButton('right', this.onRight, new Bitmap(Assets.getBitmapData('btRight')), null, this._playArea);
+        this.ui.createIconButton('actions', this.onActions, new Bitmap(Assets.getBitmapData('btSetup')), null, this._playArea);
+        this.ui.createIconButton('play', this.onPlay, new Bitmap(Assets.getBitmapData('btPlay')), null, this._playArea);
+
         this._movieInfo = new MovieInfoDisplay(this.updateInfo);
         this._controls.addChild(this._movieInfo);
-
-        // keyframe/playback
-        var kfArea:Panel = this.ui.createHArea('right');
-        this._controls.addChild(kfArea);
-        this.ui.createIconButton('left', this.onLeft, new Bitmap(Assets.getBitmapData('btLeft')), null, kfArea);
-        this.ui.createLabel('keyframes', '', '', kfArea);
-        this.ui.createIconButton('right', this.onRight, new Bitmap(Assets.getBitmapData('btRight')), null, kfArea);
-        this.ui.createSpacer('keyframe', 10, false, kfArea);
-        this.ui.createIconButton('actions', this.onActions, new Bitmap(Assets.getBitmapData('btSetup')), null, kfArea);
-        this.ui.createLabel('actions', '', '', kfArea);
-        this.ui.createIconButton('play', this.onPlay, new Bitmap(Assets.getBitmapData('btPlay')), null, kfArea);
 
         // tooltips
         this.ui.buttons['screen'].toolTip = Global.ln.get('tooltip-playercontrols-screen');
@@ -153,6 +160,9 @@ class PlayerControls extends VDividedBox {
         Updates controls information.
     **/
     public function updateInfo():Void {
+
+        this.updateSizes();
+
         if (GlobalPlayer.movie.scId == '') {
             this.ui.labels['keyframes'].text = '';
             this.ui.buttons['left'].enabled = false;
@@ -187,6 +197,8 @@ class PlayerControls extends VDividedBox {
             try { this._centerTimer.stop(); } catch (e) { }
             this._centerTimer = null;
         }
+
+        this.updateSizes();
     }
 
     /**
@@ -214,6 +226,8 @@ class PlayerControls extends VDividedBox {
             this._player.addChild(this._player.player);
             this.centerPlayer();
         }
+
+        this.updateSizes();
     }
 
     /**
@@ -229,6 +243,8 @@ class PlayerControls extends VDividedBox {
             case 5: this._movieInfo.showMsg(Global.ln.get('tooltip-accessibility-grayscale'));
             default: this._movieInfo.showMsg(Global.ln.get('tooltip-accessibility-none'));
         }
+
+        this.updateSizes();
     }
 
     /**
@@ -241,6 +257,8 @@ class PlayerControls extends VDividedBox {
         } else {
             this._movieInfo.showMsg(Global.ln.get('tooltip-accessibility-focusoff'));
         }
+
+        this.updateSizes();
     }
 
     /**
@@ -252,6 +270,8 @@ class PlayerControls extends VDividedBox {
             Global.history.clear();
             this.updateInfo();
         }
+
+        this.updateSizes();
     }
 
     /**
@@ -263,6 +283,8 @@ class PlayerControls extends VDividedBox {
             Global.history.clear();
             this.updateInfo();
         }
+
+        this.updateSizes();
     }
 
     /**
@@ -310,5 +332,13 @@ class PlayerControls extends VDividedBox {
         } else {
             this._player.setWidth(this._player.player.mWidth);
         }
+    }
+
+    private function updateSizes():Void {
+        var totWidth:Int = Math.round(this.width - 20);
+        this._displayArea.width = Math.round(totWidth * 0.2);
+        this._zoomArea.width = Math.round(totWidth * 0.2);
+        this._playArea.width = Math.round(totWidth * 0.25);
+        this._movieInfo.width = totWidth - (this._displayArea.width - this._zoomArea.width - this._playArea.width);
     }
 }

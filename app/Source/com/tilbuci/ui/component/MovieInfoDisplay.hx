@@ -66,7 +66,7 @@ class MovieInfoDisplay extends Panel {
         var lay:HorizontalLayout = new HorizontalLayout();
         lay.gap = 2;
         lay.setPadding(10);
-        lay.horizontalAlign = CENTER;
+        lay.horizontalAlign = RIGHT;
         this.layout = lay;
         var skin:RectangleSkin = new RectangleSkin();
         skin.fill = SolidColor(0x999999);

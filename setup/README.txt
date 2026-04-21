@@ -1,5 +1,5 @@
 TILBUCI INSTALLER/UPDATER
-version 21
+version 22
 
 Welcome to the TilBuci installer/updater. Please follow the instructions below carefully.
 

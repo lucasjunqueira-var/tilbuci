@@ -175,15 +175,13 @@ class TilBuci_WP {
      * Register shortcodes
      */
     private function register_shortcodes() {
-        // Shortcode registration is handled by TilBuci_WP_Shortcode class
+        
     }
 
     /**
      * Register Gutenberg blocks
      */
     private function register_blocks() {
-        // Block registration will be handled by TilBuci_WP_Blocks class
-        // For now, we'll add an action to init block registration
         add_action('init', array($this, 'register_tilbuci_block'));
     }
 
@@ -394,7 +392,7 @@ class TilBuci_WP {
             // Add CSS to hide other content and set black background
             $output .= '<style id="tilbuci-full-screen-styles">';
             $output .= 'body { background-color: #000000 !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }';
-            $output .= '#TilBuciArea { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999999; margin: 0; padding: 0; overflow: unset; background: #000; }';
+            $output .= '#TilBuciArea { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999999999; margin: 0; padding: 0; overflow: unset; background: #000; max-width: none; max-height: none;}';
             $output .= '</style>';
             
             // Add JavaScript to hide other content
@@ -616,14 +614,12 @@ class TilBuci_WP {
             <div class="card">
                 <h2><?php _e('Current Version', 'tilbuci-pl'); ?></h2>
                 <p><strong><?php echo esc_html($current_version); ?></strong></p>
-                <p><?php _e('This is the version currently installed in your database.', 'tilbuci-pl'); ?></p>
             </div>
             
             <div class="card">
                 <h2><?php _e('Latest Available Version', 'tilbuci-pl'); ?></h2>
                 <?php if ($remote_version !== false): ?>
                     <p><strong><?php echo esc_html($remote_version); ?></strong></p>
-                    <p><?php _e('This is the latest version available from the TilBuci update server.', 'tilbuci-pl'); ?></p>
                     
                     <?php
                     $current_float = floatval($current_version);
@@ -733,7 +729,7 @@ class TilBuci_WP {
         // 5. Create URL for editor
         $site_url = get_option('siteurl');
         $editor_base_url = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/app/index.php';
-        $params = '?md=editor&us=' . urlencode($user) . '&uk=' . md5($user . $key);
+        $params = '?cch=true&md=editor&us=' . urlencode($user) . '&uk=' . md5($user . $key);
         $editor_url = $editor_base_url . $params;
         
         // Output minimal HTML with iframe covering entire #wpbody-content area
@@ -1072,8 +1068,7 @@ class TilBuci_WP {
      * Enqueue public scripts and styles
      */
     public function enqueue_public_scripts() {
-        // This method is kept for future use if public scripts are needed
-        // Currently, TilBuci player scripts are loaded directly from the tilbuci/public directory
+        
     }
 
     /**
@@ -1097,8 +1092,11 @@ class TilBuci_WP {
         $font_path = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/font/';
 
         // Output script tags and inline code as per specification
-        //echo '<script type="text/javascript" src="' . esc_url($path . 'TilBuci-min.js?rd=' . $version) . '"></script>' . "\n";
-        echo '<script type="text/javascript" src="' . esc_url($path . 'TilBuci-min.js?rd=' . time()) . '"></script>' . "\n";
+        
+        // debug: no cache
+        //echo '<script type="text/javascript" src="' . esc_url($path . 'TilBuci-min.js?rd=' . time()) . '"></script>' . "\n";
+
+        echo '<script type="text/javascript" src="' . esc_url($path . 'TilBuci-min.js?rd=' . $version) . '"></script>' . "\n";
         echo '<script type="text/javascript" src="' . esc_url($path . 'externs.js?rd=' . $version) . '"></script>' . "\n";
         echo '<script>' . "\n";
         echo '	window.addEventListener ("touchmove", function (event) { event.preventDefault (); }, { capture: false, passive: false });' . "\n";
@@ -1106,6 +1104,7 @@ class TilBuci_WP {
         echo '		var meta = document.getElementById ("viewport");' . "\n";
         echo '		meta.setAttribute ("content", "width=device-width, initial-scale=" + (2 / window.devicePixelRatio) + ", user-scalable=no");' . "\n";
         echo '	}' . "\n";
+        echo '  if (typeof tb_description !== "function") { function tb_description(text) { var tb_description = document.querySelector(".tb_description"); tb_description.textContent = text; } }'. "\n";
         echo '</script>' . "\n";
         echo '<style>' . "\n";
         echo '	@font-face { font-family: "Averia Serif GWF"; src: url("' . esc_url($font_path . 'averiaserifgwf.woff2') . '"); }' . "\n";

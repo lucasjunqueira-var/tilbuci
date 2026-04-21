@@ -202,6 +202,11 @@ function TBB_existsFileCapacitor(name) {
     });
 }
 
+/**
+ * Calls a javascript method on the host page.
+ * @param {*} name the method name
+ * @param {*} args the method arguments
+ */
 function TBB_callJs(name, args) {
     if (typeof(window[name]) === 'function') {
         let callrags = new Array();
@@ -211,6 +216,15 @@ function TBB_callJs(name, args) {
             }
         }
         window[name].apply(null, callrags);
+        return (true);
+    } else {
+        return (false);
+    }
+}
+
+function TBB_callDescription(text) {
+    if (typeof(window['tb_description']) === 'function') {
+        tb_description(text);
         return (true);
     } else {
         return (false);

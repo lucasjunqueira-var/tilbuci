@@ -27,7 +27,7 @@ class TilBuci_WP_DB {
     public static function activate() {
         global $wpdb;
 
-        // Create tables using dbDelta (WordPress recommended method)
+        // Create tables
         self::create_tables_with_dbdelta();
 
         // Check if dbVersion record exists in tilbuci_config table
@@ -162,7 +162,6 @@ class TilBuci_WP_DB {
         $sql_content = preg_replace('/--.*$/m', '', $sql_content);
         
         // Split SQL statements by semicolon, being careful with semicolons inside strings
-        // Simple approach: split by semicolon at line end or followed by whitespace and newline
         $statements = preg_split('/;(?=\s*\n|$)/', $sql_content);
         
         // Group INSERT statements by table
@@ -339,7 +338,7 @@ class TilBuci_WP_DB {
     }
 
     /**
-     * Create database tables using WordPress dbDelta method
+     * Create database tables
      * This ensures tables are created or updated safely
      */
     private static function create_tables_with_dbdelta() {
@@ -595,7 +594,7 @@ $gconf = [
     ],
     "start": "",
     "render": "webgl",
-    "share": "scene",
+    "share": "never",
     "fps": "free",
     "secret": "dbfa29a53f4b366c1b8e9ae0402439e3"
 }';
@@ -682,11 +681,12 @@ $gconf = [
                     self::execute_sql_update_file($update_file);
                     
                     // Update version in database after successful execution
-                    $wpdb->query($wpdb->prepare(
+                    /*$wpdb->query($wpdb->prepare(
                         "INSERT INTO %i (%i, %i) VALUES (%s, %d)
                          ON DUPLICATE KEY UPDATE %i = %d",
                         $config_table, 'cf_key', 'cf_value', 'dbVersion', $version, 'cf_value', $version
-                    ));
+                    ));*/
+                    // leave version update on update files for now
                     
                     // Clear query cache to ensure immediate reflection of version update
                     $wpdb->flush();
@@ -803,7 +803,6 @@ $gconf = [
     /**
      * Update TilBuci plugin from ZIP file
      *
-     * This function follows the "Running the update" specification:
      * 1. If no ZIP file is provided, download latest.zip from plugin.tilbuci.com.br
      * 2. Verify ZIP contains only "tilbuci-pl" folder in root
      * 3. Extract contents to plugin folder, overwriting existing files

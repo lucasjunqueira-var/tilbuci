@@ -2,6 +2,7 @@
 cd app
 set export="Export\html5\bin\"
 set server="..\server\public_html\app\"
+set assets="..\app\"
 for /F "skip=1 delims=" %%F in ('
     wmic PATH Win32_LocalTime GET Day^,Month^,Year /FORMAT:TABLE
 ') do (
@@ -28,8 +29,7 @@ if %errorlevel% equ 0 (
     copy %export%Tilbuci.js %server%TilBuci.js
     type Externs\browser.js Externs\embedcontent.js Externs\overlayplugin.js Externs\upload.js > Externs\externs.js
     copy /Y Externs\externs.js %server%
-    xcopy %export%assets\*.* %server%assets\ /E/Y/Q
-    xcopy %export%manifest\*.* %server%manifest\ /E/Y/Q
+    xcopy %assets%assets\*.* %server%assets\ /E/Y/Q
     xcopy %export%lib\*.* %server%lib\ /E/Y/Q
     start "" "http://tilbuci/app/?md=editor&cch=true"
     echo TilBuci started!

@@ -194,7 +194,7 @@ class WindowSetup extends PopupWindow {
         buci.scaleY = buci.scaleX;
         this.addForm(Global.ln.get('window-setup-about'), this.ui.forge('form-about', [
             { tp: 'Label', id: 'about-title', tx: Global.ln.get('window-setup-about-title'), vr: Label.VARIANT_HEADING }, 
-            { tp: 'Label', id: 'about-lucas', tx: StringTools.replace(Global.ln.get('window-setup-created'), '[NAME]', 'Lucas Junqueira <lucas@var.art.br>'), vr: '' }, 
+            { tp: 'Label', id: 'about-lucas', tx: StringTools.replace(Global.ln.get('window-setup-created'), '[NAME]', 'Lucas Junqueira <doggo@tilbuci.com.br>'), vr: '' }, 
             { tp: 'Label', id: 'about-version', tx: Global.ln.get('window-setup-about-version'), vr: Label.VARIANT_DETAIL }, 
             { tp: 'Label', id: 'about-versionnum', tx: build.version, vr: '' }, 
             { tp: 'Label', id: 'about-build', tx: Global.ln.get('window-setup-about-build'), vr: Label.VARIANT_DETAIL }, 

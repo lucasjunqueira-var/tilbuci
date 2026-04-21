@@ -3020,6 +3020,12 @@ class ScriptParser {
                         return (true);
 
                     // accessibility
+                    case 'accessibility.setdescription':
+                        if (param.length >= 1) {
+                            return (ExternBrowser.TBB_callDescription(this.parseString(param[0])));
+                        } else {
+                            return (false);
+                        }
                     case 'accessibility.changeshader':
                         GlobalPlayer.currentShader++;
                         if (GlobalPlayer.currentShader >= GlobalPlayer.shaders.length) GlobalPlayer.currentShader = 0;

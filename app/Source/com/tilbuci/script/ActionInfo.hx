@@ -1210,6 +1210,9 @@ class ActionInfo {
         this.groups.push(new ActionInfoGroup(
             Global.ln.get('window-acbaccesibility-title'), 
             [
+                { n: Global.ln.get('acinfo-accesssetdescription'), a: 'accessibility.setdescription', p: [
+                    { t: 's', n: Global.ln.get('acinfo-accesssetdescription-p1'), v: '' }, 
+                ], e: [ ] },
                 { n: Global.ln.get('acinfo-accesschangeshader'), a: 'accessibility.changeshader', p: [ ], e: [ ] },
                 { n: Global.ln.get('acinfo-accesssetshader'), a: 'accessibility.setshader', p: [
                     { t: 's', n: Global.ln.get('acinfo-accesssetshader-p1'), v: 'shader' }, 

@@ -2,6 +2,7 @@
 cd app
 set export="Export\html5\bin\"
 set server="..\server\export\runtimes\"
+set assets="..\app\"
 echo TilBuci WEBSITE build...
 powershell -Command "cp project-runtime.xml project.xml"
 openfl build html5 -D haxeJSON -D tilbuciplayer -D runtimewebsite

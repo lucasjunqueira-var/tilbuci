@@ -124,10 +124,17 @@ extern class ExternBrowser {
     static function TBB_existsFileCapacitor(name:String):Bool;
 
     /**
-        Checks if a file exists in user folder on capacitor runtime.
-        @param  name    the file name
+       Call a javascript method at the host page.
+        @param  name    the method name
+        @param  args    the arguments to pass
     **/
     static function TBB_callJs(name:String, args:Array<String> = null):Bool;
+
+    /**
+        Call the "tb_description(text)" method at the host page.
+        @param  text    the description text to send
+    **/
+    static function TBB_callDescription(text:String):Bool;
 
     /**
         Starts the browser tabs communication channel.

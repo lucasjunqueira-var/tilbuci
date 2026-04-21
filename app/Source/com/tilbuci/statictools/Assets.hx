@@ -6,6 +6,7 @@
 
 package com.tilbuci.statictools;
 
+import openfl.net.URLVariables;
 import openfl.net.URLLoader;
 import openfl.display.Bitmap;
 import openfl.net.URLRequest;
@@ -30,6 +31,9 @@ class Assets extends EventDispatcher {
         'tilBuci03',
         'tilBuci04',
         'tilBuci05',
+        'tilBuci06',
+        'tilBuci07',
+        'tilBuci08',
         'btBack',
         'btClose',
         'btOk',
@@ -163,6 +167,8 @@ class Assets extends EventDispatcher {
 
     private var _txtLoader:URLLoader;
 
+    private var _nocache:Bool = false;
+
     public var complete:Int = 0;
 
     public function new() {
@@ -171,6 +177,7 @@ class Assets extends EventDispatcher {
             if (Lib.current.stage.application.window.parameters.mode == 'editor') {
                 this._reaAssets = this._edAssets;
                 this._realTexts = this._edTexts;
+                this._nocache = true;
             } else {
                 this._reaAssets = this._plAssets;
                 this._realTexts = this._plTexts;
@@ -179,6 +186,7 @@ class Assets extends EventDispatcher {
             // failsafe
             this._reaAssets = this._edAssets;
             this._realTexts = this._edTexts;
+            this._nocache = true;
         }
 
         if (Reflect.hasField(Lib.current.stage.application.window.parameters, 'assets')) {
@@ -220,7 +228,13 @@ class Assets extends EventDispatcher {
     private function loadNextTxt():Void {
         this._curTxtLoad++;
         if (this._curTxtLoad < this._realTexts.length) {
-            this._txtLoader.load(new URLRequest(this._realTexts[this._curTxtLoad].path));
+            var req:URLRequest = new URLRequest(this._realTexts[this._curTxtLoad].path);
+            if (this._nocache) {
+                var variables:URLVariables = new URLVariables();
+                Reflect.setField(variables, 'rand', (Math.ceil(Math.random()*10000)));
+                req.data = variables;
+            }
+            this._txtLoader.load(req);
         } else {
             this._txtLoader.removeEventListener(Event.COMPLETE, onTxtOk);
             this._txtLoader.removeEventListener(IOErrorEvent.IO_ERROR, onTxtError);

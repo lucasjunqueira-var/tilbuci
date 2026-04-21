@@ -1840,6 +1840,8 @@
 	"acinfo-accessfocuson": "turn on focus mode",
 	"acinfo-accessfocusoff": "turn off focus mode",
 	"acinfo-accessfocusswitch": "switch focus mode",
+	"acinfo-accesssetdescription": "set the accessibility text", 
+	"acinfo-accesssetdescription-p1": "the text to set", 
 	
 	"window-acbcontraptions-title": "Contraptions", 
 	"acinfo-showmenu": "show menu", 

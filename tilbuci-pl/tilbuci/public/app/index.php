@@ -178,6 +178,10 @@ if ($render == '') {
 			var meta = document.getElementById ("viewport");
 			meta.setAttribute ('content', 'width=device-width, initial-scale=' + (2 / window.devicePixelRatio) + ', user-scalable=no');
 		}
+
+		function tb_description(desc) {
+			console.log("desc " + desc);
+		}
 	</script>
 	<style>
 		<?= $data->indexFonts($cssmovie) ?>
@@ -196,7 +200,7 @@ if ($render == '') {
 			let params = new URLSearchParams(window.location.search);
 			let vars = params.get("vars");
 			if (vars == null) vars = "";
-			lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "moviePath": "", "mode" : "<?= $mode ?>", "movie": "<?= $movie ?>", "scene": "<?= $scene ?>", "vars":vars <?= $userlogin ?>} });
+			lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "assets": "", "moviePath": "", "mode" : "<?= $mode ?>", "movie": "<?= $movie ?>", "scene": "<?= $scene ?>", "vars":vars <?= $userlogin ?>} });
 		</script>
 		<?php
 			// end body plugin area
