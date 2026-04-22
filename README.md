@@ -2,6 +2,8 @@
 
 TilBuci is a free, open source tool to create interactive content. From a visual web interface, you can gather your media, texts, and all content in the form of interactive "movies" that can be exported as websites, embedded via iframes, made available as PWA apps or even as mobile and desktop applications.
 
+[![Welcome to TilBuci!](https://github.com/user-attachments/assets/631b6793-4fec-47ba-9d5e-438c43f2e32d)](https://www.youtube.com/watch?v=VjGJaG-YF_I)
+
 ## Easy to use graphic interface
 
 Use a drag-and-drop interface to bring your ideas to life.
