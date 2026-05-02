@@ -109,6 +109,11 @@ class MovieData extends DefBase {
     public var acstart:String;
 
     /**
+        all scenes initial actions
+    **/
+    public var scstart:String;
+
+    /**
         movie tags
     **/
     public var tags:Array<String>;
@@ -225,6 +230,7 @@ class MovieData extends DefBase {
         this.vsgroups = [ ];
         this.start = '';
         this.acstart = '';
+        this.scstart = '';
         this.tags = [ ];
         this.time = 1;
         this.origin = 'center';
@@ -317,6 +323,8 @@ class MovieData extends DefBase {
             this.actions = data['actions'];
             this.theme = data['theme'];
             // optional fields
+            if (data.exists('scstart')) this.scstart = data['scstart'];
+                else this.scstart = '';
             if (data.exists('fallback')) this.fallback = data['fallback'];
                 else this.fallback = '';
             if (data.exists('identify')) this.identify = data['identify'];
@@ -502,6 +510,7 @@ class MovieData extends DefBase {
             copyleft: this.copyleft, 
             start: this.start, 
             acstart: this.acstart, 
+            scstart: this.scstart,
             description: this.description, 
             favicon: this.favicon, 
             key: this.key, 
@@ -540,6 +549,7 @@ class MovieData extends DefBase {
         this.image = null;
         this.start = null;
         this.acstart = null;
+        this.scstart = null;
         while (this.tags.length > 0) this.tags.shift();
         this.tags = null;
         this.screen.kill();

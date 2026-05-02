@@ -3033,7 +3033,6 @@ class ScriptParser {
                         return (true);
                     case 'accessibility.setshader':
                         if (param.length >= 1) {
-                            trace ('param ok');
                             GlobalPlayer.currentShader = 0;
                             switch (this.parseString(param[0])) {
                                 case 'deuteranotopia': GlobalPlayer.currentShader = 1;
@@ -3417,6 +3416,20 @@ class ScriptParser {
 
                     // boolean conditions
                     case 'if.bool':
+                        if ((param.length > 0) && Reflect.hasField(inf, 'then')) {
+                            if (this.parseBool(param[0])) {
+                                return (this.run(Reflect.field(inf, 'then'), true));
+                            } else {
+                                if (Reflect.hasField(inf, 'else')) {
+                                    return (this.run(Reflect.field(inf, 'else'), true));
+                                } else {
+                                    return (true);
+                                }
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'if.boolequal':
                         if ((param.length > 0) && Reflect.hasField(inf, 'then')) {
                             if (this.parseBool(param[0])) {
                                 return (this.run(Reflect.field(inf, 'then'), true));

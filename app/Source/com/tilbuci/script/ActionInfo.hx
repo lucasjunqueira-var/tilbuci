@@ -121,8 +121,11 @@ class ActionInfo {
                     { t: 'b', n: Global.ln.get('acinfo-boolset-p2'), v: '' }
                 ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-ifbool'), a: 'if.bool', p: [
-                    { t: 'b', n: Global.ln.get('acinfo-ifbool-p1'), v: '' }, 
-                    { t: 'b', n: Global.ln.get('acinfo-ifbool-p2'), v: '' }
+                    { t: 'b', n: Global.ln.get('acinfo-ifbool-p1'), v: '' }
+                ], e: [ 'then', 'else' ] }, 
+                { n: Global.ln.get('acinfo-ifboolequal'), a: 'if.boolequal', p: [
+                    { t: 'b', n: Global.ln.get('acinfo-ifboolequal-p1'), v: '' }, 
+                    { t: 'b', n: Global.ln.get('acinfo-ifboolequal-p2'), v: '' }
                 ], e: [ 'then', 'else' ] }, 
                 { n: Global.ln.get('acinfo-boolsetinverse'), a: 'bool.setinverse', p: [
                     { t: 's', n: Global.ln.get('acinfo-boolsetinverse-p1'), v: '' }, 

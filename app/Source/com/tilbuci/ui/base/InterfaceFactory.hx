@@ -7,6 +7,7 @@
  package com.tilbuci.ui.base;
 
 /** OPENFL **/
+import com.tilbuci.statictools.Assets;
 import com.tilbuci.ui.component.IDLabel;
 import com.tilbuci.ui.component.IDTextInput;
 import com.tilbuci.ui.component.IDPopUpListView;
@@ -635,7 +636,8 @@ class InterfaceFactory {
                 itemRenderer.text = state.text;
                 itemRenderer.secondaryText = state.data.user;
                 var loader = cast(itemRenderer.icon, AssetLoader);
-                loader.source = state.data.asset;
+                //loader.source = state.data.asset;
+                loader.source = Assets.finalPath + state.data.asset + '.png';
                 for (ch in 0...itemRenderer.numChildren) {
                     if (Reflect.hasField(itemRenderer.getChildAt(ch), 'doubleClickEnabled')) {
                         Reflect.setField(itemRenderer.getChildAt(ch), 'doubleClickEnabled', true);

@@ -24,6 +24,8 @@ class Assets extends EventDispatcher {
 
     public static var texts:Map<String, String> = [ ];
 
+    public static var finalPath:String = '';
+
     private var _edAssets:Array<String> = [
         'buci',
         'tilBuci01',
@@ -191,6 +193,7 @@ class Assets extends EventDispatcher {
 
         if (Reflect.hasField(Lib.current.stage.application.window.parameters, 'assets')) {
             this._path = Lib.current.stage.application.window.parameters.assets + this._path;
+            Assets.finalPath = this._path;
             for (i in 0...this._realTexts.length) {
                 this._realTexts[i].path = Lib.current.stage.application.window.parameters.assets + this._realTexts[i].path;
             }

@@ -6,6 +6,7 @@
 
  package com.tilbuci.contraptions;
 
+import haxe.Timer;
 import com.tilbuci.shaders.UnfocusShader;
 import openfl.filters.ShaderFilter;
 import com.tilbuci.player.MovieArea;
@@ -81,6 +82,7 @@ class Contraptions {
     // scene loading icon
     private var _loadingOverlay:Sprite;
     private var _loadingIc:SpritemapImage;
+    private var _loadingTimer:Timer;
 
     // image zoom
     private var _zoomOverlay:Sprite;
@@ -805,17 +807,39 @@ class Contraptions {
 
     public function showLoadingIc():Void{
         if (this._loadingIc.mediaLoaded) {
-            this._loadingIc.visible = true;
+            //this._loadingIc.visible = true;
             this._loadingOverlay.visible = true;
+            if (this._loadingTimer != null) {
+                try {
+                    this._loadingTimer.stop();
+                } catch (e) { }
+                this._loadingTimer = null;
+            }
+            this._loadingTimer = new Timer(500);
+            this._loadingTimer.run = this.showLoading;
         } else {
             this._loadingIc.visible = false;
             this._loadingOverlay.visible = false;
         }
     }
 
+    private function showLoading():Void {
+        try {
+            this._loadingTimer.stop();
+        } catch (e) { }
+        this._loadingTimer = null;
+        if (this._loadingOverlay.visible) this._loadingIc.visible = true;
+    }
+
     public function hideLoadingIc():Void{
         this._loadingIc.visible = false;
         this._loadingOverlay.visible = false;
+        if (this._loadingTimer != null) {
+            try {
+                this._loadingTimer.stop();
+            } catch (e) { }
+            this._loadingTimer = null;
+        }
     }
 
     private function onLoadingIc(ok:Bool):Void

@@ -766,18 +766,20 @@ class MovieArea extends Sprite {
     public function playPause():Void {
         if (this._playing) {
             // pausing all interpolations
-            Actuate.pauseAll();
-            this._playing = false;
+            //Actuate.pauseAll();
+            //this._playing = false;
+            this.pause();
         } else {
             // resume interpolations
-            Actuate.resumeAll();
+            //Actuate.resumeAll();
             // paused between two keyframes? load the next one
-            if (this._kftoLoad >= 0) {
+            //if (this._kftoLoad >= 0) {
                 // load next keyframe
-                this._kftoLoad = -1;
-                this.loadKeyframe(GlobalPlayer.movie.scene.keyframes[this._currentKf], this._currentKf);
-            }
-            this._playing = true;
+            //    this._kftoLoad = -1;
+            //    this.loadKeyframe(GlobalPlayer.movie.scene.keyframes[this._currentKf], this._currentKf);
+            //}
+            //this._playing = true;
+            this.play();
         }
     }
 

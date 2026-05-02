@@ -123,6 +123,20 @@ class Movie extends BaseClass
 		$this->loaded = false;
 		$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id'=>$id]);
 		if (count($ck) > 0) {
+            // start actions
+            $mvstart = '';
+            $scstart = '';
+            if (!(is_null($ck[0]['mv_acstart']) || $ck[0]['mv_acstart'] == '')) {
+                if (strpos($ck[0]['mv_acstart'], ',') !== false) {
+                    $arac = explode(',', $ck[0]['mv_acstart']);
+                    if (count($arac) == 2) {
+                        $mvstart = ($arac[0] == '') ? '' : gzdecode(base64_decode($arac[0]));
+                        $scstart = ($arac[1] == '') ? '' : gzdecode(base64_decode($arac[1]));
+                    }
+                } else {
+                    $mvstart = gzdecode(base64_decode($ck[0]['mv_acstart']));
+                }
+            }
 			// basic movie information
 			$this->info = [
 				'version' => $this->version, 
@@ -140,7 +154,8 @@ class Movie extends BaseClass
                 'identify' => $ck[0]['mv_identify'] == '1' ? true : false, 
                 'vsgroups' => ((is_null($ck[0]['mv_vsgroups']) || ($ck[0]['mv_vsgroups'] == '')) ? [ ] : explode(',', $ck[0]['mv_vsgroups'])),
 				'start' => $ck[0]['mv_start'], 
-				'acstart' => (is_null($ck[0]['mv_acstart']) || $ck[0]['mv_acstart'] == '') ? '' : gzdecode(base64_decode($ck[0]['mv_acstart'])), 
+				'acstart' => $mvstart, 
+                'scstart' => $scstart, 
 				'screen' => [
 					'big'=> (int)$ck[0]['mv_screenbig'], 
 					'small'=> (int)$ck[0]['mv_screensmall'], 
@@ -531,8 +546,11 @@ class Movie extends BaseClass
 						break;
 					case 'acstart':
 						$cols[] = 'mv_acstart=:acs';
-						$vals[':acs'] = base64_encode(gzencode($v));
+                        if (isset($data['scstart'])) $scstart = $data['scstart'];
+                            else $scstart = '';
+						$vals[':acs'] = base64_encode(gzencode($v)) . ',' . base64_encode(gzencode($scstart));
 						$updt['acstart'] = $v;
+                        $updt['scstart'] = isset($data['scstart']) ? $data['scstart'] : '';
 						break;
 					case 'actions':
 						$cols[] = 'mv_actions=:ac';
@@ -1345,6 +1363,7 @@ class Movie extends BaseClass
                                         $json['vsgroups'] = [ ];
                                         if (!isset($json['start'])) $json['start'] = '';
                                         if (!isset($json['acstart'])) $json['acstart'] = '';
+                                        if (!isset($json['scstart'])) $json['scstart'] = '';
                                         if (!isset($json['screen']['bgcolor'])) $json['screen']['bgcolor'] = '0x000000';
                                         if (!isset($json['screen']['type'])) $json['screen']['type'] = 'both';
                                         if (!isset($json['time'])) $json['time'] = 1;
@@ -1383,7 +1402,7 @@ class Movie extends BaseClass
                                             ':mv_image' => $json['image'], 
                                             ':mv_key' => $json['key'], 
                                             ':mv_start' => $json['start'], 
-                                            ':mv_acstart' => $json['acstart'] == '' ? '' : base64_encode(gzencode($json['acstart'])), 
+                                            ':mv_acstart' => ($json['acstart'] == '' ? '' : base64_encode(gzencode($json['acstart']))) . ',' . ($json['scstart'] == '' ? '' : base64_encode(gzencode($json['scstart']))), 
                                             ':mv_screenbig' => $json['screen']['big'], 
                                             ':mv_screensmall' => $json['screen']['small'], 
                                             ':mv_screentype' => $json['screen']['type'], 
@@ -1491,7 +1510,7 @@ class Movie extends BaseClass
                                                             ':sc_nout' => $json['navigation']['nout'], 
                                                             ':sc_collections' => implode(',', $json['collections']), 
                                                             ':sc_loop' => $json['loop'], 
-                                                            ':sc_acstart' => $json['acstart'] == '' ? '' : base64_encode(gzencode($json['acstart'])), 
+                                                            ':sc_acstart' => ($json['acstart'] == '' ? '' : base64_encode(gzencode($json['acstart']))), 
                                                             ':sc_ackeyframes' => implode(',', $ackeyframes), 
                                                             ':sc_user' => $user, 
                                                             ':sc_date' => date('Y-m-d H:i:s'), 
