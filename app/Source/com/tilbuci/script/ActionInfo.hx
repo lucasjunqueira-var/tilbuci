@@ -945,6 +945,16 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-systemopenembed'), a: 'system.openembed', p: [
                     { t: 's', n: Global.ln.get('acinfo-systemopenembed-p1'), v: '' }, 
                 ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-systemsembedshow'), a: 'system.embedshow', p: [
+                    { t: 's', n: Global.ln.get('acinfo-systemsembedshow-p1'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-systemsembedshow-p2'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-systemsembedshow-p3'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-systemsembedshow-p4'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-systemsembedshow-p5'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-systemembedtab'), a: 'system.embedtab', p: [
+                    { t: 's', n: Global.ln.get('acinfo-systemembedtab-p1'), v: '' }, 
+                ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-systemcloseembed'), a: 'system.closeembed', p: [ ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-systemsembedplace'), a: 'system.embedplace', p: [
                     { t: 'f', n: Global.ln.get('acinfo-systemsembedplace-p1'), v: '' }, 
@@ -983,6 +993,13 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-systemcalljs'), a: 'system.calljs', p: [
                     { t: 's', n: Global.ln.get('acinfo-systemcalljs-p1'), v: '' }, 
                 ], e: [ ] },
+
+                { n: Global.ln.get('acinfo-systemgetqr'), a: 'system.getqr', p: [
+                    { t: 'i', n: Global.ln.get('acinfo-systemgetqr-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-systemgetqr-p2'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-systemgetqr-p3'), v: '' }
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-systemcloseqr'), a: 'system.closeqr', p: [ ], e: [ ] }, 
 
                 { n: Global.ln.get('acinfo-cssset'), a: 'css.set', p: [
                     { t: 's', n: Global.ln.get('acinfo-cssset-p1'), v: '' }, 

@@ -185,7 +185,9 @@ class ScriptParser {
     /**
         Constructor.
     **/
-    public function new() { }
+    public function new() {
+        
+    }
 
     /**
         Gets a variable type array reference.
@@ -824,6 +826,13 @@ class ScriptParser {
     }
 
     /**
+        Expose the run action method to javascript.
+    **/
+    public function TB_runAction(ac:String):Bool {
+        return (this.run(ac));
+    }
+
+    /**
         Runs actions on a JSON.
         @param  src json-encoded string or parsed object
         @param  parsed  is the first param an already-parsed json?
@@ -1044,7 +1053,7 @@ class ScriptParser {
                            return (true);
                     case 'system.openurl':
                         if (param.length > 0) {
-                            var req:URLRequest = new URLRequest(param[0]);
+                            var req:URLRequest = new URLRequest(this.parseString(param[0]));
                             req.method = 'GET';
                             Lib.getURL(req);
                             return (true);
@@ -1111,6 +1120,36 @@ class ScriptParser {
                     case 'system.embedreset':
                         ExternEmbed.embed_setfull();
                         return (true);
+                    case 'system.embedshow':
+                        if (param.length >= 5) {
+                            if (GlobalPlayer.mode == Player.MODE_EDITOR) {
+                                return (true);
+                            } else {
+                                var px:Int = Math.round((this.parseInt(param[1]) * GlobalPlayer.area.movieScale) + GlobalPlayer.contentPosition.x);
+                                var py:Int = Math.round((this.parseInt(param[2]) * GlobalPlayer.area.movieScale) + GlobalPlayer.contentPosition.y);
+                                var pw:Int = Math.round(this.parseInt(param[3]) * GlobalPlayer.area.movieScale);
+                                var ph:Int = Math.round(this.parseInt(param[4]) * GlobalPlayer.area.movieScale);
+                                ExternEmbed.embed_setposition(px, py, pw, ph);
+                                #if tilbuciplayer
+                                    ExternEmbed.embed_place('movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
+                                #else
+                                    ExternEmbed.embed_place('../movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
+                                #end                            
+                                return (true);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'system.embedtab':
+                        if (param.length > 0) {
+                            var url:String = GlobalPlayer.base + '/movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html';
+                            var req:URLRequest = new URLRequest(url);
+                            req.method = 'GET';
+                            Lib.getURL(req);
+                            return (true);
+                        } else {
+                            return (false);
+                        }
                     case 'system.quit':
                         #if runtimedesktop
                             return (GlobalPlayer.appQuit());
@@ -1284,6 +1323,30 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
+
+                    case 'system.getqr':
+                        if (param.length >= 3) {
+                            if (ExternBrowser.TBB_callJs('TBQR_start', [ ])) {
+                                GlobalPlayer.contraptions.showQR(
+                                    this.parseInt(param[0]), 
+                                    this.parseInt(param[1]), 
+                                    this.parseInt(param[2])
+                                );
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'system.closeqr':
+                        if (ExternBrowser.TBB_callJs('TBQR_stop', [ ])) {
+                            GlobalPlayer.contraptions.hideQR();
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+
 
                     // runtime actions
                     case 'runtime.quit':
@@ -4623,6 +4686,77 @@ class ScriptParser {
     }
 
     /**
+        Reads a string looking for commands from a QR code.
+        @param  code    the code to parse
+        @return found a valid code?
+    **/
+    public function parseQR(code:String):Bool {
+        var found:Bool = false;
+        var snippet:String = '';
+        var movie:String = '';
+        var scene:String = '';
+        var snstart:Int = code.indexOf('sn=');
+        var snend:Int = -1;
+
+        if (snstart != -1) {
+            snstart += 'sn='.length;
+            snend = code.indexOf('&', snstart);
+            if (snend != -1) {
+                snippet = code.substr(snstart, (snend - snstart));
+            } else {
+                snippet = code.substr(snstart);
+            }
+            if (snippet != '') found = true;
+        }
+
+        snstart = code.indexOf('mv=');
+        if (snstart != -1) {
+            snstart += 'mv='.length;
+            snend = code.indexOf('&', snstart);
+            if (snend != -1) {
+                movie = code.substr(snstart, (snend - snstart));
+            } else {
+                movie = code.substr(snstart);
+            }
+            if (movie != '') found = true;
+        }
+
+        snstart = code.indexOf('sc=');
+        if (snstart != -1) {
+            snstart += 'sc='.length;
+            snend = code.indexOf('&', snstart);
+            if (snend != -1) {
+                scene = code.substr(snstart, (snend - snstart));
+            } else {
+                scene = code.substr(snstart);
+            }
+            if (scene != '') found = true;
+        }
+
+        if (found) {
+            if (movie != GlobalPlayer.movie.mvId) {
+                Reflect.setField(Main, 'scene', scene);
+                Reflect.setField(Main, 'snippet', snippet);
+                GlobalPlayer.contraptions.removeContraptions(true);
+                GlobalPlayer.movie.loadMovie(movie);
+            } else {
+                if (scene != GlobalPlayer.movie.scId) {
+                    Reflect.setField(Main, 'snippet', snippet);
+                    GlobalPlayer.movie.loadScene(scene);
+                } else {
+                    if (snippet != '') {
+                        GlobalPlayer.parser.run('{ "ac": "run", "param": [ "' + snippet + '" ] }');
+                    }
+                }
+            }
+        }
+
+        trace ('qr', movie, scene, snippet);
+
+        return (found);
+    }
+
+    /**
         Gets a value object for saving.
         @param  name    the value name (starting with type, like "S:", "F:", "I:" or "B:")
         @return the value object or null if not found
@@ -4872,6 +5006,28 @@ class ScriptParser {
     @:expose('tilbuci_runaction')
     public static function tilbuci_runaction(action:String):Bool {
         return (GlobalPlayer.parser.run(action));
+    }
+
+    /**
+        Exposed function to receive a qr code reading.
+    **/
+    @:expose('tilbuci_qrcodeget')
+    public static function tilbuci_qrcodeget(qrtext:String):Void {
+        if (GlobalPlayer.parser.parseQR(qrtext)) {
+            if (ExternBrowser.TBB_callJs('TBQR_stop', [ ])) {
+                GlobalPlayer.contraptions.hideQR();
+            } else {
+                trace ('sem qr stop');
+            }
+        }
+    }
+
+    /**
+        Exposed function to receive a qr code reading image.
+    **/
+    @:expose('tilbuci_qrcodegetimage')
+    public static function tilbuci_qrcodegetimage(base64:String):Void {
+        GlobalPlayer.contraptions.updateQR(base64);
     }
     #end
 }

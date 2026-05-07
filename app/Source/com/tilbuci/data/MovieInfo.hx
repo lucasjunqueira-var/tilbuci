@@ -408,9 +408,18 @@ class MovieInfo {
     **/
     private function onColLoad():Void {
         this._colLoad--;
+        // all scene collection avalible = scene loaded!
         if (this._colLoad <= 0) {
             this._colLoad = 0;
             this._actions['scene'](this.scLoaded);
+            // initial snippet to run?
+            if (Reflect.hasField(Main, 'snippet')) {
+                var str:String = cast Reflect.field(Main, 'snippet');
+                if (str != '') {
+                    GlobalPlayer.parser.run('{ "ac": "run", "param": [ "' + str + '" ] }');
+                }
+                Reflect.setField(Main, 'snippet', '');
+            }
         }
     }
 

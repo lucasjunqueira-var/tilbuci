@@ -179,6 +179,8 @@ class MovieArea extends Sprite {
     /**
         current movie display scale
     **/
+    public var movieScale(get, null):Float;
+    public function get_movieScale():Float { return (this._scale); }
     private var _scale:Float = 1;
 
     /**

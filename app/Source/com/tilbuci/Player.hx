@@ -665,7 +665,7 @@ class Player extends Sprite {
         }
 
         // global scene start actions
-        if (GlobalPlayer.movie.data.scstart != '') GlobalPlayer.parser.run(GlobalPlayer.movie.data.scstart);
+        if ((GlobalPlayer.movie.data.scstart != '') && (GlobalPlayer.mode != Player.MODE_EDITOR)) GlobalPlayer.parser.run(GlobalPlayer.movie.data.scstart);
 
         // scene start actions
         if ((GlobalPlayer.movie.scene.acstart != '') && (GlobalPlayer.mode != Player.MODE_EDITOR)) GlobalPlayer.parser.run(GlobalPlayer.movie.scene.acstart);
