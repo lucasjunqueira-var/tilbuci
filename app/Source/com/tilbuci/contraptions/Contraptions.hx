@@ -1160,6 +1160,7 @@ class Contraptions {
 
     public function hideInterface(nm:String):Void {
         if (this.interf.exists(nm)) {
+            this.interf[nm].stopPlayback();
             this.interf[nm].remove();
         }
         if (this._interfaceOverlay.numChildren == 0) this._interfaceOverlay.visible = false;
@@ -1235,6 +1236,22 @@ class Contraptions {
     public function playInterface(nm:String):Bool {
         if (this.interf.exists(nm)) {
             return (this.interf[nm].playMap());
+        } else {
+            return (false);
+        }
+    }
+
+    public function instanceInterface(nm:String, inst:String):Bool {
+        if (this.interf.exists(nm)) {
+            return (this.interf[nm].connectInstance(inst));
+        } else {
+            return (false);
+        }
+    }
+
+    public function sceneInterface(nm:String):Bool {
+        if (this.interf.exists(nm)) {
+            return (this.interf[nm].connectScene());
         } else {
             return (false);
         }

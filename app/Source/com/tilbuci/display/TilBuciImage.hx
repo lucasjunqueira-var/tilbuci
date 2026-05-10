@@ -351,6 +351,20 @@ class TilBuciImage extends Sprite {
         }
     }
 
+    public function getTotalTime():Int {
+        if (this._useTimer) {
+            return (this._totalTime);
+        } else {
+            if (this._currentType == 'video') {
+                return (this._video.getTotalTime());
+            } else if (this._currentType == 'audio') {
+                return (this._audio.getTotalTime());
+            } else {
+                return (1);
+            }
+        }
+    }
+
     /**
         Gets this instance current float properties.
         @param  name    the property name
@@ -446,6 +460,7 @@ class TilBuciImage extends Sprite {
             }
         } else {
             if (this._currentType == 'video') {
+                trace ('video play');
                 this._video.play();
             } else if (this._currentType == 'audio') {
                 this._audio.play();

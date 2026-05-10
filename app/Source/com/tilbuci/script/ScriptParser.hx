@@ -1641,6 +1641,18 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
+                    case 'contraption.interfacepbinstance':
+                        if (param.length > 1) {
+                            return(GlobalPlayer.contraptions.instanceInterface(this.parseString(param[0]), this.parseString(param[1])));
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.interfacepbscene':
+                        if (param.length > 0) {
+                            return(GlobalPlayer.contraptions.sceneInterface(this.parseString(param[0])));
+                        } else {
+                            return (false);
+                        }
 
                     // narrative actions
                     case 'inventory.show':
@@ -4706,7 +4718,10 @@ class ScriptParser {
             } else {
                 snippet = code.substr(snstart);
             }
-            if (snippet != '') found = true;
+            if (snippet != '') {
+                snippet = StringTools.urlDecode(snippet);
+                found = true;
+            }
         }
 
         snstart = code.indexOf('mv=');
@@ -4734,13 +4749,13 @@ class ScriptParser {
         }
 
         if (found) {
-            if (movie != GlobalPlayer.movie.mvId) {
+            if ((movie != GlobalPlayer.movie.mvId) && (movie != '')) {
                 Reflect.setField(Main, 'scene', scene);
                 Reflect.setField(Main, 'snippet', snippet);
                 GlobalPlayer.contraptions.removeContraptions(true);
                 GlobalPlayer.movie.loadMovie(movie);
             } else {
-                if (scene != GlobalPlayer.movie.scId) {
+                if ((scene != GlobalPlayer.movie.scId) && (scene != '')) {
                     Reflect.setField(Main, 'snippet', snippet);
                     GlobalPlayer.movie.loadScene(scene);
                 } else {
@@ -4750,9 +4765,6 @@ class ScriptParser {
                 }
             }
         }
-
-        trace ('qr', movie, scene, snippet);
-
         return (found);
     }
 

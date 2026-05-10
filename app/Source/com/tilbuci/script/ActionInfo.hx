@@ -1146,6 +1146,13 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-interfpause'), a: 'contraption.interfaceanimpause', p: [
                     { t: 's', n: Global.ln.get('acinfo-interfpause-p1'), v: '' }, 
                 ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-interfpbinst'), a: 'contraption.interfacepbinstance', p: [
+                    { t: 's', n: Global.ln.get('acinfo-interfpbinst-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-interfpbinst-p2'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-interfpbscene'), a: 'contraption.interfacepbscene', p: [
+                    { t: 's', n: Global.ln.get('acinfo-interfpbscene-p1'), v: '' }, 
+                ], e: [ ] }, 
             ]
         ));
 

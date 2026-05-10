@@ -938,7 +938,7 @@ ApplicationMain.main = function() {
 };
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
-	app.meta.h["build"] = "121";
+	app.meta.h["build"] = "122";
 	app.meta.h["company"] = "VAR";
 	app.meta.h["file"] = "TilBuci";
 	app.meta.h["name"] = "TilBuci";
@@ -7977,6 +7977,10 @@ com_tilbuci_Editor.prototype = $extend(feathers_controls_Drawer.prototype,{
 			this.set_opened(false);
 			this.showWindow("propmovie");
 			break;
+		case "qr":
+			this.set_opened(false);
+			this.showWindow("qr");
+			break;
 		case "remove":
 			this.set_opened(false);
 			this.showWindow("removemovie");
@@ -8648,6 +8652,45 @@ com_tilbuci_Editor.prototype = $extend(feathers_controls_Drawer.prototype,{
 			var _g = new haxe_ds_StringMap();
 			_g.h["type"] = "picture";
 			_g.h["call"] = "intimage";
+			var v = _g;
+			this1.h["Media/Single"] = v;
+			this.showWindow("mediapicture");
+			var tmp = this._windows.h["mediapicture"];
+			var _g = new haxe_ds_StringMap();
+			_g.h["mode"] = "single";
+			tmp.action("setmode",_g);
+			break;
+		case "intpausegr":
+			var this1 = com_tilbuci_data_Global.temp;
+			var _g = new haxe_ds_StringMap();
+			_g.h["type"] = "picture";
+			_g.h["call"] = "intpausegr";
+			var v = _g;
+			this1.h["Media/Single"] = v;
+			this.showWindow("mediapicture");
+			var tmp = this._windows.h["mediapicture"];
+			var _g = new haxe_ds_StringMap();
+			_g.h["mode"] = "single";
+			tmp.action("setmode",_g);
+			break;
+		case "intplaygr":
+			var this1 = com_tilbuci_data_Global.temp;
+			var _g = new haxe_ds_StringMap();
+			_g.h["type"] = "picture";
+			_g.h["call"] = "intplaygr";
+			var v = _g;
+			this1.h["Media/Single"] = v;
+			this.showWindow("mediapicture");
+			var tmp = this._windows.h["mediapicture"];
+			var _g = new haxe_ds_StringMap();
+			_g.h["mode"] = "single";
+			tmp.action("setmode",_g);
+			break;
+		case "intprogress":
+			var this1 = com_tilbuci_data_Global.temp;
+			var _g = new haxe_ds_StringMap();
+			_g.h["type"] = "picture";
+			_g.h["call"] = "intprogress";
 			var v = _g;
 			this1.h["Media/Single"] = v;
 			this.showWindow("mediapicture");
@@ -9597,6 +9640,30 @@ com_tilbuci_Editor.prototype = $extend(feathers_controls_Drawer.prototype,{
 					_g.h["name"] = data.h["file"];
 					tmp.action("intimage",_g);
 					break;
+				case "intpausegr":
+					var tmp = this._windows.h["interfaces"];
+					var _g = new haxe_ds_StringMap();
+					_g.h["file"] = data.h["path"] + data.h["file"];
+					_g.h["type"] = data.h["type"];
+					_g.h["name"] = data.h["file"];
+					tmp.action("intpausegr",_g);
+					break;
+				case "intplaygr":
+					var tmp = this._windows.h["interfaces"];
+					var _g = new haxe_ds_StringMap();
+					_g.h["file"] = data.h["path"] + data.h["file"];
+					_g.h["type"] = data.h["type"];
+					_g.h["name"] = data.h["file"];
+					tmp.action("intplaygr",_g);
+					break;
+				case "intprogress":
+					var tmp = this._windows.h["interfaces"];
+					var _g = new haxe_ds_StringMap();
+					_g.h["file"] = data.h["path"] + data.h["file"];
+					_g.h["type"] = data.h["type"];
+					_g.h["name"] = data.h["file"];
+					tmp.action("intprogress",_g);
+					break;
 				case "inventclose":
 					var tmp = this._windows.h["narrative-inventory"];
 					var _g = new haxe_ds_StringMap();
@@ -10175,6 +10242,11 @@ com_tilbuci_Editor.prototype = $extend(feathers_controls_Drawer.prototype,{
 				var this1 = this._windows;
 				var v = new com_tilbuci_ui_window_scene_WindowSceneProperties($bind(this,this.actionScene));
 				this1.h["propscene"] = v;
+				break;
+			case "qr":
+				var this1 = this._windows;
+				var v = new com_tilbuci_ui_window_movie_WindowMovieQR($bind(this,this.actionMovie));
+				this1.h["qr"] = v;
 				break;
 			case "removemovie":
 				var this1 = this._windows;
@@ -13954,6 +14026,7 @@ com_tilbuci_contraptions_Contraptions.prototype = {
 	}
 	,hideInterface: function(nm) {
 		if(Object.prototype.hasOwnProperty.call(this.interf.h,nm)) {
+			this.interf.h[nm].stopPlayback();
 			this.interf.h[nm].remove();
 		}
 		if(this._interfaceOverlay.get_numChildren() == 0) {
@@ -14032,6 +14105,20 @@ com_tilbuci_contraptions_Contraptions.prototype = {
 	,playInterface: function(nm) {
 		if(Object.prototype.hasOwnProperty.call(this.interf.h,nm)) {
 			return this.interf.h[nm].playMap();
+		} else {
+			return false;
+		}
+	}
+	,instanceInterface: function(nm,inst) {
+		if(Object.prototype.hasOwnProperty.call(this.interf.h,nm)) {
+			return this.interf.h[nm].connectInstance(inst);
+		} else {
+			return false;
+		}
+	}
+	,sceneInterface: function(nm) {
+		if(Object.prototype.hasOwnProperty.call(this.interf.h,nm)) {
+			return this.interf.h[nm].connectScene();
 		} else {
 			return false;
 		}
@@ -14756,11 +14843,25 @@ com_tilbuci_contraptions_FormContraption.prototype = $extend(openfl_display_Spri
 	,__class__: com_tilbuci_contraptions_FormContraption
 });
 var com_tilbuci_contraptions_InterfaceContraption = function(data) {
+	this._pbscene = false;
+	this._useProgress = false;
+	this._usePlayback = false;
 	this._graphics = new haxe_ds_StringMap();
 	this._created = false;
 	this.elem = [];
 	this.ok = false;
 	openfl_display_Sprite.call(this);
+	this._progress = new openfl_display_Sprite();
+	this._progress.set_visible(false);
+	this._prgraphic = new com_tilbuci_display_PictureImage();
+	this._prgraphic.set_visible(true);
+	this._prmask = new openfl_display_Shape();
+	this._prmask.get_graphics().beginFill(0);
+	this._prmask.get_graphics().drawRect(0,0,32,32);
+	this._prmask.get_graphics().endFill();
+	this._progress.addChild(this._prgraphic);
+	this._progress.addChild(this._prmask);
+	this._prgraphic.set_mask(this._prmask);
 	if(data != null) {
 		this.load(data);
 	}
@@ -14776,10 +14877,29 @@ com_tilbuci_contraptions_InterfaceContraption.prototype = $extend(openfl_display
 	,_graphics: null
 	,_smap: null
 	,_text: null
+	,_progress: null
+	,_prgraphic: null
+	,_prmask: null
+	,_usePlayback: null
+	,_useProgress: null
+	,_pbtimer: null
+	,_pbinst: null
+	,_pbscene: null
 	,start: function() {
 		if(this.ok) {
 			if(!this._created) {
 				var imnum = 1;
+				this._usePlayback = false;
+				this._useProgress = false;
+				this._pbinst = null;
+				this._pbscene = false;
+				if(this._pbtimer != null) {
+					try {
+						this._pbtimer.stop();
+					} catch( _g ) {
+					}
+				}
+				this._pbtimer = null;
 				var _g = 0;
 				var _g1 = this.elem;
 				while(_g < _g1.length) {
@@ -14794,6 +14914,49 @@ com_tilbuci_contraptions_InterfaceContraption.prototype = $extend(openfl_display
 							pi.load(el.file);
 							pi.set_visible(true);
 							this._graphics.h["background"] = pi;
+						}
+						break;
+					case "playback":
+						if(el.file != "" && el.options != "") {
+							var plfile = { play : "", pause : "", progress : ""};
+							plfile = com_tilbuci_statictools_StringStatic.jsonParse(el.file);
+							if(plfile == false) {
+								plfile = { play : "", pause : "", progress : ""};
+							}
+							var plopt = { btx : 0, bty : 0, prx : 0, pry : 0, txt : false};
+							plopt = com_tilbuci_statictools_StringStatic.jsonParse(el.options);
+							if(plopt == false) {
+								plopt = { btx : 0, bty : 0, prx : 0, pry : 0, txt : false};
+							}
+							if(plfile.play != "" && plfile.pause != "") {
+								this._usePlayback = true;
+								pi = new com_tilbuci_display_PictureImage();
+								pi.load(plfile.play);
+								pi.set_visible(true);
+								pi.extraInfo.push("playback-play");
+								pi.addEventListener("click",$bind(this,this.onClick));
+								pi.addEventListener("mouseOver",$bind(this,this.onOver));
+								pi.addEventListener("mouseOut",$bind(this,this.onOut));
+								pi.set_x(plopt.btx);
+								pi.set_y(plopt.bty);
+								this._graphics.h["plplay"] = pi;
+								pi = new com_tilbuci_display_PictureImage();
+								pi.load(plfile.pause);
+								pi.set_visible(false);
+								pi.extraInfo.push("playback-pause");
+								pi.addEventListener("click",$bind(this,this.onClick));
+								pi.addEventListener("mouseOver",$bind(this,this.onOver));
+								pi.addEventListener("mouseOut",$bind(this,this.onOut));
+								pi.set_x(plopt.btx);
+								pi.set_y(plopt.bty);
+								this._graphics.h["plpause"] = pi;
+								if(plfile.progress != "") {
+									this._useProgress = true;
+									this._prgraphic.load(plfile.progress);
+									this._progress.set_x(plopt.prx);
+									this._progress.set_y(plopt.pry);
+								}
+							}
 						}
 						break;
 					case "spritemap":
@@ -14872,6 +15035,9 @@ com_tilbuci_contraptions_InterfaceContraption.prototype = $extend(openfl_display
 				if(this._text != null) {
 					this.addChild(this._text);
 				}
+				if(this._useProgress) {
+					this.addChild(this._progress);
+				}
 			}
 			this._created = true;
 			return true;
@@ -14891,14 +15057,32 @@ com_tilbuci_contraptions_InterfaceContraption.prototype = $extend(openfl_display
 			if(!ret) {
 				if(k.hasEventListener("click") && k.extraInfo.length > 0) {
 					if(obj.hitTestObject(k)) {
-						var this1 = com_tilbuci_data_GlobalPlayer.mvActions;
-						var key = com_tilbuci_data_GlobalPlayer.parser.parseString(k.extraInfo[0]);
-						if(Object.prototype.hasOwnProperty.call(this1.h,key)) {
-							var tmp = com_tilbuci_data_GlobalPlayer.parser;
-							var this2 = com_tilbuci_data_GlobalPlayer.mvActions;
-							var key1 = com_tilbuci_data_GlobalPlayer.parser.parseString(k.extraInfo[0]);
-							tmp.run(this2.h[key1]);
-							ret = true;
+						if(k.extraInfo[0] == "playback-play") {
+							if(this._pbinst != null) {
+								this._pbinst.play();
+							} else if(this._pbscene) {
+								com_tilbuci_data_GlobalPlayer.area.play();
+							}
+							this._graphics.h["plplay"].set_visible(false);
+							this._graphics.h["plpause"].set_visible(true);
+						} else if(k.extraInfo[0] == "playback-pause") {
+							if(this._pbinst != null) {
+								this._pbinst.pause();
+							} else if(this._pbscene) {
+								com_tilbuci_data_GlobalPlayer.area.pause();
+							}
+							this._graphics.h["plplay"].set_visible(true);
+							this._graphics.h["plpause"].set_visible(false);
+						} else {
+							var this1 = com_tilbuci_data_GlobalPlayer.mvActions;
+							var key = com_tilbuci_data_GlobalPlayer.parser.parseString(k.extraInfo[0]);
+							if(Object.prototype.hasOwnProperty.call(this1.h,key)) {
+								var tmp = com_tilbuci_data_GlobalPlayer.parser;
+								var this2 = com_tilbuci_data_GlobalPlayer.mvActions;
+								var key1 = com_tilbuci_data_GlobalPlayer.parser.parseString(k.extraInfo[0]);
+								tmp.run(this2.h[key1]);
+								ret = true;
+							}
 						}
 					}
 				}
@@ -14967,6 +15151,22 @@ com_tilbuci_contraptions_InterfaceContraption.prototype = $extend(openfl_display
 			}
 		}
 		this._graphics = null;
+		this._progress.removeChildren();
+		this._progress = null;
+		this._prgraphic.set_mask(null);
+		this._prgraphic.kill();
+		this._prgraphic = null;
+		this._prmask.get_graphics().clear();
+		this._prmask = null;
+		this._pbinst = null;
+		this._pbscene = false;
+		if(this._pbtimer != null) {
+			try {
+				this._pbtimer.stop();
+			} catch( _g ) {
+			}
+		}
+		this._pbtimer = null;
 	}
 	,toObject: function() {
 		return { id : this.id, elem : this.elem};
@@ -15002,17 +15202,126 @@ com_tilbuci_contraptions_InterfaceContraption.prototype = $extend(openfl_display
 			return true;
 		}
 	}
+	,stopPlayback: function() {
+		this._pbinst = null;
+		this._pbscene = false;
+		if(this._pbtimer != null) {
+			try {
+				this._pbtimer.stop();
+			} catch( _g ) {
+			}
+		}
+		this._pbtimer = null;
+	}
+	,connectInstance: function(name) {
+		this._pbinst = null;
+		this._pbscene = false;
+		if(this._pbtimer != null) {
+			try {
+				this._pbtimer.stop();
+			} catch( _g ) {
+			}
+		}
+		this._pbtimer = null;
+		this._progress.set_visible(false);
+		this._graphics.h["plplay"].set_visible(false);
+		this._graphics.h["plpause"].set_visible(false);
+		if(this._usePlayback) {
+			this._pbinst = com_tilbuci_data_GlobalPlayer.area.pickInstance(name);
+			if(this._pbinst == null) {
+				return false;
+			} else {
+				this.checkPlayback();
+				this._pbtimer = new haxe_Timer(1000);
+				this._pbtimer.run = $bind(this,this.updatePlayback);
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+	,connectScene: function() {
+		if(this._pbtimer != null) {
+			try {
+				this._pbtimer.stop();
+			} catch( _g ) {
+			}
+		}
+		this._pbtimer = null;
+		this._pbinst = null;
+		this._pbscene = true;
+		this._pbtimer = new haxe_Timer(1000);
+		this._pbtimer.run = $bind(this,this.updatePlayback);
+		this.checkPlayback();
+		return true;
+	}
+	,checkPlayback: function() {
+		if(this._pbinst != null) {
+			if(this._pbinst.get_playing()) {
+				this._graphics.h["plplay"].set_visible(false);
+				this._graphics.h["plpause"].set_visible(true);
+			} else {
+				this._graphics.h["plplay"].set_visible(true);
+				this._graphics.h["plpause"].set_visible(false);
+			}
+		} else if(this._pbscene) {
+			if(com_tilbuci_data_GlobalPlayer.area.get_playing()) {
+				this._graphics.h["plplay"].set_visible(false);
+				this._graphics.h["plpause"].set_visible(true);
+			} else {
+				this._graphics.h["plplay"].set_visible(true);
+				this._graphics.h["plpause"].set_visible(false);
+			}
+		}
+	}
+	,updatePlayback: function() {
+		if(this._useProgress) {
+			if(this._pbinst != null) {
+				this._prmask.set_height(this._prgraphic.get_height());
+				this._prmask.set_width(this._prgraphic.get_width() * this._pbinst.getTime() / this._pbinst.getTotalTime());
+				this._progress.set_visible(true);
+			} else if(this._pbscene) {
+				haxe_Log.trace("scene",{ fileName : "Source/com/tilbuci/contraptions/InterfaceContraption.hx", lineNumber : 457, className : "com.tilbuci.contraptions.InterfaceContraption", methodName : "updatePlayback", customParams : [com_tilbuci_data_GlobalPlayer.area.get_currentKf() + 1,com_tilbuci_data_GlobalPlayer.movie.scene.keyframes.length]});
+				this._prmask.set_height(this._prgraphic.get_height());
+				this._prmask.set_width(this._prgraphic.get_width() * (com_tilbuci_data_GlobalPlayer.area.get_currentKf() + 1) / com_tilbuci_data_GlobalPlayer.movie.scene.keyframes.length);
+				this._progress.set_visible(true);
+			} else {
+				this._progress.set_visible(false);
+			}
+		} else {
+			this._progress.set_visible(false);
+		}
+		this.checkPlayback();
+	}
 	,onClick: function(evt) {
 		this.onOut(evt);
 		var img = evt.target;
 		if(img.extraInfo.length > 0) {
-			var this1 = com_tilbuci_data_GlobalPlayer.mvActions;
-			var key = com_tilbuci_data_GlobalPlayer.parser.parseString(img.extraInfo[0]);
-			if(Object.prototype.hasOwnProperty.call(this1.h,key)) {
-				var tmp = com_tilbuci_data_GlobalPlayer.parser;
+			if(img.extraInfo[0] == "playback-play") {
+				if(this._pbinst != null) {
+					this._pbinst.play();
+				} else if(this._pbscene) {
+					com_tilbuci_data_GlobalPlayer.area.play();
+				}
+				this._graphics.h["plplay"].set_visible(false);
+				this._graphics.h["plpause"].set_visible(true);
+			} else if(img.extraInfo[0] == "playback-pause") {
+				if(this._pbinst != null) {
+					this._pbinst.pause();
+				} else if(this._pbscene) {
+					com_tilbuci_data_GlobalPlayer.area.pause();
+				}
+				this._graphics.h["plplay"].set_visible(true);
+				this._graphics.h["plpause"].set_visible(false);
+			} else {
 				var this1 = com_tilbuci_data_GlobalPlayer.mvActions;
 				var key = com_tilbuci_data_GlobalPlayer.parser.parseString(img.extraInfo[0]);
-				tmp.run(this1.h[key]);
+				if(Object.prototype.hasOwnProperty.call(this1.h,key)) {
+					var tmp = com_tilbuci_data_GlobalPlayer.parser;
+					var this1 = com_tilbuci_data_GlobalPlayer.mvActions;
+					var key = com_tilbuci_data_GlobalPlayer.parser.parseString(img.extraInfo[0]);
+					tmp.run(this1.h[key]);
+				}
 			}
 		}
 	}
@@ -17856,6 +18165,13 @@ com_tilbuci_display_AudioImage.prototype = $extend(com_tilbuci_display_BaseImage
 			return Math.round(this._channel.get_position() / 1000);
 		} else {
 			return 0;
+		}
+	}
+	,getTotalTime: function() {
+		if(this._loaded) {
+			return Math.round(this._sound.get_length() / 1000);
+		} else {
+			return 1;
 		}
 	}
 	,setTime: function(to) {
@@ -22689,6 +23005,9 @@ com_tilbuci_display_InstanceImage.prototype = $extend(openfl_display_Sprite.prot
 	,getTime: function() {
 		return this._imCurrent.getTime();
 	}
+	,getTotalTime: function() {
+		return this._imCurrent.getTotalTime();
+	}
 	,seek: function(time) {
 		this._imCurrent.seek(time);
 	}
@@ -24972,6 +25291,17 @@ com_tilbuci_display_TilBuciImage.prototype = $extend(openfl_display_Sprite.proto
 			return 0;
 		}
 	}
+	,getTotalTime: function() {
+		if(this._useTimer) {
+			return this._totalTime;
+		} else if(this._currentType == "video") {
+			return this._video.getTotalTime();
+		} else if(this._currentType == "audio") {
+			return this._audio.getTotalTime();
+		} else {
+			return 1;
+		}
+	}
 	,getProp: function(name) {
 		switch(name) {
 		case "fontLeading":
@@ -25051,6 +25381,7 @@ com_tilbuci_display_TilBuciImage.prototype = $extend(openfl_display_Sprite.proto
 				this._timer.run = $bind(this,this.onTimer);
 			}
 		} else if(this._currentType == "video") {
+			haxe_Log.trace("video play",{ fileName : "Source/com/tilbuci/display/TilBuciImage.hx", lineNumber : 463, className : "com.tilbuci.display.TilBuciImage", methodName : "play"});
 			this._video.play();
 		} else if(this._currentType == "audio") {
 			this._audio.play();
@@ -25301,6 +25632,7 @@ com_tilbuci_display_TilBuciImage.prototype = $extend(openfl_display_Sprite.proto
 	,__properties__: $extend(openfl_display_Sprite.prototype.__properties__,{get_currentMedia:"get_currentMedia",get_currentType:"get_currentType",get_playing:"get_playing"})
 });
 var com_tilbuci_display_VideoImage = function(ol,end,ta) {
+	this._duration = 1;
 	this._lasttime = 0;
 	this._current = "";
 	this._loaded = false;
@@ -25343,11 +25675,19 @@ com_tilbuci_display_VideoImage.prototype = $extend(com_tilbuci_display_BaseImage
 	,_current: null
 	,_lasttime: null
 	,_onTimedAc: null
+	,_duration: null
 	,getTime: function() {
 		if(this._loaded) {
 			return Math.round(this._stream.time);
 		} else {
 			return 0;
+		}
+	}
+	,getTotalTime: function() {
+		if(this._loaded) {
+			return this._duration;
+		} else {
+			return 1;
 		}
 	}
 	,setTime: function(to) {
@@ -25358,6 +25698,7 @@ com_tilbuci_display_VideoImage.prototype = $extend(com_tilbuci_display_BaseImage
 	,load: function(media) {
 		media = StringTools.replace(media,com_tilbuci_data_GlobalPlayer.path + "media/video/","");
 		this._lastMedia = media;
+		this._duration = 1;
 		var path = com_tilbuci_data_GlobalPlayer.parser.parsePath(com_tilbuci_data_GlobalPlayer.path + "media/video/" + media);
 		if(com_tilbuci_data_GlobalPlayer.mode == "editor") {
 			this._loaded = false;
@@ -25451,6 +25792,10 @@ com_tilbuci_display_VideoImage.prototype = $extend(com_tilbuci_display_BaseImage
 	,metadataEvent: function(data) {
 		this.oWidth = data.width;
 		this.oHeight = data.height;
+		if(Object.prototype.hasOwnProperty.call(data,"duration")) {
+			var total = data.duration;
+			this._duration = Math.round(total);
+		}
 		if(com_tilbuci_data_GlobalPlayer.mode == "editor") {
 			this._loaded = true;
 			this._bg.set_width(this._video.set_width(this.oWidth = data.width));
@@ -34723,7 +35068,7 @@ var com_tilbuci_script_ActionInfo = function() {
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbsystem-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-run"), a : "run", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-run-p1"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p2"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p3"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p4"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p5"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p6"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p7"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p8"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-snippetsload"), a : "snippets.load", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-snippetsload-p1"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-snippetsunload"), a : "snippets.unload", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-snippetsunload-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemfullscreen"), a : "system.fullscreen", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemopenembed"), a : "system.openembed", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemopenembed-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow"), a : "system.embedshow", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p4"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p5"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemembedtab"), a : "system.embedtab", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemembedtab-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcloseembed"), a : "system.closeembed", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace"), a : "system.embedplace", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemembedreset"), a : "system.embedreset", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemopenurl"), a : "system.openurl", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemopenurl-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcopytext"), a : "system.copytext", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemcopytext-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifhorizontal"), a : "system.ifhorizontal", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifvertical"), a : "system.ifvertical", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifwebsite"), a : "system.ifwebsite", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifpwa"), a : "system.ifpwa", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifpwainstalled"), a : "system.ifpwainstalled", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifdesktop"), a : "system.ifdesktop", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifmobile"), a : "system.ifmobile", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifpublish"), a : "system.ifpublish", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifplayer"), a : "system.ifplayer", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemvisitoringroup"), a : "system.visitoringroup", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemvisitoringroup-p1"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemlogout"), a : "system.logout", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsendevent"), a : "system.sendevent", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemsendevent-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsetkftime"), a : "system.setkftime", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemsetkftime-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcalljs"), a : "system.calljs", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemcalljs-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr"), a : "system.getqr", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcloseqr"), a : "system.closeqr", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-cssset"), a : "css.set", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-cssset-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-cssclear"), a : "css.clear", p : [], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbtimer-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-timerset"), a : "timer.set", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-timerset-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-timerset-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-timerset-p3"), v : ""}], e : ["tick","end"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-timerclear"), a : "timer.clear", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-timerclear-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-timerclearall"), a : "timer.clearall", p : [], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbreplace-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-replaceorigin"), a : "replace.origin", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-replaceorigin-p1"), v : "origins"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-replacesetstring"), a : "replace.setstring", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-replacesetstring-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-replacesetstring-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-replacesetfile"), a : "replace.setfile", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-replacesetfile-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-replacesetfile-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-replaceclearstring"), a : "replace.clearstring", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-replaceclearstring-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-replaceclearfile"), a : "replace.clearfile", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-replaceclearfile-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-replaceclearallstrings"), a : "replace.clearallstrings", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-replaceclearallfiles"), a : "replace.clearallfiles", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifreplacestringset"), a : "if.replacestringset", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifreplacestringset-p1"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifreplacefileset"), a : "if.replacefileset", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifreplacefileset-p1"), v : ""}], e : ["then","else"]}]));
-	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbcontraptions-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-showmessage"), a : "contraption.message", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmessage-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmessage-p2"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmessage-p3"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmessage-p4"), v : ""}], e : ["select"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-hidemessage"), a : "contraption.messagehide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showmenu"), a : "contraption.menu", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p2"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p3"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p4"), v : "placement"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p5"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p6"), v : ""}], e : ["select"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-hidemenu"), a : "contraption.menuhide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showcover"), a : "contraption.cover", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showcover-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hidecover"), a : "contraption.coverhide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showbg"), a : "contraption.background", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showbg-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hidebg"), a : "contraption.backgroundhide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showloading"), a : "contraption.showloading", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hideloading"), a : "contraption.hideloading", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-musicplay"), a : "contraption.musicplay", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-musicplay-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-musicpause"), a : "contraption.musicpause", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-musicstop"), a : "contraption.musicstop", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-musicvolume"), a : "contraption.musicvolume", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-musicvolume-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-soundplay"), a : "contraption.soundplay", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-soundplay-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-soundpause"), a : "contraption.soundpause", p : [{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-soundpause-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-soundstop"), a : "contraption.soundstop", p : [{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-soundstop-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-soundvolume"), a : "contraption.soundvolume", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-soundvolume-p1"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-soundvolume-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showform"), a : "contraption.form", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showform-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showform-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showform-p3"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-setformvalue"), a : "contraption.formvalue", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-setformvalue-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-setformvalue-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper"), a : "contraption.formsetstepper", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper-p3"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hideform"), a : "contraption.formhide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showinterf"), a : "contraption.interface", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showinterf-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showinterf-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showinterf-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hideinterf"), a : "contraption.interfacehide", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-hideinterf-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hideallinterf"), a : "contraption.interfacehideall", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interftext"), a : "contraption.interfacetext", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interftext-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interftext-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interfframe"), a : "contraption.interfaceanimframe", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfframe-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-interfframe-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interfplay"), a : "contraption.interfaceanimplay", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfplay-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interfpause"), a : "contraption.interfaceanimpause", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfpause-p1"), v : ""}], e : []}]));
+	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbcontraptions-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-showmessage"), a : "contraption.message", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmessage-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmessage-p2"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmessage-p3"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmessage-p4"), v : ""}], e : ["select"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-hidemessage"), a : "contraption.messagehide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showmenu"), a : "contraption.menu", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p2"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p3"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p4"), v : "placement"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p5"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p6"), v : ""}], e : ["select"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-hidemenu"), a : "contraption.menuhide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showcover"), a : "contraption.cover", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showcover-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hidecover"), a : "contraption.coverhide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showbg"), a : "contraption.background", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showbg-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hidebg"), a : "contraption.backgroundhide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showloading"), a : "contraption.showloading", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hideloading"), a : "contraption.hideloading", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-musicplay"), a : "contraption.musicplay", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-musicplay-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-musicpause"), a : "contraption.musicpause", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-musicstop"), a : "contraption.musicstop", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-musicvolume"), a : "contraption.musicvolume", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-musicvolume-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-soundplay"), a : "contraption.soundplay", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-soundplay-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-soundpause"), a : "contraption.soundpause", p : [{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-soundpause-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-soundstop"), a : "contraption.soundstop", p : [{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-soundstop-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-soundvolume"), a : "contraption.soundvolume", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-soundvolume-p1"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-soundvolume-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showform"), a : "contraption.form", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showform-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showform-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showform-p3"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-setformvalue"), a : "contraption.formvalue", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-setformvalue-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-setformvalue-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper"), a : "contraption.formsetstepper", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper-p3"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hideform"), a : "contraption.formhide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showinterf"), a : "contraption.interface", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showinterf-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showinterf-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showinterf-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hideinterf"), a : "contraption.interfacehide", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-hideinterf-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hideallinterf"), a : "contraption.interfacehideall", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interftext"), a : "contraption.interfacetext", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interftext-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interftext-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interfframe"), a : "contraption.interfaceanimframe", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfframe-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-interfframe-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interfplay"), a : "contraption.interfaceanimplay", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfplay-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interfpause"), a : "contraption.interfaceanimpause", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfpause-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interfpbinst"), a : "contraption.interfacepbinstance", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfpbinst-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfpbinst-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interfpbscene"), a : "contraption.interfacepbscene", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfpbscene-p1"), v : ""}], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbnarrative-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-invshow"), a : "inventory.show", p : [], e : ["complete"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-invclose"), a : "inventory.close", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-invaddkey"), a : "inventory.addkeyitem", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-invaddkey-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-invremkey"), a : "inventory.removekeyitem", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-invremkey-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-invclearkey"), a : "inventory.clearkeyitems", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-invhaskey"), a : "inventory.haskeyitem", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-invhaskey-p1"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-invaddcons"), a : "inventory.addconsumable", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-invaddcons-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-invaddcons-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-invremcons"), a : "inventory.removeconsumable", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-invremcons-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-invconsume"), a : "inventory.consumeitem", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-invconsume-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-invclearcons"), a : "inventory.clearconsumables", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-invtostring"), a : "inventory.tostring", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-invtostring-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-invfromstring"), a : "inventory.fromstring", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-invfromstring-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-invtostringk"), a : "inventory.keytostring", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-invtostringk-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-invfromstringk"), a : "inventory.keyfromstring", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-invfromstringk-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-invtostringc"), a : "inventory.constostring", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-invtostringc-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-invfromstringc"), a : "inventory.consfromstring", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-invfromstringc-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-battleshow"), a : "battle.show", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-battleshow-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-battleshow-p2"), v : ""}], e : ["win","loose"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-battleclose"), a : "battle.close", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-battlesetattr"), a : "battle.setattribute", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-battlesetattr-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-battlesetattr-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-battlesetattr-p3"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-battlesetattr-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-battlesetoppo"), a : "battle.setopponent", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-battlesetoppo-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-battlesetoppo-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-battlesetoppo-p3"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-battlesetoppo-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-diagloadgroup"), a : "dialogue.loadgroup", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-diagloadgroup-p1"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-diagstart"), a : "dialogue.start", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-diagstart-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-diagnext"), a : "dialogue.next", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-diagprevious"), a : "dialogue.previous", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-diaglast"), a : "dialogue.last", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-diagfirst"), a : "dialogue.first", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-diagclose"), a : "dialogue.close", p : [], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbaccesibility-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-accesssetdescription"), a : "accessibility.setdescription", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-accesssetdescription-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-accesschangeshader"), a : "accessibility.changeshader", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-accesssetshader"), a : "accessibility.setshader", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-accesssetshader-p1"), v : "shader"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-accessfocuson"), a : "accessibility.focuson", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-accessfocusoff"), a : "accessibility.focusoff", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-accessfocusswitch"), a : "accessibility.focusswitch", p : [], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbruntime-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-runinstall"), a : "runtime.install", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-runquit"), a : "runtime.quit", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-runsavedata"), a : "runtime.savedata", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-runsavedata-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-runloaddata"), a : "runtime.loaddata", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-runloaddata-p1"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-runifdataexist"), a : "runtime.ifdataexist", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-runifdataexist-p1"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-runbrowser"), a : "runtime.ifbrowser", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-startkiosk"), a : "runtime.startkiosk", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-endkiosk"), a : "runtime.endkiosk", p : [], e : []}]));
@@ -36027,7 +36372,7 @@ com_tilbuci_script_ScriptParser.tilbuci_qrcodeget = $hx_exports["tilbuci_qrcodeg
 		if(window.TBB_callJs("TBQR_stop",[])) {
 			com_tilbuci_data_GlobalPlayer.contraptions.hideQR();
 		} else {
-			haxe_Log.trace("sem qr stop",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 5020, className : "com.tilbuci.script.ScriptParser", methodName : "tilbuci_qrcodeget"});
+			haxe_Log.trace("sem qr stop",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 5032, className : "com.tilbuci.script.ScriptParser", methodName : "tilbuci_qrcodeget"});
 		}
 	}
 };
@@ -37892,6 +38237,20 @@ com_tilbuci_script_ScriptParser.prototype = {
 				case "contraption.interfacehideall":
 					com_tilbuci_data_GlobalPlayer.contraptions.hideAllInterfaces();
 					return true;
+				case "contraption.interfacepbinstance":
+					if(param.length > 1) {
+						return com_tilbuci_data_GlobalPlayer.contraptions.instanceInterface(this.parseString(param[0]),this.parseString(param[1]));
+					} else {
+						return false;
+					}
+					break;
+				case "contraption.interfacepbscene":
+					if(param.length > 0) {
+						return com_tilbuci_data_GlobalPlayer.contraptions.sceneInterface(this.parseString(param[0]));
+					} else {
+						return false;
+					}
+					break;
 				case "contraption.interfacetext":
 					if(param.length > 1) {
 						return com_tilbuci_data_GlobalPlayer.contraptions.setInterfaceText(this.parseString(param[0]),this.parseString(param[1]));
@@ -41590,10 +41949,10 @@ com_tilbuci_script_ScriptParser.prototype = {
 		var snippet = "";
 		var movie = "";
 		var scene = "";
-		var snstart = code.indexOf("sn=TB");
+		var snstart = code.indexOf("sn=");
 		var snend = -1;
 		if(snstart != -1) {
-			snstart += "sn=TB".length;
+			snstart += "sn=".length;
 			snend = code.indexOf("&",snstart);
 			if(snend != -1) {
 				snippet = HxOverrides.substr(code,snstart,snend - snstart);
@@ -41601,6 +41960,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 				snippet = HxOverrides.substr(code,snstart,null);
 			}
 			if(snippet != "") {
+				snippet = decodeURIComponent(snippet.split("+").join(" "));
 				found = true;
 			}
 		}
@@ -41631,19 +41991,18 @@ com_tilbuci_script_ScriptParser.prototype = {
 			}
 		}
 		if(found) {
-			if(movie != com_tilbuci_data_GlobalPlayer.movie.get_mvId()) {
+			if(movie != com_tilbuci_data_GlobalPlayer.movie.get_mvId() && movie != "") {
 				Main["scene"] = scene;
 				Main["snippet"] = snippet;
 				com_tilbuci_data_GlobalPlayer.contraptions.removeContraptions(true);
 				com_tilbuci_data_GlobalPlayer.movie.loadMovie(movie);
-			} else if(scene != com_tilbuci_data_GlobalPlayer.movie.get_scId()) {
+			} else if(scene != com_tilbuci_data_GlobalPlayer.movie.get_scId() && scene != "") {
 				Main["snippet"] = snippet;
 				com_tilbuci_data_GlobalPlayer.movie.loadScene(scene);
 			} else if(snippet != "") {
 				com_tilbuci_data_GlobalPlayer.parser.run("{ \"ac\": \"run\", \"param\": [ \"" + snippet + "\" ] }");
 			}
 		}
-		haxe_Log.trace("qr",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 4754, className : "com.tilbuci.script.ScriptParser", methodName : "parseQR", customParams : [movie,scene,snippet]});
 		return found;
 	}
 	,getValueObj: function(name) {
@@ -60394,6 +60753,7 @@ var com_tilbuci_ui_menu_MenuMovie = function(ac) {
 	this.addButton("btSnippets",com_tilbuci_data_Global.ln.get("menu-movie-snippets"),$bind(this,this.onSnippets));
 	this.addButton("btRepublish",com_tilbuci_data_Global.ln.get("menu-movie-republish"),$bind(this,this.onRepublish));
 	this.addButton("btNotes",com_tilbuci_data_Global.ln.get("menu-movie-notes"),$bind(this,this.onNotes));
+	this.addButton("btQR",com_tilbuci_data_Global.ln.get("menu-movie-qr"),$bind(this,this.onQR));
 	this.addButton("btPlayer",com_tilbuci_data_Global.ln.get("menu-movie-player"),$bind(this,this.onPlayer));
 };
 $hxClasses["com.tilbuci.ui.menu.MenuMovie"] = com_tilbuci_ui_menu_MenuMovie;
@@ -60433,6 +60793,8 @@ com_tilbuci_ui_menu_MenuMovie.prototype = $extend(com_tilbuci_ui_menu_DrawerMenu
 			this.ui.buttons.h["btNotes"].set_toolTip(null);
 			this.ui.buttons.h["btRepublish"].set_enabled(true);
 			this.ui.buttons.h["btRepublish"].set_toolTip(null);
+			this.ui.buttons.h["btQR"].set_enabled(true);
+			this.ui.buttons.h["btQR"].set_toolTip(null);
 		} else {
 			if(com_tilbuci_data_Global.ws.get_level() <= 50) {
 				this.ui.buttons.h["btRemove"].set_enabled(true);
@@ -60455,6 +60817,8 @@ com_tilbuci_ui_menu_MenuMovie.prototype = $extend(com_tilbuci_ui_menu_DrawerMenu
 			this.ui.buttons.h["btSnippets"].set_toolTip(com_tilbuci_data_Global.ln.get("tooltip-movie-nomovie"));
 			this.ui.buttons.h["btNotes"].set_toolTip(com_tilbuci_data_Global.ln.get("tooltip-movie-nomovie"));
 			this.ui.buttons.h["btRepublish"].set_toolTip(com_tilbuci_data_Global.ln.get("tooltip-movie-nomovie"));
+			this.ui.buttons.h["btQR"].set_enabled(false);
+			this.ui.buttons.h["btQR"].set_toolTip(com_tilbuci_data_Global.ln.get("tooltip-movie-nomovie"));
 		}
 	}
 	,kill: function() {
@@ -60486,6 +60850,9 @@ com_tilbuci_ui_menu_MenuMovie.prototype = $extend(com_tilbuci_ui_menu_DrawerMenu
 	}
 	,onNotes: function(evt) {
 		this._ac("notes");
+	}
+	,onQR: function(evt) {
+		this._ac("qr");
 	}
 	,onPlayer: function(evt) {
 		var request = new openfl_net_URLRequest(com_tilbuci_data_GlobalPlayer.base + "app/?mv=" + com_tilbuci_data_GlobalPlayer.movie.get_mvId());
@@ -63302,6 +63669,66 @@ com_tilbuci_ui_window_contraptions_WindowContrInterf.prototype = $extend(com_til
 		var tmp12 = { tp : "Custom", cont : this.ui.hcontainers.h["formeltxpos"]};
 		var tmp13 = com_tilbuci_data_Global.ln.get("window-contrinterf-setbutton");
 		tmp.forge("txset",[tmp1,tmp2,{ tp : "Toggle", id : "txuse", vl : false},tmp3,{ tp : "Select", id : "txfont", vl : [], sl : null},tmp4,{ tp : "Numeric", id : "txsize", mn : 1, mx : 1000, st : 1, vl : 12},tmp5,{ tp : "TInput", id : "txcolor", vl : "#FFFFFF", vr : ""},tmp6,tmp7,tmp8,tmp9,{ tp : "Spacer", id : "txwidth", ht : 10, ln : false},tmp10,{ tp : "Numeric", id : "txwidth", mn : 1, mx : 10000, st : 10, vl : 100},tmp11,tmp12,{ tp : "Spacer", id : "txset", ht : 10, ln : false},{ tp : "Button", id : "txset", tx : tmp13, ac : $bind(this,this.setElement)}]);
+		this.ui.createHContainer("playgr");
+		this.ui.createTInput("playgr","","",this.ui.hcontainers.h["playgr"],false);
+		var tmp = this.ui;
+		var tmp1 = com_tilbuci_statictools_Assets.getBitmapData("btOpenfile");
+		var tmp2 = this.ui.hcontainers.h["playgr"];
+		tmp.createIconButton("playgr",$bind(this,this.acPlaygr),new openfl_display_Bitmap(tmp1),null,tmp2,false);
+		var tmp = this.ui;
+		var tmp1 = com_tilbuci_statictools_Assets.getBitmapData("btDel");
+		var tmp2 = this.ui.hcontainers.h["playgr"];
+		tmp.createIconButton("playgrdel",$bind(this,this.acPlaygrdel),new openfl_display_Bitmap(tmp1),null,tmp2,false);
+		this.ui.inputs.h["playgr"].set_enabled(false);
+		this.ui.hcontainers.h["playgr"].setWidth(450,[340,50,50]);
+		this.ui.createHContainer("pausegr");
+		this.ui.createTInput("pausegr","","",this.ui.hcontainers.h["pausegr"],false);
+		var tmp = this.ui;
+		var tmp1 = com_tilbuci_statictools_Assets.getBitmapData("btOpenfile");
+		var tmp2 = this.ui.hcontainers.h["pausegr"];
+		tmp.createIconButton("pausegr",$bind(this,this.acPausegr),new openfl_display_Bitmap(tmp1),null,tmp2,false);
+		var tmp = this.ui;
+		var tmp1 = com_tilbuci_statictools_Assets.getBitmapData("btDel");
+		var tmp2 = this.ui.hcontainers.h["pausegr"];
+		tmp.createIconButton("pausegrdel",$bind(this,this.acPausegrdel),new openfl_display_Bitmap(tmp1),null,tmp2,false);
+		this.ui.inputs.h["pausegr"].set_enabled(false);
+		this.ui.hcontainers.h["pausegr"].setWidth(450,[340,50,50]);
+		this.ui.createHContainer("playgrpos");
+		this.ui.createLabel("playgrposx","X","detail",this.ui.hcontainers.h["playgrpos"]);
+		this.ui.createNumeric("playgrposx",-3840,3840,10,0,this.ui.hcontainers.h["playgrpos"]);
+		this.ui.createLabel("playgrposy","Y","detail",this.ui.hcontainers.h["playgrpos"]);
+		this.ui.createNumeric("playgrposy",-3840,3840,10,0,this.ui.hcontainers.h["playgrpos"]);
+		this.ui.createHContainer("progressgr");
+		this.ui.createTInput("progressgr","","",this.ui.hcontainers.h["progressgr"],false);
+		var tmp = this.ui;
+		var tmp1 = com_tilbuci_statictools_Assets.getBitmapData("btOpenfile");
+		var tmp2 = this.ui.hcontainers.h["progressgr"];
+		tmp.createIconButton("progressgr",$bind(this,this.acProgress),new openfl_display_Bitmap(tmp1),null,tmp2,false);
+		var tmp = this.ui;
+		var tmp1 = com_tilbuci_statictools_Assets.getBitmapData("btDel");
+		var tmp2 = this.ui.hcontainers.h["progressgr"];
+		tmp.createIconButton("progressgrdel",$bind(this,this.acProgressdel),new openfl_display_Bitmap(tmp1),null,tmp2,false);
+		this.ui.inputs.h["progressgr"].set_enabled(false);
+		this.ui.hcontainers.h["progressgr"].setWidth(450,[340,50,50]);
+		this.ui.createHContainer("progressgrpos");
+		this.ui.createLabel("progressgrposx","X","detail",this.ui.hcontainers.h["progressgrpos"]);
+		this.ui.createNumeric("progressgrposx",-3840,3840,10,0,this.ui.hcontainers.h["progressgrpos"]);
+		this.ui.createLabel("progressgrposy","Y","detail",this.ui.hcontainers.h["progressgrpos"]);
+		this.ui.createNumeric("progressgrposy",-3840,3840,10,0,this.ui.hcontainers.h["progressgrpos"]);
+		var tmp = this.ui;
+		var tmp1 = { tp : "Label", id : "playbackcon", tx : com_tilbuci_data_Global.ln.get("window-contrinterf-playbackcon"), vr : ""};
+		var tmp2 = { tp : "Label", id : "playgr", tx : com_tilbuci_data_Global.ln.get("window-contrinterf-playgr"), vr : "detail"};
+		var tmp3 = { tp : "Custom", cont : this.ui.hcontainers.h["playgr"]};
+		var tmp4 = { tp : "Label", id : "pausegr", tx : com_tilbuci_data_Global.ln.get("window-contrinterf-pausegr"), vr : "detail"};
+		var tmp5 = { tp : "Custom", cont : this.ui.hcontainers.h["pausegr"]};
+		var tmp6 = { tp : "Label", id : "playgrpos", tx : com_tilbuci_data_Global.ln.get("window-contrinterf-playgrpos"), vr : "detail"};
+		var tmp7 = { tp : "Custom", cont : this.ui.hcontainers.h["playgrpos"]};
+		var tmp8 = { tp : "Label", id : "progressgr", tx : com_tilbuci_data_Global.ln.get("window-contrinterf-progressgr"), vr : "detail"};
+		var tmp9 = { tp : "Custom", cont : this.ui.hcontainers.h["progressgr"]};
+		var tmp10 = { tp : "Label", id : "progressgrpos", tx : com_tilbuci_data_Global.ln.get("window-contrinterf-progressgrpos"), vr : "detail"};
+		var tmp11 = { tp : "Custom", cont : this.ui.hcontainers.h["progressgrpos"]};
+		var tmp12 = com_tilbuci_data_Global.ln.get("window-contrinterf-setbutton");
+		tmp.forge("playback",[tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp7,{ tp : "Spacer", id : "progressgr", ht : 10, ln : false},tmp8,tmp9,tmp10,tmp11,{ tp : "Spacer", id : "playback", ht : 10, ln : false},{ tp : "Button", id : "playback", tx : tmp12, ac : $bind(this,this.setElement)}]);
 		this.ui.createHContainer("formel");
 		this.ui.createTInput("formel","","",this.ui.hcontainers.h["formel"],false);
 		var tmp = this.ui;
@@ -63396,6 +63823,7 @@ com_tilbuci_ui_window_contraptions_WindowContrInterf.prototype = $extend(com_til
 		list.push({ text : com_tilbuci_data_Global.ln.get("window-contrinterf-namebg"), value : { type : "background", file : "", action : "", x : 0, y : 0, options : "", rot : 0, alpha : 100}});
 		list.push({ text : com_tilbuci_data_Global.ln.get("window-contrinterf-nameanim"), value : { type : "spritemap", file : "", action : "", x : 0, y : 0, options : "", rot : 0, alpha : 100}});
 		list.push({ text : com_tilbuci_data_Global.ln.get("window-contrinterf-nametx"), value : { type : "text", file : "", action : "", x : 0, y : 0, options : "", rot : 0, alpha : 100}});
+		list.push({ text : com_tilbuci_data_Global.ln.get("window-contrinterf-playback"), value : { type : "playback", file : "", action : "", x : 0, y : 0, options : "", rot : 0, alpha : 100}});
 		this.ui.setListValues("elements",list);
 		this.ui.setListSelectValue("elements",null);
 	}
@@ -63444,6 +63872,9 @@ com_tilbuci_ui_window_contraptions_WindowContrInterf.prototype = $extend(com_til
 					case "background":
 						elname = com_tilbuci_data_Global.ln.get("window-contrinterf-namebg");
 						break;
+					case "playback":
+						elname = com_tilbuci_data_Global.ln.get("window-contrinterf-playback");
+						break;
 					case "spritemap":
 						elname = com_tilbuci_data_Global.ln.get("window-contrinterf-nameanim");
 						break;
@@ -63473,6 +63904,15 @@ com_tilbuci_ui_window_contraptions_WindowContrInterf.prototype = $extend(com_til
 			break;
 		case "intimage":
 			this.ui.inputs.h["formel"].set_text(data.h["file"]);
+			break;
+		case "intpausegr":
+			this.ui.inputs.h["pausegr"].set_text(data.h["file"]);
+			break;
+		case "intplaygr":
+			this.ui.inputs.h["playgr"].set_text(data.h["file"]);
+			break;
+		case "intprogress":
+			this.ui.inputs.h["progressgr"].set_text(data.h["file"]);
 			break;
 		}
 	}
@@ -63564,6 +64004,24 @@ com_tilbuci_ui_window_contraptions_WindowContrInterf.prototype = $extend(com_til
 	,acBackgrounddel: function(evt) {
 		this.ui.inputs.h["background"].set_text("");
 	}
+	,acPlaygr: function(evt) {
+		this._ac("intplaygr");
+	}
+	,acPlaygrdel: function(evt) {
+		this.ui.inputs.h["playgr"].set_text("");
+	}
+	,acPausegr: function(evt) {
+		this._ac("intpausegr");
+	}
+	,acPausegrdel: function(evt) {
+		this.ui.inputs.h["pausegr"].set_text("");
+	}
+	,acProgress: function(evt) {
+		this._ac("intprogress");
+	}
+	,acProgressdel: function(evt) {
+		this.ui.inputs.h["progressgr"].set_text("");
+	}
 	,acBtsm: function(evt) {
 		this._ac("intanim");
 	}
@@ -63596,6 +64054,37 @@ com_tilbuci_ui_window_contraptions_WindowContrInterf.prototype = $extend(com_til
 				this.ui.containers.h["rightcol"].addChild(this.ui.containers.h["background"]);
 				this.ui.labels.h["backgroundset"].set_width(this.ui.buttons.h["backgroundset"].set_width(450));
 				this.ui.inputs.h["background"].set_text(this.ui.lists.h["elements"].get_selectedItem().value.file);
+				break;
+			case "playback":
+				this.ui.containers.h["rightcol"].addChild(this.ui.containers.h["playback"]);
+				this.ui.labels.h["playbackcon"].set_width(this.ui.labels.h["playgrpos"].set_width(this.ui.labels.h["progressgrpos"].set_width(450)));
+				this.ui.labels.h["playgr"].set_width(this.ui.labels.h["pausegr"].set_width(this.ui.labels.h["progressgr"].set_width(450)));
+				this.ui.labels.h["progresstx"].set_width(450);
+				this.ui.buttons.h["playback"].set_width(450);
+				this.ui.hcontainers.h["playgrpos"].setWidth(450,[60,145,60,145]);
+				this.ui.hcontainers.h["progressgrpos"].setWidth(450,[60,145,60,145]);
+				var plfile = { play : "", pause : "", progress : ""};
+				if(this.ui.lists.h["elements"].get_selectedItem().value.file != "") {
+					plfile = com_tilbuci_statictools_StringStatic.jsonParse(this.ui.lists.h["elements"].get_selectedItem().value.file);
+					if(plfile == false) {
+						plfile = { play : "", pause : "", progress : ""};
+					}
+				}
+				var plopt = { btx : 0, bty : 0, prx : 0, pry : 0, txt : false};
+				if(this.ui.lists.h["elements"].get_selectedItem().value.options != "") {
+					plopt = com_tilbuci_statictools_StringStatic.jsonParse(this.ui.lists.h["elements"].get_selectedItem().value.options);
+					if(plopt == false) {
+						plopt = { btx : 0, bty : 0, prx : 0, pry : 0, txt : false};
+					}
+				}
+				this.ui.inputs.h["playgr"].set_text(plfile.play);
+				this.ui.inputs.h["pausegr"].set_text(plfile.pause);
+				this.ui.inputs.h["progressgr"].set_text(plfile.progress);
+				this.ui.numerics.h["playgrposx"].set_value(plopt.btx);
+				this.ui.numerics.h["playgrposy"].set_value(plopt.bty);
+				this.ui.numerics.h["progressgrposx"].set_value(plopt.prx);
+				this.ui.numerics.h["progressgrposy"].set_value(plopt.pry);
+				this.ui.toggles.h["progresstx"].set_selected(plopt.txt);
 				break;
 			case "spritemap":
 				this.ui.containers.h["rightcol"].addChild(this.ui.containers.h["spritemap"]);
@@ -63677,6 +64166,8 @@ com_tilbuci_ui_window_contraptions_WindowContrInterf.prototype = $extend(com_til
 			switch(this.ui.lists.h["elements"].get_selectedItem().value.type) {
 			case "background":
 				break;
+			case "playback":
+				break;
 			case "spritemap":
 				break;
 			case "text":
@@ -63704,6 +64195,21 @@ com_tilbuci_ui_window_contraptions_WindowContrInterf.prototype = $extend(com_til
 			case "background":
 				var tmp = this.ui.inputs.h["background"];
 				this.ui.lists.h["elements"].get_selectedItem().value.file = tmp.get_text();
+				this.redrawElementsList();
+				break;
+			case "playback":
+				var tmp = this.ui.lists.h["elements"];
+				var tmp1 = this.ui.inputs.h["playgr"].get_text();
+				var tmp2 = this.ui.inputs.h["pausegr"].get_text();
+				var tmp3 = this.ui.inputs.h["progressgr"].get_text();
+				tmp.get_selectedItem().value.file = com_tilbuci_statictools_StringStatic.jsonStringify({ play : tmp1, pause : tmp2, progress : tmp3});
+				var tmp = this.ui.lists.h["elements"];
+				var tmp1 = this.ui.numerics.h["playgrposx"].get_value();
+				var tmp2 = this.ui.numerics.h["playgrposy"].get_value();
+				var tmp3 = this.ui.numerics.h["progressgrposx"].get_value();
+				var tmp4 = this.ui.numerics.h["progressgrposy"].get_value();
+				var tmp5 = this.ui.toggles.h["progresstx"].get_selected();
+				tmp.get_selectedItem().value.options = com_tilbuci_statictools_StringStatic.jsonStringify({ btx : tmp1, bty : tmp2, prx : tmp3, pry : tmp4, txt : tmp5});
 				this.redrawElementsList();
 				break;
 			case "spritemap":
@@ -70423,6 +70929,83 @@ com_tilbuci_ui_window_movie_WindowMovieProperties.prototype = $extend(com_tilbuc
 		}
 	}
 	,__class__: com_tilbuci_ui_window_movie_WindowMovieProperties
+});
+var com_tilbuci_ui_window_movie_WindowMovieQR = function(ac) {
+	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-qr-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(315,330),false,true,true);
+};
+$hxClasses["com.tilbuci.ui.window.movie.WindowMovieQR"] = com_tilbuci_ui_window_movie_WindowMovieQR;
+com_tilbuci_ui_window_movie_WindowMovieQR.__name__ = "com.tilbuci.ui.window.movie.WindowMovieQR";
+com_tilbuci_ui_window_movie_WindowMovieQR.__super__ = com_tilbuci_ui_window_PopupWindow;
+com_tilbuci_ui_window_movie_WindowMovieQR.prototype = $extend(com_tilbuci_ui_window_PopupWindow.prototype,{
+	startInterface: function(evt) {
+		var tmp = this.ui;
+		var tmp1 = { tp : "Label", id : "about", tx : com_tilbuci_data_Global.ln.get("window-qr-about"), vr : ""};
+		var tmp2 = { tp : "Label", id : "scenes", tx : com_tilbuci_data_Global.ln.get("window-qr-scenes"), vr : feathers_controls_Label.VARIANT_DETAIL};
+		var tmp3 = { tp : "Label", id : "snippet", tx : com_tilbuci_data_Global.ln.get("window-qr-snippet"), vr : feathers_controls_Label.VARIANT_DETAIL};
+		var tmp4 = com_tilbuci_data_Global.ln.get("window-qr-download");
+		this.addForm("intr",tmp.forge("interface",[tmp1,{ tp : "Spacer", id : "about", ht : 10, ln : false},tmp2,{ tp : "Select", id : "scenes", vl : [], sl : ""},{ tp : "Spacer", id : "scenes", ht : 10, ln : false},tmp3,{ tp : "TInput", id : "snippet", tx : "", vr : ""},{ tp : "Spacer", id : "snippet", ht : 10, ln : false},{ tp : "Button", id : "download", tx : tmp4, ac : $bind(this,this.onDownload)}]));
+		this.ui.labels.h["about"].set_wordWrap(true);
+		com_tilbuci_ui_window_PopupWindow.prototype.startInterface.call(this);
+	}
+	,kill: function() {
+		com_tilbuci_ui_window_PopupWindow.prototype.kill.call(this);
+	}
+	,acStart: function() {
+		this.ui.setSelectOptions("scenes",[]);
+		var tmp = com_tilbuci_data_Global.ws;
+		var _g = new haxe_ds_StringMap();
+		var value = com_tilbuci_data_GlobalPlayer.movie.get_mvId();
+		_g.h["movie"] = value;
+		tmp.send("Scene/List",_g,$bind(this,this.onList));
+	}
+	,onList: function(ok,ld) {
+		if(!ok) {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-qr-title"),com_tilbuci_data_Global.ln.get("window-qr-nolist"),420,150,this.stage);
+			feathers_core_PopUpManager.removePopUp(this);
+		} else if(ld.map.h["e"] == 0) {
+			var ar = ld.map.h["list"];
+			if(ar.length > 0) {
+				var items = [];
+				items.push({ text : com_tilbuci_data_Global.ln.get("window-qr-noscene"), value : ""});
+				var _g = 0;
+				while(_g < ar.length) {
+					var i = ar[_g];
+					++_g;
+					items.push({ text : Reflect.field(i,"title"), value : Reflect.field(i,"id")});
+				}
+				this.ui.setSelectOptions("scenes",items);
+			}
+		} else {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-qr-title"),com_tilbuci_data_Global.ln.get("window-qr-nolist"),420,150,this.stage);
+			feathers_core_PopUpManager.removePopUp(this);
+		}
+	}
+	,onDownload: function(evt) {
+		var sc = this.ui.selects.h["scenes"].get_selectedItem().value;
+		if(sc == "" && this.ui.inputs.h["snippet"].get_text() == "") {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-qr-title"),com_tilbuci_data_Global.ln.get("window-qr-nodata"),420,150,this.stage);
+		} else {
+			var link = "";
+			var name = "";
+			if(sc != "") {
+				link += com_tilbuci_data_GlobalPlayer.base + "?mv=" + com_tilbuci_data_GlobalPlayer.movie.get_mvId() + "&sc=" + sc;
+				name = sc;
+			}
+			if(this.ui.inputs.h["snippet"].get_text() != "") {
+				var s = this.ui.inputs.h["snippet"].get_text();
+				link += "&sn=" + encodeURIComponent(s);
+				name += StringTools.replace(this.ui.inputs.h["snippet"].get_text()," ","");
+			}
+			var tmp = com_tilbuci_data_Global.ws;
+			var _g = new haxe_ds_StringMap();
+			_g.h["file"] = "qrcode";
+			var value = haxe_crypto_Base64.encode(haxe_io_Bytes.ofString(link));
+			_g.h["link"] = value;
+			_g.h["name"] = name;
+			tmp.download(_g);
+		}
+	}
+	,__class__: com_tilbuci_ui_window_movie_WindowMovieQR
 });
 var com_tilbuci_ui_window_movie_WindowMovieRemove = function(ac) {
 	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-movieremove-title"),700,com_tilbuci_ui_base_InterfaceFactory.pickValue(380,400),false,true,true);
@@ -155487,7 +156070,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 446435;
+	this.version = 112855;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";

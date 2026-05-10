@@ -602,7 +602,7 @@ function TBU_cancelUpload() {
  */
 
 /**
- * Tilbuci javascript externs for browser handling.
+ * Tilbuci javascript externs for qr code handling.
  */
 
 /**
@@ -656,7 +656,7 @@ function TBQR_start() {
             const base64 = TBQR_Canvas.toDataURL("image/png").replace(/^data:image\/png;base64,/, "");
             // sending to TilBuci
             tilbuci_qrcodegetimage(base64);
-        }, 400);
+        }, 300);
     }).catch(err => {
         console.error("Error accessing camera:", err);
     });

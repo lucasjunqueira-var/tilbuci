@@ -171,7 +171,7 @@ if ($render == '') {
 		<script type="text/javascript" src="./externs.js?rd=<?= $version ?>"></script>
     <?php } else { ?>
         <script type="text/javascript" src="./TilBuci<?= $render ?>.js<?= $nocache ?>"></script>
-		<script type="text/javascript" src="./externs-min.js?rd=<?= $nocache ?>"></script>
+		<script type="text/javascript" src="./externs.js?rd=<?= $nocache ?>"></script>
     <?php } ?>
 	<script>
 		window.addEventListener ("touchmove", function (event) { event.preventDefault (); }, { capture: false, passive: false });

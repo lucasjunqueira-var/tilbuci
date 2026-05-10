@@ -73,6 +73,11 @@ class VideoImage extends BaseImage {
     private var _onTimedAc:Dynamic;
 
     /**
+        total media time
+    **/
+    private var _duration:Int = 1;
+
+    /**
         Creates a new VideoImage instance for video playback.
         @param  ol      onLoad callback function (Dynamic)
         @param  end     onEnd callback function (Dynamic)
@@ -86,35 +91,32 @@ class VideoImage extends BaseImage {
         // adding the clickable background
         this._bg = new Shape();
         this._bg.graphics.beginFill(0x000000);
-  this._bg.graphics.drawRect(0, 0, 32, 32);
-  this._bg.graphics.endFill();
-  this.addChild(this._bg);
+        this._bg.graphics.drawRect(0, 0, 32, 32);
+        this._bg.graphics.endFill();
+        this.addChild(this._bg);
 
         this._video = new Video();
         this._video.smoothing = true;
         this.addChild(this._video);
-
         this._connection = new NetConnection();
         this._connection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
-  this._connection.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-  this._connection.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-  this._connection.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
+        this._connection.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+        this._connection.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+        this._connection.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
         this._connection.connect(null);
-
         this._stream = new NetStream(this._connection);
-  this._stream.checkPolicyFile = true;
-  this._stream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
-  this._stream.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-  this._stream.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-
+        this._stream.checkPolicyFile = true;
+        this._stream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler);
+        this._stream.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+        this._stream.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
         var clientObj:Dynamic = {
-   'onMetaData': this.metadataEvent,
-   'onImageData': this.imagedataEvent,
-   'onPlayStatus': this.playstatusEvent,
-   'onCuePoint': this.cuepointEvent
-  };
-  this._stream.client = clientObj;
-  this._video.attachNetStream(this._stream);
+            'onMetaData': this.metadataEvent,
+            'onImageData': this.imagedataEvent,
+            'onPlayStatus': this.playstatusEvent,
+            'onCuePoint': this.cuepointEvent
+        };
+        this._stream.client = clientObj;
+        this._video.attachNetStream(this._stream);
     }
 
     /**
@@ -126,6 +128,14 @@ class VideoImage extends BaseImage {
             return (Math.round(this._stream.time));
         } else {
             return (0);
+        }
+    }
+
+    public function getTotalTime():Int {
+        if (this._loaded) {
+            return (this._duration);
+        } else {
+            return (1);
         }
     }
 
@@ -146,6 +156,7 @@ class VideoImage extends BaseImage {
     public function load(media:String):Void {
         media = StringTools.replace(media, (GlobalPlayer.path + 'media/video/'), '');
         this._lastMedia = media;
+        this._duration = 1;
         var path:String = GlobalPlayer.parser.parsePath(GlobalPlayer.path + 'media/video/' + media);
         if (GlobalPlayer.mode == Player.MODE_EDITOR) {
             this._loaded = false;
@@ -298,6 +309,10 @@ class VideoImage extends BaseImage {
 	private function metadataEvent(data:Dynamic):Void {
         this.oWidth = data.width;
         this.oHeight = data.height;
+        if (Reflect.hasField(data, 'duration')) {
+            var total:Float = cast data.duration; 
+            this._duration = Math.round(total);
+        }
         if (GlobalPlayer.mode == Player.MODE_EDITOR) {
             this._loaded = true;
             this._bg.width = this._video.width = this.oWidth = data.width;

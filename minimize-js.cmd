@@ -11,6 +11,14 @@ IF %ERRORLEVEL% EQU 0 (
         ) ELSE (
             echo - no full script file found, please run the 'deploy-full.cmd' script to create it
         )
+        echo TilBuci externs
+        IF EXIST "server/public_html/app/externs.js" (
+            echo - file located
+            CALL java -jar third/closure-compiler.jar --compilation_level SIMPLE_OPTIMIZATIONS --js server/public_html/app/externs.js --js_output_file server/public_html/app/externs.js
+            echo - success
+        ) ELSE (
+            echo - no full script file found, please run the 'deploy-full.cmd' script to create it
+        )
         echo TilBuci desktop runtime
         IF EXIST "server/export/runtimes/desktop.js" (
             echo - file located
