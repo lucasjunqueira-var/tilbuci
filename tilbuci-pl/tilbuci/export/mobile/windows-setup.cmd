@@ -18,12 +18,13 @@ IF %ERRORLEVEL% NEQ 0 (
     echo error while installing Capacitor
     exit /b %ERRORLEVEL%
 )
-echo Installing navigation bar plugin...
-call npm install @squareetlabs/capacitor-navigation-bar
-IF %ERRORLEVEL% NEQ 0 (
-    echo error while installing Capacitor
-    exit /b %ERRORLEVEL%
-)
+REM waiting for navigation bar plugin update for capacitor @8
+REM echo Installing navigation bar plugin...
+REM call npm install @squareetlabs/capacitor-navigation-bar
+REM IF %ERRORLEVEL% NEQ 0 (
+REM     echo error while installing Capacitor
+REM     exit /b %ERRORLEVEL%
+REM )
 echo Installing app plugin...
 call npm install @capacitor/app
 IF %ERRORLEVEL% NEQ 0 (

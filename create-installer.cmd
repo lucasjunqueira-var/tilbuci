@@ -96,6 +96,12 @@ if exist events\events.txt (
     copy events\events.txt temp_part1\events\ /Y
 )
 
+REM Copy third party libraries
+if exist third\qrcode.php (
+    if not exist temp_part1\third mkdir temp_part1\third
+    copy third\qrcode.php temp_part1\third\ /Y
+)
+
 REM Copy export subfolders
 set export_folders=desktop iframe mobile publish pwa runtimes site
 for %%f in (%export_folders%) do (

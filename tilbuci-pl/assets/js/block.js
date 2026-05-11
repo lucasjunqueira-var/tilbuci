@@ -149,6 +149,20 @@
                         __('You can set up to five string variables to be sent to the loaded TilBuci movie.', 'tilbuci-pl')
                     ),
                     customVariables
+                ),
+                createElement(PanelBody, { title: __('Initial snippet', 'tilbuci-pl'), initialOpen: false },
+                    createElement('p', { style: { marginTop: 0 } },
+                        __('Name of an action snippet to be executed as soon as the first scene is loaded.', 'tilbuci-pl')
+                    ),
+                    createElement(TextControl, {
+                        label: __('Snippet', 'tilbuci-pl'),
+                        value: attributes.snippet || '',
+                        __next40pxDefaultSize: true,
+                        __nextHasNoMarginBottom: true,
+                        onChange: function (value) {
+                            setAttributes({ snippet: value });
+                        }
+                    })
                 )
             ),
             createElement(SelectControl, {
@@ -219,6 +233,10 @@
                 default: ''
             },
             customVal5: {
+                type: 'string',
+                default: ''
+            },
+            snippet: {
                 type: 'string',
                 default: ''
             }

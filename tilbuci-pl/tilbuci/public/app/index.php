@@ -171,6 +171,7 @@ if ($render == '') {
 		<script type="text/javascript" src="./externs.js?rd=<?= $version ?>"></script>
     <?php } else { ?>
         <script type="text/javascript" src="./TilBuci<?= $render ?>.js<?= $nocache ?>"></script>
+		<script type="text/javascript" src="./externs.js?rd=<?= $nocache ?>"></script>
     <?php } ?>
 	<script>
 		window.addEventListener ("touchmove", function (event) { event.preventDefault (); }, { capture: false, passive: false });
@@ -200,7 +201,9 @@ if ($render == '') {
 			let params = new URLSearchParams(window.location.search);
 			let vars = params.get("vars");
 			if (vars == null) vars = "";
-			lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "assets": "", "moviePath": "", "mode" : "<?= $mode ?>", "movie": "<?= $movie ?>", "scene": "<?= $scene ?>", "vars":vars <?= $userlogin ?>} });
+			let snippet = params.get("sn");
+			if (snippet == null) snippet = "";
+			lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "assets": "", "moviePath": "", "mode" : "<?= $mode ?>", "movie": "<?= $movie ?>", "scene": "<?= $scene ?>", "vars":vars, "snippet":snippet <?= $userlogin ?>} });
 		</script>
 		<?php
 			// end body plugin area

@@ -11,6 +11,14 @@ if [ $? -eq 0 ]; then
         else
             echo " - no full script file found, please run the 'deploy-full.sh' script to create it"
         fi
+        echo "TilBuci externs"
+        if [ -f "server/public_html/app/externs.js" ]; then
+            echo " - file located"
+            java -jar third/closure-compiler.jar --compilation_level SIMPLE_OPTIMIZATIONS --js server/public_html/app/externs.js --js_output_file server/public_html/app/externs.js
+            echo " - success"
+        else
+            echo " - no full script file found, please run the 'deploy-full.sh' script to create it"
+        fi
         echo "TilBuci desktop runtime"
         if [ -f "server/export/runtimes/desktop.js" ]; then
             echo " - file located"

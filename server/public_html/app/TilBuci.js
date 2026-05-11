@@ -938,7 +938,7 @@ ApplicationMain.main = function() {
 };
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
-	app.meta.h["build"] = "122";
+	app.meta.h["build"] = "123";
 	app.meta.h["company"] = "VAR";
 	app.meta.h["file"] = "TilBuci";
 	app.meta.h["name"] = "TilBuci";
@@ -15277,13 +15277,14 @@ com_tilbuci_contraptions_InterfaceContraption.prototype = $extend(openfl_display
 	,updatePlayback: function() {
 		if(this._useProgress) {
 			if(this._pbinst != null) {
-				this._prmask.set_height(this._prgraphic.get_height());
-				this._prmask.set_width(this._prgraphic.get_width() * this._pbinst.getTime() / this._pbinst.getTotalTime());
-				this._progress.set_visible(true);
+				if(this._pbinst.get_playing()) {
+					this._prmask.set_height(this._prgraphic.get_height());
+					this._prmask.set_width(this._prgraphic.get_width() * this._pbinst.getTime() / this._pbinst.getTotalTime());
+					this._progress.set_visible(true);
+				}
 			} else if(this._pbscene) {
-				haxe_Log.trace("scene",{ fileName : "Source/com/tilbuci/contraptions/InterfaceContraption.hx", lineNumber : 457, className : "com.tilbuci.contraptions.InterfaceContraption", methodName : "updatePlayback", customParams : [com_tilbuci_data_GlobalPlayer.area.get_currentKf() + 1,com_tilbuci_data_GlobalPlayer.movie.scene.keyframes.length]});
 				this._prmask.set_height(this._prgraphic.get_height());
-				this._prmask.set_width(this._prgraphic.get_width() * (com_tilbuci_data_GlobalPlayer.area.get_currentKf() + 1) / com_tilbuci_data_GlobalPlayer.movie.scene.keyframes.length);
+				this._prmask.set_width(this._prgraphic.get_width() * com_tilbuci_data_GlobalPlayer.area.get_currentKf() / com_tilbuci_data_GlobalPlayer.movie.scene.keyframes.length);
 				this._progress.set_visible(true);
 			} else {
 				this._progress.set_visible(false);
@@ -43027,8 +43028,10 @@ var com_tilbuci_statictools_Assets = function() {
 	this._path = "assets/icons/";
 	this._plTexts = [{ name : "langDefault", path : "assets/language/default.json"}];
 	this._plAssets = ["btClose","btOk","icTarget"];
-	this._edTexts = [{ name : "buildInfo", path : "assets/build.json"},{ name : "license", path : "assets/license.html"},{ name : "langDefault", path : "assets/language/default.json"}];
-	this._edAssets = ["buci","tilBuci01","tilBuci02","tilBuci03","tilBuci04","tilBuci05","tilBuci06","tilBuci07","tilBuci08","btBack","btClose","btOk","btMovie","btScene","btMovieScene","btData","icData","icInput","icSystem","icReplace","icSnippets","icText","icTimer","icUser","icDebug","icShare","icGoogle","icContraption","icNarrative","icServer","btPlus","btPlugin","btSetup","btToggle","btZoomP","btZoomM","btZoomFit","btZoom100","btMedia","btFolder","iconFolder","iconUpLevel","iconPublished","btPlay","btPause","btStop","btLeft","btRight","btUp","btDown","btKeyframe","btFullscreen","btWorkspace","btScreen","btFocus","btColors","btOpenfile","btCopy","btPaste","btNone","btAll","btStageLeft","btStageCenter","btStageRight","btStageTop","btStageMiddle","btStageBottom","btSelectionLeft","btSelectionCenter","btSelectionRight","btSelectionTop","btSelectionMiddle","btSelectionBottom","btDistributeH","btDistributeV","btBool","btInteger","btFloat","btString","btVariables","btToLeft","btToRight","btToCenter","btToTop","btToDown","btToMiddle","btExchange","btVisitors","btContraptions","btNarrative","iconMove","iconResizeH","iconResizeV","iconResize","iconPlus","iconMinus","iconDown","iconUp","iconLock","iconLandscape","iconPortrait","btBlocks","btCode","btDel","btEdit","btExpand","btCompress","btNotes","btLock","icTarget"];
+	this._edTexts = [{ name : "langDefault", path : "assets/language/default.json"},{ name : "buildInfo", path : "assets/build.json"},{ name : "license", path : "assets/license.html"}];
+	this._edAssets = ["buci","welcome","tilBuci01","tilBuci02","tilBuci03","tilBuci04","tilBuci05","tilBuci06","tilBuci07","tilBuci08","btBack","btClose","btOk","btMovie","btScene","btMovieScene","btData","icData","icInput","icSystem","icReplace","icSnippets","icText","icTimer","icUser","icDebug","icShare","icGoogle","icContraption","icNarrative","icServer","btPlus","btPlugin","btSetup","btToggle","btZoomP","btZoomM","btZoomFit","btZoom100","btMedia","btFolder","iconFolder","iconUpLevel","iconPublished","btPlay","btPause","btStop","btLeft","btRight","btUp","btDown","btKeyframe","btFullscreen","btWorkspace","btScreen","btFocus","btColors","btOpenfile","btCopy","btPaste","btNone","btAll","btStageLeft","btStageCenter","btStageRight","btStageTop","btStageMiddle","btStageBottom","btSelectionLeft","btSelectionCenter","btSelectionRight","btSelectionTop","btSelectionMiddle","btSelectionBottom","btDistributeH","btDistributeV","btBool","btInteger","btFloat","btString","btVariables","btToLeft","btToRight","btToCenter","btToTop","btToDown","btToMiddle","btExchange","btVisitors","btContraptions","btNarrative","iconMove","iconResizeH","iconResizeV","iconResize","iconPlus","iconMinus","iconDown","iconUp","iconLock","iconLandscape","iconPortrait","btBlocks","btCode","btDel","btEdit","btExpand","btCompress","btNotes","btLock","icTarget"];
+	this._txtloaded = false;
+	this._bmploaded = false;
 	openfl_events_EventDispatcher.call(this);
 	var o = openfl_Lib.get_current().stage.application.__window.parameters;
 	if(Object.prototype.hasOwnProperty.call(o,"mode")) {
@@ -43092,7 +43095,9 @@ com_tilbuci_statictools_Assets.getText = function(name,comp) {
 };
 com_tilbuci_statictools_Assets.__super__ = openfl_events_EventDispatcher;
 com_tilbuci_statictools_Assets.prototype = $extend(openfl_events_EventDispatcher.prototype,{
-	_edAssets: null
+	_bmploaded: null
+	,_txtloaded: null
+	,_edAssets: null
 	,_edTexts: null
 	,_plAssets: null
 	,_plTexts: null
@@ -43117,7 +43122,10 @@ com_tilbuci_statictools_Assets.prototype = $extend(openfl_events_EventDispatcher
 			this._bmpLoader.unload();
 			this._bmpLoader = null;
 			this.complete = 100;
-			this.dispatchEvent(new openfl_events_Event("complete"));
+			this._bmploaded = true;
+			if(this._txtloaded) {
+				this.dispatchEvent(new openfl_events_Event("complete"));
+			}
 		}
 	}
 	,loadNextTxt: function() {
@@ -43135,6 +43143,10 @@ com_tilbuci_statictools_Assets.prototype = $extend(openfl_events_EventDispatcher
 			this._txtLoader.removeEventListener("ioError",$bind(this,this.onTxtError));
 			this._txtLoader.removeEventListener("securityError",$bind(this,this.onTxtError));
 			this._txtLoader = null;
+			this._txtloaded = true;
+			if(this._bmploaded) {
+				this.dispatchEvent(new openfl_events_Event("complete"));
+			}
 		}
 	}
 	,onOk: function(evt) {
@@ -61032,20 +61044,36 @@ com_tilbuci_ui_menu_MenuScene.prototype = $extend(com_tilbuci_ui_menu_DrawerMenu
 	,__class__: com_tilbuci_ui_menu_MenuScene
 });
 var com_tilbuci_ui_window_WindowLogin = function(ac) {
-	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-login-title"),500,330,false,false);
+	if(!com_tilbuci_data_Global.validEmail) {
+		com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-login-title"),500,560,false,false);
+	} else {
+		com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-login-title"),500,530,false,false);
+	}
+	var buci = new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("welcome"));
+	buci.smoothing = true;
+	buci.set_width(460);
+	buci.set_scaleY(buci.get_scaleX());
+	this.ui.createHContainer("welcome");
+	this.ui.createButton("welcomesite",com_tilbuci_data_Global.ln.get("window-login-site"),$bind(this,this.onSite),this.ui.hcontainers.h["welcome"],false);
+	this.ui.createButton("welcomediscord",com_tilbuci_data_Global.ln.get("window-login-discord"),$bind(this,this.onDiscord),this.ui.hcontainers.h["welcome"],false);
+	this.ui.hcontainers.h["welcome"].setWidth(460,[220,220]);
 	this.ui.createContainer("form");
+	this.ui.lastCont.addChild(buci);
+	this.ui.createLabel("about",com_tilbuci_data_Global.ln.get("window-login-about"),"",this.ui.lastCont);
+	this.ui.labels.h["about"].set_wordWrap(true);
+	this.ui.lastCont.addChild(this.ui.hcontainers.h["welcome"]);
+	this.ui.createSpacer("line-about",20,true,this.ui.lastCont);
 	this.ui.createLabel("username",com_tilbuci_data_Global.ln.get("window-login-username"),feathers_controls_Label.VARIANT_DETAIL,this.ui.lastCont);
 	this.ui.createTInput("username","","",this.ui.lastCont);
 	this.ui.createLabel("password",com_tilbuci_data_Global.ln.get("window-login-password"),feathers_controls_Label.VARIANT_DETAIL,this.ui.lastCont);
 	this.ui.createTInput("userpass","","",this.ui.lastCont);
 	this.ui.inputs.h["userpass"].set_displayAsPassword(true);
-	this.ui.createSpacer("line-nomail",10,false,this.ui.lastCont);
+	this.ui.createSpacer("line-nomail",5,false,this.ui.lastCont);
 	this.ui.createButton("btlogin",com_tilbuci_data_Global.ln.get("window-login-button"),$bind(this,this.onEnter),this.ui.lastCont);
+	this.ui.createSpacer("before-nomail",20,true,this.ui.lastCont);
 	if(!com_tilbuci_data_Global.validEmail) {
-		this.ui.createSpacer("before-nomail",30,true,this.ui.lastCont);
 		this.ui.createDescription("about-nomail",com_tilbuci_data_Global.ln.get("window-login-noemail"),"",this.ui.lastCont);
 	} else {
-		this.ui.createSpacer("before-nomail",50,true,this.ui.lastCont);
 		this.ui.createButton("btrecover",com_tilbuci_data_Global.ln.get("window-login-recover"),$bind(this,this.onRecover),this.ui.lastCont);
 	}
 	this.addForm(com_tilbuci_data_Global.ln.get("window-login-title"),this.ui.lastCont);
@@ -61077,6 +61105,16 @@ com_tilbuci_ui_window_WindowLogin.prototype = $extend(com_tilbuci_ui_window_Popu
 			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-login-title"),com_tilbuci_data_Global.ln.get("window-login-passwordno"),250,170,this.stage);
 			break;
 		}
+	}
+	,onSite: function(evt) {
+		var req = new openfl_net_URLRequest("https://tilbuci.com.br/");
+		req.method = "GET";
+		openfl_Lib.getURL(req);
+	}
+	,onDiscord: function(evt) {
+		var req = new openfl_net_URLRequest("http://discord.tilbuci.com.br/");
+		req.method = "GET";
+		openfl_Lib.getURL(req);
 	}
 	,onEnter: function(evt) {
 		if(this.ui.inputs.h["username"].get_text() != "" && this.ui.inputs.h["userpass"].get_text() != "") {
@@ -64059,7 +64097,6 @@ com_tilbuci_ui_window_contraptions_WindowContrInterf.prototype = $extend(com_til
 				this.ui.containers.h["rightcol"].addChild(this.ui.containers.h["playback"]);
 				this.ui.labels.h["playbackcon"].set_width(this.ui.labels.h["playgrpos"].set_width(this.ui.labels.h["progressgrpos"].set_width(450)));
 				this.ui.labels.h["playgr"].set_width(this.ui.labels.h["pausegr"].set_width(this.ui.labels.h["progressgr"].set_width(450)));
-				this.ui.labels.h["progresstx"].set_width(450);
 				this.ui.buttons.h["playback"].set_width(450);
 				this.ui.hcontainers.h["playgrpos"].setWidth(450,[60,145,60,145]);
 				this.ui.hcontainers.h["progressgrpos"].setWidth(450,[60,145,60,145]);
@@ -64084,7 +64121,6 @@ com_tilbuci_ui_window_contraptions_WindowContrInterf.prototype = $extend(com_til
 				this.ui.numerics.h["playgrposy"].set_value(plopt.bty);
 				this.ui.numerics.h["progressgrposx"].set_value(plopt.prx);
 				this.ui.numerics.h["progressgrposy"].set_value(plopt.pry);
-				this.ui.toggles.h["progresstx"].set_selected(plopt.txt);
 				break;
 			case "spritemap":
 				this.ui.containers.h["rightcol"].addChild(this.ui.containers.h["spritemap"]);
@@ -64208,8 +64244,7 @@ com_tilbuci_ui_window_contraptions_WindowContrInterf.prototype = $extend(com_til
 				var tmp2 = this.ui.numerics.h["playgrposy"].get_value();
 				var tmp3 = this.ui.numerics.h["progressgrposx"].get_value();
 				var tmp4 = this.ui.numerics.h["progressgrposy"].get_value();
-				var tmp5 = this.ui.toggles.h["progresstx"].get_selected();
-				tmp.get_selectedItem().value.options = com_tilbuci_statictools_StringStatic.jsonStringify({ btx : tmp1, bty : tmp2, prx : tmp3, pry : tmp4, txt : tmp5});
+				tmp.get_selectedItem().value.options = com_tilbuci_statictools_StringStatic.jsonStringify({ btx : tmp1, bty : tmp2, prx : tmp3, pry : tmp4, txt : false});
 				this.redrawElementsList();
 				break;
 			case "spritemap":
@@ -156070,7 +156105,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 112855;
+	this.version = 433637;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";

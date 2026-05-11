@@ -1,0 +1,1 @@
+{"snippet1":"[\n  {\n    \"ac\": \"scene.load\",\n    \"param\": [\n      \"3a9671b200e21a225de2744466018fe2\"\n    ]\n  }\n]","snippet2":"[\n  {\n    \"ac\": \"scene.pause\",\n    \"param\": []\n  },\n  {\n    \"ac\": \"scene.loadfirstkeyframe\",\n    \"param\": []\n  }\n]"}

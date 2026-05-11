@@ -178,7 +178,10 @@
 	"menu-movie-notes": "Design notes", 
 	"menu-movie-qr": "QR Code", 
 	
-	"window-login-title": "Login", 
+	"window-login-title": "TilBuci login", 
+	"window-login-about": "Welcome to TilBuci, a free tool for creating interactive digital content. To learn more about the software, watch some tutorials, and get your questions answered, why not join our Discord server and chat with other users?", 
+	"window-login-site": "Access tilbuci.com.br", 
+	"window-login-discord": "Join the Discord server", 
 	"window-login-username": "Your e-mail", 
 	"window-login-password": "Your password", 
 	"window-login-button": "Enter", 

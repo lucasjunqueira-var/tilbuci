@@ -84,6 +84,12 @@ if [ -f "events/events.txt" ]; then
 else
     echo "WARNING: events/events.txt not found, skipping."
 fi
+# Add third party libraries
+if [ -f "third/qrcode.php" ]; then
+    zip -r "$PART1_ZIP" third/qrcode.php
+else
+    echo "WARNING: third party libraries not found, skipping."
+fi
 # Add export folders
 for folder in desktop iframe mobile publish pwa runtimes site; do
     if [ -d "export/$folder" ]; then

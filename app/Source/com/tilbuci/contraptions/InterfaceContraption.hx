@@ -449,9 +449,11 @@ class InterfaceContraption extends Sprite {
     private function updatePlayback():Void {
         if (this._useProgress) {
             if (this._pbinst != null) {
-                this._prmask.height = this._prgraphic.height;
-                this._prmask.width = this._prgraphic.width * this._pbinst.getTime() / this._pbinst.getTotalTime();
-                this._progress.visible = true;
+                if (this._pbinst.playing) {
+                    this._prmask.height = this._prgraphic.height;
+                    this._prmask.width = this._prgraphic.width * this._pbinst.getTime() / this._pbinst.getTotalTime();
+                    this._progress.visible = true;
+                }
             } else if (this._pbscene) {
                 this._prmask.height = this._prgraphic.height;
                 this._prmask.width = this._prgraphic.width * GlobalPlayer.area.currentKf / GlobalPlayer.movie.scene.keyframes.length;

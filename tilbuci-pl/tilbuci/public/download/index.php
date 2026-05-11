@@ -17,6 +17,7 @@ if (isset($_GET['a'])) {
 		$path = '';
 		$mime = '';
 		$name = '';
+		$image = '';
 		switch (trim($_GET['file'])) {
             case 'snippets':
                 if (isset($_GET['movie']) && isset($_GET['media'])) {
@@ -116,11 +117,34 @@ if (isset($_GET['a'])) {
                     }
                 }
                 break;
+			case 'qrcode':
+                if (isset($_GET['link']) && isset($_GET['name'])) {
+					$link = base64_decode($_GET['link']);
+					if ($link !== false) {
+						require_once('../../third/qrcode.php');
+						$qr = new QRCode($link, [ 'w' => 2048, 'h' => 2048 ]);
+						$image = $qr->render_image();
+						$mime = 'qrcode';
+						$name = 'qrcode-' . trim($_GET['name']) . '.png';
+					}
+                }
+                break;
 			default:
 				http_response_code(404); 
 				exit();
 		}
 		if ($mime == '') {
+			exit();
+		} else if ($mime == 'qrcode') {
+			// download qrcode png
+			header("Content-Type: image/png");
+			header("Content-Transfer-Encoding: Binary");
+			header("Content-disposition: attachment; filename=\"" . $name . "\"");
+			header("Expires: 0"); 
+            header("Cache-Control: must-revalidate"); 
+            header("Pragma: public"); 
+			imagepng($image);
+			imagedestroy($image);
 			exit();
 		} else {
 			// download file

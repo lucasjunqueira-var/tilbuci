@@ -3,7 +3,7 @@
  * Plugin Name: TilBuci
  * Plugin URI: https://plugin.tilbuci.com.br/
  * Description: Integrate TilBuci interactive content creation tool into WordPress.
- * Version: 21.0.0
+ * Version: 22.0.0
  * Author: Lucas Junqueira
  * License: MPL-2.0
  * License URI: https://mozilla.org/MPL/2.0/
@@ -25,7 +25,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('TILBUCI_WP_VERSION', '21.0.0');
+define('TILBUCI_WP_VERSION', '22.0.0');
 define('TILBUCI_WP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('TILBUCI_WP_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('TILBUCI_WP_BASENAME', plugin_basename(__FILE__));

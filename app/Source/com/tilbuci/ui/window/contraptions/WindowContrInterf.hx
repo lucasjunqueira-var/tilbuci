@@ -517,7 +517,7 @@ class WindowContrInterf extends PopupWindow {
                     this.ui.containers['rightcol'].addChild(this.ui.containers['playback']);
                     this.ui.labels['playbackcon'].width = this.ui.labels['playgrpos'].width = this.ui.labels['progressgrpos'].width = 450;
                     this.ui.labels['playgr'].width = this.ui.labels['pausegr'].width = this.ui.labels['progressgr'].width = 450;
-                    this.ui.labels['progresstx'].width = 450;
+                    //this.ui.labels['progresstx'].width = 450;
                     this.ui.buttons['playback'].width = 450;
                     this.ui.hcontainers['playgrpos'].setWidth(450, [ 60, 145, 60, 145 ]);
                     this.ui.hcontainers['progressgrpos'].setWidth(450, [ 60, 145, 60, 145 ]);
@@ -538,9 +538,7 @@ class WindowContrInterf extends PopupWindow {
                     this.ui.numerics['playgrposy'].value = cast plopt.bty;
                     this.ui.numerics['progressgrposx'].value = cast plopt.prx;
                     this.ui.numerics['progressgrposy'].value = cast plopt.pry;
-                    this.ui.toggles['progresstx'].selected = cast plopt.txt;
-
-
+                    //this.ui.toggles['progresstx'].selected = cast plopt.txt;
                 case 'background':
                     this.ui.containers['rightcol'].addChild(this.ui.containers['background']);
                     this.ui.labels['backgroundset'].width = this.ui.buttons['backgroundset'].width = 450;
@@ -655,7 +653,7 @@ class WindowContrInterf extends PopupWindow {
                         bty: this.ui.numerics['playgrposy'].value, 
                         prx: this.ui.numerics['progressgrposx'].value, 
                         pry: this.ui.numerics['progressgrposy'].value, 
-                        txt: this.ui.toggles['progresstx'].selected
+                        txt: false, //this.ui.toggles['progresstx'].selected
                     });
                     this.redrawElementsList();
                 case 'background':
