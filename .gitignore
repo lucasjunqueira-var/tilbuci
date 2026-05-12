@@ -33,5 +33,6 @@ server/export/*
 portable-app/phplinux
 portable-app/phpmac
 portable-app/phpwindows.exe
+portable-app/package-lock.json
 portable-app/out/
 portable-app/node_modules/
