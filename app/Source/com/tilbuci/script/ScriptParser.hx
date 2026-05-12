@@ -1323,7 +1323,6 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
-
                     case 'system.getqr':
                         if (param.length >= 3) {
                             if (ExternBrowser.TBB_callJs('TBQR_start', [ ])) {
@@ -1346,7 +1345,6 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
-
 
                     // runtime actions
                     case 'runtime.quit':

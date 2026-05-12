@@ -1,0 +1,13 @@
+﻿{
+	"version": "15", 
+	"build": "202509271100", 
+	"languages": {
+		"default": "English"
+	}, 
+	"thanks": [
+		"Álvaro Andrade Garcia", 
+		"Chico Marinho", 
+		"Lucas Nascimento", 
+		"Marília Lyra Bergamo"
+	]
+}

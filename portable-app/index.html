@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>TilBuci Launcher</title>
+	<script>
+		// fetching url
+		async function checkOK(url) {
+		  try {
+			const answer = await fetch(url);
+			if (!answer.ok) throw new Error('error');
+			const text = await answer.text();
+			return text.trim() === "ok";
+		  } catch (error) {
+			return false;
+		  }
+		}
+		// check server
+		function checkServer() {
+			checkOK('http://localhost:51804/ws/launcher.php?pg=check').then(result => {
+				if (result) {
+				  window.location = 'http://localhost:51804/ws/launcher.php?pg=home';
+				} else {
+				  alert('TilBuci launcher failed to start correctly. If you received a message from your system asking you to allow connections to PHP or port 51804, please allow and restart this application.');
+				}
+			});
+		}
+		// checking server after 4 seconds
+		setTimeout(checkServer, 4000);
+	</script>
+	<style>
+		body, html {
+			padding: 0;
+			margin: 0;
+			box-sizing: border-box;
+			background-color: #000000;
+			color: #a9602e;
+			text-align: center;
+			font-weight: bold;
+			font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+			font-size: 20px;
+		}
+		#start {
+			position: absolute;
+			top: 45%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			text-align: center;
+		}
+		#gif {
+			border: none;
+			margin-bottom: -10px;
+		}
+	</style>
+  </head>
+  <body>
+	<div id="start">
+		<img id="gif" src="images/TilBuci.gif" />
+		<p>Starting TilBuci</p>
+	</div>
+  </body>
+</html>
