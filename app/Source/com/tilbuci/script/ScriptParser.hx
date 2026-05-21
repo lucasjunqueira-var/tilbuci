@@ -58,6 +58,7 @@ import com.tilbuci.data.GlobalPlayer;
 import com.tilbuci.statictools.StringStatic;
 import openfl.display.StageDisplayState;
 import openfl.Lib;
+import haxe.crypto.Base64;
 
 class ScriptParser {
 
@@ -143,6 +144,11 @@ class ScriptParser {
     private var _acError:Dynamic;
 
     /**
+        qr code reading actions on hold
+    **/
+    private var _acQR:Dynamic;
+
+    /**
         last event sent
     **/
     private var _lastEvent:Map<String, String> = [ ];
@@ -176,6 +182,11 @@ class ScriptParser {
         current snippets group
     **/
     private var _sngroup:String = '';
+
+    /**
+        last qr code read
+    **/
+    private var _lastqr:String = '';
 
     /**
         instance being dragged
@@ -1325,6 +1336,9 @@ class ScriptParser {
                         }
                     case 'system.getqr':
                         if (param.length >= 3) {
+                            this._lastqr = '';
+                            this._acQR = null;
+                            if (Reflect.hasField(inf, 'complete')) this._acQR = Reflect.field(inf, 'complete');
                             if (ExternBrowser.TBB_callJs('TBQR_start', [ ])) {
                                 GlobalPlayer.contraptions.showQR(
                                     this.parseInt(param[0]), 
@@ -1341,6 +1355,7 @@ class ScriptParser {
                     case 'system.closeqr':
                         if (ExternBrowser.TBB_callJs('TBQR_stop', [ ])) {
                             GlobalPlayer.contraptions.hideQR();
+                            this._acQR = null;
                             return (true);
                         } else {
                             return (false);
@@ -4705,6 +4720,7 @@ class ScriptParser {
         var snippet:String = '';
         var movie:String = '';
         var scene:String = '';
+        var vars:String = '';
         var snstart:Int = code.indexOf('sn=');
         var snend:Int = -1;
 
@@ -4746,6 +4762,32 @@ class ScriptParser {
             if (scene != '') found = true;
         }
 
+        snstart = code.indexOf('vars=');
+        if (snstart != -1) {
+            snstart += 'vars='.length;
+            snend = code.indexOf('&', snstart);
+            if (snend != -1) {
+                vars = code.substr(snstart, (snend - snstart));
+            } else {
+                vars = code.substr(snstart);
+            }
+            if (vars != '') {
+                var b64:String;
+                try {
+                    b64 = Base64.decode(vars).toString();
+                } catch (e) {
+                    b64 = null;
+                }
+                if (b64 != null) {
+                    var json:Map<String, Dynamic> = StringStatic.jsonAsMap(b64);
+                    for (k in json.keys()) {
+                        this._strings[k] = cast json[k];
+                    }
+                }
+                found = true;
+            }
+        }
+
         if (found) {
             if ((movie != GlobalPlayer.movie.mvId) && (movie != '')) {
                 Reflect.setField(Main, 'scene', scene);
@@ -4764,6 +4806,14 @@ class ScriptParser {
             }
         }
         return (found);
+    }
+
+    /**
+        A QR code was just read.
+    **/
+    public function qrComplete():Void {
+        if (this._acQR != null) this.run(this._acQR, true);
+        this._acQR = null;
     }
 
     /**
@@ -5026,8 +5076,7 @@ class ScriptParser {
         if (GlobalPlayer.parser.parseQR(qrtext)) {
             if (ExternBrowser.TBB_callJs('TBQR_stop', [ ])) {
                 GlobalPlayer.contraptions.hideQR();
-            } else {
-                trace ('sem qr stop');
+                GlobalPlayer.parser.qrComplete();
             }
         }
     }

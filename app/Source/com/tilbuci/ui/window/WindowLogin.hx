@@ -20,6 +20,7 @@ import com.tilbuci.ui.window.PopupWindow;
 import com.tilbuci.statictools.StringStatic;
 import com.tilbuci.data.Global;
 import com.tilbuci.statictools.Assets;
+import com.tilbuci.ui.base.InterfaceFactory;
 
 class WindowLogin extends PopupWindow {
 
@@ -37,9 +38,9 @@ class WindowLogin extends PopupWindow {
 
         // creating window
         if (!Global.validEmail) {
-            super(ac, Global.ln.get('window-login-title'), 500, 560, false, false);
+            super(ac, Global.ln.get('window-login-title'), 500, InterfaceFactory.pickValue(560, 590), false, false);
         } else {
-            super(ac, Global.ln.get('window-login-title'), 500, 530, false, false);
+            super(ac, Global.ln.get('window-login-title'), 500, InterfaceFactory.pickValue(530, 560), false, false);
         }
 
         // welcome graphic

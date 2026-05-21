@@ -88,7 +88,7 @@ class WindowMovieProperties extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-movieprop-title'), 1200, InterfaceFactory.pickValue(570, 620), true, true, true);
+        super(ac, Global.ln.get('window-movieprop-title'), 1200, InterfaceFactory.pickValue(570, 670), true, true, true);
     }
 
     /**

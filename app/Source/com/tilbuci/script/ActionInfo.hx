@@ -998,7 +998,7 @@ class ActionInfo {
                     { t: 'i', n: Global.ln.get('acinfo-systemgetqr-p1'), v: '' }, 
                     { t: 'i', n: Global.ln.get('acinfo-systemgetqr-p2'), v: '' }, 
                     { t: 'i', n: Global.ln.get('acinfo-systemgetqr-p3'), v: '' }
-                ], e: [ ] }, 
+                ], e: [ 'complete' ] }, 
                 { n: Global.ln.get('acinfo-systemcloseqr'), a: 'system.closeqr', p: [ ], e: [ ] }, 
 
                 { n: Global.ln.get('acinfo-cssset'), a: 'css.set', p: [

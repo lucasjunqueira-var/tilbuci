@@ -938,7 +938,7 @@ ApplicationMain.main = function() {
 };
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
-	app.meta.h["build"] = "123";
+	app.meta.h["build"] = "126";
 	app.meta.h["company"] = "VAR";
 	app.meta.h["file"] = "TilBuci";
 	app.meta.h["name"] = "TilBuci";
@@ -35066,7 +35066,7 @@ var com_tilbuci_script_ActionInfo = function() {
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbinstance-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-instancemorezoom"), a : "instance.morezoom", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancemorezoom-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancemorezoom-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancelesszoom"), a : "instance.lesszoom", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancelesszoom-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancelesszoom-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearzoom"), a : "instance.clearzoom", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearzoom-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveup"), a : "instance.moveup", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveup-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveup-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancemovedown"), a : "instance.movedown", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancemovedown-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancemovedown-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveleft"), a : "instance.moveleft", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveleft-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveleft-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveright"), a : "instance.moveright", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveright-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveright-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearmove"), a : "instance.clearmove", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearmove-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancestartdrag"), a : "instance.startdrag", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancestartdrag-p1"), v : "instances"}], e : ["complete"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancestopdrag"), a : "instance.stopdrag", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceisoverlapping"), a : "instance.isoverlapping", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceisoverlapping-p1"), v : "instances"},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceisoverlapping-p2"), v : "instances"}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancepause"), a : "instance.pause", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancepause-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceplay"), a : "instance.play", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceplay-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceplaypause"), a : "instance.playpause", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceplaypause-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancestop"), a : "instance.stop", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancestop-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancenext"), a : "instance.next", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancenext-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceprevious"), a : "instance.previous", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceprevious-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceseek"), a : "instance.seek", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceseek-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instanceseek-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancezoom"), a : "instance.zoom", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancezoom-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetparagraph"), a : "instance.setparagraph", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetparagraph-p1"), v : "instances"},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetparagraph-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceloadasset"), a : "instance.loadasset", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceloadasset-p1"), v : "instances"},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceloadasset-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetx"), a : "instance.setx", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetx-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetx-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesety"), a : "instance.sety", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesety-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesety-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetwidth"), a : "instance.setwidth", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetwidth-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetwidth-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetheight"), a : "instance.setheight", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetheight-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetheight-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetvisible"), a : "instance.setvisible", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetvisible-p1"), v : "instances"},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetvisible-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetalpha"), a : "instance.setalpha", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetalpha-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetalpha-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetwidth"), a : "instance.setwidth", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetwidth-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetwidth-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetorder"), a : "instance.setorder", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetorder-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetorder-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetcolor"), a : "instance.setcolor", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetcolor-p1"), v : "instances"},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetcolor-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetcoloralpha"), a : "instance.setcoloralpha", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetcoloralpha-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetcoloralpha-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfont"), a : "instance.setfont", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfont-p1"), v : "instances"},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfont-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontsize"), a : "instance.setfontsize", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontsize-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontsize-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontalign"), a : "instance.setfontalign", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontalign-p1"), v : "instances"},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontalign-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontbackground"), a : "instance.setfontbackground", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontbackground-p1"), v : "instances"},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontbackground-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontbold"), a : "instance.setfontbold", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontbold-p1"), v : "instances"},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontbold-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontitalic"), a : "instance.setfontitalic", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontitalic-p1"), v : "instances"},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontitalic-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontcolor"), a : "instance.setfontcolor", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontcolor-p1"), v : "instances"},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontcolor-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontleading"), a : "instance.setfontleading", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontleading-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontleading-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetvolume"), a : "instance.setvolume", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetvolume-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetvolume-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetrotation"), a : "instance.setrotation", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetrotation-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetrotation-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancescrolldown"), a : "instance.scrolldown", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancescrolldown-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancescrollup"), a : "instance.scrollup", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancescrollup-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancescrollbottom"), a : "instance.scrollbottom", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancescrollbottom-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancescrolltop"), a : "instance.scrolltop", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancescrolltop-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearall"), a : "instance.clearall", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearall-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearx"), a : "instance.clearx", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearx-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancecleary"), a : "instance.cleary", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancecleary-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearwidth"), a : "instance.clearwidth", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearwidth-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearheight"), a : "instance.clearheight", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearheight-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearvisible"), a : "instance.clearvisible", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearvisible-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearalpha"), a : "instance.clearalpha", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearalpha-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearwidth"), a : "instance.clearwidth", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearwidth-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearorder"), a : "instance.clearorder", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearorder-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearcolor"), a : "instance.clearcolor", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearcolor-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearcoloralpha"), a : "instance.clearcoloralpha", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearcoloralpha-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfont"), a : "instance.clearfont", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfont-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontsize"), a : "instance.clearfontsize", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontsize-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontalign"), a : "instance.clearfontalign", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontalign-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontbackground"), a : "instance.clearfontbackground", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontbackground-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontbold"), a : "instance.clearfontbold", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontbold-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontitalic"), a : "instance.clearfontitalic", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontitalic-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontcolor"), a : "instance.clearfontcolor", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontcolor-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontleading"), a : "instance.clearfontleading", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontleading-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearvolume"), a : "instance.clearvolume", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearvolume-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearrotation"), a : "instance.clearrotation", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearrotation-p1"), v : "instances"}], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbdata-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-dataevent"), a : "data.event", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-dataevent-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-dataeventclear"), a : "data.eventclear", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-dataliststates"), a : "data.liststates", p : [], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-dataload"), a : "data.load", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-dataload-p1"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-dataloadlocal"), a : "data.loadlocal", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-dataloadlocal-p1"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-dataloadquickstate"), a : "data.loadquickstate", p : [], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-dataloadstatelocal"), a : "data.loadstatelocal", p : [], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-datasave"), a : "data.save", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-datasave-p1"), v : ""},{ t : "v", n : com_tilbuci_data_Global.ln.get("acinfo-datasave-p2"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-datasavelocal"), a : "data.savelocal", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-datasavelocal-p1"), v : ""},{ t : "v", n : com_tilbuci_data_Global.ln.get("acinfo-datasavelocal-p2"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-datasavestate"), a : "data.savestate", p : [], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-datasavequickstate"), a : "data.savequickstate", p : [], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-datasavestatelocal"), a : "data.savestatelocal", p : [], e : ["success","error"]}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbinput-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-targetshow"), a : "target.show", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-targethide"), a : "target.hide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-targettoggle"), a : "target.toggle", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-targetsetposition"), a : "target.setposition", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-targetsetposition-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-targetsetposition-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-targetclear"), a : "target.clear", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-targetset"), a : "target.set", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-targetset-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-mousehide"), a : "mouse.hide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-mouseshow"), a : "mouse.show", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputmessage"), a : "input.message", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputmessage-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputmessage-p2"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputstring"), a : "input.string", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputstring-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputstring-p2"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputint"), a : "input.int", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputint-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputint-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputint-p3"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputint-p4"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputint-p5"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputfloat"), a : "input.float", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputfloat-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputfloat-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputfloat-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputfloat-p4"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputfloat-p5"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputlist"), a : "input.list", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputlist-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputlist-p2"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputlist-p3"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputlist-p4"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputlogin"), a : "input.login", p : [], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputemail"), a : "input.email", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputemail-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputemail-p2"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputadd"), a : "input.add", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputadd-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputadd-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputadd-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputadd-p4"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-inputadd-p5"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputplace"), a : "input.place", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputplace-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplace-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplace-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplace-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputsettext"), a : "input.settext", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsettext-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsettext-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputsetpassword"), a : "input.setpassword", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetpassword-p1"), v : ""},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetpassword-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputremove"), a : "input.remove", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputremove-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputremoveall"), a : "input.removeall", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputaddtarea"), a : "input.addtarea", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddtarea-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddtarea-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddtarea-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddtarea-p4"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddtarea-p5"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetarea"), a : "input.placetarea", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetarea-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetarea-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetarea-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetarea-p4"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetarea-p5"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputsettextarea"), a : "input.settextarea", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsettextarea-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsettextarea-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputremovetarea"), a : "input.removetarea", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputremovetarea-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputremovealltareas"), a : "input.removealltareas", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputaddnumeric"), a : "input.addnumeric", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddnumeric-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddnumeric-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddnumeric-p3"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddnumeric-p4"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddnumeric-p5"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputplacenumeric"), a : "input.placenumeric", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacenumeric-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacenumeric-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacenumeric-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacenumeric-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumeric"), a : "input.setnumeric", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumeric-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumeric-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumericbounds"), a : "input.setnumericbounds", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumericbounds-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumericbounds-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumericbounds-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumericbounds-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputremovenumeric"), a : "input.removenumeric", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputremovenumeric-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputremoveallnumerics"), a : "input.removeallnumerics", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputaddaddtoggle"), a : "input.addtoggle", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddaddtoggle-p1"), v : ""},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddaddtoggle-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddaddtoggle-p3"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddaddtoggle-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetoggle"), a : "input.placetoggle", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetoggle-p1"), v : ""},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetoggle-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetoggle-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputsettoggle"), a : "input.settoggle", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsettoggle-p1"), v : ""},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-inputsettoggle-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputinverttoggle"), a : "input.inverttoggle", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputinverttoggle-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputremovetoggle"), a : "input.removetoggle", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputremovetoggle-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputrremovealltoggles"), a : "input.removealltoggles", p : [], e : []}]));
-	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbsystem-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-run"), a : "run", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-run-p1"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p2"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p3"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p4"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p5"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p6"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p7"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p8"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-snippetsload"), a : "snippets.load", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-snippetsload-p1"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-snippetsunload"), a : "snippets.unload", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-snippetsunload-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemfullscreen"), a : "system.fullscreen", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemopenembed"), a : "system.openembed", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemopenembed-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow"), a : "system.embedshow", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p4"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p5"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemembedtab"), a : "system.embedtab", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemembedtab-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcloseembed"), a : "system.closeembed", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace"), a : "system.embedplace", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemembedreset"), a : "system.embedreset", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemopenurl"), a : "system.openurl", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemopenurl-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcopytext"), a : "system.copytext", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemcopytext-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifhorizontal"), a : "system.ifhorizontal", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifvertical"), a : "system.ifvertical", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifwebsite"), a : "system.ifwebsite", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifpwa"), a : "system.ifpwa", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifpwainstalled"), a : "system.ifpwainstalled", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifdesktop"), a : "system.ifdesktop", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifmobile"), a : "system.ifmobile", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifpublish"), a : "system.ifpublish", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifplayer"), a : "system.ifplayer", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemvisitoringroup"), a : "system.visitoringroup", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemvisitoringroup-p1"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemlogout"), a : "system.logout", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsendevent"), a : "system.sendevent", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemsendevent-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsetkftime"), a : "system.setkftime", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemsetkftime-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcalljs"), a : "system.calljs", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemcalljs-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr"), a : "system.getqr", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcloseqr"), a : "system.closeqr", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-cssset"), a : "css.set", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-cssset-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-cssclear"), a : "css.clear", p : [], e : []}]));
+	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbsystem-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-run"), a : "run", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-run-p1"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p2"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p3"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p4"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p5"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p6"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p7"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p8"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-snippetsload"), a : "snippets.load", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-snippetsload-p1"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-snippetsunload"), a : "snippets.unload", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-snippetsunload-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemfullscreen"), a : "system.fullscreen", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemopenembed"), a : "system.openembed", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemopenembed-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow"), a : "system.embedshow", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p4"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p5"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemembedtab"), a : "system.embedtab", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemembedtab-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcloseembed"), a : "system.closeembed", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace"), a : "system.embedplace", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemembedreset"), a : "system.embedreset", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemopenurl"), a : "system.openurl", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemopenurl-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcopytext"), a : "system.copytext", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemcopytext-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifhorizontal"), a : "system.ifhorizontal", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifvertical"), a : "system.ifvertical", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifwebsite"), a : "system.ifwebsite", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifpwa"), a : "system.ifpwa", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifpwainstalled"), a : "system.ifpwainstalled", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifdesktop"), a : "system.ifdesktop", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifmobile"), a : "system.ifmobile", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifpublish"), a : "system.ifpublish", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifplayer"), a : "system.ifplayer", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemvisitoringroup"), a : "system.visitoringroup", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemvisitoringroup-p1"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemlogout"), a : "system.logout", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsendevent"), a : "system.sendevent", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemsendevent-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsetkftime"), a : "system.setkftime", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemsetkftime-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcalljs"), a : "system.calljs", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemcalljs-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr"), a : "system.getqr", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr-p3"), v : ""}], e : ["complete"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcloseqr"), a : "system.closeqr", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-cssset"), a : "css.set", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-cssset-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-cssclear"), a : "css.clear", p : [], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbtimer-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-timerset"), a : "timer.set", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-timerset-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-timerset-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-timerset-p3"), v : ""}], e : ["tick","end"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-timerclear"), a : "timer.clear", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-timerclear-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-timerclearall"), a : "timer.clearall", p : [], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbreplace-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-replaceorigin"), a : "replace.origin", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-replaceorigin-p1"), v : "origins"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-replacesetstring"), a : "replace.setstring", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-replacesetstring-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-replacesetstring-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-replacesetfile"), a : "replace.setfile", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-replacesetfile-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-replacesetfile-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-replaceclearstring"), a : "replace.clearstring", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-replaceclearstring-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-replaceclearfile"), a : "replace.clearfile", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-replaceclearfile-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-replaceclearallstrings"), a : "replace.clearallstrings", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-replaceclearallfiles"), a : "replace.clearallfiles", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifreplacestringset"), a : "if.replacestringset", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifreplacestringset-p1"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifreplacefileset"), a : "if.replacefileset", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifreplacefileset-p1"), v : ""}], e : ["then","else"]}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbcontraptions-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-showmessage"), a : "contraption.message", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmessage-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmessage-p2"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmessage-p3"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmessage-p4"), v : ""}], e : ["select"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-hidemessage"), a : "contraption.messagehide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showmenu"), a : "contraption.menu", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p2"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p3"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p4"), v : "placement"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p5"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showmenu-p6"), v : ""}], e : ["select"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-hidemenu"), a : "contraption.menuhide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showcover"), a : "contraption.cover", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showcover-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hidecover"), a : "contraption.coverhide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showbg"), a : "contraption.background", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showbg-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hidebg"), a : "contraption.backgroundhide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showloading"), a : "contraption.showloading", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hideloading"), a : "contraption.hideloading", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-musicplay"), a : "contraption.musicplay", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-musicplay-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-musicpause"), a : "contraption.musicpause", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-musicstop"), a : "contraption.musicstop", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-musicvolume"), a : "contraption.musicvolume", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-musicvolume-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-soundplay"), a : "contraption.soundplay", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-soundplay-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-soundpause"), a : "contraption.soundpause", p : [{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-soundpause-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-soundstop"), a : "contraption.soundstop", p : [{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-soundstop-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-soundvolume"), a : "contraption.soundvolume", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-soundvolume-p1"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-soundvolume-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showform"), a : "contraption.form", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showform-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showform-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showform-p3"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-setformvalue"), a : "contraption.formvalue", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-setformvalue-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-setformvalue-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper"), a : "contraption.formsetstepper", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper-p3"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-setformstepper-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hideform"), a : "contraption.formhide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showinterf"), a : "contraption.interface", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showinterf-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showinterf-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-showinterf-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hideinterf"), a : "contraption.interfacehide", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-hideinterf-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-hideallinterf"), a : "contraption.interfacehideall", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interftext"), a : "contraption.interfacetext", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interftext-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interftext-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interfframe"), a : "contraption.interfaceanimframe", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfframe-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-interfframe-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interfplay"), a : "contraption.interfaceanimplay", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfplay-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interfpause"), a : "contraption.interfaceanimpause", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfpause-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interfpbinst"), a : "contraption.interfacepbinstance", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfpbinst-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfpbinst-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-interfpbscene"), a : "contraption.interfacepbscene", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-interfpbscene-p1"), v : ""}], e : []}]));
@@ -36317,6 +36317,7 @@ com_tilbuci_script_AssistVariables.prototype = $extend(com_tilbuci_script_Assist
 });
 var com_tilbuci_script_ScriptParser = function() {
 	this.onDrag = null;
+	this._lastqr = "";
 	this._sngroup = "";
 	this._dSnippets = new haxe_ds_StringMap();
 	this._currDiag = "";
@@ -36372,8 +36373,7 @@ com_tilbuci_script_ScriptParser.tilbuci_qrcodeget = $hx_exports["tilbuci_qrcodeg
 	if(com_tilbuci_data_GlobalPlayer.parser.parseQR(qrtext)) {
 		if(window.TBB_callJs("TBQR_stop",[])) {
 			com_tilbuci_data_GlobalPlayer.contraptions.hideQR();
-		} else {
-			haxe_Log.trace("sem qr stop",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 5032, className : "com.tilbuci.script.ScriptParser", methodName : "tilbuci_qrcodeget"});
+			com_tilbuci_data_GlobalPlayer.parser.qrComplete();
 		}
 	}
 };
@@ -36398,6 +36398,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 	,hadInteraction: null
 	,_acOk: null
 	,_acError: null
+	,_acQR: null
 	,_lastEvent: null
 	,_stringfile: null
 	,_snpParam: null
@@ -36405,6 +36406,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 	,_diagInfo: null
 	,_dSnippets: null
 	,_sngroup: null
+	,_lastqr: null
 	,onDrag: null
 	,getVarRef: function(type) {
 		switch(type) {
@@ -41076,6 +41078,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 				case "system.closeqr":
 					if(window.TBB_callJs("TBQR_stop",[])) {
 						com_tilbuci_data_GlobalPlayer.contraptions.hideQR();
+						this._acQR = null;
 						return true;
 					} else {
 						return false;
@@ -41131,6 +41134,11 @@ com_tilbuci_script_ScriptParser.prototype = {
 					return com_tilbuci_data_GlobalPlayer.fullscreen();
 				case "system.getqr":
 					if(param.length >= 3) {
+						this._lastqr = "";
+						this._acQR = null;
+						if(Object.prototype.hasOwnProperty.call(inf,"complete")) {
+							this._acQR = Reflect.field(inf,"complete");
+						}
 						if(window.TBB_callJs("TBQR_start",[])) {
 							com_tilbuci_data_GlobalPlayer.contraptions.showQR(this.parseInt(param[0]),this.parseInt(param[1]),this.parseInt(param[2]));
 							return true;
@@ -41950,6 +41958,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 		var snippet = "";
 		var movie = "";
 		var scene = "";
+		var vars = "";
 		var snstart = code.indexOf("sn=");
 		var snend = -1;
 		if(snstart != -1) {
@@ -41991,6 +42000,38 @@ com_tilbuci_script_ScriptParser.prototype = {
 				found = true;
 			}
 		}
+		snstart = code.indexOf("vars=");
+		if(snstart != -1) {
+			snstart += "vars=".length;
+			snend = code.indexOf("&",snstart);
+			if(snend != -1) {
+				vars = HxOverrides.substr(code,snstart,snend - snstart);
+			} else {
+				vars = HxOverrides.substr(code,snstart,null);
+			}
+			if(vars != "") {
+				var b64;
+				try {
+					b64 = haxe_crypto_Base64.decode(vars).toString();
+				} catch( _g ) {
+					b64 = null;
+				}
+				if(b64 != null) {
+					var json = com_tilbuci_statictools_StringStatic.jsonAsMap(b64);
+					var h = json.h;
+					var k_h = h;
+					var k_keys = Object.keys(h);
+					var k_length = k_keys.length;
+					var k_current = 0;
+					while(k_current < k_length) {
+						var k = k_keys[k_current++];
+						var v = json.h[k];
+						this._strings.h[k] = v;
+					}
+				}
+				found = true;
+			}
+		}
 		if(found) {
 			if(movie != com_tilbuci_data_GlobalPlayer.movie.get_mvId() && movie != "") {
 				Main["scene"] = scene;
@@ -42005,6 +42046,12 @@ com_tilbuci_script_ScriptParser.prototype = {
 			}
 		}
 		return found;
+	}
+	,qrComplete: function() {
+		if(this._acQR != null) {
+			this.run(this._acQR,true);
+		}
+		this._acQR = null;
 	}
 	,getValueObj: function(name) {
 		var varname = this.parseString(name).split(":");
@@ -44364,22 +44411,21 @@ var com_tilbuci_ui_PlayerControls = function(pl,ac) {
 	this._displayArea = this.ui.createHArea("left");
 	this._controls.addChild(this._displayArea);
 	this.ui.createIconButton("screen",$bind(this,this.onScreen),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btScreen")),null,this._displayArea);
-	this.ui.createSpacer("screen",10,false,this._displayArea);
+	this.ui.createSpacer("screen",10,false,this._displayArea,5);
 	this.ui.createIconButton("color",$bind(this,this.onColor),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btColors")),null,this._displayArea);
 	this.ui.createIconButton("focus",$bind(this,this.onFocus),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btFocus")),null,this._displayArea);
-	this._zoomArea = this.ui.createHArea("center");
-	this._controls.addChild(this._zoomArea);
-	this.ui.createIconButton("zoom+",$bind(this,this.onZoomP),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btZoomP")),null,this._zoomArea);
-	this.ui.createIconButton("zoom-",$bind(this,this.onZoomM),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btZoomM")),null,this._zoomArea);
-	this.ui.createIconButton("zoomfit",$bind(this,this.centerPlayer),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btZoomFit")),null,this._zoomArea);
-	this.ui.createIconButton("zoom100",$bind(this,this.onZoom100),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btZoom100")),null,this._zoomArea);
-	this._playArea = this.ui.createHArea("left");
-	this._controls.addChild(this._playArea);
-	this.ui.createIconButton("left",$bind(this,this.onLeft),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btLeft")),null,this._playArea);
-	this.ui.createLabel("keyframes","","",this._playArea);
-	this.ui.createIconButton("right",$bind(this,this.onRight),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btRight")),null,this._playArea);
-	this.ui.createIconButton("actions",$bind(this,this.onActions),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btSetup")),null,this._playArea);
-	this.ui.createIconButton("play",$bind(this,this.onPlay),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btPlay")),null,this._playArea);
+	this.ui.createSpacer("zoom",10,false,this._displayArea,5);
+	this.ui.createIconButton("zoom+",$bind(this,this.onZoomP),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btZoomP")),null,this._displayArea);
+	this.ui.createIconButton("zoom-",$bind(this,this.onZoomM),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btZoomM")),null,this._displayArea);
+	this.ui.createIconButton("zoomfit",$bind(this,this.centerPlayer),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btZoomFit")),null,this._displayArea);
+	this.ui.createIconButton("zoom100",$bind(this,this.onZoom100),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btZoom100")),null,this._displayArea);
+	this.ui.createSpacer("keyframes",10,false,this._displayArea,5);
+	this.ui.createIconButton("left",$bind(this,this.onLeft),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btLeft")),null,this._displayArea);
+	this.ui.createLabel("keyframes","","",this._displayArea);
+	this.ui.createIconButton("right",$bind(this,this.onRight),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btRight")),null,this._displayArea);
+	this.ui.createSpacer("play",10,false,this._displayArea,5);
+	this.ui.createIconButton("actions",$bind(this,this.onActions),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btSetup")),null,this._displayArea);
+	this.ui.createIconButton("play",$bind(this,this.onPlay),new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("btPlay")),null,this._displayArea);
 	this._movieInfo = new com_tilbuci_ui_component_MovieInfoDisplay($bind(this,this.updateInfo));
 	this._controls.addChild(this._movieInfo);
 	this.ui.buttons.h["screen"].set_toolTip(com_tilbuci_data_Global.ln.get("tooltip-playercontrols-screen"));
@@ -44393,6 +44439,8 @@ var com_tilbuci_ui_PlayerControls = function(pl,ac) {
 	this.ui.buttons.h["right"].set_toolTip(com_tilbuci_data_Global.ln.get("tooltip-playercontrols-right"));
 	this.ui.buttons.h["actions"].set_toolTip(com_tilbuci_data_Global.ln.get("tooltip-playercontrols-actions"));
 	this.ui.buttons.h["play"].set_toolTip(com_tilbuci_data_Global.ln.get("tooltip-playercontrols-play"));
+	this._drawTimer = new haxe_Timer(500);
+	this._drawTimer.run = $bind(this,this.updateSizes);
 };
 $hxClasses["com.tilbuci.ui.PlayerControls"] = com_tilbuci_ui_PlayerControls;
 com_tilbuci_ui_PlayerControls.__name__ = "com.tilbuci.ui.PlayerControls";
@@ -44403,6 +44451,7 @@ com_tilbuci_ui_PlayerControls.prototype = $extend(feathers_controls_VDividedBox.
 	,_scroller: null
 	,_player: null
 	,_movieInfo: null
+	,_drawTimer: null
 	,_displayArea: null
 	,_zoomArea: null
 	,_playArea: null
@@ -44545,11 +44594,16 @@ com_tilbuci_ui_PlayerControls.prototype = $extend(feathers_controls_VDividedBox.
 		}
 	}
 	,updateSizes: function() {
+		if(this._drawTimer != null) {
+			try {
+				this._drawTimer.stop();
+			} catch( _g ) {
+			}
+			this._drawTimer = null;
+		}
 		var totWidth = Math.round(this.get_width() - 20);
-		this._displayArea.set_width(Math.round(totWidth * 0.2));
-		this._zoomArea.set_width(Math.round(totWidth * 0.2));
-		this._playArea.set_width(Math.round(totWidth * 0.25));
-		this._movieInfo.set_width(totWidth - (this._displayArea.get_width() - this._zoomArea.get_width() - this._playArea.get_width()));
+		this._displayArea.set_width(Math.round(totWidth * 0.68));
+		this._movieInfo.set_width(totWidth - this._displayArea.get_width());
 	}
 	,__class__: com_tilbuci_ui_PlayerControls
 });
@@ -46964,7 +47018,10 @@ var com_tilbuci_ui_base_InterfaceFactory = function(padding) {
 $hxClasses["com.tilbuci.ui.base.InterfaceFactory"] = com_tilbuci_ui_base_InterfaceFactory;
 com_tilbuci_ui_base_InterfaceFactory.__name__ = "com.tilbuci.ui.base.InterfaceFactory";
 com_tilbuci_ui_base_InterfaceFactory.pickValue = function(desktop,mobile) {
-	if(feathers_utils_DeviceUtil.isMobile()) {
+	var ua = $global.navigator.userAgent.toLowerCase();
+	if(ua.indexOf("android") != -1 && ua.indexOf("mobile") == -1) {
+		return mobile;
+	} else if(ua.indexOf("ipad") != -1) {
 		return mobile;
 	} else {
 		return desktop;
@@ -47269,7 +47326,10 @@ com_tilbuci_ui_base_InterfaceFactory.prototype = {
 			return false;
 		}
 	}
-	,createSpacer: function(id,ht,line,holder) {
+	,createSpacer: function(id,ht,line,holder,wd) {
+		if(wd == null) {
+			wd = 10;
+		}
 		if(line == null) {
 			line = false;
 		}
@@ -47277,7 +47337,7 @@ com_tilbuci_ui_base_InterfaceFactory.prototype = {
 			ht = 10;
 		}
 		var sp = new feathers_core_MeasureSprite();
-		sp.set_width(10);
+		sp.set_width(wd);
 		sp.set_height(ht);
 		if(line) {
 			var posline = Math.ceil(ht / 2);
@@ -61045,9 +61105,9 @@ com_tilbuci_ui_menu_MenuScene.prototype = $extend(com_tilbuci_ui_menu_DrawerMenu
 });
 var com_tilbuci_ui_window_WindowLogin = function(ac) {
 	if(!com_tilbuci_data_Global.validEmail) {
-		com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-login-title"),500,560,false,false);
+		com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-login-title"),500,com_tilbuci_ui_base_InterfaceFactory.pickValue(560,590),false,false);
 	} else {
-		com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-login-title"),500,530,false,false);
+		com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-login-title"),500,com_tilbuci_ui_base_InterfaceFactory.pickValue(530,560),false,false);
 	}
 	var buci = new openfl_display_Bitmap(com_tilbuci_statictools_Assets.getBitmapData("welcome"));
 	buci.smoothing = true;
@@ -61160,7 +61220,7 @@ var com_tilbuci_ui_window_WindowNotes = function(ac) {
 	this._scene = [];
 	this._movie = [];
 	this._guideline = [];
-	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-notes-title"),1000,com_tilbuci_ui_base_InterfaceFactory.pickValue(570,600),true,true);
+	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-notes-title"),1000,com_tilbuci_ui_base_InterfaceFactory.pickValue(570,630),true,true);
 	var tmp = com_tilbuci_data_Global.ln.get("window-notes-movie");
 	var tmp1 = this.ui;
 	var tmp2 = com_tilbuci_data_Global.ln.get("window-notes-btguidelines");
@@ -69416,7 +69476,7 @@ com_tilbuci_ui_window_media_WindowTimedAction.prototype = $extend(com_tilbuci_ui
 	,__class__: com_tilbuci_ui_window_media_WindowTimedAction
 });
 var com_tilbuci_ui_window_movie_WindowMovieNew = function(ac) {
-	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-movienew-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(430,475),false);
+	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-movienew-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(430,520),false);
 };
 $hxClasses["com.tilbuci.ui.window.movie.WindowMovieNew"] = com_tilbuci_ui_window_movie_WindowMovieNew;
 com_tilbuci_ui_window_movie_WindowMovieNew.__name__ = "com.tilbuci.ui.window.movie.WindowMovieNew";
@@ -69505,7 +69565,7 @@ com_tilbuci_ui_window_movie_WindowMovieNew.prototype = $extend(com_tilbuci_ui_wi
 	,__class__: com_tilbuci_ui_window_movie_WindowMovieNew
 });
 var com_tilbuci_ui_window_movie_WindowMovieOpen = function(ac) {
-	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-movieopen-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(415,435),false);
+	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-movieopen-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(415,460),false);
 };
 $hxClasses["com.tilbuci.ui.window.movie.WindowMovieOpen"] = com_tilbuci_ui_window_movie_WindowMovieOpen;
 com_tilbuci_ui_window_movie_WindowMovieOpen.__name__ = "com.tilbuci.ui.window.movie.WindowMovieOpen";
@@ -69640,7 +69700,7 @@ com_tilbuci_ui_window_movie_WindowMoviePlugins.prototype = $extend(com_tilbuci_u
 });
 var com_tilbuci_ui_window_movie_WindowMovieProperties = function(ac) {
 	this._thColors = ["themeColor","offsetThemeColor","headerFillColor","headerFontSize","headerFontName","headerTextColor","rootFillColor","fontSize","fontName","textColor","insetFillColor","disabledTextColor","footerFillColor","controlFillColor1","controlFillColor2","scrollBarThumbFillColor"];
-	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-movieprop-title"),1200,com_tilbuci_ui_base_InterfaceFactory.pickValue(570,620),true,true,true);
+	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-movieprop-title"),1200,com_tilbuci_ui_base_InterfaceFactory.pickValue(570,670),true,true,true);
 };
 $hxClasses["com.tilbuci.ui.window.movie.WindowMovieProperties"] = com_tilbuci_ui_window_movie_WindowMovieProperties;
 com_tilbuci_ui_window_movie_WindowMovieProperties.__name__ = "com.tilbuci.ui.window.movie.WindowMovieProperties";
@@ -70966,19 +71026,39 @@ com_tilbuci_ui_window_movie_WindowMovieProperties.prototype = $extend(com_tilbuc
 	,__class__: com_tilbuci_ui_window_movie_WindowMovieProperties
 });
 var com_tilbuci_ui_window_movie_WindowMovieQR = function(ac) {
-	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-qr-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(315,330),false,true,true);
+	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-qr-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(490,540),false,true,true);
 };
 $hxClasses["com.tilbuci.ui.window.movie.WindowMovieQR"] = com_tilbuci_ui_window_movie_WindowMovieQR;
 com_tilbuci_ui_window_movie_WindowMovieQR.__name__ = "com.tilbuci.ui.window.movie.WindowMovieQR";
 com_tilbuci_ui_window_movie_WindowMovieQR.__super__ = com_tilbuci_ui_window_PopupWindow;
 com_tilbuci_ui_window_movie_WindowMovieQR.prototype = $extend(com_tilbuci_ui_window_PopupWindow.prototype,{
 	startInterface: function(evt) {
+		this.ui.createHContainer("url");
+		this.ui.createToggle("url",true,this.ui.hcontainers.h["url"]);
+		this.ui.createSpacer("url",10,false,this.ui.hcontainers.h["url"]);
+		this.ui.createLabel("url",com_tilbuci_data_Global.ln.get("window-qr-addurl"),"detail",this.ui.hcontainers.h["url"]);
+		this.ui.createHContainer("var1");
+		this.ui.createLabel("var1n",com_tilbuci_data_Global.ln.get("window-qr-var1n"),"detail",this.ui.hcontainers.h["var1"]);
+		this.ui.createTInput("var1n","","",this.ui.hcontainers.h["var1"]);
+		this.ui.createSpacer("var1",10,false,this.ui.hcontainers.h["var1"]);
+		this.ui.createLabel("var1v",com_tilbuci_data_Global.ln.get("window-qr-var1v"),"detail",this.ui.hcontainers.h["var1"]);
+		this.ui.createTInput("var1v","","",this.ui.hcontainers.h["var1"]);
+		this.ui.createHContainer("var2");
+		this.ui.createLabel("var2n",com_tilbuci_data_Global.ln.get("window-qr-var2n"),"detail",this.ui.hcontainers.h["var2"]);
+		this.ui.createTInput("var2n","","",this.ui.hcontainers.h["var2"]);
+		this.ui.createSpacer("var2",10,false,this.ui.hcontainers.h["var2"]);
+		this.ui.createLabel("var2v",com_tilbuci_data_Global.ln.get("window-qr-var2v"),"detail",this.ui.hcontainers.h["var2"]);
+		this.ui.createTInput("var2v","","",this.ui.hcontainers.h["var2"]);
 		var tmp = this.ui;
 		var tmp1 = { tp : "Label", id : "about", tx : com_tilbuci_data_Global.ln.get("window-qr-about"), vr : ""};
 		var tmp2 = { tp : "Label", id : "scenes", tx : com_tilbuci_data_Global.ln.get("window-qr-scenes"), vr : feathers_controls_Label.VARIANT_DETAIL};
 		var tmp3 = { tp : "Label", id : "snippet", tx : com_tilbuci_data_Global.ln.get("window-qr-snippet"), vr : feathers_controls_Label.VARIANT_DETAIL};
-		var tmp4 = com_tilbuci_data_Global.ln.get("window-qr-download");
-		this.addForm("intr",tmp.forge("interface",[tmp1,{ tp : "Spacer", id : "about", ht : 10, ln : false},tmp2,{ tp : "Select", id : "scenes", vl : [], sl : ""},{ tp : "Spacer", id : "scenes", ht : 10, ln : false},tmp3,{ tp : "TInput", id : "snippet", tx : "", vr : ""},{ tp : "Spacer", id : "snippet", ht : 10, ln : false},{ tp : "Button", id : "download", tx : tmp4, ac : $bind(this,this.onDownload)}]));
+		var tmp4 = { tp : "Label", id : "variables", tx : com_tilbuci_data_Global.ln.get("window-qr-variables"), vr : feathers_controls_Label.VARIANT_DETAIL};
+		var tmp5 = { tp : "Custom", cont : this.ui.hcontainers.h["var1"]};
+		var tmp6 = { tp : "Custom", cont : this.ui.hcontainers.h["var2"]};
+		var tmp7 = { tp : "Custom", cont : this.ui.hcontainers.h["url"]};
+		var tmp8 = com_tilbuci_data_Global.ln.get("window-qr-download");
+		this.addForm("intr",tmp.forge("interface",[tmp1,{ tp : "Spacer", id : "about", ht : 10, ln : false},tmp2,{ tp : "Select", id : "scenes", vl : [], sl : ""},{ tp : "Spacer", id : "scenes", ht : 10, ln : false},tmp3,{ tp : "TInput", id : "snippet", tx : "", vr : ""},{ tp : "Spacer", id : "snippet", ht : 10, ln : false},tmp4,tmp5,tmp6,{ tp : "Spacer", id : "variables", ht : 20, ln : false},tmp7,{ tp : "Spacer", id : "url", ht : 20, ln : false},{ tp : "Button", id : "download", tx : tmp8, ac : $bind(this,this.onDownload)}]));
 		this.ui.labels.h["about"].set_wordWrap(true);
 		com_tilbuci_ui_window_PopupWindow.prototype.startInterface.call(this);
 	}
@@ -70987,6 +71067,9 @@ com_tilbuci_ui_window_movie_WindowMovieQR.prototype = $extend(com_tilbuci_ui_win
 	}
 	,acStart: function() {
 		this.ui.setSelectOptions("scenes",[]);
+		this.ui.hcontainers.h["url"].setWidth(600,[50,10,510]);
+		this.ui.hcontainers.h["var1"].setWidth(760,[110,220,60,80,250]);
+		this.ui.hcontainers.h["var2"].setWidth(760,[110,220,60,80,250]);
 		var tmp = com_tilbuci_data_Global.ws;
 		var _g = new haxe_ds_StringMap();
 		var value = com_tilbuci_data_GlobalPlayer.movie.get_mvId();
@@ -71017,19 +71100,32 @@ com_tilbuci_ui_window_movie_WindowMovieQR.prototype = $extend(com_tilbuci_ui_win
 	}
 	,onDownload: function(evt) {
 		var sc = this.ui.selects.h["scenes"].get_selectedItem().value;
-		if(sc == "" && this.ui.inputs.h["snippet"].get_text() == "") {
+		if(sc == "" && this.ui.inputs.h["snippet"].get_text() == "" && this.ui.inputs.h["var1n"].get_text() == "" && this.ui.inputs.h["var2n"].get_text() == "") {
 			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-qr-title"),com_tilbuci_data_Global.ln.get("window-qr-nodata"),420,150,this.stage);
 		} else {
 			var link = "";
 			var name = "";
 			if(sc != "") {
-				link += com_tilbuci_data_GlobalPlayer.base + "?mv=" + com_tilbuci_data_GlobalPlayer.movie.get_mvId() + "&sc=" + sc;
+				if(this.ui.toggles.h["url"].get_selected()) {
+					link += com_tilbuci_data_GlobalPlayer.base + "?";
+				}
+				link += "mv=" + com_tilbuci_data_GlobalPlayer.movie.get_mvId() + "&sc=" + sc;
 				name = sc;
 			}
 			if(this.ui.inputs.h["snippet"].get_text() != "") {
 				var s = this.ui.inputs.h["snippet"].get_text();
 				link += "&sn=" + encodeURIComponent(s);
 				name += StringTools.replace(this.ui.inputs.h["snippet"].get_text()," ","");
+			}
+			if(this.ui.inputs.h["var1n"].get_text() != "" || this.ui.inputs.h["var2n"].get_text() != "") {
+				var json = { };
+				if(this.ui.inputs.h["var1n"].get_text() != "") {
+					json[this.ui.inputs.h["var1n"].get_text()] = this.ui.inputs.h["var1v"].get_text();
+				}
+				if(this.ui.inputs.h["var2n"].get_text() != "") {
+					json[this.ui.inputs.h["var2n"].get_text()] = this.ui.inputs.h["var2v"].get_text();
+				}
+				link += "&vars=" + haxe_crypto_Base64.encode(haxe_io_Bytes.ofString(com_tilbuci_statictools_StringStatic.jsonStringify(json)));
 			}
 			var tmp = com_tilbuci_data_Global.ws;
 			var _g = new haxe_ds_StringMap();
@@ -71104,7 +71200,7 @@ com_tilbuci_ui_window_movie_WindowMovieRemove.prototype = $extend(com_tilbuci_ui
 });
 var com_tilbuci_ui_window_movie_WindowMovieRepublish = function(ac) {
 	this._sequence = [];
-	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-republish-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(180,200),false,true,true);
+	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-republish-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(180,210),false,true,true);
 };
 $hxClasses["com.tilbuci.ui.window.movie.WindowMovieRepublish"] = com_tilbuci_ui_window_movie_WindowMovieRepublish;
 com_tilbuci_ui_window_movie_WindowMovieRepublish.__name__ = "com.tilbuci.ui.window.movie.WindowMovieRepublish";
@@ -71151,7 +71247,7 @@ com_tilbuci_ui_window_movie_WindowMovieRepublish.prototype = $extend(com_tilbuci
 });
 var com_tilbuci_ui_window_movie_WindowMovieSequences = function(ac) {
 	this._sequence = [];
-	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-movieseq-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(630,660),false,true,true);
+	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-movieseq-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(630,690),false,true,true);
 };
 $hxClasses["com.tilbuci.ui.window.movie.WindowMovieSequences"] = com_tilbuci_ui_window_movie_WindowMovieSequences;
 com_tilbuci_ui_window_movie_WindowMovieSequences.__name__ = "com.tilbuci.ui.window.movie.WindowMovieSequences";
@@ -71362,7 +71458,7 @@ com_tilbuci_ui_window_movie_WindowMovieSequences.prototype = $extend(com_tilbuci
 });
 var com_tilbuci_ui_window_movie_WindowMovieSnippets = function(ac) {
 	this._warn = false;
-	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-moviesnip-title"),1100,com_tilbuci_ui_base_InterfaceFactory.pickValue(630,660),false,true,true);
+	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-moviesnip-title"),1100,com_tilbuci_ui_base_InterfaceFactory.pickValue(630,690),false,true,true);
 };
 $hxClasses["com.tilbuci.ui.window.movie.WindowMovieSnippets"] = com_tilbuci_ui_window_movie_WindowMovieSnippets;
 com_tilbuci_ui_window_movie_WindowMovieSnippets.__name__ = "com.tilbuci.ui.window.movie.WindowMovieSnippets";
@@ -156105,7 +156201,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 433637;
+	this.version = 793752;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";

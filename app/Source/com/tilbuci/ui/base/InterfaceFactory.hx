@@ -7,6 +7,7 @@
  package com.tilbuci.ui.base;
 
 /** OPENFL **/
+import js.Browser;
 import com.tilbuci.statictools.Assets;
 import com.tilbuci.ui.component.IDLabel;
 import com.tilbuci.ui.component.IDTextInput;
@@ -487,9 +488,9 @@ class InterfaceFactory {
         @param  holder  the element parent (null for none)
         @return the spacer element (sprite)
     **/
-    public function createSpacer(id:String, ht:Int = 10, line:Bool = false, holder:FeathersControl = null):MeasureSprite {
+    public function createSpacer(id:String, ht:Int = 10, line:Bool = false, holder:FeathersControl = null, wd:Int = 10):MeasureSprite {
         var sp:MeasureSprite = new MeasureSprite();
-        sp.width = 10;
+        sp.width = wd;
         sp.height = ht;
         if (line) {
             var posline:Int = Math.ceil(ht/2);
@@ -906,7 +907,15 @@ class InterfaceFactory {
         @return the avlue according to the most likely platform
     **/
     public static function pickValue(desktop:Int, mobile:Int):Int {
-        if (DeviceUtil.isMobile()) {
+        /*if (DeviceUtil.isMobile()) {
+            return (mobile);
+        } else {
+            return (desktop);
+        }*/
+        var ua = Browser.navigator.userAgent.toLowerCase();
+        if (ua.indexOf("android") != -1 && (ua.indexOf("mobile") == -1)) {
+            return (mobile);
+        } else if (ua.indexOf("ipad") != -1) {
             return (mobile);
         } else {
             return (desktop);
