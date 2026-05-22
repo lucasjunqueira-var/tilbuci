@@ -8,6 +8,7 @@
  /** TIlBuci file downloader **/
 
 /** CLASS DEFINITIONS **/
+chdir(__DIR__);
 require_once('../../app/Data.php');
 
 // process request
@@ -16,12 +17,28 @@ if (isset($_GET['a'])) {
 		$path = '';
 		$mime = '';
 		$name = '';
+		$image = '';
 		switch (trim($_GET['file'])) {
-            case 'strings':
+            case 'snippets':
                 if (isset($_GET['movie']) && isset($_GET['media'])) {
                     $data = new Data;
                     $media = str_replace(['.json', ' '], '', mb_strtolower($_GET['media']));
-                    $ck = $data->queryAll('SELECT st_content FROM strings WHERE st_movie=:mv AND st_file=:fl', [':mv' => $_GET['movie'], ':fl' => $media]);
+                    $ck = $data->queryAll('SELECT `sn_content` FROM `' . $data->conf['databasePrefix'] . 'snippets` WHERE `sn_movie`=:mv AND `sn_file`=:fl', [':mv' => $_GET['movie'], ':fl' => $media]);
+                    if (count($ck) > 0) {
+                        file_put_contents(('../../export/'.$_GET['movie'].'-snippets.json'), gzdecode(base64_decode($ck[0]['sn_content'])));
+                        $path = '../../export/'.$_GET['movie'].'-snippets.json';
+                        if (is_file($path)) {
+                            $name = $media.'.json';
+                            $mime = 'application/json';
+                        }
+                    }
+                }
+                break;
+			case 'strings':
+                if (isset($_GET['movie']) && isset($_GET['media'])) {
+                    $data = new Data;
+                    $media = str_replace(['.json', ' '], '', mb_strtolower($_GET['media']));
+                    $ck = $data->queryAll('SELECT `st_content` FROM `' . $data->conf['databasePrefix'] . 'strings` WHERE `st_movie`=:mv AND `st_file`=:fl', [':mv' => $_GET['movie'], ':fl' => $media]);
                     if (count($ck) > 0) {
                         file_put_contents(('../../export/'.$_GET['movie'].'-string.json'), gzdecode(base64_decode($ck[0]['st_content'])));
                         $path = '../../export/'.$_GET['movie'].'-string.json';
@@ -35,7 +52,7 @@ if (isset($_GET['a'])) {
 			case 'strings.json':
 				if (isset($_GET['movie'])) {
                     $data = new Data;
-                    $ck = $data->queryAll('SELECT mv_strings FROM movies WHERE mv_id=:mv', [':mv' => $_GET['movie']]);
+                    $ck = $data->queryAll('SELECT `mv_strings` FROM `' . $data->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:mv', [':mv' => $_GET['movie']]);
                     if (count($ck) > 0) {
                         file_put_contents(('../../export/'.$_GET['movie'].'-string.json'), gzdecode(base64_decode($ck[0]['mv_strings'])));
                         $path = '../../export/'.$_GET['movie'].'-string.json';
@@ -100,11 +117,34 @@ if (isset($_GET['a'])) {
                     }
                 }
                 break;
+			case 'qrcode':
+                if (isset($_GET['link']) && isset($_GET['name'])) {
+					$link = base64_decode($_GET['link']);
+					if ($link !== false) {
+						require_once('../../third/qrcode.php');
+						$qr = new QRCode($link, [ 'w' => 2048, 'h' => 2048 ]);
+						$image = $qr->render_image();
+						$mime = 'qrcode';
+						$name = 'qrcode-' . trim($_GET['name']) . '.png';
+					}
+                }
+                break;
 			default:
 				http_response_code(404); 
 				exit();
 		}
 		if ($mime == '') {
+			exit();
+		} else if ($mime == 'qrcode') {
+			// download qrcode png
+			header("Content-Type: image/png");
+			header("Content-Transfer-Encoding: Binary");
+			header("Content-disposition: attachment; filename=\"" . $name . "\"");
+			header("Expires: 0"); 
+            header("Cache-Control: must-revalidate"); 
+            header("Pragma: public"); 
+			imagepng($image);
+			imagedestroy($image);
 			exit();
 		} else {
 			// download file

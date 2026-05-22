@@ -6,6 +6,7 @@
  */
 
 // addicional scripts
+chdir(__DIR__);
 require_once('../../app/Data.php');
 $data = new Data;
 
@@ -103,7 +104,7 @@ if (is_file('player.json')) {
 if ($mode != 'editor') {
 	if ($movie != '') {
 		$link .= '?mv='.urlencode($movie);
-        $ck = $data->queryAll('SELECT mv_title, mv_about, mv_tags, mv_favicon, mv_image FROM movies WHERE mv_id=:mv', [':mv'=>$movie]);
+        $ck = $data->queryAll('SELECT `mv_title`, `mv_about`, `mv_tags`, `mv_favicon`, `mv_image` FROM `' . $data->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:mv', [':mv'=>$movie]);
         if (count($ck) > 0) {
             $title = $ck[0]['mv_title'];
             $about = $ck[0]['mv_about'];
@@ -113,7 +114,7 @@ if ($mode != 'editor') {
         }
 		if ($scene != '') {
 			$link .= '&sc='.urlencode($scene);
-            $ck = $data->queryAll('SELECT sc_title, sc_about, sc_image FROM scenes WHERE sc_movie=:mv AND sc_id=:id', [':mv'=>$movie, ':id'=>$scene]);
+            $ck = $data->queryAll('SELECT `sc_title`, `sc_about`, `sc_image` FROM `' . $data->conf['databasePrefix'] . 'scenes` WHERE `sc_movie`=:mv AND `sc_id`=:id', [':mv'=>$movie, ':id'=>$scene]);
             if (count($ck) > 0) {
                 $title = $ck[0]['sc_title'];
                 if ($ck[0]['sc_about'] != '') $about = $ck[0]['sc_about'];
@@ -123,7 +124,7 @@ if ($mode != 'editor') {
 		$cssmovie = $movie;
 	} else {
 		$movie = $json['start'];
-		$ck = $data->queryAll('SELECT mv_title, mv_about, mv_tags, mv_favicon, mv_image FROM movies WHERE mv_id=:mv', [':mv'=>$movie]);
+		$ck = $data->queryAll('SELECT `mv_title`, `mv_about`, `mv_tags`, `mv_favicon`, `mv_image` FROM `' . $data->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:mv', [':mv'=>$movie]);
         if (count($ck) > 0) {
             $title = $ck[0]['mv_title'];
             $about = $ck[0]['mv_about'];
@@ -167,8 +168,10 @@ if ($render == '') {
 	?>
     <?php if ($nocache == '') { ?>
         <script type="text/javascript" src="./TilBuci<?= $render ?>-min.js?rd=<?= $version ?>"></script>
+		<script type="text/javascript" src="./externs.js?rd=<?= $version ?>"></script>
     <?php } else { ?>
         <script type="text/javascript" src="./TilBuci<?= $render ?>.js<?= $nocache ?>"></script>
+		<script type="text/javascript" src="./externs.js?rd=<?= $nocache ?>"></script>
     <?php } ?>
 	<script>
 		window.addEventListener ("touchmove", function (event) { event.preventDefault (); }, { capture: false, passive: false });
@@ -176,16 +179,16 @@ if ($render == '') {
 			var meta = document.getElementById ("viewport");
 			meta.setAttribute ('content', 'width=device-width, initial-scale=' + (2 / window.devicePixelRatio) + ', user-scalable=no');
 		}
-        
-        function customDecrypt(txt) { console.log(txt); return(txt); }
+
+		function tb_description(desc) {
+			console.log("desc " + desc);
+		}
 	</script>
 	<style>
 		<?= $data->indexFonts($cssmovie) ?>
 		html,body { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #666666; }
 		#TilBuciArea { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: #000000; }
 		#openfl-content { background: #000000; width: 100%; height: 100%; }
-        #embed_area { position: absolute; left: 0; top: 0; display: none; padding: 0; width: 100%; height: 100%; box-sizing: content-box; margin: 0; border: none; overflow: hidden; background-color: transparent; }
-        #embed_frame { display: none; padding: 0; box-sizing: content-box; margin: 0; border: none; width: 100%; height: 100%; background-color: transparent; }
 	</style>
 </head>
 <body>
@@ -193,7 +196,12 @@ if ($render == '') {
 		<noscript>This webpage makes extensive use of JavaScript. Please enable JavaScript in your web browser to view this page.</noscript>
 		<div id="openfl-content"></div>
 		<script type="text/javascript">
-			lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "mode" : "<?= $mode ?>", "movie": "<?= $movie ?>", "scene": "<?= $scene ?>" <?= $userlogin ?>} });
+			let params = new URLSearchParams(window.location.search);
+			let vars = params.get("vars");
+			if (vars == null) vars = "";
+			let snippet = params.get("sn");
+			if (snippet == null) snippet = "";
+			lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "assets": "", "moviePath": "", "mode" : "<?= $mode ?>", "movie": "<?= $movie ?>", "scene": "<?= $scene ?>", "vars":vars, "snippet":snippet <?= $userlogin ?>} });
 		</script>
 		<?php
 			// end body plugin area
@@ -201,7 +209,6 @@ if ($render == '') {
 				echo("\r\n" . $pl->indexEndBody() . "\r\n\r\n");
 			}
 		?>
-		<div id="embed_area"><iframe id="embed_frame" width="0" height="0" src="" frameborder="0"></iframe></div>
 	</div>
 </body>
 </html>

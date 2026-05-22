@@ -19,7 +19,7 @@ class Movie extends BaseClass
 	/**
      * TilBuci expected version
      */
-    private $version = 15;
+    private $version = 22;
     
 	/**
 	 * current movie information
@@ -50,7 +50,7 @@ class Movie extends BaseClass
 		// checking id
 		if ($id != '') {
 			$id = substr($this->cleanString($id), 0, 32);
-			$ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id', [':id' => $id]);
+			$ck = $this->queryAll('SELECT `mv_id` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id' => $id]);
 			if (count($ck) > 0) $id = '';
 		}
 		// create id?
@@ -58,14 +58,14 @@ class Movie extends BaseClass
 			$ckid = true;
 			while ($ckid) {
 				$id = md5(time() . rand(0, 9999));
-				$ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id', [':id' => $id]);
+				$ck = $this->queryAll('SELECT `mv_id` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id' => $id]);
 				if (count($ck) == 0) $ckid = false;
 			}
 		}
 		
 		// adding to database
 		$ok = false;
-		if ($this->execute('INSERT INTO movies (mv_id, mv_user, mv_title, mv_author, mv_copyright, mv_copyleft, mv_about, mv_screenbig, mv_screensmall, mv_screentype, mv_interval) VALUES (:id, :us, :tt, :au, :cr, :cl, :ab, :sb, :ss, :st, :in)', [
+		if ($this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'movies` (`mv_id`, `mv_user`, `mv_title`, `mv_author`, `mv_copyright`, `mv_copyleft`, `mv_about`, `mv_screenbig`, `mv_screensmall`, `mv_screentype`, `mv_interval`) VALUES (:id, :us, :tt, :au, :cr, :cl, :ab, :sb, :ss, :st, :in)', [
 			':id' => $id, 
 			':us' => $user, 
 			':tt' => $title, 
@@ -83,7 +83,7 @@ class Movie extends BaseClass
 			$ok = true;
 			if (!$this->createDir('../movie/'.$id.'.movie')) {
 				// error creating movie folder
-				$this->execute('DELETE FROM movies WHERE mv_id=:id', [':id'=>$id]);
+				$this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id'=>$id]);
 				$ok = false;
 			} else {
 				// creating sub folders
@@ -95,6 +95,7 @@ class Movie extends BaseClass
 				$this->createDir('../movie/'.$id.'.movie/media/font');
 				$this->createDir('../movie/'.$id.'.movie/media/spritemap');
                 $this->createDir('../movie/'.$id.'.movie/media/strings');
+                $this->createDir('../movie/'.$id.'.movie/media/snippets');
                 $this->createDir('../movie/'.$id.'.movie/media/dialogues');
 				$this->createDir('../movie/'.$id.'.movie/scene');
 				$this->createDir('../movie/'.$id.'.movie/collection');
@@ -120,8 +121,22 @@ class Movie extends BaseClass
 	public function loadMovie($id) {
 		$this->info = [ ];
 		$this->loaded = false;
-		$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id', [':id'=>$id]);
+		$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id'=>$id]);
 		if (count($ck) > 0) {
+            // start actions
+            $mvstart = '';
+            $scstart = '';
+            if (!(is_null($ck[0]['mv_acstart']) || $ck[0]['mv_acstart'] == '')) {
+                if (strpos($ck[0]['mv_acstart'], ',') !== false) {
+                    $arac = explode(',', $ck[0]['mv_acstart']);
+                    if (count($arac) == 2) {
+                        $mvstart = ($arac[0] == '') ? '' : gzdecode(base64_decode($arac[0]));
+                        $scstart = ($arac[1] == '') ? '' : gzdecode(base64_decode($arac[1]));
+                    }
+                } else {
+                    $mvstart = gzdecode(base64_decode($ck[0]['mv_acstart']));
+                }
+            }
 			// basic movie information
 			$this->info = [
 				'version' => $this->version, 
@@ -139,7 +154,8 @@ class Movie extends BaseClass
                 'identify' => $ck[0]['mv_identify'] == '1' ? true : false, 
                 'vsgroups' => ((is_null($ck[0]['mv_vsgroups']) || ($ck[0]['mv_vsgroups'] == '')) ? [ ] : explode(',', $ck[0]['mv_vsgroups'])),
 				'start' => $ck[0]['mv_start'], 
-				'acstart' => (is_null($ck[0]['mv_acstart']) || $ck[0]['mv_acstart'] == '') ? '' : gzdecode(base64_decode($ck[0]['mv_acstart'])), 
+				'acstart' => $mvstart, 
+                'scstart' => $scstart, 
 				'screen' => [
 					'big'=> (int)$ck[0]['mv_screenbig'], 
 					'small'=> (int)$ck[0]['mv_screensmall'], 
@@ -173,7 +189,7 @@ class Movie extends BaseClass
 				];
 			}
 			// plugin configuration
-			$ckp = $this->queryAll('SELECT pl_name, pl_config FROM plugins WHERE pl_movie=:mv AND pl_scene=:sc', [
+			$ckp = $this->queryAll('SELECT `pl_name`, `pl_config` FROM `' . $this->conf['databasePrefix'] . 'plugins` WHERE `pl_movie`=:mv AND `pl_scene`=:sc', [
 				':mv' => $id, 
 				':sc' => '', 
 			]);
@@ -214,6 +230,7 @@ class Movie extends BaseClass
 			if ($ok && !is_dir('../movie/'.$id.'.movie/media/font')) if (!$this->createDir('../movie/'.$id.'.movie/media/font')) $ok = false;
 			if ($ok && !is_dir('../movie/'.$id.'.movie/media/spritemap')) if (!$this->createDir('../movie/'.$id.'.movie/media/spritemap')) $ok = false;
             if ($ok && !is_dir('../movie/'.$id.'.movie/media/strings')) if (!$this->createDir('../movie/'.$id.'.movie/media/strings')) $ok = false;
+            if ($ok && !is_dir('../movie/'.$id.'.movie/media/snippets')) if (!$this->createDir('../movie/'.$id.'.movie/media/snippets')) $ok = false;
             if ($ok && !is_dir('../movie/'.$id.'.movie/media/dialogues')) if (!$this->createDir('../movie/'.$id.'.movie/media/dialogues')) $ok = false;
 			if ($ok && !is_dir('../movie/'.$id.'.movie/scene')) if (!$this->createDir('../movie/'.$id.'.movie/scene')) $ok = false;
 			if ($ok && !is_dir('../movie/'.$id.'.movie/collection')) if (!$this->createDir('../movie/'.$id.'.movie/collection')) $ok = false;
@@ -223,7 +240,7 @@ class Movie extends BaseClass
 				return (false);
 			} else {
                 // strings.json, contraptions.json and narrative.json
-                $ckt = $this->queryAll('SELECT mv_contraptions, mv_strings, mv_narrative FROM movies WHERE mv_id=:mv', [':mv' => $id]);
+                $ckt = $this->queryAll('SELECT `mv_contraptions`, `mv_strings`, `mv_narrative` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:mv', [':mv' => $id]);
                 // decrypted file?
                 if ($decrypt) {
                     file_put_contents(('../movie/'.$id.'.movie/movie.json'), json_encode($this->info));
@@ -238,9 +255,13 @@ class Movie extends BaseClass
                             file_put_contents(('../movie/'.$id.'.movie/narrative.json'), gzdecode(base64_decode($ckt[0]['mv_narrative'])));
                         }
                     }
-                    $ckt = $this->queryAll('SELECT st_file, st_content FROM strings WHERE st_movie=:mv', [':mv' => $id]);
+                    $ckt = $this->queryAll('SELECT `st_file`, `st_content` FROM `' . $this->conf['databasePrefix'] . 'strings` WHERE `st_movie`=:mv', [':mv' => $id]);
                     foreach ($ckt as $t) {
                         file_put_contents(('../movie/'.$id.'.movie/media/strings/' . $t['st_file'] . '.json'), gzdecode(base64_decode($t['st_content'])));
+                    } 
+                    $ckt = $this->queryAll('SELECT `sn_file`, `sn_content` FROM `' . $this->conf['databasePrefix'] . 'snippets` WHERE `sn_movie`=:mv', [':mv' => $id]);
+                    foreach ($ckt as $t) {
+                        file_put_contents(('../movie/'.$id.'.movie/media/snippets/' . $t['sn_file'] . '.json'), gzdecode(base64_decode($t['sn_content'])));
                     }                  
                 } else {
                     // save movie file
@@ -257,9 +278,13 @@ class Movie extends BaseClass
                                 file_put_contents(('../movie/'.$id.'.movie/narrative.json'), $this->encryptTBFile($this->info['id'], gzdecode(base64_decode($ckt[0]['mv_narrative']))));
                             }
                         }
-                        $ckt = $this->queryAll('SELECT st_file, st_content FROM strings WHERE st_movie=:mv', [':mv' => $id]);
+                        $ckt = $this->queryAll('SELECT `st_file`, `st_content` FROM `' . $this->conf['databasePrefix'] . 'strings` WHERE `st_movie`=:mv', [':mv' => $id]);
                         foreach ($ckt as $t) {
                             file_put_contents(('../movie/'.$id.'.movie/media/strings/' . $t['st_file'] . '.json'), $this->encryptTBFile($this->info['id'], gzdecode(base64_decode($t['st_content']))));
+                        }
+                        $ckt = $this->queryAll('SELECT `sn_file`, `sn_content` FROM `' . $this->conf['databasePrefix'] . 'snippets` WHERE `sn_movie`=:mv', [':mv' => $id]);
+                        foreach ($ckt as $t) {
+                            file_put_contents(('../movie/'.$id.'.movie/media/snippets/' . $t['sn_file'] . '.json'), $this->encryptTBFile($this->info['id'], gzdecode(base64_decode($t['sn_content']))));
                         }
                     } else {
                         file_put_contents(('../movie/'.$id.'.movie/movie.json'), json_encode($this->info));
@@ -274,9 +299,13 @@ class Movie extends BaseClass
                                 file_put_contents(('../movie/'.$id.'.movie/narrative.json'), gzdecode(base64_decode($ckt[0]['mv_narrative'])));
                             }
                         }
-                        $ckt = $this->queryAll('SELECT st_file, st_content FROM strings WHERE st_movie=:mv', [':mv' => $id]);
+                        $ckt = $this->queryAll('SELECT `st_file`, `st_content` FROM `' . $this->conf['databasePrefix'] . 'strings` WHERE `st_movie`=:mv', [':mv' => $id]);
                         foreach ($ckt as $t) {
                             file_put_contents(('../movie/'.$id.'.movie/media/strings/' . $t['st_file'] . '.json'), gzdecode(base64_decode($t['st_content'])));
+                        }
+                        $ckt = $this->queryAll('SELECT `sn_file`, `sn_content` FROM `' . $this->conf['databasePrefix'] . 'snippets` WHERE `sn_movie`=:mv', [':mv' => $id]);
+                        foreach ($ckt as $t) {
+                            file_put_contents(('../movie/'.$id.'.movie/media/snippets/' . $t['sn_file'] . '.json'), gzdecode(base64_decode($t['sn_content'])));
                         }
                     }
                 }
@@ -295,7 +324,7 @@ class Movie extends BaseClass
 	public function listMovies($user, $own = false) {
 		$ret = [ ];
         if ($own) {
-            $ck = $this->queryAll('SELECT mv_id, mv_title, mv_user FROM movies WHERE mv_user=:us ORDER BY mv_updated DESC', [
+            $ck = $this->queryAll('SELECT `mv_id`, `mv_title`, `mv_user` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_user`=:us ORDER BY `mv_updated` DESC', [
                 ':us' => $user, 
             ]);
             foreach ($ck as $v) $ret[] = [
@@ -303,7 +332,7 @@ class Movie extends BaseClass
                 'title' => $v['mv_title'], 
             ];
         } else {
-            $ck = $this->queryAll('SELECT mv_id, mv_title, mv_user FROM movies WHERE mv_user=:us OR mv_collaborators LIKE :col ORDER BY mv_updated DESC', [
+            $ck = $this->queryAll('SELECT `mv_id`, `mv_title`, `mv_user` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_user`=:us OR `mv_collaborators` LIKE :col ORDER BY `mv_updated` DESC', [
                 ':us' => $user, 
                 ':col' => '%' . $user . '%', 
             ]);
@@ -321,37 +350,37 @@ class Movie extends BaseClass
 	 */
 	public function remove($user, $id) {
         // can the current user remove the movie?
-        $ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_user=:us AND mv_id=:id', [
+        $ck = $this->queryAll('SELECT `mv_id` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_user`=:us AND `mv_id`=:id', [
             ':us' => $user, 
             ':id' => $id, 
         ]);
         if (count($ck) > 0) {
-            $ckc = $this->queryAll('SELECT cl_uid FROM collections WHERE cl_movie=:mv', [':mv'=>$id]);
-            foreach ($ckc as $v) $this->execute('DELETE FROM assets WHERE at_collection=:col', [':col'=>$v['cl_uid']]);
-            $this->execute('DELETE FROM collections WHERE cl_movie=:mv', [':mv'=>$id]);
-            $cks = $this->queryAll('SELECT sc_uid, sc_id FROM scenes WHERE sc_movie=:mv', [':mv'=>$id]);
+            $ckc = $this->queryAll('SELECT `cl_uid` FROM `' . $this->conf['databasePrefix'] . 'collections` WHERE `cl_movie`=:mv', [':mv'=>$id]);
+            foreach ($ckc as $v) $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'assets` WHERE `at_collection`=:col', [':col'=>$v['cl_uid']]);
+            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'collections` WHERE `cl_movie`=:mv', [':mv'=>$id]);
+            $cks = $this->queryAll('SELECT `sc_uid`, `sc_id` FROM `' . $this->conf['databasePrefix'] . 'scenes` WHERE `sc_movie`=:mv', [':mv'=>$id]);
             foreach ($cks as $v) {
-                $ckk = $this->queryAll('SELECT kf_id FROM keyframes WHERE kf_scene=:sc', [':sc'=>$v['sc_uid']]);
+                $ckk = $this->queryAll('SELECT `kf_id` FROM `' . $this->conf['databasePrefix'] . 'keyframes` WHERE `kf_scene`=:sc', [':sc'=>$v['sc_uid']]);
                 foreach ($ckk as $vk) {
-                    $cki = $this->queryAll('SELECT in_id FROM instances WHERE in_keyframe=:kf', [':kf'=>$vk['kf_id']]);
+                    $cki = $this->queryAll('SELECT `in_id` FROM `' . $this->conf['databasePrefix'] . 'instances` WHERE `in_keyframe`=:kf', [':kf'=>$vk['kf_id']]);
                     foreach ($cki as $vi) {
-                        $this->execute('DELETE FROM instancedesc WHERE id_instance=:in', [':in'=>$vi['in_id']]);
+                        $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'instancedesc` WHERE `id_instance`=:in', [':in'=>$vi['in_id']]);
                     }
-                    $this->execute('DELETE FROM instances WHERE in_keyframe=:kf', [':kf'=>$vk['kf_id']]);
+                    $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'instances` WHERE `in_keyframe`=:kf', [':kf'=>$vk['kf_id']]);
                 }
-                $this->execute('DELETE FROM keyframes WHERE kf_scene=:sc', [':sc'=>$v['sc_uid']]);
+                $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'keyframes` WHERE `kf_scene`=:sc', [':sc'=>$v['sc_uid']]);
             }
-            $this->execute('DELETE FROM notes WHERE nt_movie=:mv', [':mv'=>$id]);
-            $this->execute('DELETE FROM scenelock WHERE sl_movie=:mv', [':mv'=>$id]);
-            $this->execute('DELETE FROM strings WHERE st_movie=:mv', [':mv'=>$id]);
-            $this->execute('DELETE FROM scenes WHERE sc_movie=:mv', [':mv'=>$id]);
-            $this->execute('DELETE FROM movies WHERE mv_id=:id', [':id'=>$id]);
+            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'notes` WHERE `nt_movie`=:mv', [':mv'=>$id]);
+            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'scenelock` WHERE `sl_movie`=:mv', [':mv'=>$id]);
+            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'strings` WHERE `st_movie`=:mv', [':mv'=>$id]);
+            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'scenes` WHERE `sc_movie`=:mv', [':mv'=>$id]);
+            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id'=>$id]);
             $this->removeFileDir('../movie/'.$id.'.movie');
             @rmdir('../movie/'.$id.'.movie');
         }
         // loading movies
 		$ret = [ ];
-        $ck = $this->queryAll('SELECT mv_id, mv_title, mv_user FROM movies WHERE mv_user=:us ORDER BY mv_updated DESC', [
+        $ck = $this->queryAll('SELECT `mv_id`, `mv_title`, `mv_user` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_user`=:us ORDER BY `mv_updated` DESC', [
             ':us' => $user, 
         ]);
         foreach ($ck as $v) $ret[] = [
@@ -373,7 +402,7 @@ class Movie extends BaseClass
 	 * 3 => error publishing new information
 	 */
 	public function update($id, $data, $user) {
-		$ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id AND mv_user=:us', [
+		$ck = $this->queryAll('SELECT `mv_id` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:us', [
 			':id' => $id,
 			':us' => $user, 
 		]);
@@ -517,8 +546,11 @@ class Movie extends BaseClass
 						break;
 					case 'acstart':
 						$cols[] = 'mv_acstart=:acs';
-						$vals[':acs'] = base64_encode(gzencode($v));
+                        if (isset($data['scstart'])) $scstart = $data['scstart'];
+                            else $scstart = '';
+						$vals[':acs'] = base64_encode(gzencode($v)) . ',' . base64_encode(gzencode($scstart));
 						$updt['acstart'] = $v;
+                        $updt['scstart'] = isset($data['scstart']) ? $data['scstart'] : '';
 						break;
 					case 'actions':
 						$cols[] = 'mv_actions=:ac';
@@ -566,8 +598,8 @@ class Movie extends BaseClass
 				$vals[':id'] = $id;
                 $valslite[':time'] = date('Y-m-d H:i:s');
                 $valslite[':id'] = $id;
-				$this->execute('UPDATE movies SET ' . implode(', ', $cols) . ' WHERE mv_id=:id', $vals,
-                'UPDATE movies SET ' . implode(', ', $colslite) . ' WHERE mv_id=:id', $valslite);
+				$this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET ' . implode(', ', $cols) . ' WHERE `mv_id`=:id', $vals,
+                'UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET ' . implode(', ', $colslite) . ' WHERE `mv_id`=:id', $valslite);
                 // publish or remove scene files?
                 if (!is_null($publish)) {
                     if ($publish) {
@@ -595,7 +627,7 @@ class Movie extends BaseClass
     public function publishScenes($movie) {
         if (is_dir('../movie/'.$movie.'.movie/scene/')) {
             $sc = new Scene;
-            $ck = $this->queryAll('SELECT sc_id FROM scenes WHERE sc_movie=:mv AND sc_published=:pub', [
+            $ck = $this->queryAll('SELECT `sc_id` FROM `' . $this->conf['databasePrefix'] . 'scenes` WHERE `sc_movie`=:mv AND `sc_published`=:pub', [
                 ':mv' => $movie, 
                 ':pub' => '1', 
             ]);
@@ -614,7 +646,7 @@ class Movie extends BaseClass
     public function publishCollections($movie) {
         if (is_dir('../movie/'.$movie.'.movie/collection/')) {
             $cl = new Collection;
-            $ck = $this->queryAll('SELECT cl_uid FROM collections WHERE cl_movie=:mv', [
+            $ck = $this0>queryAll('SELECT `cl_uid` FROM `' . $this->conf['databasePrefix'] . 'collections` WHERE `cl_movie`=:mv', [
                 ':mv' => $movie, 
             ]);
             foreach ($ck as $v) {
@@ -647,7 +679,7 @@ class Movie extends BaseClass
 	 * @return array information about collaborators
 	 */
 	public function listCollaborators($id, $user) {
-		$ck = $this->queryAll('SELECT mv_collaborators FROM movies WHERE mv_id=:id AND mv_user=:us', [
+		$ck = $this->queryAll('SELECT `mv_collaborators` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:us', [
 			':id' => $id, 
 			':us' => $user, 
 		]);
@@ -669,7 +701,7 @@ class Movie extends BaseClass
 	 * @return array information about collaborators
 	 */
 	public function addCollaborator($id, $user, $email) {
-		$ck = $this->queryAll('SELECT mv_collaborators FROM movies WHERE mv_id=:id AND mv_user=:us', [
+		$ck = $this->queryAll('SELECT `mv_collaborators` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:us', [
 			':id' => $id, 
 			':us' => $user, 
 		]);
@@ -680,10 +712,10 @@ class Movie extends BaseClass
             if (is_null($ck[0]['mv_collaborators'])) $ck[0]['mv_collaborators'] = '';
 			if ($ck[0]['mv_collaborators'] != '') $list = explode(',', $ck[0]['mv_collaborators']);
 			$list[] = trim($email);
-			$this->execute('UPDATE movies SET mv_collaborators=:list WHERE mv_id=:id', [
+			$this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET `mv_collaborators`=:list WHERE `mv_id`=:id', [
 				':list' => implode(',', $list), 
 				':id' => $id, 
-			], 'UPDATE movies SET mv_collaborators=:list, mv_updated=:time WHERE mv_id=:id', [
+			], 'UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET `mv_collaborators`=:list, `mv_updated`=:time WHERE `mv_id`=:id', [
 				':list' => implode(',', $list), 
                 ':time' => date('Y-m-d H:i:s'), 
 				':id' => $id, 
@@ -700,7 +732,7 @@ class Movie extends BaseClass
 	 * @return array information about collaborators
 	 */
 	public function removeCollaborator($id, $user, $email) {
-		$ck = $this->queryAll('SELECT mv_collaborators FROM movies WHERE mv_id=:id AND mv_user=:us', [
+		$ck = $this->queryAll('SELECT `mv_collaborators` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:us', [
 			':id' => $id, 
 			':us' => $user, 
 		]);
@@ -712,10 +744,10 @@ class Movie extends BaseClass
 			if ($ck[0]['mv_collaborators'] != '') $list = explode(',', $ck[0]['mv_collaborators']);
 			$newlist = [ ];
 			foreach ($list as $em) if ($em != trim($email)) $newlist[] = $em;
-			$this->execute('UPDATE movies SET mv_collaborators=:list WHERE mv_id=:id', [
+			$this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET `mv_collaborators`=:list WHERE `mv_id`=:id', [
 				':list' => implode(',', $newlist), 
 				':id' => $id, 
-			], 'UPDATE movies SET mv_collaborators=:list, mv_updated=:time WHERE mv_id=:id', [
+			], 'UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET `mv_collaborators`=:list, `mv_updated`=:time WHERE `mv_id`=:id', [
 				':list' => implode(',', $newlist), 
                 ':time' => date('Y-m-d H:i:s'), 
 				':id' => $id, 
@@ -732,14 +764,14 @@ class Movie extends BaseClass
 	 * @return array error code
 	 */
 	public function changeOwner($id, $user, $email) {
-		$ck = $this->queryAll('SELECT mv_collaborators FROM movies WHERE mv_id=:id AND mv_user=:us', [
+		$ck = $this->queryAll('SELECT `mv_collaborators` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:us', [
 			':id' => $id, 
 			':us' => $user, 
 		]);
 		if (count($ck) == 0) {
 			return (['e' => 1]);
 		} else {
-			$cku = $this->queryAll('SELECT us_email FROM users WHERE us_email=:em', [':em'=>$email]);
+			$cku = $this->queryAll('SELECT `us_email` FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em', [':em'=>$email]);
 			if (count($cku) == 0) {
 				return (['e' => 2]);
 			} else {
@@ -748,11 +780,11 @@ class Movie extends BaseClass
 				if ($ck[0]['mv_collaborators'] != '') $list = explode(',', $ck[0]['mv_collaborators']);
 				$newlist = [ $user ];
 				foreach ($list as $em) if ($em != $user) $newlist[] = $em;
-				$this->execute('UPDATE movies SET mv_user=:us, mv_collaborators=:list WHERE mv_id=:id', [
+				$this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET `mv_user`=:us, `mv_collaborators`=:list WHERE `mv_id`=:id', [
 					':us' => $email, 
 					':list' => implode(',', $newlist), 
 					':id' => $id, 
-				], 'UPDATE movies SET mv_user=:us, mv_collaborators=:list, mv_updated=:time WHERE mv_id=:id', [
+				], 'UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET `mv_user`=:us, `mv_collaborators`=:list, `mv_updated`=:time WHERE `mv_id`=:id', [
 					':us' => $email, 
 					':list' => implode(',', $newlist), 
                     ':time' => date('Y-m-d H:i:s'), 
@@ -770,7 +802,7 @@ class Movie extends BaseClass
 	 * @return array information about collaborators
 	 */
 	public function infoMovie($id, $user) {
-		$ck = $this->queryAll('SELECT mv_user, mv_collaborators FROM movies WHERE mv_id=:id', [
+		$ck = $this->queryAll('SELECT `mv_user`, `mv_collaborators` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [
 			':id' => $id, 
 		]);
 		if (count($ck) == 0) {
@@ -793,7 +825,7 @@ class Movie extends BaseClass
 	 * @param	string	$conf	plugin configuration
 	 */
 	public function setPlugin($id, $user, $plugin, $active, $conf) {
-		$ck = $this->queryAll('SELECT mv_plugins FROM movies WHERE mv_id=:id AND mv_user=:us', [
+		$ck = $this->queryAll('SELECT `mv_plugins` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:us', [
 			':id' => $id, 
 			':us' => $user, 
 		]);
@@ -814,10 +846,10 @@ class Movie extends BaseClass
 					$current = $newarr;
 				}
 			}
-			$this->execute('UPDATE movies SET mv_plugins=:pl WHERE mv_id=:id', [
+			$this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET `mv_plugins`=:pl WHERE `mv_id`=:id', [
 				':pl' => implode(',', $current), 
 				':id' => $id, 
-			], 'UPDATE movies SET mv_plugins=:pl, mv_updated=:time WHERE mv_id=:id', [
+			], 'UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET `mv_plugins`=:pl, `mv_updated`=:time WHERE `mv_id`=:id', [
 				':pl' => implode(',', $current), 
                 ':time' => date('Y-m-d H:i:s'), 
 				':id' => $id, 
@@ -826,13 +858,13 @@ class Movie extends BaseClass
 			$plid = $plugin.'_'.$id;
 			$json = json_decode($conf, true);
 			if (json_last_error() != JSON_ERROR_NONE) $json = [ ];
-			$this->execute('INSERT INTO plugins (pl_id, pl_name, pl_movie, pl_scene, pl_config) VALUES (:id, :nm, :mv, :sc, :conf) ON DUPLICATE KEY UPDATE pl_config=VALUES(pl_config)', [
+			$this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'plugins` (`pl_id`, `pl_name`, `pl_movie`, `pl_scene`, `pl_config`) VALUES (:id, :nm, :mv, :sc, :conf) ON DUPLICATE KEY UPDATE `pl_config`=VALUES(`pl_config`)', [
 				':id' => $plid, 
 				':nm' => $plugin, 
 				':mv' => $id, 
 				':sc' => '', 
 				':conf' => base64_encode(gzencode(json_encode($json))), 
-			], 'INSERT INTO plugins (pl_id, pl_name, pl_movie, pl_scene, pl_config) VALUES (:id, :nm, :mv, :sc, :conf) ON CONFLICT(pl_id) DO UPDATE SET pl_config = excluded.pl_config', [
+			], 'INSERT INTO `' . $this->conf['databasePrefix'] . 'plugins` (`pl_id`, `pl_name`, `pl_movie`, `pl_scene`, `pl_config`) VALUES (:id, :nm, :mv, :sc, :conf) ON CONFLICT(`pl_id`) DO UPDATE SET `pl_config` = excluded.pl_config', [
 				':id' => $plid, 
 				':nm' => $plugin, 
 				':mv' => $id, 
@@ -855,12 +887,12 @@ class Movie extends BaseClass
 		$list = [ ];
 		// check user: admin?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT us_email FROM users WHERE us_email=:em AND us_level=:adm', [
+			$ck = $this->queryAll('SELECT `us_email` FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:adm', [
 				':em' => $user, 
 				':adm' => '0', 
 			]);
 			if (count($ck) > 0) {
-				$ck = $this->queryAll('SELECT mv_id, mv_title FROM movies ORDER BY mv_title ASC');
+				$ck = $this->queryAll('SELECT `mv_id`, `mv_title` FROM `' . $this->conf['databasePrefix'] . 'movies` ORDER BY `mv_title` ASC');
 				foreach ($ck as $v) $list[] = [
 					'name' => $v['mv_title'], 
 					'id' => $v['mv_id'], 
@@ -876,7 +908,7 @@ class Movie extends BaseClass
 	 */
 	public function getCurrentIndex() {
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT cf_value FROM config WHERE cf_key=:key', [':key'=>'indexMovie']);
+			$ck = $this->queryAll('SELECT `cf_value` FROM `' . $this->conf['databasePrefix'] . 'config` WHERE `cf_key`=:key', [':key'=>'indexMovie']);
 			if (count($ck) > 0) {
 				return ($ck[0]['cf_value']);
 			} else {
@@ -900,21 +932,21 @@ class Movie extends BaseClass
 	public function setIndexMovie($user, $movie) {
 		// check user: admin?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT us_email FROM users WHERE us_email=:em AND us_level=:adm', [
+			$ck = $this->queryAll('SELECT `us_email` FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:adm', [
 				':em' => $user, 
 				':adm' => '0', 
 			]);
 			if (count($ck) > 0) {
 				// movie id is valid?
-				$ck = $this->queryAll('SELECT mv_id FROM movies where mv_id=:id', [':id'=>$movie]);
+				$ck = $this->queryAll('SELECT mv_id FROM `' . $this->conf['databasePrefix'] . 'movies` where `mv_id`=:id', [':id'=>$movie]);
 				if (count($ck) == 0) {
 					return (3);
 				} else {
 					// set index movie
-					$this->execute('INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON DUPLICATE KEY UPDATE cf_value=VALUES(cf_value)', [
+					$this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'config` (`cf_key`, `cf_value`) VALUES (:key, :val) ON DUPLICATE KEY UPDATE `cf_value`=VALUES(`cf_value`)', [
 						':key' => 'indexMovie', 
 						':val' => $movie, 
-					], 'INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON CONFLICT(cf_key) DO UPDATE SET cf_value = excluded.cf_value', [
+					], 'INSERT INTO `' . $this->conf['databasePrefix'] . 'config` (`cf_key`, `cf_value`) VALUES (:key, :val) ON CONFLICT(`cf_key`) DO UPDATE SET `cf_value` = excluded.cf_value', [
 						':key' => 'indexMovie', 
 						':val' => $movie, 
 					]);
@@ -941,7 +973,7 @@ class Movie extends BaseClass
 	public function setRender($user, $rd) {
 		// check user: admin?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT us_email FROM users WHERE us_email=:em AND us_level=:adm', [
+			$ck = $this->queryAll('SELECT `us_email` FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:adm', [
 				':em' => $user, 
 				':adm' => '0', 
 			]);
@@ -953,10 +985,10 @@ class Movie extends BaseClass
 					$rd = 'webgl';
 				}
 				// set render mode
-				$this->execute('INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON DUPLICATE KEY UPDATE cf_value=VALUES(cf_value)', [
+				$this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'config` (`cf_key`, `cf_value`) VALUES (:key, :val) ON DUPLICATE KEY UPDATE `cf_value`=VALUES(`cf_value`)', [
 					':key' => 'renderMode', 
 					':val' => $rd, 
-				], 'INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON CONFLICT(cf_key) DO UPDATE SET cf_value = excluded.cf_value', [
+				], 'INSERT INTO `' . $this->conf['databasePrefix'] . 'config` (`cf_key`, `cf_value`) VALUES (:key, :val) ON CONFLICT(`cf_key`) DO UPDATE SET `cf_value` = excluded.cf_value', [
 					':key' => 'renderMode', 
 					':val' => $rd, 
 				]);
@@ -982,7 +1014,7 @@ class Movie extends BaseClass
 	public function setShare($user, $sh) {
 		// check user: admin?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT us_email FROM users WHERE us_email=:em AND us_level=:adm', [
+			$ck = $this->queryAll('SELECT `us_email` FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:adm', [
 				':em' => $user, 
 				':adm' => '0', 
 			]);
@@ -996,10 +1028,10 @@ class Movie extends BaseClass
 					$sh = 'scene';
 				}
 				// set render mode
-				$this->execute('INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON DUPLICATE KEY UPDATE cf_value=VALUES(cf_value)', [
+				$this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'config` (`cf_key`, `cf_value`) VALUES (:key, :val) ON DUPLICATE KEY UPDATE `cf_value`=VALUES(`cf_value`)', [
 					':key' => 'shareMode', 
 					':val' => $sh, 
-				], 'INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON CONFLICT(cf_key) DO UPDATE SET cf_value = excluded.cf_value');
+				], 'INSERT INTO `' . $this->conf['databasePrefix'] . 'config` (`cf_key`, `cf_value`) VALUES (:key, :val) ON CONFLICT(`cf_key`) DO UPDATE SET `cf_value` = excluded.cf_value');
 				// save configuration
 				return ($this->savePlayerConfig($user));
 			} else {
@@ -1022,7 +1054,7 @@ class Movie extends BaseClass
 	public function setFPS($user, $fps) {
 		// check user: admin?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT us_email FROM users WHERE us_email=:em AND us_level=:adm', [
+			$ck = $this->queryAll('SELECT `us_email` FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:adm', [
 				':em' => $user, 
 				':adm' => '0', 
 			]);
@@ -1041,10 +1073,10 @@ class Movie extends BaseClass
 					default: $fps = 'free'; break;
 				}
 				// set render mode
-				$this->execute('INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON DUPLICATE KEY UPDATE cf_value=VALUES(cf_value)', [
+				$this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'config` (`cf_key`, `cf_value`) VALUES (:key, :val) ON DUPLICATE KEY UPDATE `cf_value`=VALUES(`cf_value`)', [
 					':key' => 'fpsMode', 
 					':val' => $fps, 
-				], 'INSERT INTO config (cf_key, cf_value) VALUES (:key, :val) ON CONFLICT(cf_key) DO UPDATE SET cf_value = excluded.cf_value');
+				], 'INSERT INTO `' . $this->conf['databasePrefix'] . 'config` (`cf_key`, `cf_value`) VALUES (:key, :val) ON CONFLICT(`cf_key`) DO UPDATE SET `cf_value` = excluded.cf_value');
 				// save configuration
 				return ($this->savePlayerConfig($user));
 			} else {
@@ -1066,7 +1098,7 @@ class Movie extends BaseClass
 	private function savePlayerConfig($user) {
 		// check user: admin?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT us_email FROM users WHERE us_email=:em AND us_level=:adm', [
+			$ck = $this->queryAll('SELECT `us_email` FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:em AND `us_level`=:adm', [
 				':em' => $user, 
 				':adm' => '0', 
 			]);
@@ -1076,7 +1108,7 @@ class Movie extends BaseClass
 				$render = 'webgl';
 				$share = 'scene';
 				$fps = 'free';
-				$ck = $this->queryAll('SELECT * FROM config');
+				$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'config`');
 				foreach ($ck as $v) {
 					switch ($v['cf_key']) {
 						case 'indexMovie':
@@ -1095,7 +1127,7 @@ class Movie extends BaseClass
 				}
 				// system fonts
 				$fonts = [ ];
-				$ck = $this->queryAll('SELECT * FROM fonts');
+				$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'fonts`');
 				foreach ($ck as $v) $fonts[] = [ 'name' => $v['fn_name'], 'file' => $v['fn_file'] ];
 				// save player.json
 				file_put_contents('../app/player.json', json_encode([
@@ -1128,7 +1160,7 @@ class Movie extends BaseClass
 	public function export($user, $movie) {
 		// check user: movie owner?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:user', [
 				':id' => $movie, 
 				':user' => $user, 
 			]);
@@ -1192,12 +1224,12 @@ class Movie extends BaseClass
 	public function importId($user, $movie) {
 		// check user: at least editor?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT * FROM users WHERE us_email=:user AND us_level<=:level', [
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:user AND `us_level`<=:level', [
 				':user' => $user, 
                 ':level' => '50', 
 			]);
 			if (count($ck) > 0) {
-                $ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:movie', [
+                $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:movie', [
                     ':movie' => $movie
                 ]);
                 if (count($ck) > 0) {
@@ -1229,7 +1261,7 @@ class Movie extends BaseClass
 	public function importZip($user, $movie) {
 		// check user: at least editor?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT * FROM users WHERE us_email=:user AND us_level<=:level', [
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:user AND `us_level`<=:level', [
 				':user' => $user, 
                 ':level' => '50', 
 			]);
@@ -1240,7 +1272,7 @@ class Movie extends BaseClass
                 // movie zip not found
 				return (2);
 			} else {
-                $ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:movie', [
+                $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:movie', [
                     ':movie' => $movie
                 ]);
                 if (count($ck) > 0) {
@@ -1331,6 +1363,7 @@ class Movie extends BaseClass
                                         $json['vsgroups'] = [ ];
                                         if (!isset($json['start'])) $json['start'] = '';
                                         if (!isset($json['acstart'])) $json['acstart'] = '';
+                                        if (!isset($json['scstart'])) $json['scstart'] = '';
                                         if (!isset($json['screen']['bgcolor'])) $json['screen']['bgcolor'] = '0x000000';
                                         if (!isset($json['screen']['type'])) $json['screen']['type'] = 'both';
                                         if (!isset($json['time'])) $json['time'] = 1;
@@ -1355,7 +1388,7 @@ class Movie extends BaseClass
                                             $json['plugins'] = $plg;
                                         }
                                         file_put_contents('../movie/'.$movie.'.movie/movie.json', json_encode($json));
-                                        if (!$this->execute('INSERT INTO movies (mv_id, mv_user, mv_collaborators, mv_author, mv_title, mv_about, mv_copyright, mv_copyleft, mv_tags, mv_favicon, mv_image, mv_key, mv_start, mv_acstart, mv_screenbig, mv_screensmall, mv_screentype, mv_screenbg, mv_interval, mv_origin, mv_animation, mv_fonts, mv_style, mv_actions, mv_theme, mv_texts, mv_numbers, mv_flags, mv_plugins, mv_created, mv_updated, mv_loading, mv_encrypted, mv_highlight, mv_contraptions, mv_strings, mv_narrative) VALUES (:mv_id, :mv_user, :mv_collaborators, :mv_author, :mv_title, :mv_about, :mv_copyright, :mv_copyleft, :mv_tags, :mv_favicon, :mv_image, :mv_key, :mv_start, :mv_acstart, :mv_screenbig, :mv_screensmall, :mv_screentype, :mv_screenbg, :mv_interval, :mv_origin, :mv_animation, :mv_fonts, :mv_style, :mv_actions, :mv_theme, :mv_texts, :mv_numbers, :mv_flags, :mv_plugins, :mv_created, :mv_updated, :mv_loading, :mv_encrypted, :mv_highlight, :mv_contraptions, :mv_strings, :mv_narrative)', [
+                                        if (!$this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'movies` (`mv_id`, `mv_user`, `mv_collaborators`, `mv_author`, `mv_title`, `mv_about`, `mv_copyright`, `mv_copyleft`, `mv_tags`, `mv_favicon`, `mv_image`, `mv_key`, `mv_start`, `mv_acstart`, `mv_screenbig`, `mv_screensmall`, `mv_screentype`, `mv_screenbg`, `mv_interval`, `mv_origin`, `mv_animation`, `mv_fonts`, `mv_style`, `mv_actions`, `mv_theme`, `mv_texts`, `mv_numbers`, `mv_flags`, `mv_plugins`, `mv_created`, `mv_updated`, `mv_loading`, `mv_encrypted`, `mv_highlight`, `mv_contraptions`, `mv_strings`, `mv_narrative`) VALUES (:mv_id, :mv_user, :mv_collaborators, :mv_author, :mv_title, :mv_about, :mv_copyright, :mv_copyleft, :mv_tags, :mv_favicon, :mv_image, :mv_key, :mv_start, :mv_acstart, :mv_screenbig, :mv_screensmall, :mv_screentype, :mv_screenbg, :mv_interval, :mv_origin, :mv_animation, :mv_fonts, :mv_style, :mv_actions, :mv_theme, :mv_texts, :mv_numbers, :mv_flags, :mv_plugins, :mv_created, :mv_updated, :mv_loading, :mv_encrypted, :mv_highlight, :mv_contraptions, :mv_strings, :mv_narrative)', [
                                             ':mv_id' => $json['id'], 
                                             ':mv_user' => $user, 
                                             ':mv_collaborators' => '', 
@@ -1369,7 +1402,7 @@ class Movie extends BaseClass
                                             ':mv_image' => $json['image'], 
                                             ':mv_key' => $json['key'], 
                                             ':mv_start' => $json['start'], 
-                                            ':mv_acstart' => $json['acstart'] == '' ? '' : base64_encode(gzencode($json['acstart'])), 
+                                            ':mv_acstart' => ($json['acstart'] == '' ? '' : base64_encode(gzencode($json['acstart']))) . ',' . ($json['scstart'] == '' ? '' : base64_encode(gzencode($json['scstart']))), 
                                             ':mv_screenbig' => $json['screen']['big'], 
                                             ':mv_screensmall' => $json['screen']['small'], 
                                             ':mv_screentype' => $json['screen']['type'], 
@@ -1422,7 +1455,7 @@ class Movie extends BaseClass
                                                     $json = json_decode(file_get_contents('../movie/'.$movie.'.movie/collection/'.$fl), true);
                                                     if (json_last_error() == JSON_ERROR_NONE) {
                                                         $uid = $movie . $json['id'];
-                                                        $this->execute('INSERT INTO collections (cl_uid, cl_id, cl_movie, cl_title, cl_transition, cl_time) VALUES (:cl_uid, :cl_id, :cl_movie, :cl_title, :cl_transition, :cl_time)', [
+                                                        $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'collections` (`cl_uid`, `cl_id`, `cl_movie`, `cl_title`, `cl_transition`, `cl_time`) VALUES (:cl_uid, :cl_id, :cl_movie, :cl_title, :cl_transition, :cl_time)', [
                                                             ':cl_uid' => $uid, 
                                                             ':cl_id' => $json['id'], 
                                                             ':cl_movie' => $movie, 
@@ -1431,7 +1464,7 @@ class Movie extends BaseClass
                                                             ':cl_time' => $json['time'], 
                                                         ]);
                                                         foreach ($json['assets'] as $kas => $vas) {
-                                                            $this->execute('INSERT INTO assets (at_id, at_collection, at_order, at_name, at_type, at_time, at_action, at_frames, at_frtime, at_file1, at_file2, at_file3, at_file4, at_file5) VALUES (:at_id, :at_collection, :at_order, :at_name, :at_type, :at_time, :at_action, :at_frames, :at_frtime, :at_file1, :at_file2, :at_file3, :at_file4, :at_file5)', [
+                                                            $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'assets` (`at_id`, `at_collection`, `at_order`, `at_name`, `at_type`, `at_time`, `at_action`, `at_frames`, `at_frtime`, `at_file1`, `at_file2`, `at_file3`, `at_file4`, `at_file5`) VALUES (:at_id, :at_collection, :at_order, :at_name, :at_type, :at_time, :at_action, :at_frames, :at_frtime, :at_file1, :at_file2, :at_file3, :at_file4, :at_file5)', [
                                                                 ':at_id' => $kas, 
                                                                 ':at_collection' => $uid, 
                                                                 ':at_order' => $json['assets'][$kas]['order'], 
@@ -1462,7 +1495,7 @@ class Movie extends BaseClass
                                                     if (json_last_error() == JSON_ERROR_NONE) {
                                                         $ackeyframes = [ ];
                                                         foreach ($json['ackeyframes'] as $ack) $ackeyframes[] = $ack == '' ? '' : base64_encode(gzencode($ack));
-                                                        $this->execute('INSERT INTO scenes (sc_id, sc_movie, sc_published, sc_title, sc_about, sc_image, sc_up, sc_down, sc_left, sc_right, sc_nin, sc_nout, sc_collections, sc_loop, sc_acstart, sc_ackeyframes, sc_user, sc_date, sc_static) VALUES (:sc_id, :sc_movie, :sc_published, :sc_title, :sc_about, :sc_image, :sc_up, :sc_down, :sc_left, :sc_right, :sc_nin, :sc_nout, :sc_collections, :sc_loop, :sc_acstart, :sc_ackeyframes, :sc_user, :sc_date, :sc_static)', [
+                                                        $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'scenes` (`sc_id`, `sc_movie`, `sc_published`, `sc_title`, `sc_about`, `sc_image`, `sc_up`, `sc_down`, `sc_left`, `sc_right`, `sc_nin`, `sc_nout`, `sc_collections`, `sc_loop`, `sc_acstart`, `sc_ackeyframes`, `sc_user`, `sc_date`, `sc_static`) VALUES (:sc_id, :sc_movie, :sc_published, :sc_title, :sc_about, :sc_image, :sc_up, :sc_down, :sc_left, :sc_right, :sc_nin, :sc_nout, :sc_collections, :sc_loop, :sc_acstart, :sc_ackeyframes, :sc_user, :sc_date, :sc_static)', [
                                                             ':sc_id' => $json['id'], 
                                                             ':sc_movie' => $movie, 
                                                             ':sc_published' => '1', 
@@ -1477,7 +1510,7 @@ class Movie extends BaseClass
                                                             ':sc_nout' => $json['navigation']['nout'], 
                                                             ':sc_collections' => implode(',', $json['collections']), 
                                                             ':sc_loop' => $json['loop'], 
-                                                            ':sc_acstart' => $json['acstart'] == '' ? '' : base64_encode(gzencode($json['acstart'])), 
+                                                            ':sc_acstart' => ($json['acstart'] == '' ? '' : base64_encode(gzencode($json['acstart']))), 
                                                             ':sc_ackeyframes' => implode(',', $ackeyframes), 
                                                             ':sc_user' => $user, 
                                                             ':sc_date' => date('Y-m-d H:i:s'), 
@@ -1486,13 +1519,13 @@ class Movie extends BaseClass
                                                         $sceneid = $this->insertID();
                                                         $kforder = 0;
                                                         foreach ($json['keyframes'] as $kf) {
-                                                            $this->execute('INSERT INTO keyframes (kf_scene, kf_order) VALUES (:kf_scene, :kf_order)', [
+                                                            $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'keyframes` (`kf_scene`, `kf_order`) VALUES (:kf_scene, :kf_order)', [
                                                                ':kf_scene' => $sceneid,
                                                                 ':kf_order' => $kforder, 
                                                             ]);
                                                             $kfid = $this->insertID();
                                                             foreach ($kf as $kin => $vin) {
-                                                                $this->execute('INSERT INTO instances (in_keyframe, in_name, in_collection, in_asset, in_action, in_play, in_actionover, in_timedac) VALUES (:in_keyframe, :in_name, :in_collection, :in_asset, :in_action, :in_play, :in_actionover, :in_timedac)', [
+                                                                $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instances` (`in_keyframe`, `in_name`, `in_collection`, `in_asset`, `in_action`, `in_play`, `in_actionover`, `in_timedac` , `in_focus`) VALUES (:in_keyframe, :in_name, :in_collection, :in_asset, :in_action, :in_play, :in_actionover, :in_timedac, :in_focus)', [
                                                                     ':in_keyframe' => $kfid, 
                                                                     ':in_name' => $kin, 
                                                                     ':in_collection' => $vin['collection'], 
@@ -1501,9 +1534,10 @@ class Movie extends BaseClass
                                                                     ':in_play' => $vin['play'] == true ? '1' : '0', 
                                                                     ':in_actionover' => (isset($vin['actionover']) ? ($vin['actionover'] == '' ? '' : base64_encode(gzencode($vin['actionover']))) : ''), 
                                                                     ':in_timedac' => (isset($vin['timedac']) ? ($vin['timedac'] == '' ? '' : base64_encode(gzencode($vin['timedac']))) : ''), 
+                                                                    ':in_focus' => $vin['focus'] == true ? '1' : '0', 
                                                                 ]);
                                                                 $inid = $this->insertID();
-                                                                $this->execute('INSERT INTO instancedesc (id_instance, id_position, id_order, id_x, id_y, id_alpha, id_width, id_height, id_rotation, id_visible, id_color, id_coloralpha, id_volume, id_pan, id_blur, id_dropshadow, id_textfont, id_textsize, id_textcolor, id_textbold, id_textitalic, id_textleading, id_textspacing, id_textbackground, id_textalign, id_glow, id_blend) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign, :glow, :blend)', [
+                                                                $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instancedesc` (`id_instance`, `id_position`, `id_order`, `id_x`, `id_y`, `id_alpha`, `id_width`, `id_height`, `id_rotation`, `id_visible`, `id_color`, `id_coloralpha`, `id_volume`, `id_pan`, `id_blur`, `id_dropshadow`, `id_textfont`, `id_textsize`, `id_textcolor`, `id_textbold`, `id_textitalic`, `id_textleading`, `id_textspacing`, `id_textbackground`, `id_textalign`, `id_glow`, `id_blend`) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign, :glow, :blend)', [
                                                                     ':instance' => $inid, 
                                                                     ':position' => 'h', 
                                                                     ':order' => $vin['horizontal']['order'], 
@@ -1532,7 +1566,7 @@ class Movie extends BaseClass
                                                                     ':glow' => (isset($vin['horizontal']['glow']) ? $vin['horizontal']['glow'] : ''), 
                                                                     ':blend' => (isset($vin['horizontal']['blend']) ? $vin['horizontal']['blend'] : ''), 
                                                                 ]);
-                                                                $this->execute('INSERT INTO instancedesc (id_instance, id_position, id_order, id_x, id_y, id_alpha, id_width, id_height, id_rotation, id_visible, id_color, id_coloralpha, id_volume, id_pan, id_blur, id_dropshadow, id_textfont, id_textsize, id_textcolor, id_textbold, id_textitalic, id_textleading, id_textspacing, id_textbackground, id_textalign, id_glow, id_blend) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign, :glow, :blend)', [
+                                                                $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instancedesc` (`id_instance`, `id_position`, `id_order`, `id_x`, `id_y`, `id_alpha`, `id_width`, `id_height`, `id_rotation`, `id_visible`, `id_color`, `id_coloralpha`, `id_volume`, `id_pan`, `id_blur`, `id_dropshadow`, `id_textfont`, `id_textsize`, `id_textcolor`, `id_textbold`, `id_textitalic`, `id_textleading`, `id_textspacing`, `id_textbackground`, `id_textalign`, `id_glow`, `id_blend`) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign, :glow, :blend)', [
                                                                     ':instance' => $inid, 
                                                                     ':position' => 'v', 
                                                                     ':order' => $vin['vertical']['order'], 
@@ -1577,6 +1611,7 @@ class Movie extends BaseClass
                                             if (!is_dir('../movie/'.$movie.'.movie/media/font')) !$this->createDir('../movie/'.$movie.'.movie/media/font');
                                             if (!is_dir('../movie/'.$movie.'.movie/media/spritemap')) !$this->createDir('../movie/'.$movie.'.movie/media/spritemap');
                                             if (!is_dir('../movie/'.$movie.'.movie/media/strings')) !$this->createDir('../movie/'.$movie.'.movie/media/strings');
+                                            if (!is_dir('../movie/'.$movie.'.movie/media/snippets')) !$this->createDir('../movie/'.$movie.'.movie/media/snippets');
                                             if (!is_dir('../movie/'.$movie.'.movie/media/dialogues')) !$this->createDir('../movie/'.$movie.'.movie/media/dialogues');
                                             
                                             // string files
@@ -1586,11 +1621,32 @@ class Movie extends BaseClass
                                                         $name = str_replace('.json', '', $file);
                                                         $content = file_get_contents('../movie/'.$movie.'.movie/media/strings/'.$file);
                                                         if ($content !== false) {
-                                                            $this->execute('DELETE FROM strings WHERE st_movie=:mv AND st_file=:fl', [
+                                                            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'strings` WHERE `st_movie`=:mv AND `st_file`=:fl', [
                                                                 ':mv' => $movie, 
                                                                 ':fl' => $name, 
                                                             ]);
-                                                            $this->execute('INSERT INTO strings (st_movie, st_file, st_content) VALUES (:mv, :fl, :ct)', [
+                                                            $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'strings` (`st_movie`, `st_file`, `st_content`) VALUES (:mv, :fl, :ct)', [
+                                                                ':mv' => $movie, 
+                                                                ':fl' => $name, 
+                                                                ':ct' => base64_encode(gzencode($content)), 
+                                                            ]);
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            // snippets files
+                                            if ($handle = opendir('../movie/'.$movie.'.movie/media/snippets')) {
+                                                while (false !== ($file = readdir($handle))) {
+                                                    if (($file != '.') && ($file != '..')) {
+                                                        $name = str_replace('.json', '', $file);
+                                                        $content = file_get_contents('../movie/'.$movie.'.movie/media/snippets/'.$file);
+                                                        if ($content !== false) {
+                                                            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'snippets` WHERE `sn_movie`=:mv AND `sn_file`=:fl', [
+                                                                ':mv' => $movie, 
+                                                                ':fl' => $name, 
+                                                            ]);
+                                                            $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'snippets` (`sn_movie`, `sn_file`, `sn_content`) VALUES (:mv, :fl, :ct)', [
                                                                 ':mv' => $movie, 
                                                                 ':fl' => $name, 
                                                                 ':ct' => base64_encode(gzencode($content)), 
@@ -1633,7 +1689,7 @@ class Movie extends BaseClass
 	public function exportSite($user, $movie, $mode, $sitemap, $location, $iframe = false) {
 		// check user: movie owner?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:user', [
 				':id' => $movie, 
 				':user' => $user, 
 			]);
@@ -1658,22 +1714,22 @@ class Movie extends BaseClass
                             // fonts
                             $fonts = [ ];
                             $embedft = [ ];
-                            $ck = $this->queryAll('SELECT * FROM fonts');
+                            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'fonts`');
                             foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/site-'.$movie.'/assets/' . $v['fn_file']));
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/site-'.$movie.'/assetsrt/' . $v['fn_file']));
                             }
-                            $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
+                            $ck = $this->queryAll('SELECT `mv_fonts` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id' => $movie]);
                             if (count($ck) > 0) {
                                 if ($ck[0]['mv_fonts'] != '') {
                                     $json = json_decode(gzdecode(base64_decode($ck[0]['mv_fonts'])), true);
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         foreach ($json as $k => $v) {
                                             if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/site-'.$movie.'/assets/' . $v['file']));
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/site-'.$movie.'/assetsrt/' . $v['file']));
                                             }
                                         }
                                     }
@@ -1682,7 +1738,7 @@ class Movie extends BaseClass
                             // plugins
                             $plhead = [ ];
                             $plend = [ ];
-                            $ck = $this->queryAll('SELECT pc_id, pc_file FROM pluginconfig WHERE pc_active=:ac AND pc_index=:in', [
+                            $ck = $this->queryAll('SELECT `pc_id`, `pc_file` FROM `' . $this->conf['databasePrefix'] . 'pluginconfig` WHERE `pc_active`=:ac AND `pc_index`=:in', [
                                 ':ac' => '1', 
                                 ':in' => '1', 
                             ]);
@@ -1712,7 +1768,7 @@ class Movie extends BaseClass
                                 $sitemap = $this->slashUrl($sitemap);
                                 $mapcontent = [ ['loc' => $sitemap . 'index.html', 'lastmod' => date('Y-m-d'), 'priority' => '1.0' ] ];
                                 $sitemap = $this->slashUrl($sitemap);
-                                $cks = $this->queryAll('SELECT sc_id, sc_title, sc_about, sc_image, sc_date FROM scenes WHERE sc_movie=:mv AND sc_published=:pub', [
+                                $cks = $this->queryAll('SELECT `sc_id`, `sc_title`, `sc_about`, `sc_image`, `sc_date` FROM `' . $this->conf['databasePrefix'] . 'scenes` WHERE `sc_movie`=:mv AND `sc_published`=:pub', [
                                     ':mv' => $movie, 
                                     ':pub' => '1', 
                                 ]);
@@ -1770,9 +1826,9 @@ class Movie extends BaseClass
                                     }
                                 }
                                 if ($cdomain != '') {
-                                    $this->execute('INSERT IGNORE INTO cors (cr_domain) VALUE (:dom)', [
+                                    $this->execute('INSERT IGNORE INTO `' . $this->conf['databasePrefix'] . 'cors` (`cr_domain`) VALUE (:dom)', [
                                        ':dom' => $cdomain, 
-                                    ], 'INSERT OR IGNORE INTO cors (cr_domain) VALUES (:dom)');
+                                    ], 'INSERT OR IGNORE INTO `' . $this->conf['databasePrefix'] . 'cors` (`cr_domain`) VALUES (:dom)');
                                 }
                             }
                             // index.html
@@ -1805,11 +1861,12 @@ class Movie extends BaseClass
                             ], $index);
                             file_put_contents('../../export/site-'.$movie.'/index.html', $index);
                             // runtime
-                            if ($mode == 'dom') {
+                            @copy('../../export/runtimes/website.js', ('../../export/site-'.$movie.'/TilBuci.js'));
+                            /*if ($mode == 'dom') {
                                 @copy('../../export/runtimes/website-dom.js', ('../../export/site-'.$movie.'/TilBuci.js'));
                             } else {
                                 @copy('../../export/runtimes/website-webgl.js', ('../../export/site-'.$movie.'/TilBuci.js'));
-                            }
+                            }*/
                             // iframe?
                             if ($iframe) {
                                 $ifcontent = file_get_contents('../../export/iframe/iframe.html');
@@ -1903,7 +1960,7 @@ class Movie extends BaseClass
 	public function exportPwa($user, $movie, $name, $shortname, $lang, $url, $location) {
 		// check user: movie owner?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:user', [
 				':id' => $movie, 
 				':user' => $user, 
 			]);
@@ -1937,9 +1994,9 @@ class Movie extends BaseClass
                                 }
                             }
                             if ($cdomain != '') {
-                                $this->execute('INSERT IGNORE INTO cors (cr_domain) VALUE (:dom)', [
+                                $this->execute('INSERT IGNORE INTO `' . $this->conf['databasePrefix'] . 'cors` (`cr_domain`) VALUE (:dom)', [
                                    ':dom' => $cdomain, 
-                                ], 'INSERT OR IGNORE INTO cors (cr_domain) VALUES (:dom)');
+                                ], 'INSERT OR IGNORE INTO `' . $this->conf['databasePrefix'] . 'cors` (`cr_domain`) VALUES (:dom)');
                             }
                             
                             // check url
@@ -1958,30 +2015,31 @@ class Movie extends BaseClass
                                 $url . 'manifest.json', 
                                 $url . 'assets/tilbuci/btClose.png', 
                                 $url . 'assets/tilbuci/btOk.png', 
+                                $url . 'assets/tilbuci/icTarget.png', 
                                 $url . 'manifest/default.json', 
                                 $url . 'movie/' . $movie . '.movie/movie.json'
                             ];
                             // fonts
                             $fonts = [ ];
                             $embedft = [ ];
-                            $ck = $this->queryAll('SELECT * FROM fonts');
+                            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'fonts`');
                             foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/pwa-'.$movie.'/assets/' . $v['fn_file']));
-                                $offline[] = $url . 'assets/' . $v['fn_file'];
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/pwa-'.$movie.'/assetsrt/' . $v['fn_file']));
+                                $offline[] = $url . 'assetsrt/' . $v['fn_file'];
                             }
-                            $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
+                            $ck = $this->queryAll('SELECT `mv_fonts` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id' => $movie]);
                             if (count($ck) > 0) {
                                 if ($ck[0]['mv_fonts'] != '') {
                                     $json = json_decode(gzdecode(base64_decode($ck[0]['mv_fonts'])), true);
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         foreach ($json as $k => $v) {
                                             if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/pwa-'.$movie.'/assets/' . $v['file']));
-                                                $offline[] = $url . 'assets/' . $v['file'];
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/pwa-'.$movie.'/assetsrt/' . $v['file']));
+                                                $offline[] = $url . 'assetsrt/' . $v['file'];
                                             }
                                         }
                                     }
@@ -1990,7 +2048,7 @@ class Movie extends BaseClass
                             // plugins
                             $plhead = [ ];
                             $plend = [ ];
-                            $ck = $this->queryAll('SELECT pc_id, pc_file FROM pluginconfig WHERE pc_active=:ac AND pc_index=:in', [
+                            $ck = $this->queryAll('SELECT `pc_id`, `pc_file` FROM `' . $this->conf['databasePrefix'] . 'pluginconfig` WHERE `pc_active`=:ac AND `pc_index`=:in', [
                                 ':ac' => '1', 
                                 ':in' => '1', 
                             ]);
@@ -2061,7 +2119,7 @@ class Movie extends BaseClass
                             if (is_file('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/narrative.json')) $offline[] = $url . 'movie/'.$movie.'.movie/narrative.json';
                             // check offline scenes
                             $collections = [ ];
-                            $cks = $this->queryAll('SELECT sc_id, sc_collections FROM scenes WHERE sc_movie=:mv AND sc_published=:pub', [ ':mv' => $movie, ':pub' => '1' ]);
+                            $cks = $this->queryAll('SELECT `sc_id`, `sc_collections` FROM `' . $this->conf['databasePrefix'] . 'scenes` WHERE `sc_movie`=:mv AND `sc_published`=:pub', [ ':mv' => $movie, ':pub' => '1' ]);
                             foreach ($cks as $vs) {
                                 $offline[] = $url . 'movie/'.$movie.'.movie/scene/' . $vs['sc_id'] . '.json';
                                 if (is_null($vs['sc_collections'])) $vs['sc_collections'] = '';
@@ -2075,42 +2133,11 @@ class Movie extends BaseClass
                             // check offline collections
                             foreach ($collections as $vc) {
                                 if (is_file('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/collection/' . $vc . '.json')) $offline[] = $url . 'movie/'.$movie.'.movie/collection/' . $vc . '.json';
-                                // offline collection assets
-                                $cka = $this->queryAll('SELECT at_type, at_file1, at_file2, at_file3, at_file4, at_file5 FROM assets WHERE at_collection=:col AND FIND_IN_SET(at_type, :types)', [
-                                    ':col' => $movie . $vc, 
-                                    ':types' => 'audio,html,picture,spritemap,video', 
-                                ], "SELECT at_type, at_file1, at_file2, at_file3, at_file4, at_file5 FROM assets WHERE at_collection=:col AND at_type IN ('audio','html','picture','spritemap','video')", [
-                                    ':col' => $movie . $vc, 
-                                ]);
-                                foreach ($cka as $va) {
-                                    for ($ia=1; $ia<=5; $ia++) {
-                                        $path = $url . 'movie/'.$movie.'.movie/media/' . $va['at_type'] . '/' . $va['at_file'.$ia];
-                                        if (!in_array($path, $offline)) {
-                                            if (is_file('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/' . $va['at_type'] . '/' . $va['at_file'.$ia])) {
-                                                $offline[] = $path; 
-                                            }
-                                        }
-                                    }
-                                }
                             }
-                            // check offline string files
-                            if (is_dir('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/strings/')) {
-                                $embedlist = $this->listDirFiles('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/strings');
-                                foreach ($embedlist as $el) {
-                                    $offline[] = str_replace('../../export/pwa-'.$movie.'/', $url, $el);
-                                }
-                            }
-                            // check offline dialogue files
-                            if (is_dir('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/dialogues/')) {
-                                $embedlist = $this->listDirFiles('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/dialogues');
-                                foreach ($embedlist as $el) {
-                                    $offline[] = str_replace('../../export/pwa-'.$movie.'/', $url, $el);
-                                }
-                            }
-                            // check offline embed files
-                            if (is_dir('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/embed/')) {
-                                $embedlist = $this->listDirFiles('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/embed');
-                                foreach ($embedlist as $el) {
+                            // offline media files
+                            if (is_dir('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media/')) {
+                                $mlist = $this->listDirFiles('../../export/pwa-'.$movie.'/movie/'.$movie.'.movie/media');
+                                foreach ($mlist as $el) {
                                     $offline[] = str_replace('../../export/pwa-'.$movie.'/', $url, $el);
                                 }
                             }
@@ -2213,7 +2240,7 @@ class Movie extends BaseClass
 	public function exportPub($user, $movie) {
 		// check user: movie owner?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:user', [
 				':id' => $movie, 
 				':user' => $user, 
 			]);
@@ -2238,22 +2265,22 @@ class Movie extends BaseClass
                             // fonts
                             $fonts = [ ];
                             $embedft = [ ];
-                            $ck = $this->queryAll('SELECT * FROM fonts');
+                            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'fonts`');
                             foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/publish-'.$movie.'/assets/' . $v['fn_file']));
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/publish-'.$movie.'/assetsrt/' . $v['fn_file']));
                             }
-                            $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
+                            $ck = $this->queryAll('SELECT `mv_fonts` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id' => $movie]);
                             if (count($ck) > 0) {
                                 if ($ck[0]['mv_fonts'] != '') {
                                     $json = json_decode(gzdecode(base64_decode($ck[0]['mv_fonts'])), true);
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         foreach ($json as $k => $v) {
                                             if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/publish-'.$movie.'/assets/' . $v['file']));
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/publish-'.$movie.'/assetsrt/' . $v['file']));
                                             }
                                         }
                                     }
@@ -2262,7 +2289,7 @@ class Movie extends BaseClass
                             // plugins
                             $plhead = [ ];
                             $plend = [ ];
-                            $ck = $this->queryAll('SELECT pc_id, pc_file FROM pluginconfig WHERE pc_active=:ac AND pc_index=:in', [
+                            $ck = $this->queryAll('SELECT `pc_id`, `pc_file` FROM `' . $this->conf['databasePrefix'] . 'pluginconfig` WHERE `pc_active`=:ac AND `pc_index`=:in', [
                                 ':ac' => '1', 
                                 ':in' => '1', 
                             ]);
@@ -2283,12 +2310,12 @@ class Movie extends BaseClass
                             $image = $this->info['image'] == '' ? '' : '<meta property="og:image" content="./movie/'.$movie.'.movie/media/picture/'.$this->info['image'].'" />';
                             $color = str_replace('0x', '#', $this->info['screen']['bgcolor']);
                             // add CORS
-                            $this->execute('INSERT IGNORE INTO cors (cr_domain) VALUE (:dom)', [
+                            $this->execute('INSERT IGNORE INTO `' . $this->conf['databasePrefix'] . 'cors` (`cr_domain`) VALUE (:dom)', [
                                ':dom' => 'https://itch.io/', 
-                            ], 'INSERT OR IGNORE INTO cors (cr_domain) VALUES (:dom)');
-                            $this->execute('INSERT IGNORE INTO cors (cr_domain) VALUE (:dom)', [
+                            ], 'INSERT OR IGNORE INTO `' . $this->conf['databasePrefix'] . 'cors` (`cr_domain`) VALUES (:dom)');
+                            $this->execute('INSERT IGNORE INTO `' . $this->conf['databasePrefix'] . 'cors` (`cr_domain`) VALUE (:dom)', [
                                ':dom' => 'https://gamejolt.com/', 
-                            ], 'INSERT OR IGNORE INTO cors (cr_domain) VALUES (:dom)');
+                            ], 'INSERT OR IGNORE INTO `' . $this->conf['databasePrefix'] . 'cors` (`cr_domain`) VALUES (:dom)');
                             $ws = '';
                             if ((strpos($this->conf['path'], 'localhost') === false) && (strpos($this->conf['path'], '127.0.0.1') === false)) {
                                 $ws = $this->slashUrl($this->conf['path']) . 'ws/';
@@ -2394,7 +2421,7 @@ class Movie extends BaseClass
 	public function exportDesk($user, $movie, $mode, $window, $width, $height, $favicon, $author, $description, $title) {
 		// check user: movie owner?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:user', [
 				':id' => $movie, 
 				':user' => $user, 
 			]);
@@ -2416,7 +2443,7 @@ class Movie extends BaseClass
                         @copy('../../export/desktop/readmeupdate.txt', '../../export/desktop-'.$movie.'/readme.txt');
                     } else {
                         // readme
-                        @copy('../../export/desktop/readmefull.txt', '../../export/desktop-'.$movie.'/readme.txt');
+                        @copy('../../export/desktop/readme.html', '../../export/desktop-'.$movie.'/readme.html');
 
                         // package
                         $package = file_get_contents('../../export/desktop/package.json');
@@ -2425,11 +2452,11 @@ class Movie extends BaseClass
                             '[AUTHOR]', 
                             '[DESCRIPTION]'
                         ], [
-                            $title, 
+                            $movie, 
                             $author, 
                             $description
                         ], $package);
-                        file_put_contents('../../export/desktop-'.$movie.'/'.$movie.'/package.json', $package);
+                        file_put_contents('../../export/desktop-'.$movie.'/'.$movie.'/package.ori', $package);
                     }
 
                     // howler audio fix
@@ -2438,7 +2465,27 @@ class Movie extends BaseClass
                     // other assets
                     @copy('../../export/desktop/btclose.png', '../../export/desktop-'.$movie.'/'.$movie.'/btclose.png');
                     @copy('../../export/desktop/preload.js', '../../export/desktop-'.$movie.'/'.$movie.'/preload.js');
-                    $this->copyDir(('../../export/desktop/assets'), ('../../export/desktop-'.$movie.'/'.$movie.'/assets'));
+                    @copy('../../export/desktop/adjust-forge.mjs', '../../export/desktop-'.$movie.'/'.$movie.'/adjust-forge.mjs');
+
+                    // linux scripts
+                    @copy('../../export/desktop/linux-testapp.sh', '../../export/desktop-'.$movie.'/'.$movie.'/linux-testapp.sh');
+                    @copy('../../export/desktop/linux-createapp.sh', '../../export/desktop-'.$movie.'/'.$movie.'/linux-createapp.sh');
+                    @copy('../../export/desktop/linux-setup.sh', '../../export/desktop-'.$movie.'/'.$movie.'/linux-setup.sh');
+
+                    // windows scripts
+                    @copy('../../export/desktop/windows-testapp.cmd', '../../export/desktop-'.$movie.'/'.$movie.'/windows-testapp.cmd');
+                    @copy('../../export/desktop/windows-createapp.cmd', '../../export/desktop-'.$movie.'/'.$movie.'/windows-createapp.cmd');
+                    @copy('../../export/desktop/windows-createinstaller.cmd', '../../export/desktop-'.$movie.'/'.$movie.'/windows-createinstaller.cmd');
+                    @copy('../../export/desktop/windows-setup.cmd', '../../export/desktop-'.$movie.'/'.$movie.'/windows-setup.cmd');
+
+                    // macos scripts
+                    @copy('../../export/desktop/macos-testapp.sh', '../../export/desktop-'.$movie.'/'.$movie.'/macos-testapp.sh');
+                    @copy('../../export/desktop/macos-createapp.sh', '../../export/desktop-'.$movie.'/'.$movie.'/macos-createapp.sh');
+                    @copy('../../export/desktop/macos-createinstaller.sh', '../../export/desktop-'.$movie.'/'.$movie.'/macos-createinstaller.sh');
+                    @copy('../../export/desktop/macos-setup.sh', '../../export/desktop-'.$movie.'/'.$movie.'/macos-setup.sh');
+                    
+                    // other files
+                    $this->copyDir(('../../export/desktop/assetsrt'), ('../../export/desktop-'.$movie.'/'.$movie.'/assetsrt'));
                     $this->copyDir(('../../export/desktop/lib'), ('../../export/desktop-'.$movie.'/'.$movie.'/lib'));
                     $this->copyDir(('../../export/desktop/manifest'), ('../../export/desktop-'.$movie.'/'.$movie.'/manifest'));
 
@@ -2470,22 +2517,22 @@ class Movie extends BaseClass
                     // fonts
                     $fonts = [ ];
                     $embedft = [ ];
-                    $ckf = $this->queryAll('SELECT * FROM fonts');
+                    $ckf = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'fonts`');
                     foreach ($ckf as $v) {
-                        $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                        $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                        @copy(('../font/' . $v['fn_file']), ('../../export/desktop-'.$movie.'/'.$movie.'/assets/' . $v['fn_file']));
+                        $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                        $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                        @copy(('../font/' . $v['fn_file']), ('../../export/desktop-'.$movie.'/'.$movie.'/assetsrt/' . $v['fn_file']));
                     }
-                    $ckf = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
+                    $ckf = $this->queryAll('SELECT `mv_fonts` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id' => $movie]);
                     if (count($ckf) > 0) {
                         if ($ckf[0]['mv_fonts'] != '') {
                             $json = json_decode(gzdecode(base64_decode($ckf[0]['mv_fonts'])), true);
                             if (json_last_error() == JSON_ERROR_NONE) {
                                 foreach ($json as $k => $v) {
                                     if (isset($v['name']) && isset($v['file'])) {
-                                        $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                        $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                        @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/desktop-'.$movie.'/'.$movie.'/assets/' . $v['file']));
+                                        $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                        $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                        @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/desktop-'.$movie.'/'.$movie.'/assetsrt/' . $v['file']));
                                     }
                                 }
                             }
@@ -2495,7 +2542,7 @@ class Movie extends BaseClass
                     // plugins
                     $plhead = [ ];
                     $plend = [ ];
-                    $ckp = $this->queryAll('SELECT pc_id, pc_file FROM pluginconfig WHERE pc_active=:ac AND pc_index=:in', [
+                    $ckp = $this->queryAll('SELECT `pc_id`, `pc_file` FROM `' . $this->conf['databasePrefix'] . 'pluginconfig` WHERE `pc_active`=:ac AND `pc_index`=:in', [
                         ':ac' => '1', 
                         ':in' => '1', 
                     ]);
@@ -2602,6 +2649,232 @@ class Movie extends BaseClass
 			return (false);
 		}
 	}
+
+    /**
+	 * Exports a movie as a capacitor project.
+	 * @param	string	$user	the requesting user
+	 * @param	string	$movie	the movie id
+     * @param	string	$mode  exporte mode (complete or update)
+     * @param	string	$appid application id
+     * @param	string	$fullscr    display mode
+     * @param	string	$icon    app icon file
+	 * @return	string|bool the path to the exported file or false on error
+	 */
+	public function exportCordova($user, $movie, $mode, $appid, $fullscr, $icon) {
+		// check user: movie owner?
+		if (!is_null($this->db)) {
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:user', [
+				':id' => $movie, 
+				':user' => $user, 
+			]);
+			if (count($ck) > 0) {
+                if (is_dir('../movie/'.$movie.'.movie')) {
+                    set_time_limit(0);
+                    $this->removeFileDir('../../export/mobile-'.$movie.'.zip');
+                    $this->removeFileDir('../../export/mobile-'.$movie);
+                    $this->createDir('../../export/mobile-'.$movie.'/'.$movie);
+                    $this->createDir('../../export/mobile-'.$movie.'/'.$movie.'/www', true);
+                    $this->createDir('../../export/mobile-'.$movie.'/'.$movie.'/assets', true);
+                    $this->copyDir('../../export/site', ('../../export/mobile-'.$movie.'/'.$movie.'/www'));
+                    if (is_dir('../../export/mobile-'.$movie.'/'.$movie.'/www')) {
+                        if ($this->loadMovie($movie)) {                            
+                            // re-publish scenes?
+                            $pub = false;
+                            if (($ck[0]['mv_identify'] == '1') || (!is_null($ck[0]['mv_vsgroups']) && ($ck[0]['mv_vsgroups'] != ''))) {
+                                $pub = true;
+                                $this->publishScenes($movie);
+                                $this->publishCollections($movie);
+                            }
+                            // fonts
+                            $fonts = [ ];
+                            $embedft = [ ];
+                            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'fonts`');
+                            foreach ($ck as $v) {
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assetsrt/' . $v['fn_file']));
+                            }
+                            $ck = $this->queryAll('SELECT `mv_fonts` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id' => $movie]);
+                            if (count($ck) > 0) {
+                                if ($ck[0]['mv_fonts'] != '') {
+                                    $json = json_decode(gzdecode(base64_decode($ck[0]['mv_fonts'])), true);
+                                    if (json_last_error() == JSON_ERROR_NONE) {
+                                        foreach ($json as $k => $v) {
+                                            if (isset($v['name']) && isset($v['file'])) {
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assetsrt/' . $v['file']));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            // plugins
+                            $plhead = [ ];
+                            $plend = [ ];
+                            $ck = $this->queryAll('SELECT `pc_id`, `pc_file` FROM `' . $this->conf['databasePrefix'] . 'pluginconfig` WHERE `pc_active`=:ac AND `pc_index`=:in', [
+                                ':ac' => '1', 
+                                ':in' => '1', 
+                            ]);
+                            foreach ($ck as $v) {
+                                if (is_file('../../app/' . $v['pc_file'] . '.php')) {
+                                    require_once('../../app/' . $v['pc_file'] . '.php');
+                                    $pl = new $v['pc_file'];
+                                    $plhead[] = $pl->indexHead();
+                                    $plend[] = $pl->indexEndBody();
+                                }
+                            }
+                            // index text
+                            $index = file_get_contents('../../export/mobile/index.html');
+                            // prepare values
+                            $fonts = implode("\r\n", $fonts);
+                            $plhead = implode("\r\n", $plhead); 
+                            $plend = implode("\r\n", $plend); 
+                            $image = $this->info['image'] == '' ? '' : '<meta property="og:image" content="./movie/'.$movie.'.movie/media/picture/'.$this->info['image'].'" />';
+                            $color = str_replace('0x', '#', $this->info['screen']['bgcolor']);
+                            $ws = '';
+                            if ((strpos($this->conf['path'], 'localhost') === false) && (strpos($this->conf['path'], '127.0.0.1') === false)) {
+                                $ws = $this->slashUrl($this->conf['path']) . 'ws/';
+                            }
+                            // index.html
+                            $index = str_replace([
+                                '[SITEMOVIE]', 
+                                '[SITESCENE]', 
+                                '[SITETITLE]', 
+                                '[SITECOLOR]', 
+                                '[SITEABOUT]', 
+                                '[SITESHAREIMG]',
+                                '[SITEFONTS]', 
+                                '[SITEPLUGINHEAD]', 
+                                '[SITEPLUGINEND]', 
+                                '[SITEWS]', 
+                                '[PARAMEXTRA]'
+                            ], [
+                                $movie, 
+                                '', 
+                                $this->info['title'], 
+                                $color, 
+                                $this->info['description'], 
+                                $image, 
+                                $fonts, 
+                                $plhead, 
+                                $plend, 
+                                $ws, 
+                                ', "fonts": [' . implode(', ', $embedft) . ']'
+                            ], $index);
+                            file_put_contents('../../export/mobile-'.$movie.'/'.$movie.'/www/index.html', $index);
+                            // runtime
+                            @copy('../../export/runtimes/mobile.js', ('../../export/mobile-'.$movie.'/'.$movie.'/www/TilBuci.js'));
+                            // app icon
+                            if ($this->info['favicon'] != '') {
+                                @unlink('../../export/mobile-'.$movie.'/'.$movie.'/www/favicon.png');
+                                @copy(('../movie/'.$movie.'.movie/media/picture/'.$this->info['favicon']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/favicon.png'));
+                                @unlink('../../export/mobile-'.$movie.'/'.$movie.'/assets/icon-only.png');
+                                @copy(('../movie/'.$movie.'.movie/media/picture/'.$this->info['favicon']), ('../../export/mobile-'.$movie.'/'.$movie.'/assets/icon-only.png'));
+                                @unlink('../../export/mobile-'.$movie.'/'.$movie.'/assets/icon-foreground.png');
+                                @copy(('../movie/'.$movie.'.movie/media/picture/'.$this->info['favicon']), ('../../export/mobile-'.$movie.'/'.$movie.'/assets/icon-foreground.png'));
+                                @unlink('../../export/mobile-'.$movie.'/'.$movie.'/assets/icon-background.png');
+                                @copy(('../movie/'.$movie.'.movie/media/picture/'.$this->info['favicon']), ('../../export/mobile-'.$movie.'/'.$movie.'/assets/icon-background.png'));
+                            }
+                            // movie folder
+                            $this->copyDir(('../movie/'.$movie.'.movie'), ('../../export/mobile-'.$movie.'/'.$movie.'/www/movie/'.$movie.'.movie'));
+                            $this->info['key'] = '';
+                            $this->info['fallback'] = '';
+                            $this->info['identify'] = false;
+                            $this->info['vsgroups'] = '';
+                            file_put_contents(('../../export/mobile-'.$movie.'/'.$movie.'/www/movie/'.$movie.'.movie/movie.json'), json_encode($this->info));
+                            // readme and config files
+                            if ($mode == 'update') {
+                                @copy('../../export/mobile/readme-update.txt', ('../../export/mobile-'.$movie.'/readme.txt'));
+                            } else {
+                                $txt = file_get_contents('../../export/mobile/readme.html');
+                                $txt = str_replace('[APPID]', $movie, $txt);
+                                file_put_contents(('../../export/mobile-'.$movie.'/readme.html'), $txt);
+                                $txt = file_get_contents('../../export/mobile/capacitor.config.json');
+                                $txt = str_replace([
+                                    '[APPID]', 
+                                    '[APPNAME]'
+                                ], [
+                                    str_replace([' ', 'tilbuci.', '.'], '', $this->cleanString($appid)), 
+                                    $this->info['title'], 
+                                ], $txt);
+                                file_put_contents(('../../export/mobile-'.$movie.'/'.$movie.'/capacitor.config.json'), $txt);
+                                file_put_contents(('../../export/mobile-'.$movie.'/'.$movie.'/package.ori'), json_encode([
+                                    'name' => $this->info['title'], 
+                                    'main' => 'main.js', 
+                                    'author' => '', 
+                                    'license' => '', 
+                                    'version' => time(),
+                                ]));
+                                $txt = file_get_contents('../../export/mobile/capacitor.js');
+                                if (($fullscr == 'full') || ($fullscr == 'kiosk')) {
+                                    $txt = str_replace('[STATUSBAR]', 'try { await StatusBar.hide(); } catch (error) { }', $txt);
+                                } else {
+                                    $txt = str_replace('[STATUSBAR]', '', $txt);
+                                }
+                                if ($fullscr == 'kiosk') {
+                                    $txt = str_replace('[NAVIGATIONBAR]', 'try { await NavigationBar.hide(); } catch (error) { }', $txt);
+                                } else {
+                                    $txt = str_replace('[NAVIGATIONBAR]', '', $txt);
+                                }
+                                file_put_contents(('../../export/mobile-'.$movie.'/'.$movie.'/www/capacitor.js'), $txt);
+
+                                // windows script files
+                                @copy('../../export/mobile/windows-setup.cmd', ('../../export/mobile-'.$movie.'/'.$movie.'/windows-setup.cmd'));
+                                @copy('../../export/mobile/windows-android.cmd', ('../../export/mobile-'.$movie.'/'.$movie.'/windows-android.cmd'));
+
+                                // linux script files
+                                @copy('../../export/mobile/linux-setup.sh', ('../../export/mobile-'.$movie.'/'.$movie.'/linux-setup.sh'));
+                                @copy('../../export/mobile/linux-android.sh', ('../../export/mobile-'.$movie.'/'.$movie.'/linux-android.sh'));
+
+                                // macos script files
+                                @copy('../../export/mobile/macos-setup.sh', ('../../export/mobile-'.$movie.'/'.$movie.'/macos-setup.sh'));
+                                @copy('../../export/mobile/macos-android.sh', ('../../export/mobile-'.$movie.'/'.$movie.'/macos-android.sh'));
+                                @copy('../../export/mobile/macos-ios.sh', ('../../export/mobile-'.$movie.'/'.$movie.'/macos-ios.sh'));
+                            }
+                        
+                            // save zip
+                            $zip = new \ZipArchive;
+                            $zip->open('../../export/mobile-'.$movie.'.zip', \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+                            $files = new \RecursiveIteratorIterator(
+                                new \RecursiveDirectoryIterator('../../export/mobile-'.$movie),
+                                \RecursiveIteratorIterator::LEAVES_ONLY
+                            );
+                            $rootPath = realpath('../../export/mobile-'.$movie);
+                            foreach ($files as $file) {
+                                if (!$file->isDir()) {
+                                    $filePath = $file->getRealPath();
+                                    $relativePath = substr($filePath, strlen($rootPath) + 1);
+                                    $relativePath = str_replace('\\', '/', $relativePath);
+                                    $zip->addFile($filePath, $relativePath);
+                                }
+                            }
+                            $zip->close();
+                            $this->removeFileDir('../../export/mobile-'.$movie);
+                            
+                            // remove scenes?
+                            if ($pub) {
+                                $this->removePublished($movie);
+                            }
+                            
+                            return ('mobile-'.$movie.'.zip');
+                        } else {
+                            return (false);
+                        }
+                    } else {
+                        return (false);
+                    }                    
+                } else {
+                    return (false);
+                }
+			} else {
+                // the current user isn't the movie owner
+				return (false);
+			}
+		} else {
+			return (false);
+		}
+	}
     
     /**
 	 * Exports a movie as an Apache Cordova project.
@@ -2617,10 +2890,10 @@ class Movie extends BaseClass
      * @param	string	$icon    app icon file
 	 * @return	string|bool the path to the exported file or false on error
 	 */
-	public function exportCordova($user, $movie, $mode, $appid, $appsite, $appauthor, $appemail, $applicense, $fullscr, $icon) {
+	public function exportCordovaOld($user, $movie, $mode, $appid, $appsite, $appauthor, $appemail, $applicense, $fullscr, $icon) {
 		// check user: movie owner?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT * FROM movies WHERE mv_id=:id AND mv_user=:user', [
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:user', [
 				':id' => $movie, 
 				':user' => $user, 
 			]);
@@ -2656,22 +2929,22 @@ class Movie extends BaseClass
                             // fonts
                             $fonts = [ ];
                             $embedft = [ ];
-                            $ck = $this->queryAll('SELECT * FROM fonts');
+                            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'fonts`');
                             foreach ($ck as $v) {
-                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assets/' . $v['fn_file'] . '"); }';
-                                $embedft[] = '["' . $v['fn_name'] . '","./assets/' . $v['fn_file'] . '"]';
-                                @copy(('../font/' . $v['fn_file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assets/' . $v['fn_file']));
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assetsrt/' . $v['fn_file']));
                             }
-                            $ck = $this->queryAll('SELECT mv_fonts FROM movies WHERE mv_id=:id', [':id' => $movie]);
+                            $ck = $this->queryAll('SELECT `mv_fonts` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id' => $movie]);
                             if (count($ck) > 0) {
                                 if ($ck[0]['mv_fonts'] != '') {
                                     $json = json_decode(gzdecode(base64_decode($ck[0]['mv_fonts'])), true);
                                     if (json_last_error() == JSON_ERROR_NONE) {
                                         foreach ($json as $k => $v) {
                                             if (isset($v['name']) && isset($v['file'])) {
-                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assets/' . $v['file'] . '"); }';
-                                                $embedft[] = '["' . $v['name'] . '","./assets/' . $v['file'] . '"]';
-                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assets/' . $v['file']));
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/mobile-'.$movie.'/'.$movie.'/www/assetsrt/' . $v['file']));
                                             }
                                         }
                                     }
@@ -2680,7 +2953,7 @@ class Movie extends BaseClass
                             // plugins
                             $plhead = [ ];
                             $plend = [ ];
-                            $ck = $this->queryAll('SELECT pc_id, pc_file FROM pluginconfig WHERE pc_active=:ac AND pc_index=:in', [
+                            $ck = $this->queryAll('SELECT `pc_id`, `pc_file` FROM `' . $this->conf['databasePrefix'] . 'pluginconfig` WHERE `pc_active`=:ac AND `pc_index`=:in', [
                                 ':ac' => '1', 
                                 ':in' => '1', 
                             ]);
@@ -2880,7 +3153,7 @@ class Movie extends BaseClass
      */
     public function listAcMovies($user) {
         $list = [ ];
-        $ck = $this->queryAll('SELECT mv_id, mv_title FROM movies WHERE mv_user=:us OR mv_collaborators LIKE :col ORDER BY mv_title ASC', [
+        $ck = $this->queryAll('SELECT `mv_id`, `mv_title` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_user`=:us OR `mv_collaborators` LIKE :col ORDER BY `mv_title` ASC', [
             ':us' => $user, 
             ':col' => '%' . $user . '%', 
         ]);
@@ -2898,7 +3171,7 @@ class Movie extends BaseClass
      */
     public function listAcScenes($movie) {
         $list = [ ];
-        $ck = $this->queryAll('SELECT sc_id, sc_title FROM scenes WHERE sc_movie=:mv AND sc_published=:pub ORDER BY sc_title ASC', [
+        $ck = $this->queryAll('SELECT `sc_id`, `sc_title` FROM `' . $this->conf['databasePrefix'] . 'scenes` WHERE `sc_movie`=:mv AND `sc_published`=:pub ORDER BY `sc_title` ASC', [
             ':mv' => $movie, 
             ':pub' => '1', 
         ]);
@@ -3034,7 +3307,7 @@ class Movie extends BaseClass
      */
     public function getNotes($user, $mv, $sc) {
         // does the movie exist?
-        $ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id', [':id'=>$mv]);
+        $ck = $this->queryAll('SELECT `mv_id` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id'=>$mv]);
         if (count($ck) > 0) {
             $ret = [
                 'guidelines' => [ ], 
@@ -3042,7 +3315,7 @@ class Movie extends BaseClass
                 'scene' => [ ], 
                 'own' => [ ], 
             ];
-            $ck = $this->queryAll('SELECT * FROM notes WHERE nt_movie=:mv AND nt_scene=:sc ORDER BY nt_time DESC', [':mv'=>$mv, ':sc'=>'']);
+            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'notes` WHERE `nt_movie`=:mv AND `nt_scene`=:sc ORDER BY `nt_time` DESC', [':mv'=>$mv, ':sc'=>'']);
             foreach ($ck as $v) {
                 if ($v['nt_type'] == 'guide') {
                     $ret['guidelines'][] = [
@@ -3060,7 +3333,7 @@ class Movie extends BaseClass
                     ];
                 }
             }
-            $ck = $this->queryAll('SELECT * FROM notes WHERE nt_movie=:mv AND nt_scene=:sc AND nt_type=:tp ORDER BY nt_time DESC', [':mv'=>$mv, ':sc'=>$sc, ':tp' => 'scene']);
+            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'notes` WHERE `nt_movie`=:mv AND `nt_scene`=:sc AND `nt_type`=:tp ORDER BY `nt_time` DESC', [':mv'=>$mv, ':sc'=>$sc, ':tp' => 'scene']);
             foreach ($ck as $v) {
                 $ret['scene'][] = [
                     'id' => $v['nt_id'], 
@@ -3069,7 +3342,7 @@ class Movie extends BaseClass
                     'time' => $v['nt_time'], 
                 ];
             }
-            $ck = $this->queryAll('SELECT * FROM notes WHERE nt_type=:tp AND nt_author=:user ORDER BY nt_time DESC', [':tp'=>'own', ':user' => $user]);
+            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'notes` WHERE `nt_type`=:tp AND `nt_author`=:user ORDER BY `nt_time` DESC', [':tp'=>'own', ':user' => $user]);
             foreach ($ck as $v) {
                 $ret['own'][] = [
                     'id' => $v['nt_id'], 
@@ -3095,7 +3368,7 @@ class Movie extends BaseClass
      */
     public function saveNote($user, $movie, $scene, $type, $text) {
         // getting movie information
-        $ck = $this->queryAll('SELECT mv_user, mv_collaborators FROM movies WHERE mv_id=:mv', [':mv'=>$movie]);
+        $ck = $this->queryAll('SELECT `mv_user`, `mv_collaborators` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:mv', [':mv'=>$movie]);
         if (count($ck) == 0) {
             // no movie found
             return (false);
@@ -3111,7 +3384,7 @@ class Movie extends BaseClass
             } else {
                 $mv = ($type == 'own') ? '' : $movie;
                 $sc = ($type == 'scene') ? $scene : '';
-                $this->execute('INSERT INTO notes (nt_movie, nt_scene, nt_type, nt_text, nt_author) VALUES (:mv, :sc, :tp, :tx, :au)', [
+                $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'notes` (`nt_movie`, `nt_scene`, `nt_type`, `nt_text`, `nt_author`) VALUES (:mv, :sc, :tp, :tx, :au)', [
                     ':mv' => $mv, 
                     ':sc' => $sc, 
                     ':tp' => $type, 
@@ -3119,19 +3392,19 @@ class Movie extends BaseClass
                     ':au' => $user, 
                 ]);
                 if ($type == 'own') {
-                    $ck = $this->queryAll('SELECT nt_id FROM notes WHERE nt_author=:user AND nt_type=:own ORDER BY nt_time DESC LIMIT 5 OFFSET 5', [
+                    $ck = $this->queryAll('SELECT `nt_id` FROM `' . $this->conf['databasePrefix'] . 'notes` WHERE `nt_author`=:user AND `nt_type`=:own ORDER BY `nt_time` DESC LIMIT 5 OFFSET 5', [
 						':user' => $user, 
                         ':own' => 'own', 
 					]);
                 } else {
-                    $ck = $this->queryAll('SELECT nt_id FROM notes WHERE nt_movie=:mv AND nt_scene=:sc AND nt_type=:tp ORDER BY nt_time DESC LIMIT 5 OFFSET 5', [
+                    $ck = $this->queryAll('SELECT `nt_id` FROM `' . $this->conf['databasePrefix'] . 'notes` WHERE `nt_movie`=:mv AND `nt_scene`=:sc AND `nt_type`=:tp ORDER BY `nt_time` DESC LIMIT 5 OFFSET 5', [
 						':mv' => $mv, 
 						':sc' => $sc, 
                         ':tp' => $type, 
 					]);
                 }
                 if (count($ck) > 0) {
-                    foreach ($ck as $vn) $this->execute('DELETE FROM notes WHERE nt_id=:id LIMIT 1', [':id'=>$vn['nt_id']], 'DELETE FROM notes WHERE nt_id=:id');
+                    foreach ($ck as $vn) $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'notes` WHERE `nt_id`=:id LIMIT 1', [':id'=>$vn['nt_id']], 'DELETE FROM `' . $this->conf['databasePrefix'] . 'notes` WHERE `nt_id`=:id');
                 }
                 return ($this->getNotes($user, $movie, $scene));
             }
@@ -3145,12 +3418,12 @@ class Movie extends BaseClass
      * @return  bool    were the scenes unlocked?
      */
     public function unlockScenes($user, $movie) {
-        $ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id AND mv_user=:user', [
+        $ck = $this->queryAll('SELECT `mv_id` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:user', [
             ':id' => $movie, 
             ':user' => $user, 
         ]);
         if (count($ck) > 0) {
-            $this->execute('DELETE FROM scenelock WHERE sl_movie=:id', [':id'=>$movie]);
+            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'scenelock` WHERE `sl_movie`=:id', [':id'=>$movie]);
             return (true);
         } else {
             return (false);
@@ -3168,7 +3441,7 @@ class Movie extends BaseClass
      * 2 => corrupted contraption data
      */
     public function saveContraptions($user, $movie, $data) {
-        $ck = $this->queryAll('SELECT mv_id, mv_encrypted FROM movies WHERE mv_id=:id AND (mv_user=:user OR mv_collaborators LIKE :col)', [
+        $ck = $this->queryAll('SELECT `mv_id`, `mv_encrypted` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND (`mv_user`=:user OR `mv_collaborators` LIKE :col)', [
             ':id' => $movie, 
             ':user' => $user, 
             ':col' => '%' . trim($user) . '%', 
@@ -3178,10 +3451,10 @@ class Movie extends BaseClass
             if (json_last_error() != JSON_ERROR_NONE) {
                 return (2);
             } else {
-                $this->execute('UPDATE movies SET mv_contraptions=:cont WHERE mv_id=:id', [
+                $this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET `mv_contraptions`=:cont WHERE `mv_id`=:id', [
                     ':cont' => base64_encode(gzencode($data)), 
                     ':id' => $movie, 
-                ], 'UPDATE movies SET mv_contraptions=:cont, mv_updated=:time WHERE mv_id=:id', [
+                ], 'UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET `mv_contraptions`=:cont, `mv_updated`=:time WHERE `mv_id`=:id', [
                     ':cont' => base64_encode(gzencode($data)), 
                     ':time' => date('Y-m-d H:i:s'), 
                     ':id' => $movie, 
@@ -3209,7 +3482,7 @@ class Movie extends BaseClass
      * 2 => corrupted narrative data
      */
     public function saveNarrative($user, $movie, $data) {
-        $ckm = $this->queryAll('SELECT mv_id, mv_encrypted FROM movies WHERE mv_id=:id AND (mv_user=:user OR mv_collaborators LIKE :col)', [
+        $ckm = $this->queryAll('SELECT `mv_id`, `mv_encrypted` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND (`mv_user`=:user OR `mv_collaborators` LIKE :col)', [
             ':id' => $movie, 
             ':user' => $user, 
             ':col' => '%' . trim($user) . '%', 
@@ -3224,7 +3497,7 @@ class Movie extends BaseClass
                     $dids = [ ];
                     foreach($json['dialogues'] as $k => $v) {
                         if ($v['code'] == '') {
-                            $this->execute('INSERT INTO dialogues (dg_movie, dg_name) VALUES (:mv, :nm)', [
+                            $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'dialogues` (`dg_movie`, `dg_name`) VALUES (:mv, :nm)', [
                                 ':mv' => $movie, 
                                 ':nm' => $v['id'], 
                             ]);
@@ -3244,12 +3517,12 @@ class Movie extends BaseClass
                                 $json['diagcontent'][$kfound]['code'] = $json['dialogues'][$k]['code'];
                             }
                         } else {
-                            $ck = $this->queryAll('SELECT dg_name FROM dialogues WHERE dg_id=:id AND dg_movie=:mv', [
+                            $ck = $this->queryAll('SELECT `dg_name` FROM `' . $this->conf['databasePrefix'] . 'dialogues` WHERE `dg_id`=:id AND `dg_movie`=:mv', [
                                 ':id' => $v['code'], 
                                 ':mv' => $movie, 
                             ]);
                             if (count($ck) == 0) {
-                                $this->execute('INSERT INTO dialogues (dg_movie, dg_name) VALUES (:mv, :nm)', [
+                                $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'dialogues` (`dg_movie`, `dg_name`) VALUES (:mv, :nm)', [
                                     ':mv' => $movie, 
                                     ':nm' => $v['id'], 
                                 ]);
@@ -3270,7 +3543,7 @@ class Movie extends BaseClass
                                 }
                             } else {
                                 if ($ck[0]['dg_name'] != $v['id']) {
-                                    $this->execute('UPDATE dialogues SET dg_name=:nm WHERE dg_id=:id', [
+                                    $this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'dialogues` SET `dg_name`=:nm WHERE `dg_id`=:id', [
                                         ':nm' => $v['id'], 
                                         ':id' => $v['code'], 
                                     ]);
@@ -3283,7 +3556,7 @@ class Movie extends BaseClass
                         if (isset($dids[$v['id']])) {
                             $v['code'] = $json['diagcontent'][$k]['code'] = $dids[$v['id']];
                         } else {
-                            $this->execute('INSERT INTO dialogues (dg_movie, dg_name) VALUES (:mv, :nm)', [
+                            $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'dialogues` (`dg_movie`, `dg_name`) VALUES (:mv, :nm)', [
                                 ':mv' => $movie, 
                                 ':nm' => $v['id'], 
                             ]);
@@ -3293,7 +3566,7 @@ class Movie extends BaseClass
                                 'code' => $dids[$v['id']], 
                             ];
                         }
-                        $this->execute('UPDATE dialogues SET dg_content=:ct WHERE dg_id=:id', [
+                        $this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'dialogues` SET `dg_content`=:ct WHERE `dg_id`=:id', [
                             ':ct' => base64_encode(gzencode(json_encode($v))), 
                             ':id' => $json['diagcontent'][$k]['code'], 
                         ]);
@@ -3306,10 +3579,10 @@ class Movie extends BaseClass
                     $this->info = $dids;
                     unset($json['diagcontent']);
                 }
-                $this->execute('UPDATE movies SET mv_narrative=:nar WHERE mv_id=:id', [
+                $this->execute('UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET `mv_narrative`=:nar WHERE `mv_id`=:id', [
                     ':nar' => base64_encode(gzencode(json_encode($json))), 
                     ':id' => $movie, 
-                ], 'UPDATE movies SET mv_narrative=:nar, mv_updated=:time WHERE mv_id=:id', [
+                ], 'UPDATE `' . $this->conf['databasePrefix'] . 'movies` SET `mv_narrative`=:nar, `mv_updated`=:time WHERE `mv_id`=:id', [
                     ':nar' => base64_encode(gzencode(json_encode($json))), 
                     ':time' => date('Y-m-d H:i:s'), 
                     ':id' => $movie, 
@@ -3337,7 +3610,7 @@ class Movie extends BaseClass
      * 2 => movie not found
      */
     public function republish($user, $movie, $newest, $decrypt = false) {
-        $ck = $this->queryAll('SELECT mv_id FROM movies WHERE mv_id=:id AND (mv_user=:user OR mv_collaborators LIKE :col)', [
+        $ck = $this->queryAll('SELECT `mv_id` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND (`mv_user`=:user OR `mv_collaborators` LIKE :col)', [
             ':id' => $movie, 
             ':user' => $user, 
             ':col' => '%' . trim($user) . '%', 
@@ -3350,7 +3623,7 @@ class Movie extends BaseClass
                 
                 // scenes
                 $sc = new Scene;
-                $ck = $this->queryAll('SELECT sc_id FROM scenes WHERE sc_movie=:mv AND sc_published=:pub', [
+                $ck = $this->queryAll('SELECT `sc_id` FROM `' . $this->conf['databasePrefix'] . 'scenes` WHERE `sc_movie`=:mv AND `sc_published`=:pub', [
                     ':mv' => $movie, 
                     ':pub' => '1', 
                 ]);
@@ -3367,7 +3640,7 @@ class Movie extends BaseClass
                 
                 // collections
                 $cl = new Collection;
-                $ck = $this->queryAll('SELECT cl_uid FROM collections WHERE cl_movie=:mv', [
+                $ck = $this->queryAll('SELECT `cl_uid` FROM `' . $this->conf['databasePrefix'] . 'collections` WHERE `cl_movie`=:mv', [
                     ':mv' => $movie, 
                 ]);
                 foreach ($ck as $v) {
@@ -3381,6 +3654,149 @@ class Movie extends BaseClass
             }
         } else {
             return (1);
+        }
+    }
+
+    /**
+     * List available dynamic snippets groups.
+     * @param   string  $user   request user
+     * @param   string  $movie  the movie id
+     * @return  array|bool  the snippet gourps list or false if it was not loaded
+     */
+    public function listSnippets($user, $movie) {
+        $ck = $this->queryAll('SELECT `mv_id` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND (`mv_user`=:user OR `mv_collaborators` LIKE :col)', [
+            ':id' => $movie, 
+            ':user' => $user, 
+            ':col' => '%' . trim($user) . '%', 
+        ]);
+        if (count($ck) > 0) {
+            // listing snippets
+            $list = [ ];
+            if (!is_dir('../movie/'.$movie.'.movie/media/snippets')) $this->createDir('../movie/'.$movie.'.movie/media/snippets');
+            if ($handle = opendir('../movie/'.$movie.'.movie/media/snippets')) {
+                while (false !== ($file = readdir($handle))) {
+                    if (($file != '.') && ($file != '..')) {
+                        $list[] = str_replace('.json', '', $file);
+                    }
+                }
+            }
+            return ($list);
+        } else {
+            return (false);
+        }
+    }
+
+    /**
+     * Save a group of dynamic snippets.
+     * @param   string  $user   request user
+     * @param   string  $movie  the movie id
+     * @param   string  $name   the group name
+     * @param   string  $code   the group snippets code
+     * @return  array|bool  the vailable snippet groups list or false if it was not loaded
+     */
+    public function saveSnippets($user, $movie, $name, $code) {
+        $ck = $this->queryAll('SELECT `mv_id` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND (`mv_user`=:user OR `mv_collaborators` LIKE :col)', [
+            ':id' => $movie, 
+            ':user' => $user, 
+            ':col' => '%' . trim($user) . '%', 
+        ]);
+        if (count($ck) > 0) {
+            if ($this->loadMovie($movie)) {
+                // saving snippets
+                $name = trim(str_replace(' ', '', $name));
+                $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'snippets` WHERE `sn_movie`=:mv AND `sn_file`=:fl', [
+                    ':mv' => $movie, 
+                    ':fl' => $name, 
+                ]);
+                $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'snippets` (`sn_movie`, `sn_file`, `sn_content`) VALUES (:mv, :fl, :ct)', [
+                    ':mv' => $movie, 
+                    ':fl' => $name, 
+                    ':ct' => base64_encode(gzencode($code)), 
+                ]);
+                // saving file
+                if ($this->info['encrypted']) {
+                    file_put_contents(('../movie/'.$movie.'.movie/media/snippets/' . $name . '.json'), $this->encryptTBFile($this->info['id'], $code));
+                } else {
+                    file_put_contents(('../movie/'.$movie.'.movie/media/snippets/' . $name . '.json'), $code);
+                }
+                // listing snippets
+                $list = [ ];
+                if (!is_dir('../movie/'.$movie.'.movie/media/snippets')) $this->createDir('../movie/'.$movie.'.movie/media/snippets');
+                if ($handle = opendir('../movie/'.$movie.'.movie/media/snippets')) {
+                    while (false !== ($file = readdir($handle))) {
+                        if (($file != '.') && ($file != '..')) {
+                            $list[] = str_replace('.json', '', $file);
+                        }
+                    }
+                }
+                return ($list);
+            } else {
+                return (false);
+            }
+            
+        } else {
+            return (false);
+        }
+    }
+
+    /**
+     * Load a group of dynamic snippets.
+     * @param   string  $user   request user
+     * @param   string  $movie  the movie id
+     * @param   string  $name   the group name
+     * @return  string|bool  the snippet group code or false if it was not loaded
+     */
+    public function loadSnippets($user, $movie, $name) {
+        $ck = $this->queryAll('SELECT `mv_id` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND (`mv_user`=:user OR `mv_collaborators` LIKE :col)', [
+            ':id' => $movie, 
+            ':user' => $user, 
+            ':col' => '%' . trim($user) . '%', 
+        ]);
+        if (count($ck) > 0) {
+            $ck2 = $this->queryAll('SELECT `sn_content` FROM `' . $this->conf['databasePrefix'] . 'snippets` WHERE `sn_movie`=:mv AND `sn_file`=:fl', [
+                ':mv' => $movie, 
+                ':fl' => $name, 
+            ]);
+            if (count($ck2) == 0) {
+                return (false);
+            } else {
+                return (gzdecode(base64_decode($ck2[0]['sn_content'])));
+            }
+        } else {
+            return (false);
+        }
+    }
+
+    /**
+     * Remove a group of dynamic snippets.
+     * @param   string  $user   request user
+     * @param   string  $movie  the movie id
+     * @param   string  $name   the group name
+     */
+    public function removeSnippets($user, $movie, $name) {
+        $ck = $this->queryAll('SELECT `mv_id` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND (`mv_user`=:user OR `mv_collaborators` LIKE :col)', [
+            ':id' => $movie, 
+            ':user' => $user, 
+            ':col' => '%' . trim($user) . '%', 
+        ]);
+        if (count($ck) > 0) {
+            $this->execute('DELETE FROM `' . $this->conf['databasePrefix'] . 'snippets` WHERE `sn_movie`=:mv AND `sn_file`=:fl', [
+                ':mv' => $movie, 
+                ':fl' => $name, 
+            ]);
+            if (!is_dir('../movie/'.$movie.'.movie/media/snippets')) $this->createDir('../movie/'.$movie.'.movie/media/snippets');
+            if (is_file('../movie/'.$movie.'.movie/media/snippets/' . $name . '.json')) @unlink('../movie/'.$movie.'.movie/media/snippets/' . $name . '.json');
+            $list = [ ];
+            if ($handle = opendir('../movie/'.$movie.'.movie/media/snippets')) {
+                while (false !== ($file = readdir($handle))) {
+                    if (($file != '.') && ($file != '..')) {
+                        $list[] = str_replace('.json', '', $file);
+                    }
+                }
+            }
+            return ($list);
+        } else {
+            return (false);
         }
     }
 
@@ -3408,7 +3824,7 @@ class Movie extends BaseClass
                 default:
                     // remove unused movie folders
                     $mvs = [ ];
-                    $ck = $this->queryAll('SELECT mv_id FROM movies');
+                    $ck = $this->queryAll('SELECT `mv_id` FROM `' . $this->conf['databasePrefix'] . 'movies`');
                     foreach ($ck as $v) $mvs[] = $v['mv_id'].'.movie';
                     if ($handle = opendir('../movie/')) {
                         while (false !== ($file = readdir($handle))) {

@@ -7,13 +7,14 @@
 
 /**
  TilBuci setup script
- Lucas Junqueira, September 2025
+ Lucas Junqueira, May 2026
  **/
 
 // version info
 $version = [
-    'num' => 15, 
+    'num' => 23, 
 ];
+chdir(__DIR__);
 
 // database access
 function queryDb($db, $query, $values = [ ]) {
@@ -215,7 +216,12 @@ if (isset($_POST['ac'])) {
 			} else {
 				// check database connection
 				$db = null;
+				if (!isset($gconf)) {
+					$gconf = $iinfo;
+					$sqlfl = '';
+				}
 				if ($gconf['databaseServ'] == 'sqlite') {
+					$sqlfl = '-sqlite';
                     try {    
                         $db = new PDO('sqlite:./movie/tilbuci.sqlite');
                         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -224,7 +230,7 @@ if (isset($_POST['ac'])) {
                     }
                 } else {
                     try {
-                        $db = new PDO('mysql:host=' . $gconf['databaseServ'] . (($gconf['databasePort'] != '') ? (':' . $gconf['databasePort']) : '') . ';dbname=' . $gconf['databaseName'] . ';charset=utf8', $gconf['databaseUser'], ($gconf['databasePass'] == '' ? '' : base64_decode($gconf['databasePass'])));
+                        $db = new PDO('mysql:host=' . $gconf['databaseServ'] . (($gconf['databasePort'] != '') ? (':' . $gconf['databasePort']) : '') . ';dbname=' . $gconf['databaseName'] . ';charset=utf8', $gconf['databaseUser'], $gconf['databasePass']);
                     } catch(Exception $e) {
                         $db = null;
                     }

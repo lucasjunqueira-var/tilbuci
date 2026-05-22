@@ -1,1 +1,0 @@
-{"id":"2826b9e7a70d76cb354161acc1c86ce5","movie":"tilbuci","name":"simple animations","transition":"alpha","time":1,"assets":{"02c7768f70":{"order":0,"name":"press start","type":"spritemap","time":5,"action":"loop","frames":2,"frtime":250,"file":{"@1":"pressstart.png","@2":"pressstart.png","@3":"pressstart.png","@4":"pressstart.png","@5":"pressstart.png"}}}}

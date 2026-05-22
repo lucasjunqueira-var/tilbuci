@@ -48,6 +48,9 @@ class WSSystem extends Webservice
 				case 'System/VisitorCode':
 					$this->checkVisitorCode();
 					break;
+				case 'System/VisitorKey':
+					$this->checkVisitorKey();
+					break;
 				case 'System/Update':
 					$this->checkUpdate();
 					break;
@@ -89,8 +92,8 @@ class WSSystem extends Webservice
 		$mailer = new Mailer;
 		// available fonts
 		$fonts = [ ];
-		$ck = $this->data->queryAll('SELECT * FROM fonts');
-		foreach ($ck as $val) $fonts[] = [ 'n' => $val['fn_name'], 'v' => $val['fn_file'] ];
+		$ck = $this->data->queryAll('SELECT * FROM `' . $this->data->conf['databasePrefix'] . 'fonts`');
+		foreach ($ck as $val) $fonts[] = [ 'n' => $val['fn_name'], 'v' => $val['fn_file'] ];		
 		// return the configuration
 		$this->returnRequest([
 			'e' => $er, 
@@ -101,6 +104,7 @@ class WSSystem extends Webservice
 			'autouser' => $autouser, 
 			'autokey' => $autokey, 
 			'autolevel' => $autolevel,
+			'host' => $this->conf['host'], 
 		]);
 	}
 	
@@ -179,6 +183,26 @@ class WSSystem extends Webservice
 	private function checkVisitorCode() {
 		if ($this->requiredFields(['email', 'code'])) {
 			$key = $this->data->checkVisitorCode($this->req['email'], $this->req['code']);
+			if ($key === false) {
+				// no code found
+				$this->returnRequest([ 'e' => 1 ]);
+			} else {
+				// code ok
+				$this->returnRequest([
+					'e' => 0, 
+					'key' => $key, 
+                    'groups' => $this->data->getVisitorGroups($this->req['email']), 
+				]);
+			}
+		}
+	}
+
+	/**
+	 * Checks a visitor automatic login key.
+	 */
+	private function checkVisitorKey() {
+		if ($this->requiredFields(['email', 'key'])) {
+			$key = $this->data->checkVisitorKey($this->req['email'], $this->req['key']);
 			if ($key === false) {
 				// no code found
 				$this->returnRequest([ 'e' => 1 ]);

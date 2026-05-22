@@ -6,6 +6,7 @@
  */
 
 /** CLASS DEFINITIONS **/
+chdir(__DIR__);
 require_once('../../app/WSEmail.php');
 require_once('../../app/WSFile.php');
 require_once('../../app/WSMedia.php');

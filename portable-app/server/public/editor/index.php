@@ -1,4 +1,5 @@
 <?php
+chdir(__DIR__);
 session_start();
 $_SESSION['md'] = 'editor';
 if (isset($_POST['mv'])) {

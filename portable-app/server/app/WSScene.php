@@ -45,6 +45,9 @@ class WSScene extends Webservice
 				case 'Scene/List':
 					$this->listScenes();
 					break;
+				case 'Scene/ListDflow':
+					$this->listDflow();
+					break;
 				case 'Scene/Save':
 					$this->saveScene();
 					break;
@@ -128,6 +131,20 @@ class WSScene extends Webservice
 		if ($this->requiredFields(['movie'])) {
 			$sc = new Scene;
 			$list = $sc->listScenes($this->user, $this->req['movie']);
+			$this->returnRequest([ 'e' => 0, 'list' => $list ]);
+		} else {
+			// error loading list
+			$this->returnRequest([ 'e' => 1 ]);
+		}
+	}
+
+	/**
+	 * Lists scenes with decision flow enabled.
+	 */
+	private function listDflow() {
+		if ($this->requiredFields(['movie'])) {
+			$sc = new Scene;
+			$list = $sc->listDflow($this->user, $this->req['movie']);
 			$this->returnRequest([ 'e' => 0, 'list' => $list ]);
 		} else {
 			// error loading list

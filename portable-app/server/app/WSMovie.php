@@ -127,6 +127,18 @@ class WSMovie extends Webservice
                 case 'Movie/Republish':
 					$this->republish();
 					break;
+				case 'Movie/ListSnippets':
+					$this->listSnippets();
+					break;
+				case 'Movie/SaveSnippets':
+					$this->saveSnippets();
+					break;
+				case 'Movie/LoadSnippets':
+					$this->loadSnippets();
+					break;
+				case 'Movie/RemoveSnippets':
+					$this->removeSnippets();
+					break;
 				default:
 					$this->returnRequest([ 'e' => -9 ]);
 					break;
@@ -452,13 +464,13 @@ class WSMovie extends Webservice
 	}
     
     /**
-	 * Exports a movie as an Apache Cordova project.
+	 * Exports a movie as a Capacitor project.
 	 */
 	private function exportCordova() {
 		// required fields received?
-		if ($this->requiredFields(['movie', 'mode', 'appid', 'appsite', 'appauthor', 'appemail', 'applicense', 'fullscr', 'icon'])) {
+		if ($this->requiredFields(['movie', 'mode', 'appid', 'fullscr', 'icon'])) {
 			$mv = new Movie;
-            $exp = $mv->exportCordova($this->user, $this->req['movie'], $this->req['mode'], $this->req['appid'], $this->req['appsite'], $this->req['appauthor'], $this->req['appemail'], $this->req['applicense'], $this->req['fullscr'], $this->req['icon']);
+            $exp = $mv->exportCordova($this->user, $this->req['movie'], $this->req['mode'], $this->req['appid'], $this->req['fullscr'], $this->req['icon']);
             if ($exp === false) {
                 $this->returnRequest([ 'e' => 1, 'exp' => '' ]);
             } else {
@@ -596,6 +608,71 @@ class WSMovie extends Webservice
 		if ($this->requiredFields(['movie', 'newest'])) {
 			$mv = new Movie;
             $this->returnRequest([ 'e' => $mv->republish($this->user, $this->req['movie'], $this->req['newest']) ]);
+		}
+	}
+
+	/**
+	 * List available dynamic snippets.
+	 */
+	private function listSnippets() {
+		// required fields received?
+		if ($this->requiredFields(['movie'])) {
+			$mv = new Movie;
+			$list = $mv->listSnippets($this->user, $this->req['movie']);
+			if ($list === false) {
+				$this->returnRequest([ 'e' => 1, 'list' => [ ] ]);
+			} else {
+				$this->returnRequest([ 'e' => 0, 'list' => $list ]);
+			}
+            
+		}
+	}
+
+	/**
+	 * Save a dynamic snippts group.
+	 */
+	private function saveSnippets() {
+		// required fields received?
+		if ($this->requiredFields(['movie', 'name', 'code'])) {
+			$mv = new Movie;
+			$list = $mv->saveSnippets($this->user, $this->req['movie'], $this->req['name'], $this->req['code']);
+			if ($list === false) {
+				$this->returnRequest([ 'e' => 1, 'list' => [ ] ]);
+			} else {
+				$this->returnRequest([ 'e' => 0, 'list' => $list ]);
+			}
+		}
+	}
+
+	/**
+	 * Load a dynamic snippts group.
+	 */
+	private function loadSnippets() {
+		// required fields received?
+		if ($this->requiredFields(['movie', 'name'])) {
+			$mv = new Movie;
+			$code = $mv->loadSnippets($this->user, $this->req['movie'], $this->req['name']);
+			if ($code === false) {
+				$this->returnRequest([ 'e' => 1, 'code' => '' ]);
+			} else {
+				$this->returnRequest([ 'e' => 0, 'code' => $code ]);
+			}
+		}
+	}
+
+	/**
+	 * Remove a dynamic snippets group.
+	 */
+	private function removeSnippets() {
+		// required fields received?
+		if ($this->requiredFields(['movie', 'name'])) {
+			$mv = new Movie;
+			$list = $mv->removeSnippets($this->user, $this->req['movie'], $this->req['name']);
+			if ($list === false) {
+				$this->returnRequest([ 'e' => 1, 'list' => [ ] ]);
+			} else {
+				$this->returnRequest([ 'e' => 0, 'list' => $list ]);
+			}
 		}
 	}
 }
