@@ -9,7 +9,7 @@
  * License URI: https://mozilla.org/MPL/2.0/
  * Text Domain: tilbuci-pl
  * Requires at least: 6.7.2
- * Tested up to: 6.9.1
+ * Tested up to: 7.0.0
  * Requires PHP: 8.1
  */
 
