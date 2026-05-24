@@ -4,6 +4,8 @@ java -version >nul 2>&1
 IF %ERRORLEVEL% EQU 0 (
     IF EXIST "third/closure-compiler.jar" (
         echo TilBuci externs
+        type app\Externs\browser.js app\Externs\embedcontent.js app\Externs\overlayplugin.js app\Externs\upload.js app\Externs\qrcode.js > app\Externs\externs.js
+        copy /Y app\Externs\externs.js server\public_html\app\
         IF EXIST "server/public_html/app/externs.js" (
             echo - file located
             CALL java -jar third/closure-compiler.jar --compilation_level SIMPLE_OPTIMIZATIONS --js server/public_html/app/externs.js --js_output_file server/public_html/app/externs.js

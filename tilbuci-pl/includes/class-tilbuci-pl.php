@@ -391,7 +391,6 @@ class TilBuci_WP {
         $output .= '<script type="text/javascript">';
         $output .= 'lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "assets": "' . esc_js($assets_path) . '", "moviePath": "' . esc_js($movie_path) . '", "mode" : "player", "movie": "' . esc_js($movie) . '", "scene": "", "snippet": "' . esc_js($snippet) . '", "vars": "' . esc_js($vars) . '"' . $userlogin . ' } });';
         $output .= '</script>';
-        $output .= '<div id="embed_area"><iframe id="embed_frame" width="0" height="0" src="" frameborder="0"></iframe></div>';
         $output .= '</div>';
         
         // Apply full screen settings if enabled
@@ -1137,7 +1136,6 @@ class TilBuci_WP {
         
         // debug: no cache
         //echo '<script type="text/javascript" src="' . esc_url($path . 'TilBuci-min.js?rd=' . time()) . '"></script>' . "\n";
-
         echo '<script type="text/javascript" src="' . esc_url($path . 'TilBuci-min.js?rd=' . $version) . '"></script>' . "\n";
         echo '<script type="text/javascript" src="' . esc_url($path . 'externs.js?rd=' . $version) . '"></script>' . "\n";
         echo '<script>' . "\n";
@@ -1155,8 +1153,6 @@ class TilBuci_WP {
         echo '    @font-face { font-family: "Roboto Sans"; src: url("' . esc_url($font_path . 'roboto.woff2') . '"); }' . "\n";
         echo '	#TilBuciArea { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: #000000; }' . "\n";
         echo '	#openfl-content { background: #000000; width: 100%; height: 100%; }' . "\n";
-        echo '    #embed_area { position: absolute; left: 0; top: 0; display: none; padding: 0; width: 100%; height: 100%; box-sizing: content-box; margin: 0; border: none; overflow: hidden; background-color: transparent; }' . "\n";
-        echo '    #embed_frame { display: none; padding: 0; box-sizing: content-box; margin: 0; border: none; width: 100%; height: 100%; background-color: transparent; }' . "\n";
         echo '</style>' . "\n";
     }
 

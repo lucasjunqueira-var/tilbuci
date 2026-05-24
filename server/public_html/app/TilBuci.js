@@ -938,7 +938,7 @@ ApplicationMain.main = function() {
 };
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
-	app.meta.h["build"] = "130";
+	app.meta.h["build"] = "133";
 	app.meta.h["company"] = "VAR";
 	app.meta.h["file"] = "TilBuci";
 	app.meta.h["name"] = "TilBuci";
@@ -41112,7 +41112,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 							var pw = Math.round(this.parseInt(param[3]) * com_tilbuci_data_GlobalPlayer.area.get_movieScale());
 							var ph = Math.round(this.parseInt(param[4]) * com_tilbuci_data_GlobalPlayer.area.get_movieScale());
 							window.embed_setposition(px,py,pw,ph);
-							window.embed_place("../movie/" + com_tilbuci_data_GlobalPlayer.movie.get_mvId() + ".movie/media/embed/" + this.parseString(param[0]) + "/index.html");
+							window.embed_place(com_tilbuci_data_GlobalPlayer.base + "/movie/" + com_tilbuci_data_GlobalPlayer.movie.get_mvId() + ".movie/media/embed/" + this.parseString(param[0]) + "/index.html");
 							return true;
 						}
 					} else {
@@ -41231,7 +41231,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 					if(com_tilbuci_data_GlobalPlayer.mode == "editor") {
 						return true;
 					} else if(param.length > 0) {
-						window.embed_place("../movie/" + com_tilbuci_data_GlobalPlayer.movie.get_mvId() + ".movie/media/embed/" + this.parseString(param[0]) + "/index.html");
+						window.embed_place(com_tilbuci_data_GlobalPlayer.base + "/movie/" + com_tilbuci_data_GlobalPlayer.movie.get_mvId() + ".movie/media/embed/" + this.parseString(param[0]) + "/index.html");
 						return true;
 					} else {
 						return false;
@@ -156201,7 +156201,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 53511;
+	this.version = 262501;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";
@@ -225979,6 +225979,7 @@ if(typeof self === "undefined" || !self.constructor.name.includes("Worker")) { /
  */
 
 // embed variables
+var tilbuci_area = null;
 var embed_display = false;
 var embed_area = null;
 var embed_frame = null;
@@ -226003,10 +226004,9 @@ function embed_create() {
 	embed_area.style.backgroundColor = "transparent";
 	const tbdiv = document.getElementById("TilBuciArea");
 	if (tbdiv) {
-		tbdiv.appendChild(embed_area);
-	} else {
-		document.body.append(embed_area);
+		tilbuci_area = tbdiv;
 	}
+	document.body.append(embed_area);
 	embed_frame = document.createElement("iframe");
 	embed_frame.style.display = "none";
 	embed_frame.style.padding = "0";
@@ -226045,6 +226045,10 @@ function embed_place(src) {
 function embed_setposition(x, y, width, height) {
 	if (embed_area == null) embed_create();
 	if ((embed_area != null) && (embed_frame != null)) {
+		if (tilbuci_area != null) {
+			x += tilbuci_area.getBoundingClientRect().left + window.scrollX;
+			y += tilbuci_area.getBoundingClientRect().top + window.scrollY;
+		}
 		embed_area.style.marginLeft = (x + "px");
 		embed_area.style.marginTop = (y + "px");
 		embed_area.style.width = (width + "px");

@@ -252,6 +252,7 @@ function TBB_sendTabsMessage(type, message) {
  */
 
 // embed variables
+var tilbuci_area = null;
 var embed_display = false;
 var embed_area = null;
 var embed_frame = null;
@@ -276,10 +277,9 @@ function embed_create() {
 	embed_area.style.backgroundColor = "transparent";
 	const tbdiv = document.getElementById("TilBuciArea");
 	if (tbdiv) {
-		tbdiv.appendChild(embed_area);
-	} else {
-		document.body.append(embed_area);
+		tilbuci_area = tbdiv;
 	}
+	document.body.append(embed_area);
 	embed_frame = document.createElement("iframe");
 	embed_frame.style.display = "none";
 	embed_frame.style.padding = "0";
@@ -318,6 +318,10 @@ function embed_place(src) {
 function embed_setposition(x, y, width, height) {
 	if (embed_area == null) embed_create();
 	if ((embed_area != null) && (embed_frame != null)) {
+		if (tilbuci_area != null) {
+			x += tilbuci_area.getBoundingClientRect().left + window.scrollX;
+			y += tilbuci_area.getBoundingClientRect().top + window.scrollY;
+		}
 		embed_area.style.marginLeft = (x + "px");
 		embed_area.style.marginTop = (y + "px");
 		embed_area.style.width = (width + "px");

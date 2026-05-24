@@ -1104,9 +1104,9 @@ class ScriptParser {
                         } else {
                             if (param.length > 0) {
                                 #if tilbuciplayer
-                                    ExternEmbed.embed_place('movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
+                                    ExternEmbed.embed_place(GlobalPlayer.base + '/movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
                                 #else
-                                    ExternEmbed.embed_place('../movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
+                                    ExternEmbed.embed_place(GlobalPlayer.base + '/movie/' /*'../movie/'*/ + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
                                 #end                            
                                 return (true);
                             } else {
@@ -1142,9 +1142,9 @@ class ScriptParser {
                                 var ph:Int = Math.round(this.parseInt(param[4]) * GlobalPlayer.area.movieScale);
                                 ExternEmbed.embed_setposition(px, py, pw, ph);
                                 #if tilbuciplayer
-                                    ExternEmbed.embed_place('movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
+                                    ExternEmbed.embed_place(GlobalPlayer.base + '/movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
                                 #else
-                                    ExternEmbed.embed_place('../movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
+                                    ExternEmbed.embed_place(GlobalPlayer.base + '/movie/' /*'../movie/'*/ + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
                                 #end                            
                                 return (true);
                             }
