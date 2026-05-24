@@ -24,8 +24,15 @@ class Assets extends EventDispatcher {
 
     public static var texts:Map<String, String> = [ ];
 
+    public static var finalPath:String = '';
+
+    private var _bmploaded:Bool = false;
+
+    private var _txtloaded:Bool = false;
+
     private var _edAssets:Array<String> = [
         'buci',
+        'welcome', 
         'tilBuci01',
         'tilBuci02',
         'tilBuci03',
@@ -138,9 +145,9 @@ class Assets extends EventDispatcher {
     ];
 
     private var _edTexts:Array<TbTxtAsset> = [
+        { name: 'langDefault', path: 'assets/language/default.json' }, // language must be the first one
         { name: 'buildInfo', path: 'assets/build.json' }, 
-        { name: 'license', path: 'assets/license.html' }, 
-        { name: 'langDefault', path: 'assets/language/default.json' }
+        { name: 'license', path: 'assets/license.html' }
     ];
 
     private var _plAssets:Array<String> = [
@@ -150,7 +157,7 @@ class Assets extends EventDispatcher {
     ]; 
 
     private var _plTexts:Array<TbTxtAsset> = [
-        { name: 'langDefault', path: 'assets/language/default.json' }
+        { name: 'langDefault', path: 'assets/language/default.json' } // language must be the first one
     ];
 
     private var _reaAssets:Array<String>; 
@@ -191,6 +198,7 @@ class Assets extends EventDispatcher {
 
         if (Reflect.hasField(Lib.current.stage.application.window.parameters, 'assets')) {
             this._path = Lib.current.stage.application.window.parameters.assets + this._path;
+            Assets.finalPath = this._path;
             for (i in 0...this._realTexts.length) {
                 this._realTexts[i].path = Lib.current.stage.application.window.parameters.assets + this._realTexts[i].path;
             }
@@ -221,7 +229,8 @@ class Assets extends EventDispatcher {
             this._bmpLoader.unload();
             this._bmpLoader = null;
             this.complete = 100;
-            this.dispatchEvent(new Event(openfl.events.Event.COMPLETE));
+            this._bmploaded = true;
+            if (this._txtloaded) this.dispatchEvent(new Event(openfl.events.Event.COMPLETE));
         }
     }
 
@@ -240,6 +249,8 @@ class Assets extends EventDispatcher {
             this._txtLoader.removeEventListener(IOErrorEvent.IO_ERROR, onTxtError);
             this._txtLoader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onTxtError);
             this._txtLoader = null;
+            this._txtloaded = true;
+            if (this._bmploaded) this.dispatchEvent(new Event(openfl.events.Event.COMPLETE));
         }
     }
 

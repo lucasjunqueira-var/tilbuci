@@ -53,6 +53,11 @@ class WindowMovieProperties extends PopupWindow {
     private var _acstart:ActionArea;
 
     /**
+        scene start actions
+    **/
+    private var _scstart:ActionArea;
+
+    /**
         action snippets area
     **/
     private var _acsnippet:ActionArea;
@@ -83,7 +88,7 @@ class WindowMovieProperties extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-movieprop-title'), 1200, InterfaceFactory.pickValue(570, 620), true, true, true);
+        super(ac, Global.ln.get('window-movieprop-title'), 1200, InterfaceFactory.pickValue(570, 670), true, true, true);
     }
 
     /**
@@ -311,10 +316,26 @@ class WindowMovieProperties extends PopupWindow {
 
         // start actions
         var acstart:InterfaceContainer = this.ui.createContainer('acstart');
-        acstart.addChild(this.ui.createLabel('acstartlabel', Global.ln.get('window-movieprop-acstartabout'), Label.VARIANT_DETAIL));
-        this._acstart = new ActionArea(1156, 405);
+        var hacstart:HInterfaceContainer = this.ui.createHContainer('hacstart');
+
+        var mvacstart:InterfaceContainer = this.ui.createContainer('mvacstart');
+        var scacstart:InterfaceContainer = this.ui.createContainer('scacstart');
+
+        mvacstart.addChild(this.ui.createLabel('acstartlabel', Global.ln.get('window-movieprop-acstartabout'), Label.VARIANT_DETAIL));
+        this._acstart = new ActionArea(555, 380);
         this._acstart.setText(GlobalPlayer.mdata.acstart);
-        acstart.addChild(this._acstart);
+        mvacstart.addChild(this._acstart);
+
+        scacstart.addChild(this.ui.createLabel('scacstartlabel', Global.ln.get('window-movieprop-acscstartabout'), Label.VARIANT_DETAIL));
+        this._scstart = new ActionArea(555, 380);
+        this._scstart.setText(GlobalPlayer.mdata.scstart);
+        scacstart.addChild(this._scstart);
+
+        hacstart.addChild(mvacstart);
+        hacstart.addChild(scacstart);
+        acstart.addChild(hacstart);
+        hacstart.setWidth(1170, [575, 575]);
+
         acstart.addChild(this.ui.createSpacer('acstartspacer', 15));
         acstart.addChild(this.ui.createButton('saveacstart', Global.ln.get('window-movieprop-acstartbt'), this.onSaveAcstart ));
         this.addForm(Global.ln.get('window-movieprop-acstart'), acstart);
@@ -575,6 +596,7 @@ class WindowMovieProperties extends PopupWindow {
 
         // actions
         this._acstart.setText(GlobalPlayer.mdata.acstart);
+        this._scstart.setText(GlobalPlayer.mdata.scstart);
         this.snippetsList();
 
         // theme
@@ -753,11 +775,13 @@ class WindowMovieProperties extends PopupWindow {
     **/
     private function onSaveAcstart(evt:TriggerEvent):Void {
         var json:Dynamic = StringStatic.jsonParse(this._acstart.getText());
-        if ((this._acstart.getText() != '') && (json == false)) {
+        var jsonsc:Dynamic = StringStatic.jsonParse(this._scstart.getText());
+        if (((this._acstart.getText() != '') && (json == false)) || ((this._scstart.getText() != '') && (jsonsc == false))) {
             this.ui.createWarning(Global.ln.get('window-movieprop-acstart'), Global.ln.get('window-movieprop-acstarterror'), 300, 180, this.stage);
         } else {
             var data:String = StringStatic.jsonStringify({
-                acstart: this._acstart.getText()
+                acstart: this._acstart.getText(), 
+                scstart: this._scstart.getText()
             });
             Global.ws.send(
                 'Movie/Update', 
@@ -810,6 +834,8 @@ class WindowMovieProperties extends PopupWindow {
                             GlobalPlayer.style.parseCSS(GlobalPlayer.mdata.style);
                         case 'acstart':
                             GlobalPlayer.mdata.acstart = Reflect.field(ar, k);
+                        case 'scstart':
+                            GlobalPlayer.mdata.scstart = Reflect.field(ar, k);
                         case 'actions':
                             var json:Dynamic = StringStatic.jsonParse(Reflect.field(ar, k));
                             if (json != false) {

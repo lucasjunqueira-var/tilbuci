@@ -27,7 +27,7 @@ echo TilBuci FULL build %buildtime%...
 openfl build html5 -D haxeJSON -nolaunch
 if %errorlevel% equ 0 (
     copy %export%Tilbuci.js %server%TilBuci.js
-    type Externs\browser.js Externs\embedcontent.js Externs\overlayplugin.js Externs\upload.js > Externs\externs.js
+    type Externs\browser.js Externs\embedcontent.js Externs\overlayplugin.js Externs\upload.js Externs\qrcode.js > Externs\externs.js
     copy /Y Externs\externs.js %server%
     xcopy %assets%assets\*.* %server%assets\ /E/Y/Q
     xcopy %export%lib\*.* %server%lib\ /E/Y/Q

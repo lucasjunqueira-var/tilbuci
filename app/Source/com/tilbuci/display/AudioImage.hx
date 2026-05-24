@@ -97,6 +97,14 @@ class AudioImage extends BaseImage {
         }
     }
 
+    public function getTotalTime():Int {
+        if (this._loaded) {
+            return (Math.round(this._sound.length / 1000));
+        } else {
+            return (1);
+        }
+    }
+
     /**
         Sets the current playback time.
         @param  to  the new time in seconds

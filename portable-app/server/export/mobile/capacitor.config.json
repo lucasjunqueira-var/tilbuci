@@ -1,0 +1,6 @@
+{
+  "appId": "tilbuci.[APPID]",
+  "appName": "[APPNAME]",
+  "webDir": "www", 
+  "bundledWebRuntime": false
+}

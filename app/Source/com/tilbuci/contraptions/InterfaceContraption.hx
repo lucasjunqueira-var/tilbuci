@@ -7,6 +7,9 @@
  package com.tilbuci.contraptions;
 
 /** OPENFL **/
+import haxe.Timer;
+import com.tilbuci.display.InstanceImage;
+import openfl.display.Shape;
 import com.tilbuci.statictools.StringStatic;
 import openfl.text.TextFormat;
 import com.tilbuci.display.SpritemapImage;
@@ -25,13 +28,10 @@ import openfl.display.Sprite;
  */
 class InterfaceContraption extends Sprite {
 
-    /** Indicates whether the contraption is properly loaded and ready. */
     public var ok:Bool = false;
 
-    /** Unique identifier for this interface contraption. */
     public var id:String;
 
-    /** Array of interface element definitions (background, spritemap, text, images). */
     public var elem:Array<InterfaceElem> = [ ];
 
     private var _created:Bool = false;
@@ -42,12 +42,39 @@ class InterfaceContraption extends Sprite {
 
     private var _text:TextField;
 
+    private var _progress:Sprite;
+
+    private var _prgraphic:PictureImage;
+
+    private var _prmask:Shape;
+
+    private var _usePlayback:Bool = false;
+
+    private var _useProgress:Bool = false;
+
+    private var _pbtimer:Timer;
+
+    private var _pbinst:InstanceImage;
+
+    private var _pbscene:Bool = false;
+
     /**
      * Creates a new InterfaceContraption instance.
      * @param data Optional initialization data (as returned by `toObject`).
      */
     public function new(data:Dynamic = null) {
         super();
+        this._progress = new Sprite();
+        this._progress.visible = false;
+        this._prgraphic = new PictureImage();
+        this._prgraphic.visible = true;
+        this._prmask = new Shape();
+        this._prmask.graphics.beginFill(0);
+        this._prmask.graphics.drawRect(0, 0, 32, 32);
+        this._prmask.graphics.endFill();
+        this._progress.addChild(this._prgraphic);
+        this._progress.addChild(this._prmask);
+        this._prgraphic.mask = this._prmask;
         if (data != null) this.load(data);
     }
 
@@ -59,10 +86,54 @@ class InterfaceContraption extends Sprite {
         if (this.ok) {
             if (!this._created) {
                 var imnum:Int = 1;
+                this._usePlayback = false;
+                this._useProgress = false;
+                this._pbinst = null;
+                this._pbscene = false;
+                if (this._pbtimer != null) try{ this._pbtimer.stop(); } catch (e) { }
+                this._pbtimer = null;
                 for (el in this.elem) {
                     var pi:PictureImage;
                     var opt:Array<String>;
                     switch (el.type) {
+                        case 'playback':
+                            if ((el.file != '') && (el.options != '')) {
+                                var plfile:Dynamic = { play: '', pause: '', progress: '' };
+                                plfile = StringStatic.jsonParse(el.file);
+                                if (plfile == false) plfile = { play: '', pause: '', progress: '' };
+                                var plopt:Dynamic = { btx: 0, bty: 0, prx: 0, pry: 0, txt: false };
+                                plopt = StringStatic.jsonParse(el.options);
+                                if (plopt == false) plopt = { btx: 0, bty: 0, prx: 0, pry: 0, txt: false };
+                                if ((plfile.play != '') && (plfile.pause != '')) {
+                                    this._usePlayback = true;
+                                    pi = new PictureImage();
+                                    pi.load(plfile.play);
+                                    pi.visible = true;
+                                    pi.extraInfo.push('playback-play');
+                                    pi.addEventListener(MouseEvent.CLICK, onClick);
+                                    pi.addEventListener(MouseEvent.MOUSE_OVER, onOver);
+                                    pi.addEventListener(MouseEvent.MOUSE_OUT, onOut);
+                                    pi.x = plopt.btx;
+                                    pi.y = plopt.bty;
+                                    this._graphics['plplay'] = pi;
+                                    pi = new PictureImage();
+                                    pi.load(plfile.pause);
+                                    pi.visible = false;
+                                    pi.extraInfo.push('playback-pause');
+                                    pi.addEventListener(MouseEvent.CLICK, onClick);
+                                    pi.addEventListener(MouseEvent.MOUSE_OVER, onOver);
+                                    pi.addEventListener(MouseEvent.MOUSE_OUT, onOut);
+                                    pi.x = plopt.btx;
+                                    pi.y = plopt.bty;
+                                    this._graphics['plpause'] = pi;
+                                    if (plfile.progress != '') {
+                                        this._useProgress = true;
+                                        this._prgraphic.load(plfile.progress);
+                                        this._progress.x = plopt.prx;
+                                        this._progress.y = plopt.pry;
+                                    }
+                                }
+                            }
                         case 'background':
                             if (el.file != '') {
                                 pi = new PictureImage();
@@ -127,6 +198,7 @@ class InterfaceContraption extends Sprite {
                     if (k != 'background') this.addChild(this._graphics[k]);
                 }
                 if (this._text != null) this.addChild(this._text);
+                if (this._useProgress) this.addChild(this._progress);
             }
             this._created = true;
             return (true);
@@ -147,7 +219,23 @@ class InterfaceContraption extends Sprite {
             if (!ret) {
                 if (k.hasEventListener(MouseEvent.CLICK) && (k.extraInfo.length > 0)) {
                     if (obj.hitTestObject(k)) {
-                        if (GlobalPlayer.mvActions.exists(GlobalPlayer.parser.parseString(k.extraInfo[0]))) {
+                        if (k.extraInfo[0] == 'playback-play') {
+                            if (this._pbinst != null) {
+                                this._pbinst.play();
+                            } else if (this._pbscene) {
+                                GlobalPlayer.area.play();
+                            }
+                            this._graphics['plplay'].visible = false;
+                            this._graphics['plpause'].visible = true;
+                        } else if (k.extraInfo[0] == 'playback-pause') {
+                            if (this._pbinst != null) {
+                                this._pbinst.pause();
+                            } else if (this._pbscene) {
+                                GlobalPlayer.area.pause();
+                            }
+                            this._graphics['plplay'].visible = true;
+                            this._graphics['plpause'].visible = false;
+                        } else if (GlobalPlayer.mvActions.exists(GlobalPlayer.parser.parseString(k.extraInfo[0]))) {
                             GlobalPlayer.parser.run(GlobalPlayer.mvActions[GlobalPlayer.parser.parseString(k.extraInfo[0])]);
                             ret = true;
                         }
@@ -220,6 +308,17 @@ class InterfaceContraption extends Sprite {
             this._graphics.remove(k);
         }
         this._graphics = null;
+        this._progress.removeChildren();
+        this._progress = null;
+        this._prgraphic.mask = null;
+        this._prgraphic.kill();
+        this._prgraphic = null;
+        this._prmask.graphics.clear();
+        this._prmask = null;
+        this._pbinst = null;
+        this._pbscene = false;
+        if (this._pbtimer != null) try{ this._pbtimer.stop(); } catch (e) { }
+        this._pbtimer = null;
     }
 
     /**
@@ -286,6 +385,88 @@ class InterfaceContraption extends Sprite {
         }
     }
 
+    public function stopPlayback():Void {
+        this._pbinst = null;
+        this._pbscene = false;
+        if (this._pbtimer != null) try{ this._pbtimer.stop(); } catch (e) { }
+        this._pbtimer = null;
+    }
+
+    public function connectInstance(name:String):Bool {
+        this._pbinst = null;
+        this._pbscene = false;
+        if (this._pbtimer != null) try{ this._pbtimer.stop(); } catch (e) { }
+        this._pbtimer = null;
+        this._progress.visible = false;
+        this._graphics['plplay'].visible = false;
+        this._graphics['plpause'].visible = false;
+        if (this._usePlayback) {
+            this._pbinst = GlobalPlayer.area.pickInstance(name);
+            if (this._pbinst == null) {
+                return (false);
+            } else {
+                this.checkPlayback();
+                this._pbtimer = new Timer(1000);
+                this._pbtimer.run = this.updatePlayback;
+                return (true);
+            }
+        } else {
+            return (false);
+        }
+    }
+
+    public function connectScene():Bool {
+        if (this._pbtimer != null) try{ this._pbtimer.stop(); } catch (e) { }
+        this._pbtimer = null;
+        this._pbinst = null;
+        this._pbscene = true;
+        this._pbtimer = new Timer(1000);
+        this._pbtimer.run = this.updatePlayback;
+        this.checkPlayback();
+        return (true);
+    }
+
+    private function checkPlayback():Void {
+        if (this._pbinst != null) {
+            if (this._pbinst.playing) {
+                this._graphics['plplay'].visible = false;
+                this._graphics['plpause'].visible = true;
+            } else {
+                this._graphics['plplay'].visible = true;
+                this._graphics['plpause'].visible = false;
+            }
+        } else if (this._pbscene) {
+            if (GlobalPlayer.area.playing) {
+                this._graphics['plplay'].visible = false;
+                this._graphics['plpause'].visible = true;
+            } else {
+                this._graphics['plplay'].visible = true;
+                this._graphics['plpause'].visible = false;
+            }
+        }
+    }
+
+    private function updatePlayback():Void {
+        if (this._useProgress) {
+            if (this._pbinst != null) {
+                if (this._pbinst.playing) {
+                    this._prmask.height = this._prgraphic.height;
+                    this._prmask.width = this._prgraphic.width * this._pbinst.getTime() / this._pbinst.getTotalTime();
+                    this._progress.visible = true;
+                }
+            } else if (this._pbscene) {
+                this._prmask.height = this._prgraphic.height;
+                this._prmask.width = this._prgraphic.width * GlobalPlayer.area.currentKf / GlobalPlayer.movie.scene.keyframes.length;
+                this._progress.visible = true;
+            } else {
+                this._progress.visible = false;
+            }
+        } else {
+            this._progress.visible = false;
+        }
+        this.checkPlayback();
+    }
+
     /**
      * Click event handler for interactive elements. Executes the associated action.
      * @param evt MouseEvent object.
@@ -294,7 +475,23 @@ class InterfaceContraption extends Sprite {
         this.onOut(evt);
         var img:BaseImage = cast evt.target;
         if (img.extraInfo.length > 0) {
-            if (GlobalPlayer.mvActions.exists(GlobalPlayer.parser.parseString(img.extraInfo[0]))) {
+            if (img.extraInfo[0] == 'playback-play') {
+                if (this._pbinst != null) {
+                    this._pbinst.play();
+                } else if (this._pbscene) {
+                    GlobalPlayer.area.play();
+                }
+                this._graphics['plplay'].visible = false;
+                this._graphics['plpause'].visible = true;
+            } else if (img.extraInfo[0] == 'playback-pause') {
+                if (this._pbinst != null) {
+                    this._pbinst.pause();
+                } else if (this._pbscene) {
+                    GlobalPlayer.area.pause();
+                }
+                this._graphics['plplay'].visible = true;
+                this._graphics['plpause'].visible = false;
+            } else if (GlobalPlayer.mvActions.exists(GlobalPlayer.parser.parseString(img.extraInfo[0]))) {
                 GlobalPlayer.parser.run(GlobalPlayer.mvActions[GlobalPlayer.parser.parseString(img.extraInfo[0])]);
             }
         }
@@ -306,7 +503,7 @@ class InterfaceContraption extends Sprite {
      */
     private function onOver(evt:MouseEvent):Void {
         var img:BaseImage = cast evt.target;
-        if (GlobalPlayer.cursorVisible) if (GlobalPlayer.mdata.highlight != '') {
+        if (GlobalPlayer.cursorVisible) if (GlobalPlayer.mdata.highlight != '') if (!GlobalPlayer.isMobile()) {
             img.filters = [
                 new GlowFilter(GlobalPlayer.mdata.highlightInt, 1, 4, 4, 255, 1, true)
             ];

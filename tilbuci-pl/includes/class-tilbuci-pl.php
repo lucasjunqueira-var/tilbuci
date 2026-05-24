@@ -260,6 +260,10 @@ class TilBuci_WP {
                     'type' => 'string',
                     'default' => '',
                 ),
+                'snippet' => array(
+                    'type' => 'string',
+                    'default' => '',
+                ),
             ),
         ));
     }
@@ -365,6 +369,9 @@ class TilBuci_WP {
         }
         self::$first_block_rendered = true;
 
+        // Get snippet value
+        $snippet = isset($attributes['snippet']) ? sanitize_text_field($attributes['snippet']) : '';
+        
         // Prepare placeholders
         $assets_path = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/app/';
         $movie_path = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/';
@@ -382,9 +389,8 @@ class TilBuci_WP {
         $output .= '<noscript>This webpage makes extensive use of JavaScript. Please enable JavaScript in your web browser to view this page.</noscript>';
         $output .= '<div id="openfl-content"></div>';
         $output .= '<script type="text/javascript">';
-        $output .= 'lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "assets": "' . esc_js($assets_path) . '", "moviePath": "' . esc_js($movie_path) . '", "mode" : "player", "movie": "' . esc_js($movie) . '", "scene": "", "vars": "' . esc_js($vars) . '"' . $userlogin . ' } });';
+        $output .= 'lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "assets": "' . esc_js($assets_path) . '", "moviePath": "' . esc_js($movie_path) . '", "mode" : "player", "movie": "' . esc_js($movie) . '", "scene": "", "snippet": "' . esc_js($snippet) . '", "vars": "' . esc_js($vars) . '"' . $userlogin . ' } });';
         $output .= '</script>';
-        $output .= '<div id="embed_area"><iframe id="embed_frame" width="0" height="0" src="" frameborder="0"></iframe></div>';
         $output .= '</div>';
         
         // Apply full screen settings if enabled
@@ -473,6 +479,16 @@ class TilBuci_WP {
             'manage_options',
             'tilbuci-pl',
             array($this, 'display_tilbuci_page')
+        );
+
+        // Submenu - Help
+        add_submenu_page(
+            'tilbuci-pl',
+            __('Help', 'tilbuci-pl'),
+            __('Help', 'tilbuci-pl'),
+            'manage_options',
+            'tilbuci-pl-help',
+            array($this, 'display_help_page')
         );
 
         // Submenu - Backup
@@ -955,6 +971,31 @@ class TilBuci_WP {
     }
 
     /**
+     * Display Help page
+     */
+    public function display_help_page() {
+        ?>
+        <div class="wrap">
+            <h1><?php echo esc_html__('Help', 'tilbuci-pl'); ?></h1>
+            <div class="card">
+                <p><?php echo esc_html__('Want to know more about TilBuci and learn how to develop interesting interactive content? We\'ve compiled some links here to help you with this process!', 'tilbuci-pl'); ?></p>
+                <div style="margin-top: 20px;">
+                    <div onclick="window.open('http://discord.tilbuci.com.br/', '_blank');" style="cursor: pointer; background: #2271b1; color: #fff; padding: 15px 25px; border-radius: 8px; margin-bottom: 15px; display: block; width: 100%; box-sizing: border-box; text-align: center; font-size: 16px; font-weight: 500;">
+                        <?php echo esc_html__('Join the TilBuci Discord server to discuss the software features', 'tilbuci-pl'); ?>
+                    </div>
+                    <div onclick="window.open('https://tilbuci.com.br/files/TilBuci-ScriptingActions.pdf', '_blank');" style="cursor: pointer; background: #2271b1; color: #fff; padding: 15px 25px; border-radius: 8px; margin-bottom: 15px; display: block; width: 100%; box-sizing: border-box; text-align: center; font-size: 16px; font-weight: 500;">
+                        <?php echo esc_html__('Check out the \'TilBuci Scripting Actions\' manual', 'tilbuci-pl'); ?>
+                    </div>
+                    <div onclick="window.open('https://tilbuci.com.br/site/tutorials/', '_blank');" style="cursor: pointer; background: #2271b1; color: #fff; padding: 15px 25px; border-radius: 8px; margin-bottom: 15px; display: block; width: 100%; box-sizing: border-box; text-align: center; font-size: 16px; font-weight: 500;">
+                        <?php echo esc_html__('Follow the content creation tutorials', 'tilbuci-pl'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
      * Display Backup page with backup creation button and list of existing backups
      */
     public function display_backup_page() {
@@ -1095,7 +1136,6 @@ class TilBuci_WP {
         
         // debug: no cache
         //echo '<script type="text/javascript" src="' . esc_url($path . 'TilBuci-min.js?rd=' . time()) . '"></script>' . "\n";
-
         echo '<script type="text/javascript" src="' . esc_url($path . 'TilBuci-min.js?rd=' . $version) . '"></script>' . "\n";
         echo '<script type="text/javascript" src="' . esc_url($path . 'externs.js?rd=' . $version) . '"></script>' . "\n";
         echo '<script>' . "\n";
@@ -1113,8 +1153,6 @@ class TilBuci_WP {
         echo '    @font-face { font-family: "Roboto Sans"; src: url("' . esc_url($font_path . 'roboto.woff2') . '"); }' . "\n";
         echo '	#TilBuciArea { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: #000000; }' . "\n";
         echo '	#openfl-content { background: #000000; width: 100%; height: 100%; }' . "\n";
-        echo '    #embed_area { position: absolute; left: 0; top: 0; display: none; padding: 0; width: 100%; height: 100%; box-sizing: content-box; margin: 0; border: none; overflow: hidden; background-color: transparent; }' . "\n";
-        echo '    #embed_frame { display: none; padding: 0; box-sizing: content-box; margin: 0; border: none; width: 100%; height: 100%; background-color: transparent; }' . "\n";
         echo '</style>' . "\n";
     }
 

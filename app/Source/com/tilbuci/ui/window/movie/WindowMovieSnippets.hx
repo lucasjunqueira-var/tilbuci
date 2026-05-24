@@ -50,7 +50,7 @@ class WindowMovieSnippets extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-moviesnip-title'), 1100, InterfaceFactory.pickValue(630, 660), false, true, true);
+        super(ac, Global.ln.get('window-moviesnip-title'), 1100, InterfaceFactory.pickValue(630, 690), false, true, true);
     }
 
     /**

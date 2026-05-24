@@ -5,8 +5,9 @@ echo "Installing status bar plugin..."
 npm install @capacitor/status-bar
 echo "Installing file system plugin..."
 npm install @capacitor/filesystem
-echo "Installing navigation bar plugin..."
-npm install @squareetlabs/capacitor-navigation-bar
+# waiting for navigation bar plugin update for capacitor @8
+#echo "Installing navigation bar plugin..."
+#npm install @squareetlabs/capacitor-navigation-bar
 echo "Installing app plugin..."
 npm install @capacitor/app
 echo "Installing assets handler..."

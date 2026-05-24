@@ -1,0 +1,20 @@
+{
+  "name": "TilBuci",
+  "author": "Lucas Junqueira",
+  "license": "MPL-2.0",
+  "description": "TilBuci portable launcher.",
+  "version": "23.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "make": "electron-forge make"
+  },
+  "devDependencies": {
+    "electron": "latest",
+    "@electron-forge/cli": "latest",
+    "@electron-forge/maker-squirrel": "latest",
+    "@electron-forge/maker-deb": "latest",
+    "@electron-forge/maker-dmg": "latest"
+  },
+  "config": {}
+}

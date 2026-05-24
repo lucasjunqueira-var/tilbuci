@@ -58,6 +58,7 @@ import com.tilbuci.data.GlobalPlayer;
 import com.tilbuci.statictools.StringStatic;
 import openfl.display.StageDisplayState;
 import openfl.Lib;
+import haxe.crypto.Base64;
 
 class ScriptParser {
 
@@ -143,6 +144,11 @@ class ScriptParser {
     private var _acError:Dynamic;
 
     /**
+        qr code reading actions on hold
+    **/
+    private var _acQR:Dynamic;
+
+    /**
         last event sent
     **/
     private var _lastEvent:Map<String, String> = [ ];
@@ -178,6 +184,11 @@ class ScriptParser {
     private var _sngroup:String = '';
 
     /**
+        last qr code read
+    **/
+    private var _lastqr:String = '';
+
+    /**
         instance being dragged
     **/
     public var onDrag:InstanceImage = null;
@@ -185,7 +196,9 @@ class ScriptParser {
     /**
         Constructor.
     **/
-    public function new() { }
+    public function new() {
+        
+    }
 
     /**
         Gets a variable type array reference.
@@ -824,6 +837,13 @@ class ScriptParser {
     }
 
     /**
+        Expose the run action method to javascript.
+    **/
+    public function TB_runAction(ac:String):Bool {
+        return (this.run(ac));
+    }
+
+    /**
         Runs actions on a JSON.
         @param  src json-encoded string or parsed object
         @param  parsed  is the first param an already-parsed json?
@@ -1044,7 +1064,7 @@ class ScriptParser {
                            return (true);
                     case 'system.openurl':
                         if (param.length > 0) {
-                            var req:URLRequest = new URLRequest(param[0]);
+                            var req:URLRequest = new URLRequest(this.parseString(param[0]));
                             req.method = 'GET';
                             Lib.getURL(req);
                             return (true);
@@ -1084,9 +1104,9 @@ class ScriptParser {
                         } else {
                             if (param.length > 0) {
                                 #if tilbuciplayer
-                                    ExternEmbed.embed_place('movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
+                                    ExternEmbed.embed_place(GlobalPlayer.base + '/movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
                                 #else
-                                    ExternEmbed.embed_place('../movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
+                                    ExternEmbed.embed_place(GlobalPlayer.base + '/movie/' /*'../movie/'*/ + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
                                 #end                            
                                 return (true);
                             } else {
@@ -1111,6 +1131,36 @@ class ScriptParser {
                     case 'system.embedreset':
                         ExternEmbed.embed_setfull();
                         return (true);
+                    case 'system.embedshow':
+                        if (param.length >= 5) {
+                            if (GlobalPlayer.mode == Player.MODE_EDITOR) {
+                                return (true);
+                            } else {
+                                var px:Int = Math.round((this.parseInt(param[1]) * GlobalPlayer.area.movieScale) + GlobalPlayer.contentPosition.x);
+                                var py:Int = Math.round((this.parseInt(param[2]) * GlobalPlayer.area.movieScale) + GlobalPlayer.contentPosition.y);
+                                var pw:Int = Math.round(this.parseInt(param[3]) * GlobalPlayer.area.movieScale);
+                                var ph:Int = Math.round(this.parseInt(param[4]) * GlobalPlayer.area.movieScale);
+                                ExternEmbed.embed_setposition(px, py, pw, ph);
+                                #if tilbuciplayer
+                                    ExternEmbed.embed_place(GlobalPlayer.base + '/movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
+                                #else
+                                    ExternEmbed.embed_place(GlobalPlayer.base + '/movie/' /*'../movie/'*/ + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html');
+                                #end                            
+                                return (true);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'system.embedtab':
+                        if (param.length > 0) {
+                            var url:String = GlobalPlayer.base + '/movie/' + GlobalPlayer.movie.mvId + '.movie/media/embed/' + this.parseString(param[0]) + '/index.html';
+                            var req:URLRequest = new URLRequest(url);
+                            req.method = 'GET';
+                            Lib.getURL(req);
+                            return (true);
+                        } else {
+                            return (false);
+                        }
                     case 'system.quit':
                         #if runtimedesktop
                             return (GlobalPlayer.appQuit());
@@ -1281,6 +1331,32 @@ class ScriptParser {
                             if (param.length > 5) args.push(this.parseString(param[5]));
                             if (param.length > 6) args.push(this.parseString(param[6]));
                             return (ExternBrowser.TBB_callJs(this.parseString(param[0]), args));
+                        } else {
+                            return (false);
+                        }
+                    case 'system.getqr':
+                        if (param.length >= 3) {
+                            this._lastqr = '';
+                            this._acQR = null;
+                            if (Reflect.hasField(inf, 'complete')) this._acQR = Reflect.field(inf, 'complete');
+                            if (ExternBrowser.TBB_callJs('TBQR_start', [ ])) {
+                                GlobalPlayer.contraptions.showQR(
+                                    this.parseInt(param[0]), 
+                                    this.parseInt(param[1]), 
+                                    this.parseInt(param[2])
+                                );
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'system.closeqr':
+                        if (ExternBrowser.TBB_callJs('TBQR_stop', [ ])) {
+                            GlobalPlayer.contraptions.hideQR();
+                            this._acQR = null;
+                            return (true);
                         } else {
                             return (false);
                         }
@@ -1575,6 +1651,18 @@ class ScriptParser {
                     case 'contraption.interfaceanimpause':
                         if (param.length > 0) {
                             return(GlobalPlayer.contraptions.pauseInterface(this.parseString(param[0])));
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.interfacepbinstance':
+                        if (param.length > 1) {
+                            return(GlobalPlayer.contraptions.instanceInterface(this.parseString(param[0]), this.parseString(param[1])));
+                        } else {
+                            return (false);
+                        }
+                    case 'contraption.interfacepbscene':
+                        if (param.length > 0) {
+                            return(GlobalPlayer.contraptions.sceneInterface(this.parseString(param[0])));
                         } else {
                             return (false);
                         }
@@ -3033,7 +3121,6 @@ class ScriptParser {
                         return (true);
                     case 'accessibility.setshader':
                         if (param.length >= 1) {
-                            trace ('param ok');
                             GlobalPlayer.currentShader = 0;
                             switch (this.parseString(param[0])) {
                                 case 'deuteranotopia': GlobalPlayer.currentShader = 1;
@@ -3417,6 +3504,20 @@ class ScriptParser {
 
                     // boolean conditions
                     case 'if.bool':
+                        if ((param.length > 0) && Reflect.hasField(inf, 'then')) {
+                            if (this.parseBool(param[0])) {
+                                return (this.run(Reflect.field(inf, 'then'), true));
+                            } else {
+                                if (Reflect.hasField(inf, 'else')) {
+                                    return (this.run(Reflect.field(inf, 'else'), true));
+                                } else {
+                                    return (true);
+                                }
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'if.boolequal':
                         if ((param.length > 0) && Reflect.hasField(inf, 'then')) {
                             if (this.parseBool(param[0])) {
                                 return (this.run(Reflect.field(inf, 'then'), true));
@@ -4610,6 +4711,112 @@ class ScriptParser {
     }
 
     /**
+        Reads a string looking for commands from a QR code.
+        @param  code    the code to parse
+        @return found a valid code?
+    **/
+    public function parseQR(code:String):Bool {
+        var found:Bool = false;
+        var snippet:String = '';
+        var movie:String = '';
+        var scene:String = '';
+        var vars:String = '';
+        var snstart:Int = code.indexOf('sn=');
+        var snend:Int = -1;
+
+        if (snstart != -1) {
+            snstart += 'sn='.length;
+            snend = code.indexOf('&', snstart);
+            if (snend != -1) {
+                snippet = code.substr(snstart, (snend - snstart));
+            } else {
+                snippet = code.substr(snstart);
+            }
+            if (snippet != '') {
+                snippet = StringTools.urlDecode(snippet);
+                found = true;
+            }
+        }
+
+        snstart = code.indexOf('mv=');
+        if (snstart != -1) {
+            snstart += 'mv='.length;
+            snend = code.indexOf('&', snstart);
+            if (snend != -1) {
+                movie = code.substr(snstart, (snend - snstart));
+            } else {
+                movie = code.substr(snstart);
+            }
+            if (movie != '') found = true;
+        }
+
+        snstart = code.indexOf('sc=');
+        if (snstart != -1) {
+            snstart += 'sc='.length;
+            snend = code.indexOf('&', snstart);
+            if (snend != -1) {
+                scene = code.substr(snstart, (snend - snstart));
+            } else {
+                scene = code.substr(snstart);
+            }
+            if (scene != '') found = true;
+        }
+
+        snstart = code.indexOf('vars=');
+        if (snstart != -1) {
+            snstart += 'vars='.length;
+            snend = code.indexOf('&', snstart);
+            if (snend != -1) {
+                vars = code.substr(snstart, (snend - snstart));
+            } else {
+                vars = code.substr(snstart);
+            }
+            if (vars != '') {
+                var b64:String;
+                try {
+                    b64 = Base64.decode(vars).toString();
+                } catch (e) {
+                    b64 = null;
+                }
+                if (b64 != null) {
+                    var json:Map<String, Dynamic> = StringStatic.jsonAsMap(b64);
+                    for (k in json.keys()) {
+                        this._strings[k] = cast json[k];
+                    }
+                }
+                found = true;
+            }
+        }
+
+        if (found) {
+            if ((movie != GlobalPlayer.movie.mvId) && (movie != '')) {
+                Reflect.setField(Main, 'scene', scene);
+                Reflect.setField(Main, 'snippet', snippet);
+                GlobalPlayer.contraptions.removeContraptions(true);
+                GlobalPlayer.movie.loadMovie(movie);
+            } else {
+                if ((scene != GlobalPlayer.movie.scId) && (scene != '')) {
+                    Reflect.setField(Main, 'snippet', snippet);
+                    GlobalPlayer.movie.loadScene(scene);
+                } else {
+                    if (snippet != '') {
+                        GlobalPlayer.parser.run('{ "ac": "run", "param": [ "' + snippet + '" ] }');
+                    }
+                }
+            }
+        }
+        return (found);
+    }
+
+    /**
+        A QR code was just read.
+    **/
+    public function qrComplete():Void {
+        if (this._acQR != null) this.run(this._acQR, true);
+        this._acQR = null;
+    }
+
+    /**
         Gets a value object for saving.
         @param  name    the value name (starting with type, like "S:", "F:", "I:" or "B:")
         @return the value object or null if not found
@@ -4859,6 +5066,27 @@ class ScriptParser {
     @:expose('tilbuci_runaction')
     public static function tilbuci_runaction(action:String):Bool {
         return (GlobalPlayer.parser.run(action));
+    }
+
+    /**
+        Exposed function to receive a qr code reading.
+    **/
+    @:expose('tilbuci_qrcodeget')
+    public static function tilbuci_qrcodeget(qrtext:String):Void {
+        if (GlobalPlayer.parser.parseQR(qrtext)) {
+            if (ExternBrowser.TBB_callJs('TBQR_stop', [ ])) {
+                GlobalPlayer.contraptions.hideQR();
+                GlobalPlayer.parser.qrComplete();
+            }
+        }
+    }
+
+    /**
+        Exposed function to receive a qr code reading image.
+    **/
+    @:expose('tilbuci_qrcodegetimage')
+    public static function tilbuci_qrcodegetimage(base64:String):Void {
+        GlobalPlayer.contraptions.updateQR(base64);
     }
     #end
 }

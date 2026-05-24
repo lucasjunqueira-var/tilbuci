@@ -116,6 +116,7 @@ import com.tilbuci.ui.window.movie.WindowMovieProperties;
 import com.tilbuci.ui.window.movie.WindowMovieSequences;
 import com.tilbuci.ui.window.movie.WindowMovieSnippets;
 import com.tilbuci.ui.window.movie.WindowMovieRepublish;
+import com.tilbuci.ui.window.movie.WindowMovieQR;
 import com.tilbuci.ui.window.movie.WindowMoviePlugins;
 import com.tilbuci.ui.window.movie.WindowMovieUsers;
 import com.tilbuci.ui.window.movie.WindowMovieRemove;
@@ -549,6 +550,9 @@ class Editor extends Drawer {
             case 'republish':
                 this.opened = false;
                 this.showWindow('republish');
+            case 'qr':
+                this.opened = false;
+                this.showWindow('qr');
             case 'notes':
                 this.opened = false;
                 this.showWindow('designnotes');
@@ -1127,6 +1131,33 @@ class Editor extends Drawer {
                 Global.temp['Media/Single'] = [
                     'type' => 'picture', 
                     'call' => 'intbackground'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'intplaygr':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'intplaygr'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'intpausegr':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'intpausegr'
+                ];
+                this.showWindow('mediapicture');
+                this._windows['mediapicture'].action('setmode', [
+                    'mode' => 'single', 
+                ]);
+            case 'intprogress':
+                Global.temp['Media/Single'] = [
+                    'type' => 'picture', 
+                    'call' => 'intprogress'
                 ];
                 this.showWindow('mediapicture');
                 this._windows['mediapicture'].action('setmode', [
@@ -2077,6 +2108,24 @@ class Editor extends Drawer {
                                 'type' => data['type'], 
                                 'name' => data['file'], 
                             ]);
+                        case 'intplaygr':
+                            this._windows['interfaces'].action('intplaygr', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'intpausegr':
+                            this._windows['interfaces'].action('intpausegr', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
+                        case 'intprogress':
+                            this._windows['interfaces'].action('intprogress', [
+                                'file' => data['path'] + data['file'], 
+                                'type' => data['type'], 
+                                'name' => data['file'], 
+                            ]);
                         case 'intimage':
                             this._windows['interfaces'].action('intimage', [
                                 'file' => data['path'] + data['file'], 
@@ -2406,6 +2455,7 @@ class Editor extends Drawer {
                 case 'seqmovie': this._windows['seqmovie'] = new WindowMovieSequences(actionMovie);
                 case 'snippets': this._windows['snippets'] = new WindowMovieSnippets(actionMovie);
                 case 'republish': this._windows['republish'] = new WindowMovieRepublish(actionMovie);
+                case 'qr': this._windows['qr'] = new WindowMovieQR(actionMovie);
                 case 'usermovie': this._windows['usermovie'] = new WindowMovieUsers(actionMovie);
                 case 'removemovie': this._windows['removemovie'] = new WindowMovieRemove(actionMovie);
                 case 'pluginmovie': this._windows['pluginmovie'] = new WindowMoviePlugins(actionMovie);

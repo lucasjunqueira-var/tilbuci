@@ -1,6 +1,6 @@
 <?php
 // launcher version
-$version = 22;
+$version = 23;
 chdir(__DIR__);
 
 // running from launcher?
@@ -76,8 +76,6 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 			#title small {
 				font-size: 12px;
 			}
-			
-			
 			#holder {
 				box-sizing: border-box;
 				padding: 20px;
@@ -87,9 +85,22 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 				width: 750px;
 				height: 530px;
 			}
-			
-			
-			
+			@keyframes shake {
+				0%, 33% {
+					transform: translate(0, 0); /* pausa inicial */
+				}
+				36% { transform: translate(-2px, 2px); }
+				40% { transform: translate(2px, -2px); }
+				44% { transform: translate(-2px, -2px); }
+				48% { transform: translate(2px, 2px); }
+				52% { transform: translate(-2px, 2px); }
+				56% { transform: translate(2px, -2px); }
+				60% { transform: translate(0, 0); }
+				100% { transform: translate(0, 0); }
+			}
+			.shake {
+				animation: shake 6s infinite;
+			}
 		</style>
 	</head>
 	<body>
@@ -144,6 +155,10 @@ if (!isset($gconf['databaseServ']) || ($gconf['databaseServ'] != 'sqlite')) {
 				<div class="button" onclick="api.openwindow('http://localhost:51804/editor/?us=single&uk=<?= $key ?>&cch=true')">
 					<h1>Open TilBuci</h1>
 					Start a new TilBuci workspace.
+				</div>
+				<div class="button shake" onclick="api.openbrowser('http://discord.tilbuci.com.br/')">
+					<h1>Talk about TilBuci</h1>
+					Join the TilBuci Discord server!
 				</div>
 				<div class="button" onclick="window.location='http://localhost:51804/ws/launcher.php?pg=learn'">
 					<h1>Learn TilBuci</h1>

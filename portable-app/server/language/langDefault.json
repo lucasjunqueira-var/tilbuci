@@ -1,0 +1,5 @@
+{
+	"setting-email-subject": "TilBuci e-mail setting", 
+	"setting-email-msgtext": "Hello, you recently cheanged the e-mail settings of your TilBuci application. In order to complete the process, please access 'Setup > E-mail Settings' and provide this code:\r\n\r\n[CODE]\r\n\r\n If you didn't ask for this message, no need worry, just ignore it.", 
+	"setting-email-msghtml": "<p>Hello, you recently cheanged the e-mail settings of your <em>TilBuci</em> application. In order to complete the process, please access <strong>Setup > E-mail Settings</strong> and provide this code:</p><p><strong>[CODE]</strong></p><p>If you didn't ask for this message, no need worry, just ignore it.</p>"
+}

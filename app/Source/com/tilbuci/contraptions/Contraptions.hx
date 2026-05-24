@@ -6,6 +6,14 @@
 
  package com.tilbuci.contraptions;
 
+import openfl.events.UncaughtErrorEvent;
+import openfl.events.Event;
+import openfl.display.Loader;
+import haxe.crypto.Base64;
+import openfl.utils.ByteArray;
+import openfl.display.BitmapData;
+import openfl.display.Bitmap;
+import haxe.Timer;
 import com.tilbuci.shaders.UnfocusShader;
 import openfl.filters.ShaderFilter;
 import com.tilbuci.player.MovieArea;
@@ -21,66 +29,54 @@ import openfl.display.Sprite;
 class Contraptions {
 
     // menu contraption
-    /** Map of menu contraptions keyed by their identifier. */
     public var menus:Map<String, MenuContraption> = [ ];
     private var _menusOverlay:Sprite;
     private var _menuAction:Dynamic;
     private var _menuVariable:String;
     private var _menuCurrent:MenuContraption = null;
-    /** Indicates whether a menu contraption is currently being displayed. */
     public var usingMenu:Bool = false;
 
     // decision flow contraption
-    /** Map of decision flow contraptions keyed by their identifier. */
     public var dflow:Map<String, DflowContraption> = [ ];
     private var _dflowOverlay:Sprite;
     private var _dflowCurrent:DflowContraption = null;
-    /** Indicates whether a decision flow contraption is currently being displayed. */
     public var usingDflow:Bool = false;
 
     // inventory contraption
-    /** Map of inventory contraptions keyed by their identifier. */
     public var inv:Map<String, InventoryContraption> = [ ];
     private var _invOverlay:Sprite;
     private var _invCurrent:InventoryContraption = null;
-    /** Indicates whether an inventory contraption is currently being displayed. */
     public var usingInv:Bool = false;
 
     // battle system contraption
-    /** Map of battle system contraptions keyed by their identifier. */
     public var bs:Map<String, BattleContraption> = [ ];
     private var _bsOverlay:Sprite;
     private var _bsCurrent:BattleContraption = null;
-    /** Indicates whether a battle system contraption is currently being displayed. */
     public var usingBs:Bool = false;
 
     // messages contraption
-    /** Map of messages contraptions keyed by their identifier. */
     public var messages:Map<String, MessagesContraption> = [ ];
     private var _messagesOverlay:Sprite;
     private var _messagesAction:Dynamic;
     private var _messagesVariable:String;
     private var _messagesCurrent:MessagesContraption = null;
-    /** Indicates whether a messages contraption is currently being displayed. */
     public var usingMessages:Bool = false;
 
     // cover contraption
-    /** Map of cover contraptions keyed by their identifier. */
     public var covers:Map<String, CoverContraption> = [ ];
     private var _coverOverlay:Sprite;
 
     // target contraption
-    /** Map of target contraptions keyed by their identifier. */
     public var targets:Map<String, TargetContraption> = [ ];
 
     // background contraption
-    /** Map of background contraptions keyed by their identifier. */
     public var backgrounds:Map<String, BackgroundContraption> = [ ];
     private var _backgroundOverlay:Sprite;
 
     // scene loading icon
     private var _loadingOverlay:Sprite;
     private var _loadingIc:SpritemapImage;
+    private var _loadingTimer:Timer;
 
     // image zoom
     private var _zoomOverlay:Sprite;
@@ -88,33 +84,40 @@ class Contraptions {
     private var _zoomVideo:VideoImage;
 
     // music
-    /** Map of music contraptions keyed by their identifier. */
     public var musics:Map<String, MusicContraption> = [ ];
 
     // sound
-    /** Map of sound contraptions keyed by their identifier. */
     public var sounds:Map<String, SoundContraption> = [ ];
 
     // forms
-    /** Map of form contraptions keyed by their identifier. */
     public var forms:Map<String, FormContraption> = [ ];
     private var _formsOverlay:Sprite;
     private var _formcurrent:String = '';
 
     // interface
-    /** Map of interface contraptions keyed by their identifier. */
     public var interf:Map<String, InterfaceContraption> = [ ];
     private var _interfaceOverlay:Sprite;
 
+    // qr code
+    private var _qrDisplay:Bitmap;
+    private var _qrOverlay:Sprite;
+    private var _qrLoader:Loader;
+    private var _qrSize:Int = 256;
+
     /**
         Creates a new Contraptions manager instance.
-        Initializes internal structures for managing various contraption types.
     */
     public function new() {
-
+        
     }
 
     private function getLayers():Void {
+        if (this._qrOverlay == null) {
+            this._qrOverlay = GlobalPlayer.area.getOverlay('contraptions-qr');
+            this._qrDisplay = new Bitmap();
+            this._qrLoader = new Loader();
+        }
+        this._qrOverlay.mouseEnabled = false;
         if (this._coverOverlay == null) this._coverOverlay = GlobalPlayer.area.getOverlay('contraptions-cover');
         this._coverOverlay.mouseEnabled = false;
         if (this._backgroundOverlay == null) this._backgroundOverlay = GlobalPlayer.area.getOverlay('contraptions-background', true);
@@ -137,6 +140,16 @@ class Contraptions {
     **/
     public function clear():Void {
         this.getLayers();
+        this._qrOverlay.removeChildren();
+        this._qrOverlay.graphics.clear();
+        if (this._qrLoader != null) {
+            if (this._qrLoader.contentLoaderInfo.hasEventListener(Event.COMPLETE)) {
+                try { this._qrLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onQRComplete); } catch (e) { }
+            }
+            if (this._qrLoader.uncaughtErrorEvents.hasEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR)) {
+                try { this._qrLoader.uncaughtErrorEvents.removeEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onQRError); } catch (e) { }
+            }
+        }
         for (k in this.covers.keys()) {
             this.covers[k].kill();
             this.covers.remove(k);
@@ -236,6 +249,15 @@ class Contraptions {
         for (k in this.interf.keys()) {
             this.interf[k].kill();
             this.interf.remove(k);
+        }
+        this._qrOverlay.removeChildren();
+        if (this._qrLoader != null) {
+            if (this._qrLoader.contentLoaderInfo.hasEventListener(Event.COMPLETE)) {
+                try { this._qrLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onQRComplete); } catch (e) { }
+            }
+            if (this._qrLoader.uncaughtErrorEvents.hasEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR)) {
+                try { this._qrLoader.uncaughtErrorEvents.removeEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onQRError); } catch (e) { }
+            }
         }
     }
 
@@ -629,6 +651,7 @@ class Contraptions {
         this.hideForm();
         this.hideLoadingIc();
         this.removeZoom();
+        this.hideQR();
         if (all) {
             this.musicStop();
             this.soundStop();
@@ -805,17 +828,39 @@ class Contraptions {
 
     public function showLoadingIc():Void{
         if (this._loadingIc.mediaLoaded) {
-            this._loadingIc.visible = true;
+            //this._loadingIc.visible = true;
             this._loadingOverlay.visible = true;
+            if (this._loadingTimer != null) {
+                try {
+                    this._loadingTimer.stop();
+                } catch (e) { }
+                this._loadingTimer = null;
+            }
+            this._loadingTimer = new Timer(500);
+            this._loadingTimer.run = this.showLoading;
         } else {
             this._loadingIc.visible = false;
             this._loadingOverlay.visible = false;
         }
     }
 
+    private function showLoading():Void {
+        try {
+            this._loadingTimer.stop();
+        } catch (e) { }
+        this._loadingTimer = null;
+        if (this._loadingOverlay.visible) this._loadingIc.visible = true;
+    }
+
     public function hideLoadingIc():Void{
         this._loadingIc.visible = false;
         this._loadingOverlay.visible = false;
+        if (this._loadingTimer != null) {
+            try {
+                this._loadingTimer.stop();
+            } catch (e) { }
+            this._loadingTimer = null;
+        }
     }
 
     private function onLoadingIc(ok:Bool):Void
@@ -960,6 +1005,43 @@ class Contraptions {
         }
     }
 
+    public function showQR(size:Int, px:Int, py:Int):Void {
+        this.getLayers();
+        this._qrSize = size;
+        this._qrDisplay.bitmapData = new BitmapData(size, size, false, 0x000000);
+        this._qrDisplay.x = px;
+        this._qrDisplay.y = py;
+        this._qrDisplay.width = this._qrDisplay.height = size;
+        this._qrOverlay.addChild(this._qrDisplay);
+        this._qrLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onQRComplete);
+        this._qrLoader.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onQRError);
+    }
+
+    public function hideQR():Void {
+        this._qrOverlay.removeChildren();
+        if (this._qrLoader != null) {
+            if (this._qrLoader.contentLoaderInfo.hasEventListener(Event.COMPLETE)) {
+                try { this._qrLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onQRComplete); } catch (e) { }
+            }
+            if (this._qrLoader.uncaughtErrorEvents.hasEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR)) {
+                try { this._qrLoader.uncaughtErrorEvents.removeEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onQRError); } catch (e) { }
+            }
+        }
+    }
+
+    public function updateQR(pic:String):Void {
+        this._qrLoader.loadBytes(Base64.decode(pic));
+    }
+
+    private function onQRComplete(e:Event):Void {
+        this._qrDisplay.bitmapData = cast(this._qrLoader.content, Bitmap).bitmapData;
+        this._qrDisplay.width = this._qrDisplay.height = this._qrSize;
+    }
+    
+    private function onQRError(e:UncaughtErrorEvent):Void {
+        // nothing to do
+    }
+
     public function showCover(name:String):Bool {
         this.getLayers();
         if (this.covers.exists(name)) {
@@ -1078,6 +1160,7 @@ class Contraptions {
 
     public function hideInterface(nm:String):Void {
         if (this.interf.exists(nm)) {
+            this.interf[nm].stopPlayback();
             this.interf[nm].remove();
         }
         if (this._interfaceOverlay.numChildren == 0) this._interfaceOverlay.visible = false;
@@ -1153,6 +1236,22 @@ class Contraptions {
     public function playInterface(nm:String):Bool {
         if (this.interf.exists(nm)) {
             return (this.interf[nm].playMap());
+        } else {
+            return (false);
+        }
+    }
+
+    public function instanceInterface(nm:String, inst:String):Bool {
+        if (this.interf.exists(nm)) {
+            return (this.interf[nm].connectInstance(inst));
+        } else {
+            return (false);
+        }
+    }
+
+    public function sceneInterface(nm:String):Bool {
+        if (this.interf.exists(nm)) {
+            return (this.interf[nm].connectScene());
         } else {
             return (false);
         }

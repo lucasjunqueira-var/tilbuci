@@ -4,6 +4,10 @@ TilBuci is a free, open source tool to create interactive content. From a visual
 
 [![Welcome to TilBuci!](https://github.com/user-attachments/assets/631b6793-4fec-47ba-9d5e-438c43f2e32d)](https://www.youtube.com/watch?v=VjGJaG-YF_I)
 
+Quer tirar dúvidas e saber das novidades sobre o TilBuci? Porque não se juntar ao nosso sewrvidor no Discord em [discord.tilbuci.com.br](http://discord.tilbuci.com.br/)
+
+[![discord](https://github.com/user-attachments/assets/5df8aa51-44b4-4206-92fd-f6e9dd375e18)](http://discord.tilbuci.com.br/)
+
 ## Easy to use graphic interface
 
 Use a drag-and-drop interface to bring your ideas to life.
@@ -77,13 +81,19 @@ TilBuci has several features that simplify the creation of narrative stories, in
 
 ![narrative](https://github.com/user-attachments/assets/e5fb92dc-011e-475b-b86d-7c2d8c80b51e)
 
+## QR code support
+
+TilBuci natively supports QR code reading. This feature simplifies the creation of content that visitors can locate using printed codes. You have a code generator in the editor interface, and reading can be done both from within your exported content and using mobile device camera apps.
+
+![qrcode](https://github.com/user-attachments/assets/ad3a7f1f-6333-47de-b039-6a2cf68b42e5)
+
 ## Web and desktop software
 
 TilBuci is a web software with several multi-user features for collective creation. However, there are cases where local use by just one person may be necessary. With that in mind, we now have a desktop version, presented as a portable software that can be copied to your computer or even to external drives, without the need for installation. The portable version is available for Windows, Linux, and macOS (x64-based architectures). Note that when performing in this way, TilBuci's server functions, such as visitor identification (login) or cloud data storage, will not be available, but creations made in the desktop version can be easily exported and imported to a server installation in the usual way.
 
-![webanddesktop](https://github.com/user-attachments/assets/91e5ff09-16d0-48f9-a7ce-0579fd109414)
+![webanddesktop](https://github.com/user-attachments/assets/dbe0975d-1201-408e-9524-e2e74bbaa0ec)
 
-TilBuci is also available as a WordPress plugin, integrating functionalities from both software programs. To learn more and see the installation steps, visit https://plugin.tilbuci.com.br/
+TilBuci is also available as a WordPress plugin, integrating functionalities from both software programs. To learn more and see the installation steps, visit [plugin.tilbuci.com.br](https://plugin.tilbuci.com.br/)
 
 ## Tutorials and examples
 

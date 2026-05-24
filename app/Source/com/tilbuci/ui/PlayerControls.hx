@@ -62,6 +62,8 @@ class PlayerControls extends VDividedBox {
     **/
     private var _movieInfo:MovieInfoDisplay;
 
+    private var _drawTimer:Timer;
+
     /**
         button areas
     **/
@@ -112,11 +114,29 @@ class PlayerControls extends VDividedBox {
         this._displayArea = this.ui.createHArea('left');
         this._controls.addChild(this._displayArea);
         this.ui.createIconButton('screen', this.onScreen, new Bitmap(Assets.getBitmapData('btScreen')), null, this._displayArea);
-        this.ui.createSpacer('screen', 10, false, this._displayArea);
+        this.ui.createSpacer('screen', 10, false, this._displayArea, 5);
         this.ui.createIconButton('color', this.onColor, new Bitmap(Assets.getBitmapData('btColors')), null, this._displayArea);
         this.ui.createIconButton('focus', this.onFocus, new Bitmap(Assets.getBitmapData('btFocus')), null, this._displayArea);
+
+        this.ui.createSpacer('zoom', 10, false, this._displayArea, 5);
+
+        this.ui.createIconButton('zoom+', this.onZoomP, new Bitmap(Assets.getBitmapData('btZoomP')), null, this._displayArea);
+        this.ui.createIconButton('zoom-', this.onZoomM, new Bitmap(Assets.getBitmapData('btZoomM')), null, this._displayArea);
+        this.ui.createIconButton('zoomfit', this.centerPlayer, new Bitmap(Assets.getBitmapData('btZoomFit')), null, this._displayArea);
+        this.ui.createIconButton('zoom100', this.onZoom100, new Bitmap(Assets.getBitmapData('btZoom100')), null, this._displayArea);
+
+        this.ui.createSpacer('keyframes', 10, false, this._displayArea, 5);
         
-        this._zoomArea = this.ui.createHArea('center');
+        this.ui.createIconButton('left', this.onLeft, new Bitmap(Assets.getBitmapData('btLeft')), null, this._displayArea);
+        this.ui.createLabel('keyframes', '', '', this._displayArea);
+        this.ui.createIconButton('right', this.onRight, new Bitmap(Assets.getBitmapData('btRight')), null, this._displayArea);
+
+        this.ui.createSpacer('play', 10, false, this._displayArea, 5);
+
+        this.ui.createIconButton('actions', this.onActions, new Bitmap(Assets.getBitmapData('btSetup')), null, this._displayArea);
+        this.ui.createIconButton('play', this.onPlay, new Bitmap(Assets.getBitmapData('btPlay')), null, this._displayArea);
+        
+        /*this._zoomArea = this.ui.createHArea('center');
         this._controls.addChild(this._zoomArea);
         this.ui.createIconButton('zoom+', this.onZoomP, new Bitmap(Assets.getBitmapData('btZoomP')), null, this._zoomArea);
         this.ui.createIconButton('zoom-', this.onZoomM, new Bitmap(Assets.getBitmapData('btZoomM')), null, this._zoomArea);
@@ -129,7 +149,7 @@ class PlayerControls extends VDividedBox {
         this.ui.createLabel('keyframes', '', '', this._playArea);
         this.ui.createIconButton('right', this.onRight, new Bitmap(Assets.getBitmapData('btRight')), null, this._playArea);
         this.ui.createIconButton('actions', this.onActions, new Bitmap(Assets.getBitmapData('btSetup')), null, this._playArea);
-        this.ui.createIconButton('play', this.onPlay, new Bitmap(Assets.getBitmapData('btPlay')), null, this._playArea);
+        this.ui.createIconButton('play', this.onPlay, new Bitmap(Assets.getBitmapData('btPlay')), null, this._playArea);*/
 
         this._movieInfo = new MovieInfoDisplay(this.updateInfo);
         this._controls.addChild(this._movieInfo);
@@ -146,6 +166,9 @@ class PlayerControls extends VDividedBox {
         this.ui.buttons['right'].toolTip = Global.ln.get('tooltip-playercontrols-right');
         this.ui.buttons['actions'].toolTip = Global.ln.get('tooltip-playercontrols-actions');
         this.ui.buttons['play'].toolTip = Global.ln.get('tooltip-playercontrols-play');
+
+        this._drawTimer = new Timer(500);
+        this._drawTimer.run = this.updateSizes;
     }
 
     /**
@@ -335,10 +358,15 @@ class PlayerControls extends VDividedBox {
     }
 
     private function updateSizes():Void {
+        if (this._drawTimer != null) {
+            try { this._drawTimer.stop(); } catch (e) { }
+            this._drawTimer = null;
+        }
         var totWidth:Int = Math.round(this.width - 20);
-        this._displayArea.width = Math.round(totWidth * 0.2);
-        this._zoomArea.width = Math.round(totWidth * 0.2);
-        this._playArea.width = Math.round(totWidth * 0.25);
-        this._movieInfo.width = totWidth - (this._displayArea.width - this._zoomArea.width - this._playArea.width);
+        this._displayArea.width = Math.round(totWidth * 0.68);
+        //this._zoomArea.width = Math.round(totWidth * 0.2);
+        //this._playArea.width = Math.round(totWidth * 0.25);
+        //this._movieInfo.width = totWidth - (this._displayArea.width - this._zoomArea.width - this._playArea.width);
+        this._movieInfo.width = totWidth - (this._displayArea.width);
     }
 }

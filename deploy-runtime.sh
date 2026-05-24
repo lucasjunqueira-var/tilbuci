@@ -42,7 +42,7 @@ build_runtime "PUBLISH SERVICES" "runtimepublish" "publish.js"
 # Concatenate externs files
 echo "Creating externs.js..."
 if [ -f "Externs/browser.js" ] && [ -f "Externs/embedcontent.js" ] && [ -f "Externs/overlayplugin.js" ] && [ -f "Externs/upload.js" ]; then
-    cat Externs/browser.js Externs/embedcontent.js Externs/overlayplugin.js Externs/upload.js > Externs/externs.js
+    cat Externs/browser.js Externs/embedcontent.js Externs/overlayplugin.js Externs/upload.js Externs/qrcode.js > Externs/externs.js
     echo "  externs.js created"
     
     # Copy externs.js to desktop, mobile, site directories

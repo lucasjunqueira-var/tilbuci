@@ -29,6 +29,7 @@ class MenuMovie extends DrawerMenu {
         this.addButton('btSnippets', Global.ln.get('menu-movie-snippets'), onSnippets);
         this.addButton('btRepublish', Global.ln.get('menu-movie-republish'), onRepublish);
         this.addButton('btNotes', Global.ln.get('menu-movie-notes'), onNotes);
+        this.addButton('btQR', Global.ln.get('menu-movie-qr'), onQR);
         this.addButton('btPlayer', Global.ln.get('menu-movie-player'), onPlayer);
     }
 
@@ -68,6 +69,8 @@ class MenuMovie extends DrawerMenu {
             this.ui.buttons['btNotes'].toolTip = null;
             this.ui.buttons['btRepublish'].enabled = true;
             this.ui.buttons['btRepublish'].toolTip = null;
+            this.ui.buttons['btQR'].enabled = true;
+            this.ui.buttons['btQR'].toolTip = null;
         } else {
             if (Global.ws.level <= 50) {
                 this.ui.buttons['btRemove'].enabled = true;
@@ -90,6 +93,8 @@ class MenuMovie extends DrawerMenu {
             this.ui.buttons['btSnippets'].toolTip = Global.ln.get('tooltip-movie-nomovie');
             this.ui.buttons['btNotes'].toolTip = Global.ln.get('tooltip-movie-nomovie');
             this.ui.buttons['btRepublish'].toolTip = Global.ln.get('tooltip-movie-nomovie');
+            this.ui.buttons['btQR'].enabled = false;
+            this.ui.buttons['btQR'].toolTip = Global.ln.get('tooltip-movie-nomovie');
         }
     }
 
@@ -161,6 +166,13 @@ class MenuMovie extends DrawerMenu {
     **/
     private  function onNotes(evt:TriggerEvent):Void {
         this._ac('notes');
+    }
+
+    /**
+        Shows the qr code window.
+    **/
+    private  function onQR(evt:TriggerEvent):Void {
+        this._ac('qr');
     }
 
     /**

@@ -219,6 +219,14 @@ Generates the TilBuci web installer from the current codebase.
 create-installer.cmd
 ```
 
+## WordPress plugin
+
+The TilBuci plugin for WordPress was designed as a way to simplify integration with the blogging system and facilitate the publication of online content. In the code, the plugin is located in the "tilbuci-pl" folder, which contains the "tilbuci" folder containing the latest version of TilBuci, without the configuration files, which are created when the plugin is activated.
+
+## Portable desktop apps
+
+The "portable-app" folder contains the necessary code to use the Electron platform to generate portable applications for Windows, Linux, and macOS systems (tested on Intel architecture only). This folder contains its own instruction and script files to be used in development. Additionally, the "server" folder contains the latest version of TilBuci, but with the configuration files already populated to run in a local environment using a SQLite database.
+
 ## Additional Resources
 
 - **Official Website**: [https://tilbuci.com.br/](https://tilbuci.com.br/)

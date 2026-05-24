@@ -30,7 +30,7 @@ class WindowMovieNew extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-movienew-title'), 800, InterfaceFactory.pickValue(430, 475), false);
+        super(ac, Global.ln.get('window-movienew-title'), 800, InterfaceFactory.pickValue(430, 520), false);
     }
 
     /**

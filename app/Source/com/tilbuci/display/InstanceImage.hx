@@ -792,6 +792,10 @@ class InstanceImage extends Sprite {
         return (this._imCurrent.getTime());
     }
 
+    public function getTotalTime():Int {
+        return (this._imCurrent.getTotalTime());
+    }
+
     /**
         Sets the media playback position.
         @param  time    the time to jump to (seconds)

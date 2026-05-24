@@ -1,0 +1,2 @@
+INSERT INTO `{PR}tilbuci_config` (`cf_key`, `cf_value`) VALUES ('dbVersion', '23') ON DUPLICATE KEY UPDATE `cf_value`=VALUES(`cf_value`);
+INSERT INTO `{PR}tilbuci_config` (`cf_key`, `cf_value`) VALUES ('shareMode', 'never') ON DUPLICATE KEY UPDATE `cf_value`=VALUES(`cf_value`);

@@ -49,7 +49,7 @@ class WindowNotes extends PopupWindow {
     public function new(ac:Dynamic) {
 
         // creating window
-        super(ac, Global.ln.get('window-notes-title'), 1000, InterfaceFactory.pickValue(570, 600), true, true);
+        super(ac, Global.ln.get('window-notes-title'), 1000, InterfaceFactory.pickValue(570, 630), true, true);
 
         // movie gudelines
         this.addForm(Global.ln.get('window-notes-movie'), this.ui.forge('guidelines', [

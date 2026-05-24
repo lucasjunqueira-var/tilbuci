@@ -131,6 +131,55 @@ class WindowContrInterf extends PopupWindow {
             { tp: 'Button', id: 'txset', tx: Global.ln.get('window-contrinterf-setbutton'), ac: setElement },
         ]);
 
+        // playback
+        this.ui.createHContainer('playgr');
+        this.ui.createTInput('playgr', '', '', this.ui.hcontainers['playgr'], false);
+        this.ui.createIconButton('playgr', this.acPlaygr, new Bitmap(Assets.getBitmapData('btOpenfile')), this.ui.hcontainers['playgr'], false);
+        this.ui.createIconButton('playgrdel', this.acPlaygrdel, new Bitmap(Assets.getBitmapData('btDel')), this.ui.hcontainers['playgr'], false);
+        this.ui.inputs['playgr'].enabled = false;
+        this.ui.hcontainers['playgr'].setWidth(450, [340, 50, 50]);
+        this.ui.createHContainer('pausegr');
+        this.ui.createTInput('pausegr', '', '', this.ui.hcontainers['pausegr'], false);
+        this.ui.createIconButton('pausegr', this.acPausegr, new Bitmap(Assets.getBitmapData('btOpenfile')), this.ui.hcontainers['pausegr'], false);
+        this.ui.createIconButton('pausegrdel', this.acPausegrdel, new Bitmap(Assets.getBitmapData('btDel')), this.ui.hcontainers['pausegr'], false);
+        this.ui.inputs['pausegr'].enabled = false;
+        this.ui.hcontainers['pausegr'].setWidth(450, [340, 50, 50]);
+        this.ui.createHContainer('playgrpos');
+        this.ui.createLabel('playgrposx', 'X', 'detail', this.ui.hcontainers['playgrpos']);
+        this.ui.createNumeric('playgrposx', -3840, 3840, 10, 0, this.ui.hcontainers['playgrpos']);
+        this.ui.createLabel('playgrposy', 'Y', 'detail', this.ui.hcontainers['playgrpos']);
+        this.ui.createNumeric('playgrposy', -3840, 3840, 10, 0, this.ui.hcontainers['playgrpos']);
+        this.ui.createHContainer('progressgr');
+        this.ui.createTInput('progressgr', '', '', this.ui.hcontainers['progressgr'], false);
+        this.ui.createIconButton('progressgr', this.acProgress, new Bitmap(Assets.getBitmapData('btOpenfile')), this.ui.hcontainers['progressgr'], false);
+        this.ui.createIconButton('progressgrdel', this.acProgressdel, new Bitmap(Assets.getBitmapData('btDel')), this.ui.hcontainers['progressgr'], false);
+        this.ui.inputs['progressgr'].enabled = false;
+        this.ui.hcontainers['progressgr'].setWidth(450, [340, 50, 50]);
+        this.ui.createHContainer('progressgrpos');
+        this.ui.createLabel('progressgrposx', 'X', 'detail', this.ui.hcontainers['progressgrpos']);
+        this.ui.createNumeric('progressgrposx', -3840, 3840, 10, 0, this.ui.hcontainers['progressgrpos']);
+        this.ui.createLabel('progressgrposy', 'Y', 'detail', this.ui.hcontainers['progressgrpos']);
+        this.ui.createNumeric('progressgrposy', -3840, 3840, 10, 0, this.ui.hcontainers['progressgrpos']);
+        this.ui.forge('playback', [
+            { tp: 'Label', id: 'playbackcon', tx: Global.ln.get('window-contrinterf-playbackcon'), vr: '' },
+            { tp: 'Label', id: 'playgr', tx: Global.ln.get('window-contrinterf-playgr'), vr: 'detail' },
+            { tp: 'Custom', cont: this.ui.hcontainers['playgr'] }, 
+            { tp: 'Label', id: 'pausegr', tx: Global.ln.get('window-contrinterf-pausegr'), vr: 'detail' },
+            { tp: 'Custom', cont: this.ui.hcontainers['pausegr'] }, 
+            { tp: 'Label', id: 'playgrpos', tx: Global.ln.get('window-contrinterf-playgrpos'), vr: 'detail' },
+            { tp: 'Custom', cont: this.ui.hcontainers['playgrpos'] }, 
+            { tp: 'Spacer', id: 'progressgr', ht: 10, ln: false }, 
+            { tp: 'Label', id: 'progressgr', tx: Global.ln.get('window-contrinterf-progressgr'), vr: 'detail' },
+            { tp: 'Custom', cont: this.ui.hcontainers['progressgr'] }, 
+            { tp: 'Label', id: 'progressgrpos', tx: Global.ln.get('window-contrinterf-progressgrpos'), vr: 'detail' },
+            { tp: 'Custom', cont: this.ui.hcontainers['progressgrpos'] }, 
+            //{ tp: 'Spacer', id: 'progresstx', ht: 10, ln: false }, 
+            //{ tp: 'Label', id: 'progresstx', tx: Global.ln.get('window-contrinterf-progresstx'), vr: 'detail' },
+            //{ tp: 'Toggle', id: 'progresstx', vl: false },
+            { tp: 'Spacer', id: 'playback', ht: 10, ln: false }, 
+            { tp: 'Button', id: 'playback', tx: Global.ln.get('window-contrinterf-setbutton'), ac: setElement },
+        ]);
+
         // button elements
         this.ui.createHContainer('formel');
         this.ui.createTInput('formel', '', '', this.ui.hcontainers['formel'], false);
@@ -250,6 +299,19 @@ class WindowContrInterf extends PopupWindow {
                 alpha: 100
             }
         });
+        list.push({
+            text: Global.ln.get('window-contrinterf-playback'), 
+            value: {
+                type: 'playback',
+                file: '',
+                action: '', 
+                x: 0, 
+                y: 0, 
+                options: '', 
+                rot: 0, 
+                alpha: 100
+            }
+        });
         this.ui.setListValues('elements', list);
         this.ui.setListSelectValue('elements', null);
     }
@@ -290,6 +352,7 @@ class WindowContrInterf extends PopupWindow {
                         case 'background': elname = Global.ln.get('window-contrinterf-namebg');
                         case 'spritemap': elname = Global.ln.get('window-contrinterf-nameanim');
                         case 'text': elname = Global.ln.get('window-contrinterf-nametx');
+                        case 'playback': elname = Global.ln.get('window-contrinterf-playback');
                         default: elname = Global.ln.get('window-contrinterf-namebutton');
                     }
                     list.push({ text: elname, value: el });
@@ -308,6 +371,12 @@ class WindowContrInterf extends PopupWindow {
         switch (ac) {
             case 'intbackground':
                 this.ui.inputs['background'].text = data['file'];
+            case 'intplaygr':
+                this.ui.inputs['playgr'].text = data['file'];
+            case 'intpausegr':
+                this.ui.inputs['pausegr'].text = data['file'];
+            case 'intprogress':
+                this.ui.inputs['progressgr'].text = data['file'];
             case 'intanim':
                 this.ui.inputs['spritemap'].text = data['file'];
                 this._lastframes = Std.parseInt(data['frames']);
@@ -374,6 +443,30 @@ class WindowContrInterf extends PopupWindow {
         this.ui.inputs['background'].text = '';
     }
 
+    private function acPlaygr(evt:Event):Void {
+        this._ac('intplaygr');
+    }
+
+    private function acPlaygrdel(evt:Event):Void {
+        this.ui.inputs['playgr'].text = '';
+    }
+
+    private function acPausegr(evt:Event):Void {
+        this._ac('intpausegr');
+    }
+
+    private function acPausegrdel(evt:Event):Void {
+        this.ui.inputs['pausegr'].text = '';
+    }
+
+    private function acProgress(evt:Event):Void {
+        this._ac('intprogress');
+    }
+
+    private function acProgressdel(evt:Event):Void {
+        this.ui.inputs['progressgr'].text = '';
+    }
+
     private function acBtsm(evt:Event):Void {
         this._ac('intanim');
     }
@@ -420,6 +513,32 @@ class WindowContrInterf extends PopupWindow {
         if (this.ui.lists['elements'].selectedItem != null) {
             this.ui.containers['rightcol'].removeChildren();
             switch (this.ui.lists['elements'].selectedItem.value.type) {
+                case 'playback':
+                    this.ui.containers['rightcol'].addChild(this.ui.containers['playback']);
+                    this.ui.labels['playbackcon'].width = this.ui.labels['playgrpos'].width = this.ui.labels['progressgrpos'].width = 450;
+                    this.ui.labels['playgr'].width = this.ui.labels['pausegr'].width = this.ui.labels['progressgr'].width = 450;
+                    //this.ui.labels['progresstx'].width = 450;
+                    this.ui.buttons['playback'].width = 450;
+                    this.ui.hcontainers['playgrpos'].setWidth(450, [ 60, 145, 60, 145 ]);
+                    this.ui.hcontainers['progressgrpos'].setWidth(450, [ 60, 145, 60, 145 ]);
+                    var plfile:Dynamic = { play: '', pause: '', progress: '' };
+                    if (this.ui.lists['elements'].selectedItem.value.file != '') {
+                        plfile = StringStatic.jsonParse(this.ui.lists['elements'].selectedItem.value.file);
+                        if (plfile == false) plfile = { play: '', pause: '', progress: '' };
+                    }
+                    var plopt:Dynamic = { btx: 0, bty: 0, prx: 0, pry: 0, txt: false };
+                    if (this.ui.lists['elements'].selectedItem.value.options != '') {
+                        plopt = StringStatic.jsonParse(this.ui.lists['elements'].selectedItem.value.options);
+                        if (plopt == false) plopt = { btx: 0, bty: 0, prx: 0, pry: 0, txt: false };
+                    }
+                    this.ui.inputs['playgr'].text = cast plfile.play;
+                    this.ui.inputs['pausegr'].text = cast plfile.pause;
+                    this.ui.inputs['progressgr'].text = cast plfile.progress;
+                    this.ui.numerics['playgrposx'].value = cast plopt.btx;
+                    this.ui.numerics['playgrposy'].value = cast plopt.bty;
+                    this.ui.numerics['progressgrposx'].value = cast plopt.prx;
+                    this.ui.numerics['progressgrposy'].value = cast plopt.pry;
+                    //this.ui.toggles['progresstx'].selected = cast plopt.txt;
                 case 'background':
                     this.ui.containers['rightcol'].addChild(this.ui.containers['background']);
                     this.ui.labels['backgroundset'].width = this.ui.buttons['backgroundset'].width = 450;
@@ -504,6 +623,7 @@ class WindowContrInterf extends PopupWindow {
                 case 'background': // nothing to do
                 case 'spritemap': // nothing to do
                 case 'text': // nothing to do
+                case 'playback': // nothing to do
                 default:
                     var list:Array<Dynamic> = [ ];
                     for (i in 0...this.ui.lists['elements'].dataProvider.length) {
@@ -522,6 +642,20 @@ class WindowContrInterf extends PopupWindow {
     private function setElement(evt:Event):Void {
         if (this.ui.lists['elements'].selectedItem != null) {
             switch (this.ui.lists['elements'].selectedItem.value.type) {
+                case 'playback':
+                    this.ui.lists['elements'].selectedItem.value.file = StringStatic.jsonStringify({
+                        play: this.ui.inputs['playgr'].text, 
+                        pause: this.ui.inputs['pausegr'].text, 
+                        progress: this.ui.inputs['progressgr'].text
+                    });
+                    this.ui.lists['elements'].selectedItem.value.options = StringStatic.jsonStringify({
+                        btx: this.ui.numerics['playgrposx'].value, 
+                        bty: this.ui.numerics['playgrposy'].value, 
+                        prx: this.ui.numerics['progressgrposx'].value, 
+                        pry: this.ui.numerics['progressgrposy'].value, 
+                        txt: false, //this.ui.toggles['progresstx'].selected
+                    });
+                    this.redrawElementsList();
                 case 'background':
                     this.ui.lists['elements'].selectedItem.value.file = this.ui.inputs['background'].text;
                     this.redrawElementsList();

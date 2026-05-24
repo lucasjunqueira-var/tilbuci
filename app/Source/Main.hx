@@ -39,9 +39,19 @@ class Main extends Sprite {
 	private var _movie:String = '';
 
 	/**
-		index scene
+		initial movie
 	**/
-	public static var scene:String = '';
+	public static var movie:String;
+
+	/**
+		initial scene
+	**/
+	public static var scene:String;
+
+	/**
+		initial snippet
+	**/
+	public static var snippet:String;
 
 	/**
 		initial string variables
@@ -94,11 +104,17 @@ class Main extends Sprite {
 		}
 
 		// index movie set?
+		Main.movie = '';
+		Main.scene = '';
+		Main.snippet = '';
 		if (Reflect.hasField(this.loaderInfo.parameters, 'movie')) {
 			this._movie = Reflect.field(this.loaderInfo.parameters, 'movie');
 		}
 		if (Reflect.hasField(this.loaderInfo.parameters, 'scene')) {
 			Main.scene = Reflect.field(this.loaderInfo.parameters, 'scene');
+		}
+		if (Reflect.hasField(this.loaderInfo.parameters, 'snippet')) {
+			Main.snippet = Reflect.field(this.loaderInfo.parameters, 'snippet');
 		}
 		// webservices url set?
 		if (Reflect.hasField(this.loaderInfo.parameters, 'ws')) {
@@ -228,6 +244,11 @@ class Main extends Application
 	public static var scene:String;
 
 	/**
+		initial snippet
+	**/
+	public static var snippet:String;
+
+	/**
 		initial user
 	**/
 	public static var us:String;
@@ -279,6 +300,7 @@ class Main extends Application
 		Main.mode = 'player';
 		Main.movie = '';
 		Main.scene = '';
+		Main.snippet = '';
 		if (Reflect.hasField(this.loaderInfo.parameters, 'mode')) {
 			if (Reflect.field(this.loaderInfo.parameters, 'mode') == 'editor') {
 				Main.mode = 'editor';
@@ -289,6 +311,9 @@ class Main extends Application
 			if (Reflect.hasField(this.loaderInfo.parameters, 'scene')) {
 				Main.scene = Reflect.field(this.loaderInfo.parameters, 'scene');
 			}
+		}
+		if (Reflect.hasField(this.loaderInfo.parameters, 'snippet')) {
+			Main.snippet = Reflect.field(this.loaderInfo.parameters, 'snippet');
 		}
 		if (Reflect.hasField(this.loaderInfo.parameters, 'decrypt')) {
 			DataLoader.customDecrypt = Reflect.field(this.loaderInfo.parameters, 'decrypt');

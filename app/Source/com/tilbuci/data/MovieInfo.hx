@@ -175,6 +175,12 @@ class MovieInfo {
                         this._scId = '';
                     }
                     this._actions['scene'](this.scLoaded);
+                    if (!GlobalPlayer.movie.preventHistory && (this._scId != '')) {
+                        GlobalPlayer.history.push(this._scId);
+                    } else {
+                        if (GlobalPlayer.history.length == 0) GlobalPlayer.history.push(this._scId);
+                    }
+                    GlobalPlayer.movie.preventHistory = false;
                     return (this.scLoaded);
                 } else {
                     var cache:Map<String, Dynamic> = null;
@@ -339,9 +345,12 @@ class MovieInfo {
     private function onSceneLoaded(ok:Bool, ld:DataLoader):Void {
         if (ok) {
             // record history?
-            if (!GlobalPlayer.movie.preventHistory && (this._scId != '')) GlobalPlayer.history.push(this._scId);
+            if (!GlobalPlayer.movie.preventHistory && (this._scId != '')) {
+                GlobalPlayer.history.push(this._scId);
+            } else {
+                if (GlobalPlayer.history.length == 0) GlobalPlayer.history.push(this._scId);
+            }
             GlobalPlayer.movie.preventHistory = false;
-
             // remove previous scene
             GlobalPlayer.movie.scene.clear();
 
@@ -399,9 +408,18 @@ class MovieInfo {
     **/
     private function onColLoad():Void {
         this._colLoad--;
+        // all scene collection avalible = scene loaded!
         if (this._colLoad <= 0) {
             this._colLoad = 0;
             this._actions['scene'](this.scLoaded);
+            // initial snippet to run?
+            if (Reflect.hasField(Main, 'snippet')) {
+                var str:String = cast Reflect.field(Main, 'snippet');
+                if (str != '') {
+                    GlobalPlayer.parser.run('{ "ac": "run", "param": [ "' + str + '" ] }');
+                }
+                Reflect.setField(Main, 'snippet', '');
+            }
         }
     }
 
