@@ -4,7 +4,7 @@ TilBuci is a free, open source tool to create interactive content. From a visual
 
 [![Welcome to TilBuci!](https://github.com/user-attachments/assets/631b6793-4fec-47ba-9d5e-438c43f2e32d)](https://www.youtube.com/watch?v=VjGJaG-YF_I)
 
-Quer tirar dúvidas e saber das novidades sobre o TilBuci? Porque não se juntar ao nosso sewrvidor no Discord em [discord.tilbuci.com.br](http://discord.tilbuci.com.br/)
+Want to chat about the software, ask questions, and find out about TilBuci news? Why not join our Discord server at [discord.tilbuci.com.br](http://discord.tilbuci.com.br/)
 
 [![discord](https://github.com/user-attachments/assets/5df8aa51-44b4-4206-92fd-f6e9dd375e18)](http://discord.tilbuci.com.br/)
 
