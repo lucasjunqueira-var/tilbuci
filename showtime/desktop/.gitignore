@@ -1,0 +1,36 @@
+# Node.js / npm / yarn
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build output
+/dist
+/build
+/out
+/release
+
+# Electron packaging
+/*.asar
+/*.asar.unpacked
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Env files (se contiverem segredos)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# Cache
+.cache/
+.tmp/
+
+# Showtime
+/config.xml
+tilbuci/movie/*
+!tilbuci/movie/movie.txt
