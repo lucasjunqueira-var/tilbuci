@@ -59,3 +59,27 @@ showtime/desktop/.tmp/
 showtime/desktop/config.xml
 showtime/desktop/tilbuci/movie/*
 !showtime/desktop/tilbuci/movie/movie.txt
+
+# Showtime android
+showtime/androidos/.gradle/
+showtime/androidos/.idea/
+showtime/androidos/.cxx/
+showtime/androidos/.externalNativeBuild/
+showtime/androidos/build/
+showtime/androidos/app/build/
+showtime/androidos/local.properties
+showtime/androidos/captures/
+showtime/androidos/.DS_Store
+showtime/androidos/Thumbs.db
+showtime/androidos/*.log
+showtime/androidos/.signing/
+showtime/androidos/.keystore
+showtime/androidos/*.jks
+showtime/androidos/*.keystore
+showtime/androidos/.env
+showtime/androidos/.env.local
+showtime/androidos/.env.*.local
+showtime/androidos/*.apk
+showtime/androidos/*.ap_
+showtime/androidos/*.aab
+showtime/androidos/.ndk/
