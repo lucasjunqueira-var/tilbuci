@@ -88,7 +88,7 @@ class InstanceImage extends Sprite {
     private var _multSize:Point;
 
     /**
-        image displauy description
+        image display description
     **/
     private var _desc:InstanceDesc;
 
@@ -156,6 +156,11 @@ class InstanceImage extends Sprite {
         instance selected?
     **/
     public var selected:Bool = false;
+
+    /**
+        alternative text for acessibility
+    **/
+    public var alttext:String = '';
 
     /**
         currently playing?
@@ -342,6 +347,7 @@ class InstanceImage extends Sprite {
                             this._collection = inf.collection;
                             this._asset = inf.asset;
                             this._imCurrent.stopTimer();
+                            this.alttext = inf.alttext;
                             return (true);
                         } else {
                             this.visible = false;
@@ -446,6 +452,7 @@ class InstanceImage extends Sprite {
         this._asset = null;
         this._changeAsset = null;
         this._onSelect = null;
+        this.alttext = null;
     }
 
     /**
@@ -1305,6 +1312,7 @@ class InstanceImage extends Sprite {
             case 'instance': return (this._name);
             case 'collection': return (this._collection);
             case 'asset': return (this._asset);
+            case 'alttext': return (this.alttext);
             default: return ('');
         }
     }

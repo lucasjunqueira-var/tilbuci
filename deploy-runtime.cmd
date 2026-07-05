@@ -45,7 +45,7 @@ if %errorlevel% equ 0 (
     echo error!
 )
 
-type Externs\browser.js Externs\embedcontent.js Externs\overlayplugin.js Externs\upload.js Externs\qrcode.js > Externs\externs.js
+type Externs\browser.js Externs\embedcontent.js Externs\overlayplugin.js Externs\upload.js Externs\qrcode.js Externs\accessibility.js > Externs\externs.js
 copy /Y Externs\externs.js %server%\..\desktop
 copy /Y Externs\externs.js %server%\..\mobile
 copy /Y Externs\externs.js %server%\..\site

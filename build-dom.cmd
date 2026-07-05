@@ -23,27 +23,16 @@ set CurrMinute=%CurrMinute:~-2%
 set buildtime=%CurrYear%%CurrMonth%%CurrDay%%CurrHour%%CurrMinute%
 powershell -Command "(gc Assets/build-base.json) -replace 'BNUM', %buildtime% | Out-File -encoding UTF8 Assets/build.json"
 powershell -Command "cp project-full.xml project.xml"
-echo TilBuci FULL deploy %buildtime%...
-openfl build html5 -D haxeJSON -nolaunch
-if %errorlevel% equ 0 (
-    copy %export%Tilbuci.js %server%TilBuci.js
-    type Externs\browser.js Externs\embedcontent.js Externs\overlayplugin.js Externs\upload.js Externs\qrcode.js Externs\accessibility.js > Externs\externs.js
-    copy /Y Externs\externs.js %server%
-    xcopy %assets%assets\*.* %server%assets\ /E/Y/Q
-    xcopy %export%lib\*.* %server%lib\ /E/Y/Q
-    echo TilBuci FULL ready!
-) else (
-    echo TilBuci FULL build error!
-)
-echo TilBuci DOM deploy %buildtime%...
+echo TilBuci DOM build %buildtime%...
 openfl build html5 -Ddom -D haxeJSON -D renderdom -nolaunch
 if %errorlevel% equ 0 (
-    copy %export%Tilbuci.js %server%TilBuci.js
+    copy %export%Tilbuci.js %server%TilBuci-dom.js
     type Externs\browser.js Externs\embedcontent.js Externs\overlayplugin.js Externs\upload.js Externs\qrcode.js Externs\accessibility.js > Externs\externs.js
     copy /Y Externs\externs.js %server%
     xcopy %assets%assets\*.* %server%assets\ /E/Y/Q
     xcopy %export%lib\*.* %server%lib\ /E/Y/Q
-    echo TilBuci DOM ready!
+    start "" "http://tilbuci/app/?md=editor&cch=true"
+    echo TilBuci started!
 ) else (
-    echo TilBuci DOM build error!
+    echo TilBuci build error!
 )

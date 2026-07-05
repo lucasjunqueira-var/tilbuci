@@ -80,6 +80,11 @@ class Global {
     public static var host:String = '';
 
     /**
+        Showtime access key.
+    **/
+    public static var stAKey:String = '';
+
+    /**
         available fonts
     **/
     public static var fonts:Array<String> = [ ];

@@ -64,6 +64,11 @@ class InstanceData {
     public var vertical:InstanceDesc;
 
     /**
+        alternative text for acessibility
+    **/
+    public var alttext:String = '';
+
+    /**
         Constructor.
         @param  data    information about the instance
     **/
@@ -111,6 +116,9 @@ class InstanceData {
         if (this.ok && Reflect.hasField(data, 'focus')) {
             this.focus = Reflect.field(data, 'focus');
         } else this.focus = true;
+        if (this.ok && Reflect.hasField(data, 'alttext')) {
+            this.alttext = Reflect.field(data, 'alttext');
+        } else this.alttext = '';
     }
 
     /**
@@ -128,6 +136,7 @@ class InstanceData {
         this.vertical = null;
         for (k in this.timedAc.keys()) this.timedAc.remove(k);
         this.timedAc = null;
+        this.alttext = null;
     }
 
     /**
@@ -145,7 +154,8 @@ class InstanceData {
             play: this.playOnLoad, 
             focus: this.focus, 
             horizontal: this.horizontal.toObject(), 
-            vertical: this.vertical.toObject()
+            vertical: this.vertical.toObject(), 
+            alttext: this.alttext
         });
     }
 

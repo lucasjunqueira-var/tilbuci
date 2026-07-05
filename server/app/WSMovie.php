@@ -73,6 +73,24 @@ class WSMovie extends Webservice
 				case 'Movie/SetFPS':
 					$this->setFPS();
 					break;
+				case 'Movie/SetShowtime':
+					$this->setShowtime();
+					break;
+				case 'Movie/ShowtimeList':
+					$this->getShowtimeList();
+					break;
+				case 'Movie/ShowtimeInst':
+					$this->getShowtimeInst();
+					break;
+				case 'Movie/ShowtimeConf':
+					$this->setShowtimeConf();
+					break;
+				case 'Movie/ShowtimeRemove':
+					$this->setShowtimeRemove();
+					break;
+				case 'Movie/ShowtimeUpload':
+					$this->setShowtimeUpload();
+					break;
                 case 'Movie/Export':
 					$this->export();
 					break;
@@ -295,6 +313,118 @@ class WSMovie extends Webservice
 			'current' => $mv->getCurrentIndex(), 
 		]);
 	}
+
+	/**
+	 * Gets a list of connected showtime instances.
+	 */
+	private function getShowtimeList() {
+		$list = [ ];
+		$ck = $this->queryAll('SELECT `st_name` FROM `' . $this->data->conf['databasePrefix'] . 'showtime` GROUP BY `st_name` ORDER BY `st_when` DESC');
+		foreach ($ck as $v) $list[] = $v['st_name'];
+		$this->returnRequest([
+			'e' => 0,
+			'list' => $list, 
+		]);
+	}
+
+	/**
+	 * Gets information about a showtime instance.
+	 */
+	private function getShowtimeInst() {
+		if ($this->requiredFields(['name'])) {
+			$last = [ ];
+			$movies = [ ];
+			$type = '';
+			$config = [ ];
+			$ck = $this->queryAll('SELECT * FROM `' . $this->data->conf['databasePrefix'] . 'showtime` WHERE `st_name`=:nm ORDER BY `st_when` DESC LIMIT 1', [
+				':nm' => $this->req['name'],
+			]);
+			if (count($ck) > 0) {
+				$type = $ck[0]['st_type'];
+				if ($ck[0]['st_movies'] != '') $movies = explode(',', $ck[0]['st_movies']);
+				$config = json_decode($ck[0]['st_config'], true);
+				if (json_last_error() != JSON_ERROR_NONE) $config = [ ];
+			}
+			$ck = $this->queryAll('SELECT st_when FROM `' . $this->data->conf['databasePrefix'] . 'showtime` WHERE `st_name`=:nm ORDER BY `st_when` DESC LIMIT 250', [
+				':nm' => $this->req['name'],
+			]);
+			foreach ($ck as $v) {
+				$last[] = $v['st_when'];
+			}
+			$ck = $this->queryAll('SELECT `mv_id`, `mv_title` FROM `' . $this->data->conf['databasePrefix'] . 'movies` ORDER BY `mv_title` ASC');
+			$available = [ ];
+			foreach ($ck as $v) $available[] = [
+				'id' => $v['mv_id'], 
+				'title' => $v['mv_title'], 
+			];
+			$this->returnRequest([
+				'e' => 0,
+				'last' => $last, 
+				'type' => $type, 
+				'movies' => $movies, 
+				'config' => $config, 
+				'available' => $available, 
+			]);
+		}
+	}
+
+	/**
+	 * Sets a showtime application configuration.
+	 */
+	private function setShowtimeConf() {
+		if ($this->requiredFields(['name', 'movie', 'accesskey', 'identifier', 'autoStart', 'hideCursor'])) {
+			$this->execute('DELETE FROM `' . $this->data->conf['databasePrefix'] . 'showtimeevt` WHERE `se_name`=:nm AND `se_type`=:tp', [
+				':nm'  => $this->req['name'], 
+				':tp'  => 'config', 
+			]);
+			$this->execute('INSERT INTO `' . $this->data->conf['databasePrefix'] . 'showtimeevt` (`se_name`, `se_type`, `se_data`) VALUES (:nm, :tp, :dt)', [
+				':nm'  => $this->req['name'], 
+				':tp'  => 'config', 
+				':dt' => json_encode([
+					'movie' => $this->req['movie'], 
+					'accesskey' => $this->req['accesskey'], 
+					'identifier' => $this->req['identifier'], 
+					'autoStart' => $this->req['autoStart'], 
+					'hideCursor' => $this->req['hideCursor']
+				]), 
+			]);
+			$this->returnRequest(['e' => 0]);
+		}
+	}
+
+	/**
+	 * Sets a movie removal on a showtime application.
+	 */
+	private function setShowtimeRemove() {
+		if ($this->requiredFields(['name', 'movie'])) {
+			$this->execute('INSERT INTO `' . $this->data->conf['databasePrefix'] . 'showtimeevt` (`se_name`, `se_type`, `se_data`) VALUES (:nm, :tp, :dt)', [
+				':nm'  => $this->req['name'], 
+				':tp'  => 'remove', 
+				':dt' => $this->req['movie'], 
+			]);
+			$this->returnRequest(['e' => 0]);
+		}
+	}
+
+	/**
+	 * Sets a movie upload to a showtime application.
+	 */
+	private function setShowtimeUpload() {
+		if ($this->requiredFields(['name', 'movie'])) {
+			$mv = new Movie;
+            $exp = $mv->export($this->user, $this->req['movie'], true);
+			if ($exp === false) {
+				$this->returnRequest(['e' => 1]);
+			} else {
+				$this->execute('INSERT INTO `' . $this->data->conf['databasePrefix'] . 'showtimeevt` (`se_name`, `se_type`, `se_data`) VALUES (:nm, :tp, :dt)', [
+					':nm'  => $this->req['name'], 
+					':tp'  => 'upload', 
+					':dt' => $this->req['movie'], 
+				]);
+				$this->returnRequest(['e' => 0]);
+			}
+		}
+	}
 	
 	/**
 	 * Sets the index movie.
@@ -337,6 +467,25 @@ class WSMovie extends Webservice
 		if ($this->requiredFields(['fps'])) {
 			$mv = new Movie;
 			$this->returnRequest([ 'e' => $mv->setFPS($this->user, $this->req['fps']) ]);
+		}
+	}
+
+	/**
+	 * Sets the Showtime configuration.
+	 */
+	private function setShowtime() {
+		// required fields received?
+		if ($this->requiredFields(['stType'])) {
+			switch ($this->req['stType']) {
+				case 'accesskey':
+					if (isset($this->req['accesskey'])) {
+						$this->setConfig('stAKey', $this->req['accesskey']);
+						$this->returnRequest([ 'e' => 0 ]);
+					} else {
+						$this->returnRequest([ 'e' => 1 ]);
+					}
+					break;
+			}
 		}
 	}
     

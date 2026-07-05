@@ -54,6 +54,8 @@ class MediaPanel extends DropDownPanel {
             { tp: 'Toggle', id: 'playonload', vl: true }, 
             { tp: 'Label', id: 'focus', tx: Global.ln.get('rightbar-media-focus'), vr: '' }, 
             { tp: 'Toggle', id: 'focus', vl: true }, 
+            { tp: 'Label', id: 'alt', tx: Global.ln.get('rightbar-media-alt'), vr: '' }, 
+            { tp: 'TInput', id: 'alt', tx: '', vr: '' }, 
             { tp: 'Spacer', id: 'update', ht: 5 }, 
             { tp: 'Button', id: 'update', tx: Global.ln.get('rightbar-media-update'), ac: onUpdate }, 
             { tp: 'Spacer', id: 'cache', ht: 10 }, 
@@ -103,6 +105,7 @@ class MediaPanel extends DropDownPanel {
             this.ui.inputs['name'].text = this._current.getCurrentStr('instance');
             this.ui.toggles['playonload'].selected = GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].playOnLoad;
             this.ui.toggles['focus'].selected = GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].focus;
+            this.ui.inputs['alt'].text = this._current.getCurrentStr('alttext');
             this.ui.containers['properties'].enabled = true;
         }
     }
@@ -112,6 +115,7 @@ class MediaPanel extends DropDownPanel {
         this.ui.setSelectOptions('collection', [ ]);
         this.ui.setSelectOptions('asset', [ ]);
         this.ui.inputs['name'].text = '';
+        this.ui.inputs['alt'].text = '';
         this.ui.toggles['playonload'].selected = true;
         this.ui.toggles['focus'].selected = true;
         this._current = null;
@@ -163,8 +167,21 @@ class MediaPanel extends DropDownPanel {
                 if ((GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].collection != this.ui.selects['collection'].selectedItem.value) || (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].asset != this.ui.selects['asset'].selectedItem.value)) {
                     GlobalPlayer.area.setCurrentStr('asset', (this.ui.selects['collection'].selectedItem.value + '|:|' + this.ui.selects['asset'].selectedItem.value));
                 }
-                Global.history.addState(Global.ln.get('rightbar-history-instance'));
                 GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].focus = this.ui.toggles['focus'].selected;
+                GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].alttext = this.ui.inputs['alt'].text;
+                this._current.alttext = this.ui.inputs['alt'].text;
+                Global.history.addState(Global.ln.get('rightbar-history-instance'));
+            } else if (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].alttext != this.ui.inputs['alt'].text) {
+                GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].alttext = this.ui.inputs['alt'].text;
+                this._current.alttext = this.ui.inputs['alt'].text;
+                GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].focus = this.ui.toggles['focus'].selected;
+                if (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf].exists(this.ui.inputs['name'].text)) {
+                    GlobalPlayer.area.setCurrentStr('instance', this.ui.inputs['name'].text);
+                }
+                if ((GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].collection != this.ui.selects['collection'].selectedItem.value) || (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].asset != this.ui.selects['asset'].selectedItem.value)) {
+                    GlobalPlayer.area.setCurrentStr('asset', (this.ui.selects['collection'].selectedItem.value + '|:|' + this.ui.selects['asset'].selectedItem.value));
+                }
+                Global.history.addState(Global.ln.get('rightbar-history-instance'));
             } else if (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].focus != this.ui.toggles['focus'].selected) {
                 GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this._current.getInstName()].focus = this.ui.toggles['focus'].selected;
                 if (GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf].exists(this.ui.inputs['name'].text)) {
