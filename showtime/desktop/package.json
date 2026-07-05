@@ -1,0 +1,52 @@
+{
+  "name": "desktop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --x64 --arm64",
+    "build:win": "electron-builder --win --x64 --arm64",
+    "build:mac": "electron-builder --mac --x64 --arm64",
+    "build:linux": "electron-builder --linux --x64 --arm64"
+  },
+  "build": {
+    "appId": "com.tilbuci.showtime",
+    "productName": "TilBuci Showtime",
+    "asar": false,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!config.json",
+      "!tilbuci/index.html",
+      "!tilbuci/movie/**/*"
+    ],
+    "win": {
+      "target": "dir",
+      "icon": "images/tilbuciIcon.ico"
+    },
+    "mac": {
+      "target": "dir",
+      "icon": "images/tilbuciIcon.icns"
+    },
+    "linux": {
+      "target": "dir",
+      "icon": "images/tilbuciIcon.png"
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "adm-zip": "^0.5.10",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^26.15.3"
+  }
+}

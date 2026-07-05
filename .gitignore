@@ -36,3 +36,26 @@ portable-app/phpwindows.exe
 portable-app/package-lock.json
 portable-app/out/
 portable-app/node_modules/
+
+# Showtime desktop
+showtime/desktop/node_modules/
+showtime/desktop/npm-debug.log*
+showtime/desktop/yarn-debug.log*
+showtime/desktop/yarn-error.log*
+showtime/desktop/dist/
+showtime/desktop/build/
+showtime/desktop/out/
+showtime/desktop/release/
+showtime/desktop/*.asar
+showtime/desktop/*.asar.unpacked
+showtime/desktop/.DS_Store
+showtime/desktop/Thumbs.db
+showtime/desktop/.env
+showtime/desktop/.env.local
+showtime/desktop/.env.*.local
+showtime/desktop/*.log
+showtime/desktop/.cache/
+showtime/desktop/.tmp/
+showtime/desktop/config.xml
+showtime/desktop/tilbuci/movie/*
+!showtime/desktop/tilbuci/movie/movie.txt
