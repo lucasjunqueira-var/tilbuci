@@ -372,7 +372,7 @@ class WSMovie extends Webservice
 	 * Sets a showtime application configuration.
 	 */
 	private function setShowtimeConf() {
-		if ($this->requiredFields(['name', 'movie', 'accesskey', 'identifier', 'autoStart', 'hideCursor'])) {
+		if ($this->requiredFields(['name', 'movie', 'accesskey', 'identifier', 'autoStart', 'hideCursor', 'serialPort', 'serialBaud'])) {
 			$this->execute('DELETE FROM `' . $this->data->conf['databasePrefix'] . 'showtimeevt` WHERE `se_name`=:nm AND `se_type`=:tp', [
 				':nm'  => $this->req['name'], 
 				':tp'  => 'config', 
@@ -385,7 +385,9 @@ class WSMovie extends Webservice
 					'accesskey' => $this->req['accesskey'], 
 					'identifier' => $this->req['identifier'], 
 					'autoStart' => $this->req['autoStart'], 
-					'hideCursor' => $this->req['hideCursor']
+					'hideCursor' => $this->req['hideCursor'], 
+					'serialPort' => $this->req['serialPort'], 
+					'serialBaud' => $this->req['serialBaud']
 				]), 
 			]);
 			$this->returnRequest(['e' => 0]);

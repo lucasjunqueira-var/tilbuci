@@ -12,14 +12,17 @@ const cors = require('cors');
 const multer = require('multer');
 const AdmZip = require('adm-zip');
 const crypto = require('crypto');
+const { SerialPort } = require('serialport');
+const { ReadlineParser } = require('@serialport/parser-readline');
 
 let mainWindow;
 let server;
+let activeSerialPort = null;
 let appConfig = {
     movie: "",
     ws: "",
     wsKey: "",
-    accesskey: "ABCDA",
+    accesskey: "AAAAA",
     identifier: "",
     autoStart: false,
     hideCursor: false,
@@ -35,6 +38,7 @@ const moviesDir = path.join(tilbuciDir, 'movie');
 const ENCRYPTION_KEY = crypto.scryptSync('tilbuci-showtime-secret-key-2023', 'salt', 32);
 const IV_LENGTH = 16;
 
+// Encrypt text securely using aes-256-cbc and a pre-defined key
 function encrypt(text) {
     if (!text) return text;
     if (text.includes(':') && text.split(':')[0].length === 32) return text; // Already encrypted
@@ -49,6 +53,7 @@ function encrypt(text) {
     }
 }
 
+// Decrypt aes-256-cbc encrypted string using a pre-defined key
 function decrypt(text) {
     if (!text || !text.includes(':')) return text;
     try {
@@ -77,6 +82,41 @@ if (fs.existsSync(configPath)) {
     saveConfig();
 }
 
+// Set up the serial port connection using the configuration settings
+function setupSerialPort() {
+    if (activeSerialPort) {
+        if (activeSerialPort.isOpen) activeSerialPort.close();
+        activeSerialPort = null;
+    }
+    
+    if (appConfig.serialPort && appConfig.serialBaud) {
+        try {
+            activeSerialPort = new SerialPort({
+                path: appConfig.serialPort,
+                baudRate: parseInt(appConfig.serialBaud)
+            });
+            
+            const parser = activeSerialPort.pipe(new ReadlineParser({ delimiter: '\n' }));
+            parser.on('data', (data) => {
+                const text = data.trim();
+                if (mainWindow && !mainWindow.isDestroyed()) {
+                    try {
+                        const jsonStr = JSON.stringify(text); // Escape string properly for eval
+                        mainWindow.webContents.executeJavaScript(`if(typeof tilbuci_runaction === 'function') tilbuci_runaction(${jsonStr});`);
+                    } catch(e) {}
+                }
+            });
+            
+            activeSerialPort.on('error', function(err) {
+                console.error("Serial port error:", err.message);
+            });
+            
+        } catch (e) {
+            console.error("Failed to initialize serial port:", e.message);
+        }
+    }
+}
+
 if (!appConfig.identifier) {
     const now = new Date();
     const pad = n => n.toString().padStart(2, '0');
@@ -90,6 +130,7 @@ if (!appConfig.identifier) {
     saveConfig();
 }
 
+// Save the application configuration settings to disk
 function saveConfig() {
     let saveAppConfig = { ...appConfig };
     delete saveAppConfig.lastError;
@@ -97,10 +138,12 @@ function saveConfig() {
     fs.writeFileSync(configPath, JSON.stringify(saveAppConfig));
 }
 
+// Calculate and return the MD5 hash of a given string
 function md5(str) {
     return crypto.createHash('md5').update(str).digest('hex').toLowerCase();
 }
 
+// Ping the configured remote server and process synchronization tasks
 async function pingServer() {
     if (!appConfig.ws || !appConfig.wsKey || appConfig.wsKey.length < 5) {
         appConfig.lastError = null;
@@ -182,6 +225,14 @@ async function pingServer() {
                 appConfig.hideCursor = !!data.conf.hideCursor;
                 changed = true;
             }
+            if (data.conf.serialPort !== undefined && data.conf.serialPort !== appConfig.serialPort) {
+                appConfig.serialPort = data.conf.serialPort;
+                changed = true;
+            }
+            if (data.conf.serialBaud !== undefined && data.conf.serialBaud !== appConfig.serialBaud) {
+                appConfig.serialBaud = data.conf.serialBaud;
+                changed = true;
+            }
             
             if (changed) {
                 saveConfig();
@@ -246,6 +297,7 @@ async function pingServer() {
     }
 }
 
+// Send a CLEARREMOVE REST signal to the remote server
 async function clearRemoveServer(movieName) {
     if (!appConfig.ws || !appConfig.wsKey || appConfig.wsKey.length < 5) return;
     
@@ -279,6 +331,7 @@ async function clearRemoveServer(movieName) {
     }
 }
 
+// Send a CLEARUPLOAD REST signal to the remote server
 async function clearUploadServer(movieName) {
     if (!appConfig.ws || !appConfig.wsKey || appConfig.wsKey.length < 5) return;
     
@@ -312,6 +365,7 @@ async function clearUploadServer(movieName) {
     }
 }
 
+// Send a CLEARCONF REST signal to the remote server
 async function clearConfServer() {
     if (!appConfig.ws || !appConfig.wsKey || appConfig.wsKey.length < 5) return;
     
@@ -346,6 +400,7 @@ async function clearConfServer() {
     }
 }
 
+// Generate index.html dynamically by replacing placeholders in tilbuci.html
 function generateIndexHtml() {
     const templatePath = path.join(tilbuciDir, 'tilbuci.html');
     const indexPath = path.join(tilbuciDir, 'index.html');
@@ -355,9 +410,23 @@ function generateIndexHtml() {
         content = content.replace(/\[MOVIE\]/g, appConfig.movie || '');
         content = content.replace(/\[WS\]/g, appConfig.ws || '');
         
-        // Inject ABCD areas
+        // Inject ABCD areas and TBShowtime_Event
         const injectScript = `
         <script>
+            function TBShowtime_Event(movie, eventName, jsonStr) {
+                fetch('http://localhost:8080/api/event', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ movie: movie, event: eventName, json: jsonStr })
+                });
+            }
+            function TBShowtime_Hardware(msg) {
+                fetch('http://localhost:8080/api/hardware', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+            }
             let access = "";
             let accesskey = "${appConfig.accesskey}";
             function addAccess(char) {
@@ -387,15 +456,34 @@ function generateIndexHtml() {
     }
 }
 
+// Initialize and configure the local Express server
 function startServer() {
     const expressApp = express();
     expressApp.use(cors());
     expressApp.use(express.json());
     
     // Serve tilbuci content at root
-    expressApp.use('/', express.static(tilbuciDir));
+    expressApp.use('/', express.static(tilbuciDir, {
+        etag: false,
+        maxAge: 0,
+        setHeaders: function (res, path) {
+            res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+            res.setHeader("Pragma", "no-cache");
+            res.setHeader("Expires", "0");
+            res.setHeader("Surrogate-Control", "no-store");
+        }
+    }));
     // Serve config at /config
-    expressApp.use('/config', express.static(path.join(__dirname, 'config')));
+    expressApp.use('/config', express.static(path.join(__dirname, 'config'), {
+        etag: false,
+        maxAge: 0,
+        setHeaders: function (res, path) {
+            res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+            res.setHeader("Pragma", "no-cache");
+            res.setHeader("Expires", "0");
+            res.setHeader("Surrogate-Control", "no-store");
+        }
+    }));
 
     const upload = multer({ dest: path.join(__dirname, 'temp') });
 
@@ -411,6 +499,8 @@ function startServer() {
         appConfig.identifier = req.body.identifier !== undefined ? req.body.identifier : appConfig.identifier;
         appConfig.autoStart = req.body.autoStart !== undefined ? req.body.autoStart : appConfig.autoStart;
         appConfig.hideCursor = req.body.hideCursor !== undefined ? req.body.hideCursor : appConfig.hideCursor;
+        appConfig.serialPort = req.body.serialPort !== undefined ? req.body.serialPort : appConfig.serialPort;
+        appConfig.serialBaud = req.body.serialBaud !== undefined ? req.body.serialBaud : appConfig.serialBaud;
         
         app.setLoginItemSettings({
             openAtLogin: appConfig.autoStart,
@@ -419,6 +509,7 @@ function startServer() {
 
         saveConfig();
         generateIndexHtml();
+        setupSerialPort();
         
         pingServer();
         if (pingInterval) clearInterval(pingInterval);
@@ -471,13 +562,58 @@ function startServer() {
         res.json({ success: true });
     });
 
+    expressApp.get('/api/serialports', async (req, res) => {
+        try {
+            const { SerialPort } = require('serialport');
+            const ports = await SerialPort.list();
+            res.json(ports.map(p => p.path));
+        } catch (e) {
+            console.error("Error listing serial ports:", e);
+            res.json([]);
+        }
+    });
+
+    expressApp.post('/api/event', (req, res) => {
+        const { movie, event, json } = req.body;
+        if (movie && event && json) {
+            try {
+                const docsDir = app.getPath('documents');
+                const tbDir = path.join(docsDir, 'TBShowtime');
+                if (!fs.existsSync(tbDir)) fs.mkdirSync(tbDir, { recursive: true });
+                
+                const movieDir = path.join(tbDir, movie);
+                if (!fs.existsSync(movieDir)) fs.mkdirSync(movieDir, { recursive: true });
+                
+                const now = new Date();
+                const pad = n => n.toString().padStart(2, '0');
+                const dateStr = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+                
+                const filePath = path.join(movieDir, `${event}-${dateStr}.json`);
+                fs.writeFileSync(filePath, json, 'utf8');
+            } catch (e) {
+                console.error("Error saving event:", e);
+            }
+        }
+        res.json({ success: true });
+    });
+
+    expressApp.post('/api/hardware', (req, res) => {
+        const { message } = req.body;
+        if (activeSerialPort && activeSerialPort.isOpen) {
+            activeSerialPort.write(message + '\n');
+        }
+        res.json({ success: true });
+    });
+
     server = expressApp.listen(8080, () => {
         // Server started silently
     });
 }
 
+// Create and initialize the main Electron window
 function createWindow() {
     generateIndexHtml();
+    setupSerialPort();
     startServer();
     
     pingServer();
@@ -530,11 +666,13 @@ function createWindow() {
     }
 
     mainWindow.once('ready-to-show', () => {
-        if (initialKiosk) {
-            mainWindow.show();
-            mainWindow.setAlwaysOnTop(true, 'screen-saver');
-            mainWindow.focus();
-        }
+        mainWindow.webContents.session.clearCache().then(() => {
+            if (initialKiosk) {
+                mainWindow.show();
+                mainWindow.setAlwaysOnTop(true, 'screen-saver');
+                mainWindow.focus();
+            }
+        });
     });
 
     mainWindow.on('closed', function () {

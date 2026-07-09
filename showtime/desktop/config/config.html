@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<!--
+ This Source Code Form is subject to the terms of the Mozilla Public
+ License, v. 2.0. If a copy of the MPL was not distributed with this
+ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -14,7 +19,7 @@
         label { display: block; margin-bottom: 8px; font-weight: 500; color: #ccc; }
         input[type="text"], input[type="password"], select { width: 100%; padding: 12px; margin-bottom: 15px; box-sizing: border-box; background: #222; border: 1px solid #444; color: #fff; border-radius: 6px; transition: border-color 0.3s; outline: none; font-size: 14px; }
         input[type="text"]:focus, input[type="password"]:focus, select:focus { border-color: #f39c12; }
-        button, .file-upload-btn { display: inline-block; padding: 12px 20px; background: linear-gradient(135deg, #e67e22, #d35400); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: opacity 0.3s, transform 0.1s; text-align: center; }
+        button, .file-upload-btn { display: inline-block; padding: 12px 20px; background: linear-gradient(135deg, #e67e22, #d35400); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: opacity 0.3s, transform 0.1s; text-align: center; width: 100%;}
         button:hover, .file-upload-btn:hover { opacity: 0.9; }
         button:active, .file-upload-btn:active { transform: translateY(1px); }
         .btn-danger { background: linear-gradient(135deg, #c0392b, #a53125); }
@@ -23,7 +28,7 @@
         .credits a:hover { text-decoration: underline; }
         
         /* Custom File Input */
-        .file-upload-wrapper { position: relative; overflow: hidden; display: inline-block; margin-right: 10px; }
+        .file-upload-wrapper { position: relative; overflow: hidden; display: block; margin-right: 10px; }
         .file-upload-wrapper input[type="file"] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
         #fileNameDisplay { display: inline-block; margin-left: 10px; font-style: italic; color: #aaa; font-size: 14px; }
         
@@ -48,7 +53,7 @@
     <div class="container">
         <h1>
             <img id="tblogo" src="cfassets/tilbuciIcon.png" />
-            TilBuci Showtime Configuration
+            TilBuci Showtime Configuration (v24)
         </h1>
         
         <div class="section">
@@ -65,7 +70,7 @@
         <div class="section">
             <h2>Upload New Movie</h2>
             <p>Export your movies from the TilBuci exchange menu and import the generated ZIP files using the buttons below.</p>
-            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+            <div style="align-items: center; margin-bottom: 15px;">
                 <div class="file-upload-wrapper">
                     <button type="button" class="file-upload-btn">Choose ZIP File</button>
                     <input type="file" id="zipFile" accept=".zip" onchange="document.getElementById('fileNameDisplay').textContent = this.files.length ? this.files[0].name : 'No file chosen'">
@@ -127,6 +132,28 @@
         </div>
 
         <div class="section">
+            <h2>Hardware Connection</h2>
+            <p>Select the serial port and baud rate to communicate with an external Arduino*-compatible board (via USB or Bluetooth SPP).</p>
+            <label>Serial Port:</label>
+            <div class="custom-select-wrapper" id="serialPortSelectWrapper">
+                <select id="serialPortSelect">
+                    <option value="">-- No port selected --</option>
+                </select>
+            </div>
+            <label>Baud Rate (bps):</label>
+            <div class="custom-select-wrapper" id="serialBaudSelectWrapper">
+                <select id="serialBaudSelect">
+                    <option value="9600">9600</option>
+                    <option value="19200">19200</option>
+                    <option value="38400">38400</option>
+                    <option value="57600">57600</option>
+                    <option value="115200">115200</option>
+                </select>
+            </div>
+            <button onclick="saveSettings()">Save Hardware Settings</button>
+        </div>
+
+        <div class="section">
             <h2>Startup</h2>
             <label class="checkbox-label">
                 <input type="checkbox" id="autoStartInput">
@@ -137,12 +164,15 @@
 
         <div class="section">
             <button onclick="goToApp()">Back to Player</button>
+            <br />&nbsp;<br />
             <button class="btn-danger" onclick="window.close()">Exit Application</button>
         </div>
         
         <div class="credits">
-            TilBuci Showtime is an application created using Electron technology (<a href="https://electronjs.org" target="_blank">electronjs.org</a>). Our sincerest thanks to the development team behind this amazing tool. 
-            TilBuci is a free tool, licensed under MPL-2.0, focused on creating interactive digital content. To learn more about the project, visit <a href="https://tilbuci.com.br" target="_blank">tilbuci.com.br</a>.
+            TilBuci Showtime is an application created using Electron technology (electronjs.org). Our sincerest thanks to the development team behind this amazing tool. 
+            TilBuci is a free tool, licensed under MPL-2.0, focused on creating interactive digital content. To learn more about the project, visit tilbuci.com.br.
+            <br />&nbsp;<br />
+            * Arduino is a registered trademark of Arduino AG. The name "Arduino" is used here solely for reference purposes to describe compatibility with the Arduino platform. This project is not affiliated with or endorsed by Arduino AG.
         </div>
     </div>
 

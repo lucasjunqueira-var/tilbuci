@@ -47,7 +47,7 @@
 			if (vars == null) vars = "";
 			let snippet = params.get("sn");
 			if (snippet == null) snippet = "";
-            lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "mode": "player", "movie": "", "scene": "", "vars":vars, "snippet":snippet, "ws": "http://tilbuci/" , "fonts": [["Averia Serif GWF","./assetsrt/averiaserifgwf.woff2"], ["Liberation Serif","./assetsrt/liberationserif.woff2"], ["Libra Sans","./assetsrt/librasans.woff2"], ["Roboto Sans","./assetsrt/roboto.woff2"]] } });
+            lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "mode": "player", "movie": "showtime", "scene": "", "vars":vars, "snippet":snippet, "ws": "http://tilbuci/" , "fonts": [["Averia Serif GWF","./assetsrt/averiaserifgwf.woff2"], ["Liberation Serif","./assetsrt/liberationserif.woff2"], ["Libra Sans","./assetsrt/librasans.woff2"], ["Roboto Sans","./assetsrt/roboto.woff2"]] } });
         </script>
 
 <!-- body end overlay -->
@@ -55,6 +55,20 @@
     </div>
 
         <script>
+            function TBShowtime_Event(movie, eventName, jsonStr) {
+                fetch('http://localhost:8080/api/event', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ movie: movie, event: eventName, json: jsonStr })
+                });
+            }
+            function TBShowtime_Hardware(msg) {
+                fetch('http://localhost:8080/api/hardware', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+            }
             let access = "";
             let accesskey = "AAAAA";
             function addAccess(char) {

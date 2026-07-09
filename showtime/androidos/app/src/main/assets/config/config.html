@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -50,9 +55,9 @@
     <div class="container">
         <h1>
             <img id="tblogo" src="cfassets/tilbuciIcon.png" />
-            TilBuci Showtime Configuration
+            TilBuci Showtime Configuration (v24)
         </h1>
-        
+
         <div class="section">
             <h2>Select Initial Movie</h2>
             <p>The content will start playing using the movie indicated below. While no movie is selected, the Showtime application will start displaying this configuration screen.</p>
@@ -119,7 +124,27 @@
             <button onclick="saveSettings()">Save Access Key</button>
         </div>
 
-
+        <div class="section">
+            <h2>Hardware Connection</h2>
+            <p>Select the serial port and baud rate to communicate with an external Arduino*-compatible board (via USB or Bluetooth SPP).</p>
+            <label>Serial Port:</label>
+            <div class="custom-select-wrapper" id="serialPortSelectWrapper">
+                <select id="serialPortSelect">
+                    <option value="">-- No port selected --</option>
+                </select>
+            </div>
+            <label>Baud Rate (bps):</label>
+            <div class="custom-select-wrapper" id="serialBaudSelectWrapper">
+                <select id="serialBaudSelect">
+                    <option value="9600">9600</option>
+                    <option value="19200">19200</option>
+                    <option value="38400">38400</option>
+                    <option value="57600">57600</option>
+                    <option value="115200">115200</option>
+                </select>
+            </div>
+            <button onclick="saveSettings()">Save Hardware Settings</button>
+        </div>
 
         <div class="section">
             <h2>Startup</h2>
@@ -134,6 +159,12 @@
             <button onclick="goToApp()">Back to Player</button>
             <br />&nbsp;<br />
             <button class="btn-danger" onclick="if(window.AndroidApp) { AndroidApp.closeApp(); } else { window.close(); }">Exit Application</button>
+        </div>
+
+        <div class="credits">
+            TilBuci is a free tool, licensed under MPL-2.0, focused on creating interactive digital content. To learn more about the project, visit tilbuci.com.br.
+            <br />&nbsp;<br />
+            * Arduino is a registered trademark of Arduino AG. The name "Arduino" is used here solely for reference purposes to describe compatibility with the Arduino platform. This project is not affiliated with or endorsed by Arduino AG.
         </div>
     </div>
 

@@ -1715,6 +1715,9 @@
 	"window-showtime-removeok": "The movie will be removed in the next communication with this server.", 
 	"window-showtime-uploader": "Error while setting the movie to be sent.", 
 	"window-showtime-uploadok": "The movie will be sent in the next communication with this server.", 
+	"window-showtime-serial": "Hardware serial port", 
+	"window-showtime-noport": "no port selected", 
+	"window-showtime-baud": "Hardware baud rate", 
 	
 	
 	"window-visitors-title": "Content visitors",
@@ -2271,6 +2274,19 @@
 	"acinfo-datasavequickstate": "save a quick state on the server",
 	"acinfo-datasavestate": "save a state on the server",
 	"acinfo-datasavestatelocal": "save a state on local storage",
+	
+	"window-acshowtime-title": "Showtime application", 
+	"acinfo-showtimeevent": "register an event",
+	"acinfo-showtimeevent-p1": "the event name",
+	"acinfo-showtimehardware": "send a command to connected hardware",
+	"acinfo-showtimehardware-p1": "the command name",
+	"acinfo-showtimehardware-p2": "command parameter 1 (optional)",
+	"acinfo-showtimehardware-p3": "command parameter 2 (optional)",
+	"acinfo-showtimehardware-p4": "command parameter 3 (optional)",
+	"acinfo-showtimehardware-p5": "command parameter 4 (optional)",
+	"acinfo-showtimehardware-p6": "command parameter 5 (optional)",
+	"acinfo-showtimehardware-p7": "command parameter 6 (optional)",
+	"acinfo-showtimehardware-p8": "command parameter 7 (optional)",
 	
 	"window-acbinput-title": "Input management", 
 	"acinfo-inputemail": "show the e-mail address input interface", 

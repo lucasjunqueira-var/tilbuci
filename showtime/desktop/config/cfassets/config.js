@@ -5,9 +5,10 @@ async function loadData() {
         
         document.getElementById('wsInput').value = config.ws || '';
         document.getElementById('wsKeyInput').value = config.wsKey || '';
-        document.getElementById('accesskeyInput').value = config.accesskey || 'ABCDA';
+        document.getElementById('accesskeyInput').value = config.accesskey || 'AAAAA';
         document.getElementById('identifierInput').value = config.identifier || '';
         document.getElementById('autoStartInput').checked = !!config.autoStart;
+        if (config.serialBaud) document.getElementById('serialBaudSelect').value = config.serialBaud;
         document.getElementById('hideCursorInput').checked = !!config.hideCursor;
         
         const serverStatus = document.getElementById('serverStatus');
@@ -43,6 +44,23 @@ async function loadData() {
         
         setupCustomSelect('movieSelect', 'movieSelectWrapper');
         setupCustomSelect('deleteSelect', 'deleteSelectWrapper');
+        
+        try {
+            const serialRes = await fetch('/api/serialports');
+            const serialPorts = await serialRes.json();
+            const serialPortSelect = document.getElementById('serialPortSelect');
+            serialPortSelect.innerHTML = '<option value="">-- No port selected --</option>';
+            serialPorts.forEach(p => {
+                let opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                if (config.serialPort === p) opt.selected = true;
+                serialPortSelect.appendChild(opt);
+            });
+        } catch (e) {}
+
+        setupCustomSelect('serialPortSelect', 'serialPortSelectWrapper');
+        setupCustomSelect('serialBaudSelect', 'serialBaudSelectWrapper');
     } catch (e) {
         console.error('Error loading data', e);
     }
@@ -127,6 +145,8 @@ async function saveSettings() {
     const identifier = document.getElementById('identifierInput').value;
     const autoStart = document.getElementById('autoStartInput').checked;
     const hideCursor = document.getElementById('hideCursorInput').checked;
+    const serialPort = document.getElementById('serialPortSelect').value;
+    const serialBaud = document.getElementById('serialBaudSelect').value;
     
     if (accesskey.length !== 5 || !/^[A-D]{5}$/.test(accesskey)) {
         return; // silently fail since we can't show alert easily, or maybe update UI. Let's just update UI or return.
@@ -136,7 +156,7 @@ async function saveSettings() {
         await fetch('/api/config', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ movie, ws, wsKey, accesskey, identifier, autoStart, hideCursor })
+            body: JSON.stringify({ movie, ws, wsKey, accesskey, identifier, autoStart, hideCursor, serialPort, serialBaud })
         });
         
         setTimeout(loadData, 500); // Reload to get updated server status

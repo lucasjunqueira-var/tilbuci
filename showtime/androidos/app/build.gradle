@@ -31,4 +31,5 @@ dependencies {
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'org.nanohttpd:nanohttpd:2.3.1' // For local web server
+    implementation 'com.github.mik3y:usb-serial-for-android:3.4.6'
 }

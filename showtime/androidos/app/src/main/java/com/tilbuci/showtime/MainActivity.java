@@ -1,3 +1,8 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package com.tilbuci.showtime;
 
 import android.annotation.SuppressLint;
@@ -16,6 +21,9 @@ import android.net.Uri;
 import android.content.Intent;
 import android.content.ActivityNotFoundException;
 import android.widget.Toast;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import org.json.JSONObject;
 
@@ -39,7 +47,30 @@ import android.webkit.WebResourceRequest;
 
 import android.webkit.JavascriptInterface;
 
-public class MainActivity extends AppCompatActivity {
+import com.hoho.android.usbserial.driver.UsbSerialPort;
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.hoho.android.usbserial.driver.UsbSerialProber;
+import com.hoho.android.usbserial.util.SerialInputOutputManager;
+import android.hardware.usb.UsbManager;
+import android.hardware.usb.UsbDeviceConnection;
+import android.content.Context;
+import java.util.List;
+
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import java.util.UUID;
+
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
+
+public class MainActivity extends AppCompatActivity implements SerialInputOutputManager.Listener {
+
+    private UsbSerialPort usbSerialPort;
+    private SerialInputOutputManager usbIoManager;
+    private BluetoothSocket btSocket;
+    private Thread btReadThread;
     
     private boolean isKiosk = false;
 
@@ -51,10 +82,51 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_SELECT_FILE = 100;
     private Timer pingTimer;
 
+    private static final String ACTION_USB_PERMISSION = "com.tilbuci.showtime.USB_PERMISSION";
+    
+    private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (ACTION_USB_PERMISSION.equals(action)) {
+                synchronized (this) {
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        // Retry setup
+                        String sp = "";
+                        String sb = "9600";
+                        try {
+                            File configFile = new File(getFilesDir(), "config.json");
+                            if (configFile.exists()) {
+                                InputStream is = new FileInputStream(configFile);
+                                byte[] buf = new byte[is.available()];
+                                is.read(buf);
+                                is.close();
+                                JSONObject config = new JSONObject(new String(buf, "UTF-8"));
+                                sp = config.optString("serialPort", "");
+                                sb = config.optString("serialBaud", "9600");
+                            }
+                        } catch (Exception e) {}
+                        setupSerialPort(sp, sb);
+                    }
+                }
+            }
+        }
+    };
+
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            registerReceiver(usbReceiver, filter, android.content.Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(usbReceiver, filter);
+        }
+        
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 112);
+        }
 
         webView = new WebView(this);
         setContentView(webView);
@@ -123,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         File configFile = new File(internalDir, "config.json");
         String movie = "";
         String ws = "";
-        String accesskey = "ABCDA";
+        String accesskey = "AAAAA";
         
         if (configFile.exists()) {
             try {
@@ -134,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject config = new JSONObject(new String(buf, "UTF-8"));
                 movie = config.optString("movie", "");
                 ws = config.optString("ws", "");
-                accesskey = config.optString("accesskey", "ABCDA");
+                accesskey = config.optString("accesskey", "AAAAA");
             } catch (Exception e) {}
         }
         
@@ -150,6 +222,20 @@ public class MainActivity extends AppCompatActivity {
                 content = content.replace("[WS]", ws);
                 
                 String injectScript = "<script>\n" +
+                        "    function TBShowtime_Event(movie, eventName, jsonStr) {\n" +
+                        "        fetch('http://localhost:8080/api/event', {\n" +
+                        "            method: 'POST',\n" +
+                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                        "            body: JSON.stringify({ movie: movie, event: eventName, json: jsonStr })\n" +
+                        "        });\n" +
+                        "    }\n" +
+                        "    function TBShowtime_Hardware(msg) {\n" +
+                        "        fetch('http://localhost:8080/api/hardware', {\n" +
+                        "            method: 'POST',\n" +
+                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                        "            body: JSON.stringify({ message: msg })\n" +
+                        "        });\n" +
+                        "    }\n" +
                         "    let access = \"\";\n" +
                         "    let accesskey = \"" + accesskey + "\";\n" +
                         "    function addAccess(char) {\n" +
@@ -198,6 +284,22 @@ public class MainActivity extends AppCompatActivity {
             localServer.start();
             Log.i("MainActivity", "Local server started on port " + PORT);
             
+            // Connect Serial
+            String serialPort = "";
+            String serialBaud = "9600";
+            if (configFile.exists()) {
+                try {
+                    InputStream is = new FileInputStream(configFile);
+                    byte[] buf = new byte[is.available()];
+                    is.read(buf);
+                    is.close();
+                    JSONObject config = new JSONObject(new String(buf, "UTF-8"));
+                    serialPort = config.optString("serialPort", "");
+                    serialBaud = config.optString("serialBaud", "9600");
+                } catch (Exception e) {}
+            }
+            setupSerialPort(serialPort, serialBaud);
+            
             if (!movie.isEmpty()) {
                 webView.loadUrl("http://localhost:" + PORT + "/index.html");
             } else {
@@ -212,6 +314,7 @@ public class MainActivity extends AppCompatActivity {
         startPingTimer();
     }
 
+    // Initialize a periodic timer to ping the remote server every 15 minutes
     private void startPingTimer() {
         if (pingTimer != null) pingTimer.cancel();
         pingTimer = new Timer();
@@ -223,6 +326,7 @@ public class MainActivity extends AppCompatActivity {
         }, 5000, 15 * 60 * 1000); // Wait 5s for init, then every 15 min
     }
 
+    // Generate an MD5 hash string for cryptographic communication checks
     private String getMd5(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -239,6 +343,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Update the 'lastError' property in config.json to reflect connection status
     private void setLastError(String err) {
         try {
             File configFile = new File(getFilesDir(), "config.json");
@@ -255,6 +360,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {}
     }
 
+    // Core routine to ping the master server and process incoming commands (conf, remove, upload)
     private void doPing() {
         Log.i("MainActivity", "doPing() triggered...");
         try {
@@ -344,8 +450,61 @@ public class MainActivity extends AppCompatActivity {
                     if (data.has("conf")) {
                         JSONObject conf = data.optJSONObject("conf");
                         if (conf != null) {
+                            boolean changed = false;
+                            
+                            JSONObject localConfig = new JSONObject();
+                            if (configFile.exists()) {
+                                InputStream is2 = new FileInputStream(configFile);
+                                byte[] buf2 = new byte[is2.available()];
+                                is2.read(buf2);
+                                is2.close();
+                                localConfig = new JSONObject(new String(buf2, "UTF-8"));
+                            }
+                            
+                            if (conf.has("movie") && !conf.getString("movie").equals(localConfig.optString("movie", ""))) {
+                                localConfig.put("movie", conf.getString("movie"));
+                                changed = true;
+                            }
+                            if (conf.has("accesskey") && !conf.getString("accesskey").equals(localConfig.optString("accesskey", "AAAAA"))) {
+                                localConfig.put("accesskey", conf.getString("accesskey"));
+                                changed = true;
+                            }
+                            if (conf.has("identifier") && !conf.getString("identifier").equals(localConfig.optString("identifier", ""))) {
+                                localConfig.put("identifier", conf.getString("identifier"));
+                                changed = true;
+                            }
+                            if (conf.has("autoStart") && conf.getBoolean("autoStart") != localConfig.optBoolean("autoStart", false)) {
+                                localConfig.put("autoStart", conf.getBoolean("autoStart"));
+                                changed = true;
+                            }
+                            if (conf.has("serialPort") && !conf.getString("serialPort").equals(localConfig.optString("serialPort", ""))) {
+                                localConfig.put("serialPort", conf.getString("serialPort"));
+                                changed = true;
+                            }
+                            if (conf.has("serialBaud") && !conf.getString("serialBaud").equals(localConfig.optString("serialBaud", ""))) {
+                                localConfig.put("serialBaud", conf.getString("serialBaud"));
+                                changed = true;
+                            }
+                            
+                            if (changed) {
+                                FileOutputStream fos = new FileOutputStream(configFile);
+                                fos.write(localConfig.toString().getBytes("UTF-8"));
+                                fos.close();
+                                
+                                // Restart app logic if we want, or just wait for next tick
+                            }
+                            
                             // save new conf and then:
                             clearConfServer(ws, wsKey, identifier);
+                            
+                            if (changed) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        recreate();
+                                    }
+                                });
+                            }
                         }
                     }
                     
@@ -413,6 +572,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Send a CLEARCONF REST signal to the remote server to acknowledge configuration update
     private void clearConfServer(String ws, String wsKey, String identifier) {
         try {
             JSONObject rObj = new JSONObject();
@@ -432,6 +592,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {}
     }
 
+    // Send a CLEARREMOVE REST signal to the remote server to acknowledge movie deletion
     private void clearRemoveServer(String ws, String wsKey, String identifier, String movieName) {
         try {
             JSONObject rObj = new JSONObject();
@@ -452,6 +613,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {}
     }
 
+    // Send a CLEARUPLOAD REST signal to the remote server to acknowledge movie download
     private void clearUploadServer(String ws, String wsKey, String identifier, String movieName) {
         try {
             JSONObject rObj = new JSONObject();
@@ -472,6 +634,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {}
     }
 
+    // Recursively copy base HTML and JS assets from APK to internal storage
     private void copyAssetsToInternal(String path, File outPath) {
         try {
             String[] assets = getAssets().list(path);
@@ -491,6 +654,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Copy a single asset file from APK to internal storage
     private void copyFile(String assetFilePath, File outPath) throws IOException {
         InputStream in = getAssets().open(assetFilePath);
         File outFile = new File(outPath, assetFilePath);
@@ -533,6 +697,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Recursively delete files and folders
     private void deleteRecursively(File f) {
         if (f.isDirectory()) {
             File[] files = f.listFiles();
@@ -545,6 +710,7 @@ public class MainActivity extends AppCompatActivity {
         f.delete();
     }
     
+    // Toggle full-screen immersive view and Lock Task (pinning)
     private void setKioskMode(boolean kiosk) {
         isKiosk = kiosk;
         if (kiosk) {
@@ -563,6 +729,118 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private StringBuilder serialBuffer = new StringBuilder();
+
+    @Override
+    public void onNewData(byte[] data) {
+        String chunk = new String(data);
+        serialBuffer.append(chunk);
+        
+        int newlineIndex;
+        while ((newlineIndex = serialBuffer.indexOf("\n")) != -1) {
+            final String text = serialBuffer.substring(0, newlineIndex).trim();
+            serialBuffer.delete(0, newlineIndex + 1);
+            
+            if (!text.isEmpty()) {
+                runOnUiThread(() -> {
+                    try {
+                        String jsonStr = JSONObject.quote(text);
+                        webView.evaluateJavascript("if(typeof tilbuci_runaction === 'function') tilbuci_runaction(" + jsonStr + ");", null);
+                    } catch (Exception e) {}
+                });
+            }
+        }
+    }
+
+    @Override
+    public void onRunError(Exception e) {
+        // Disconnected
+        if (usbIoManager != null) {
+            usbIoManager.stop();
+            usbIoManager = null;
+        }
+    }
+
+    // Initialize USB or Bluetooth SPP connection based on user settings
+    private void setupSerialPort(String portName, String baudStr) {
+        if (usbIoManager != null) { usbIoManager.stop(); usbIoManager = null; }
+        if (usbSerialPort != null) { try { usbSerialPort.close(); } catch(Exception e){} usbSerialPort = null; }
+        if (btSocket != null) { try { btSocket.close(); } catch(Exception e){} btSocket = null; }
+        if (btReadThread != null) { btReadThread.interrupt(); btReadThread = null; }
+        
+        if (portName == null || portName.isEmpty()) return;
+        
+        try {
+            int baudRate = 9600;
+            if (!baudStr.isEmpty()) baudRate = Integer.parseInt(baudStr);
+
+            if (portName.startsWith("BT:")) {
+                // Bluetooth SPP Connection
+                String macAddress = portName.substring(3, 20); // BT:XX:XX:XX:XX:XX:XX
+                BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+                BluetoothDevice device = btAdapter.getRemoteDevice(macAddress);
+                btSocket = device.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+                btSocket.connect();
+                
+                btReadThread = new Thread(() -> {
+                    try {
+                        InputStream in = btSocket.getInputStream();
+                        byte[] buffer = new byte[1024];
+                        int bytes;
+                        while (!Thread.currentThread().isInterrupted() && (bytes = in.read(buffer)) > -1) {
+                            byte[] data = new byte[bytes];
+                            System.arraycopy(buffer, 0, data, 0, bytes);
+                            onNewData(data);
+                        }
+                    } catch (Exception e) {}
+                });
+                btReadThread.start();
+                
+            } else if (portName.startsWith("USB:")) {
+                // USB OTG Connection
+                UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
+                List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
+                if (availableDrivers.isEmpty()) return;
+                
+                UsbSerialDriver driver = availableDrivers.get(0);
+                if (!manager.hasPermission(driver.getDevice())) {
+                    PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+                    manager.requestPermission(driver.getDevice(), permissionIntent);
+                    return;
+                }
+                
+                UsbDeviceConnection connection = manager.openDevice(driver.getDevice());
+                if (connection == null) return;
+                
+                usbSerialPort = driver.getPorts().get(0);
+                usbSerialPort.open(connection);
+                usbSerialPort.setParameters(baudRate, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+                usbSerialPort.setDTR(true);
+                usbSerialPort.setRTS(true);
+                
+                usbIoManager = new SerialInputOutputManager(usbSerialPort, this);
+                java.util.concurrent.Executors.newSingleThreadExecutor().submit(usbIoManager);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Write text payload to the active serial port (USB or Bluetooth)
+    public void sendSerialMessage(String msg) {
+        try {
+            byte[] data = (msg + "\n").getBytes("UTF-8");
+            if (usbSerialPort != null && usbSerialPort.isOpen()) {
+                usbSerialPort.write(data, 1000);
+            } else if (btSocket != null && btSocket.isConnected()) {
+                OutputStream os = btSocket.getOutputStream();
+                os.write(data);
+                os.flush();
+            }
+        } catch (Exception e) {}
+    }
+
+    // Hide Android status and navigation bars (Immersive Sticky Mode)
     private void hideSystemUI() {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(

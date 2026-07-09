@@ -59,6 +59,7 @@ import com.tilbuci.statictools.StringStatic;
 import openfl.display.StageDisplayState;
 import openfl.Lib;
 import haxe.crypto.Base64;
+import js.Syntax;
 
 class ScriptParser {
 
@@ -197,7 +198,7 @@ class ScriptParser {
         Constructor.
     **/
     public function new() {
-        
+
     }
 
     /**
@@ -3107,6 +3108,74 @@ class ScriptParser {
                         } catch (e) { }
                         return (true);
 
+                    // showtime
+                    case 'showtime.event':
+                            var prData:Array<Dynamic> = [ ];
+                            prData.push(this.parseString(param[0]));
+                            prData.push(Date.now().toString());
+                            prData.push(GlobalPlayer.movie.mvId);
+                            prData.push(GlobalPlayer.mdata.title);
+                            prData.push(GlobalPlayer.movie.scId);
+                            prData.push(GlobalPlayer.movie.scene.title);
+                            if (param.length > 1) {
+                                for (i in 1...param.length) {
+                                    if (Std.string(param[i]).substr(0, 1) == '#') {
+                                        if (this._ints.exists(Std.string(param[i]).substr(1))) {
+                                            prData.push(this._ints[Std.string(param[i]).substr(1)]);
+                                        } else if (this._floats.exists(Std.string(param[i]).substr(1))) {
+                                            prData.push(this._floats[Std.string(param[i]).substr(1)]);
+                                        } else {
+                                            prData.push(this.parseString(param[i]));
+                                        }
+                                    } else if (Std.string(param[i]).substr(0, 1) == '?') {
+                                        if (this._bools.exists(Std.string(param[i]).substr(1))) {
+                                            prData.push(this._bools[Std.string(param[i]).substr(1)]);
+                                        } else {
+                                            prData.push(this.parseString(param[i]));
+                                        }
+                                    } else {
+                                        prData.push(this.parseString(param[i]));
+                                    }
+                                }
+                            }
+                            this.TBShowtime_Event_Call(GlobalPlayer.movie.mvId, this.parseString(param[0]), StringStatic.jsonStringify(prData));
+                            return (true);
+                        case 'showtime.hardware':
+                            if (param.length > 0) {
+                                var prData:Array<String> = [ ];
+                                prData.push(this.parseString(param[0]));
+                                var prParam:String = '';
+                                if (param.length > 1) {
+                                    for (i in 1...param.length) {
+                                        prParam = '';
+                                        if (Std.string(param[i]).substr(0, 1) == '#') {
+                                            if (this._ints.exists(Std.string(param[i]).substr(1))) {
+                                                prParam = (Std.string(this._ints[Std.string(param[i]).substr(1)]));
+                                            } else if (this._floats.exists(Std.string(param[i]).substr(1))) {
+                                                prParam = (Std.string(this._floats[Std.string(param[i]).substr(1)]));
+                                            } else {
+                                                prParam = (this.parseString(param[i]));
+                                            }
+                                            if (prParam != '') prData.push(prParam);
+                                        } else if (Std.string(param[i]).substr(0, 1) == '?') {
+                                            if (this._bools.exists(Std.string(param[i]).substr(1))) {
+                                                prParam = (Std.string(this._bools[Std.string(param[i]).substr(1)]));
+                                            } else {
+                                                prParam = (this.parseString(param[i]));
+                                            }
+                                            if (prParam != '') prData.push(prParam);
+                                        } else {
+                                            prParam = (this.parseString(param[i]));
+                                            if (prParam != '') prData.push(prParam);
+                                        }
+                                    }
+                                }
+                                this.TBShowtime_Hardware_Call(prData.join('|'));
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+
                     // accessibility
                     case 'accessibility.setdescription':
                         if (param.length >= 1) {
@@ -4996,6 +5065,33 @@ class ScriptParser {
     }
 
     #if (js && html5)
+    /**
+       Call the Showtime event record method.
+        @param  movie   the movie name
+        @param  name    the event name
+        @param  data    the event data
+    **/
+    public function TBShowtime_Event_Call(movie:String, name:String, data:String):Void {
+        if (Syntax.code("typeof TBShowtime_Event === 'function'")) {
+            Syntax.code("TBShowtime_Event({0}, {1}, {2})", movie, name, data);
+        } else {
+            trace ('Showtime event:', data);
+        }
+    }
+
+    /**
+       Send a command to a Showtime connected hardware.
+        @param  data    the data to send
+    **/
+    public function TBShowtime_Hardware_Call(data:String):Void {
+        if (Syntax.code("typeof TBShowtime_Hardware === 'function'")) {
+            Syntax.code("TBShowtime_Hardware({0})", data);
+            trace ('hardware call ok');
+        } else {
+            trace ('Showtime hardware call:', data);
+        }
+    }
+
     /**
         Exposed function to request a string value.
     **/

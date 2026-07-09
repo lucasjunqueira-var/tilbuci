@@ -74,6 +74,20 @@ class WindowShowtime extends PopupWindow {
         this.ui.createToggle('startup', false, this.ui.hcontainers['startup']);
         this.ui.createLabel('startup2', '', '', this.ui.hcontainers['startup']);
 
+        this.ui.createHContainer('serial');
+        this.ui.createLabel('serial', Global.ln.get('window-showtime-serial'), '', this.ui.hcontainers['serial']);
+        this.ui.createTInput('serial', '', '', this.ui.hcontainers['serial']);
+
+        this.ui.createHContainer('baud');
+        this.ui.createLabel('baud', Global.ln.get('window-showtime-baud'), '', this.ui.hcontainers['baud']);
+        this.ui.createSelect('baud', [
+            { text: '9600', value: '9600' }, 
+            { text: '19200', value: '19200' }, 
+            { text: '38400', value: '38400' }, 
+            { text: '57600', value: '57600' }, 
+            { text: '115200', value: '115200' }
+        ], null, this.ui.hcontainers['baud']);
+
         this.addForm(Global.ln.get('window-showtime-conf-title'), this.ui.forge('form-conf', [
             { tp: 'Label', id: 'confabout', tx: Global.ln.get('window-showtime-confabout'), vr: '' },
             { tp: 'Spacer', id: 'confabout', ht: 20, ln: false },
@@ -83,7 +97,9 @@ class WindowShowtime extends PopupWindow {
             { tp: 'Custom', cont: this.ui.hcontainers['accessk'] },  
             { tp: 'Custom', cont: this.ui.hcontainers['mouse'] },  
             { tp: 'Custom', cont: this.ui.hcontainers['startup'] },  
-            { tp: 'Spacer', id: 'confbt', ht: 180, ln: false },
+            { tp: 'Custom', cont: this.ui.hcontainers['serial'] },  
+            { tp: 'Custom', cont: this.ui.hcontainers['baud'] },  
+            { tp: 'Spacer', id: 'confbt', ht: 120, ln: false },
             { tp: 'Button', id: 'confbt', tx: Global.ln.get('window-showtime-confbt'), ac: this.onConfig }, 
         ]));
         this.ui.labels['confabout'].wordWrap = true;
@@ -133,6 +149,8 @@ class WindowShowtime extends PopupWindow {
         this.ui.hcontainers['accessk'].setWidth(860, [250, 575]);
         this.ui.hcontainers['mouse'].setWidth(860, [250, 75, 490]);
         this.ui.hcontainers['startup'].setWidth(860, [250, 75, 490]);
+        this.ui.hcontainers['serial'].setWidth(860, [250, 575]);
+        this.ui.hcontainers['baud'].setWidth(860, [250, 575]);
     }
 
     /**
@@ -145,6 +163,8 @@ class WindowShowtime extends PopupWindow {
         this.ui.hcontainers['accessk'].setWidth(860, [250, 575]);
         this.ui.hcontainers['mouse'].setWidth(860, [250, 75, 490]);
         this.ui.hcontainers['startup'].setWidth(860, [250, 75, 490]);
+        this.ui.hcontainers['serial'].setWidth(860, [250, 575]);
+        this.ui.hcontainers['baud'].setWidth(860, [250, 575]);
     }
 
     /**
@@ -172,6 +192,8 @@ class WindowShowtime extends PopupWindow {
                     'identifier' => this.ui.inputs['appid'].text, 
                     'autoStart' => this.ui.toggles['startup'].selected, 
                     'hideCursor' => this.ui.toggles['mouse'].selected, 
+                    'serialPort' => this.ui.inputs['serial'].text, 
+                    'serialBaud' => this.ui.selects['baud'].selectedItem.value, 
                 ], onConfigReturn);
             } else {
                 this.ui.createWarning(Global.ln.get('window-showtime-title'), Global.ln.get('window-showtime-confnoakey'), 400, 180, this.stage);
@@ -301,7 +323,9 @@ class WindowShowtime extends PopupWindow {
             // configuration
             this.ui.inputs['apptype'].text = '';
             this.ui.setSelectValue('inimovie', '');
+            this.ui.setSelectValue('baud', '9600');
             this.ui.inputs['appid'].text = '';
+            this.ui.inputs['serial'].text = '';
             this.ui.inputs['accessk'].text = '';
             this.ui.toggles['mouse'].selected = false;
             this.ui.toggles['startup'].selected = false;
@@ -330,6 +354,12 @@ class WindowShowtime extends PopupWindow {
                 }
                 if (Reflect.hasField(ld.map['config'], 'hideCursor')) {
                     this.ui.toggles['mouse'].selected = Reflect.field(ld.map['config'], 'hideCursor');
+                }
+                if (Reflect.hasField(ld.map['config'], 'serialPort')) {
+                    this.ui.inputs['serial'].text = Reflect.field(ld.map['config'], 'serialPort');
+                }
+                if (Reflect.hasField(ld.map['config'], 'serialBaud')) {
+                    this.ui.setSelectValue('baud', Reflect.field(ld.map['config'], 'serialBaud'));
                 }
             }
         }

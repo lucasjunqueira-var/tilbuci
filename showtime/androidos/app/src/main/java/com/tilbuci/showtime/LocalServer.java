@@ -1,3 +1,8 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package com.tilbuci.showtime;
 
 import android.content.Context;
@@ -13,12 +18,14 @@ public class LocalServer extends NanoHTTPD {
     private Context context;
     private File filesDir;
 
+    // Constructor to initialize the local server
     public LocalServer(int port, Context context, File filesDir) {
         super(port);
         this.context = context;
         this.filesDir = filesDir;
     }
 
+    // Handle incoming HTTP requests from the WebView and process API routes
     @Override
     public Response serve(IHTTPSession session) {
         String uri = session.getUri();
@@ -33,15 +40,28 @@ public class LocalServer extends NanoHTTPD {
                     String postData = files.get("postData");
                     
                     if (postData != null) {
+                        File potentialTempFile = new File(postData);
+                        if (potentialTempFile.exists() && potentialTempFile.isFile()) {
+                            java.io.InputStream is = new java.io.FileInputStream(potentialTempFile);
+                            byte[] buf = new byte[is.available()];
+                            is.read(buf);
+                            is.close();
+                            postData = new String(buf, "UTF-8");
+                        }
+                        
                         java.io.FileOutputStream fos = new java.io.FileOutputStream(configFile);
                         fos.write(postData.getBytes("UTF-8"));
                         fos.close();
+                        
+                        if (context instanceof MainActivity) {
+                            ((MainActivity) context).runOnUiThread(() -> ((MainActivity) context).recreate());
+                        }
                         
                         try {
                             org.json.JSONObject config = new org.json.JSONObject(postData);
                             String movie = config.optString("movie", "");
                             String ws = config.optString("ws", "");
-                            String accesskey = config.optString("accesskey", "ABCDA");
+                            String accesskey = config.optString("accesskey", "AAAAA");
                             
                             File tilbuciTemplate = new File(new File(filesDir, "tilbuci"), "tilbuci.html");
                             File indexFile = new File(new File(filesDir, "tilbuci"), "index.html");
@@ -56,6 +76,20 @@ public class LocalServer extends NanoHTTPD {
                                 content = content.replace("[WS]", ws);
                                 
                                 String injectScript = "<script>\n" +
+                                        "    function TBShowtime_Event(movie, eventName, jsonStr) {\n" +
+                                        "        fetch('http://localhost:8080/api/event', {\n" +
+                                        "            method: 'POST',\n" +
+                                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                                        "            body: JSON.stringify({ movie: movie, event: eventName, json: jsonStr })\n" +
+                                        "        });\n" +
+                                        "    }\n" +
+                                        "    function TBShowtime_Hardware(msg) {\n" +
+                                        "        fetch('http://localhost:8080/api/hardware', {\n" +
+                                        "            method: 'POST',\n" +
+                                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                                        "            body: JSON.stringify({ message: msg })\n" +
+                                        "        });\n" +
+                                        "    }\n" +
                                         "    let access = \"\";\n" +
                                         "    let accesskey = \"" + accesskey + "\";\n" +
                                         "    function addAccess(char) {\n" +
@@ -105,7 +139,7 @@ public class LocalServer extends NanoHTTPD {
                         return newFixedLengthResponse(Response.Status.OK, "application/json", content);
                     } catch (Exception e) {}
                 }
-                return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"movie\":\"\",\"ws\":\"\",\"wsKey\":\"\",\"accesskey\":\"ABCDA\",\"identifier\":\"\",\"autoStart\":false}");
+                return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"movie\":\"\",\"ws\":\"\",\"wsKey\":\"\",\"accesskey\":\"AAAAA\",\"identifier\":\"\",\"autoStart\":false}");
             }
         }
         if (uri.equals("/api/upload") && Method.POST.equals(method)) {
@@ -139,6 +173,14 @@ public class LocalServer extends NanoHTTPD {
                 session.parseBody(files);
                 String postData = files.get("postData");
                 if (postData != null) {
+                    File potentialTempFile = new File(postData);
+                    if (potentialTempFile.exists() && potentialTempFile.isFile()) {
+                        java.io.InputStream is = new java.io.FileInputStream(potentialTempFile);
+                        byte[] buf = new byte[is.available()];
+                        is.read(buf);
+                        is.close();
+                        postData = new String(buf, "UTF-8");
+                    }
                     org.json.JSONObject obj = new org.json.JSONObject(postData);
                     String movieName = obj.optString("movie", "");
                     if (!movieName.isEmpty()) {
@@ -151,6 +193,107 @@ public class LocalServer extends NanoHTTPD {
                 e.printStackTrace();
                 return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\":false}");
             }
+        }
+        
+        if (uri.equals("/api/serialports")) {
+            org.json.JSONArray arr = new org.json.JSONArray();
+            try {
+                // USB OTG Devices
+                android.hardware.usb.UsbManager manager = (android.hardware.usb.UsbManager) context.getSystemService(Context.USB_SERVICE);
+                for (android.hardware.usb.UsbDevice device : manager.getDeviceList().values()) {
+                    arr.put("USB:" + device.getDeviceName());
+                }
+                
+                // Bluetooth SPP Devices
+                android.bluetooth.BluetoothAdapter btAdapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter();
+                if (btAdapter != null && btAdapter.isEnabled()) {
+                    java.util.Set<android.bluetooth.BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
+                    if (pairedDevices != null) {
+                        for (android.bluetooth.BluetoothDevice device : pairedDevices) {
+                            arr.put("BT:" + device.getAddress() + " (" + device.getName() + ")");
+                        }
+                    }
+                }
+            } catch (Exception e) {}
+            return newFixedLengthResponse(Response.Status.OK, "application/json", arr.toString());
+        }
+        
+        if (uri.equals("/api/event") && Method.POST.equals(method)) {
+            try {
+                java.util.Map<String, String> files = new java.util.HashMap<>();
+                session.parseBody(files);
+                String postData = files.get("postData");
+                
+                if (postData != null) {
+                    File potentialTempFile = new File(postData);
+                    if (potentialTempFile.exists() && potentialTempFile.isFile()) {
+                        // It's a file path
+                        java.io.InputStream is = new java.io.FileInputStream(potentialTempFile);
+                        byte[] buf = new byte[is.available()];
+                        is.read(buf);
+                        is.close();
+                        postData = new String(buf, "UTF-8");
+                    }
+                    
+                    org.json.JSONObject obj = new org.json.JSONObject(postData);
+                    String movie = obj.optString("movie", "");
+                    String event = obj.optString("event", "");
+                    String json = obj.optString("json", "");
+                    
+                    if (!movie.isEmpty() && !event.isEmpty() && !json.isEmpty()) {
+                        File docsDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOCUMENTS);
+                        if (docsDir != null) {
+                            File tbDir = new File(docsDir, "TBShowtime");
+                            if (!tbDir.exists()) tbDir.mkdirs();
+                            
+                            File movieDir = new File(tbDir, movie);
+                            if (!movieDir.exists()) movieDir.mkdirs();
+                            
+                            java.util.Calendar cal = java.util.Calendar.getInstance();
+                            String dateStr = String.format(java.util.Locale.US, "%04d%02d%02d%02d%02d%02d",
+                                cal.get(java.util.Calendar.YEAR),
+                                cal.get(java.util.Calendar.MONTH) + 1,
+                                cal.get(java.util.Calendar.DAY_OF_MONTH),
+                                cal.get(java.util.Calendar.HOUR_OF_DAY),
+                                cal.get(java.util.Calendar.MINUTE),
+                                cal.get(java.util.Calendar.SECOND));
+                                
+                            File outFile = new File(movieDir, event + "-" + dateStr + ".json");
+                            java.io.FileOutputStream fos = new java.io.FileOutputStream(outFile);
+                            fos.write(json.getBytes("UTF-8"));
+                            fos.close();
+                        }
+                    }
+                }
+                return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\":true}");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\":false}");
+            }
+        }
+        
+        if (uri.equals("/api/hardware") && Method.POST.equals(method)) {
+            try {
+                java.util.Map<String, String> files = new java.util.HashMap<>();
+                session.parseBody(files);
+                String postData = files.get("postData");
+                if (postData != null) {
+                    File potentialTempFile = new File(postData);
+                    if (potentialTempFile.exists() && potentialTempFile.isFile()) {
+                        java.io.InputStream is = new java.io.FileInputStream(potentialTempFile);
+                        byte[] buf = new byte[is.available()];
+                        is.read(buf);
+                        is.close();
+                        postData = new String(buf, "UTF-8");
+                    }
+                    org.json.JSONObject obj = new org.json.JSONObject(postData);
+                    String msg = obj.optString("message", "");
+                    if (context instanceof MainActivity) {
+                        ((MainActivity) context).sendSerialMessage(msg);
+                    }
+                }
+            } catch (Exception e) {}
+            return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\":true}");
         }
         
         if (uri.equals("/api/movies")) {
@@ -193,6 +336,7 @@ public class LocalServer extends NanoHTTPD {
         }
     }
 
+    // Resolve standard MIME types for HTTP responses
     private String getContentType(String uri) {
         if (uri.endsWith(".html")) return "text/html";
         if (uri.endsWith(".js")) return "application/javascript";
@@ -203,6 +347,7 @@ public class LocalServer extends NanoHTTPD {
         return "application/octet-stream";
     }
 
+    // Extract a ZIP file directly to a target directory
     private void unzip(File zipFile, File targetDir) throws Exception {
         if (!targetDir.exists()) targetDir.mkdirs();
         java.util.zip.ZipInputStream zis = new java.util.zip.ZipInputStream(new java.io.FileInputStream(zipFile));
@@ -227,6 +372,7 @@ public class LocalServer extends NanoHTTPD {
         zis.close();
     }
     
+    // Recursively delete files and folders
     private void deleteRecursively(File f) {
         if (f.isDirectory()) {
             for (File c : f.listFiles()) {
