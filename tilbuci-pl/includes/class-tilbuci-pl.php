@@ -43,6 +43,13 @@ class TilBuci_WP {
     private static $first_block_rendered = false;
 
     /**
+     * Flag indicating if the first TilBuci block should use HTML DOM render mode
+     *
+     * @var bool
+     */
+    private static $html_dom_render = false;
+
+    /**
      * Constructor
      */
     public function __construct() {
@@ -56,6 +63,7 @@ class TilBuci_WP {
     /**
      * Detect if TilBuci block is present in the current post content
      * Sets the block_rendered flag if found.
+     * Also detects the htmlDomRender attribute from the first TilBuci block.
      */
     public function detect_tilbuci_block_in_content() {
         // Only run for singular posts/pages
@@ -71,6 +79,17 @@ class TilBuci_WP {
         // Check for TilBuci block by its block name
         if (has_block('tilbuci-pl/tilbuci-block', $post)) {
             self::$block_rendered = true;
+
+            // Parse blocks to find the first TilBuci block and check htmlDomRender attribute
+            $blocks = parse_blocks($post->post_content);
+            foreach ($blocks as $block) {
+                if ($block['blockName'] === 'tilbuci-pl/tilbuci-block') {
+                    if (isset($block['attrs']['htmlDomRender']) && $block['attrs']['htmlDomRender'] === true) {
+                        self::$html_dom_render = true;
+                    }
+                    break;
+                }
+            }
             return;
         }
 
@@ -219,6 +238,10 @@ class TilBuci_WP {
                 'height' => array(
                     'type' => 'number',
                     'default' => 56,
+                ),
+                'htmlDomRender' => array(
+                    'type' => 'boolean',
+                    'default' => false,
                 ),
                 'customVar1' => array(
                     'type' => 'string',
@@ -1132,11 +1155,11 @@ class TilBuci_WP {
         $path = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/app/';
         $font_path = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/font/';
 
+        // Choose script based on htmlDomRender setting
+        $main_script = self::$html_dom_render ? 'TilBuci-dom-min.js' : 'TilBuci-min.js';
+
         // Output script tags and inline code as per specification
-        
-        // debug: no cache
-        //echo '<script type="text/javascript" src="' . esc_url($path . 'TilBuci-min.js?rd=' . time()) . '"></script>' . "\n";
-        echo '<script type="text/javascript" src="' . esc_url($path . 'TilBuci-min.js?rd=' . $version) . '"></script>' . "\n";
+        echo '<script type="text/javascript" src="' . esc_url($path . $main_script . '?rd=' . $version) . '"></script>' . "\n";
         echo '<script type="text/javascript" src="' . esc_url($path . 'externs.js?rd=' . $version) . '"></script>' . "\n";
         echo '<script>' . "\n";
         echo '	window.addEventListener ("touchmove", function (event) { event.preventDefault (); }, { capture: false, passive: false });' . "\n";

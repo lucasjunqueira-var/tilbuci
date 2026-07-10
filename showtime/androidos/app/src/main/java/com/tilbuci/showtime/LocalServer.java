@@ -101,7 +101,7 @@ public class LocalServer extends NanoHTTPD {
                                         "    }\n" +
                                         "</script>\n" +
                                         "<style>\n" +
-                                        "    .abcd-area { position: fixed; z-index: 999999; cursor: pointer; -webkit-tap-highlight-color: transparent; }\n" +
+                                        "    .abcd-area { position: fixed; z-index: 999999; cursor: pointer; }\n" +
                                         "    @media (orientation: landscape) { .abcd-area { width: 5%; height: 10%; } }\n" +
                                         "    @media (orientation: portrait) { .abcd-area { width: 10%; height: 5%; } }\n" +
                                         "    #area-A { top: 0; left: 0; }\n" +

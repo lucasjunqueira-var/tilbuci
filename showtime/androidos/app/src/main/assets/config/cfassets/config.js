@@ -163,6 +163,13 @@ async function saveSettings() {
     }
 }
 
+async function saveHardwareSettings() {
+    await saveSettings();
+    if (window.AndroidApp && typeof window.AndroidApp.requestHardwarePermission === 'function') {
+        window.AndroidApp.requestHardwarePermission();
+    }
+}
+
 async function uploadMovie() {
     const fileInput = document.getElementById('zipFile');
     if (!fileInput.files.length) {

@@ -105,12 +105,15 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
                                 sb = config.optString("serialBaud", "9600");
                             }
                         } catch (Exception e) {}
-                        setupSerialPort(sp, sb);
+                        setupSerialPort(sp, sb, false);
                     }
                 }
             }
         }
     };
+
+    private String currentSerialPort = "";
+    private String currentSerialBaud = "9600";
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -146,6 +149,12 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
             public void closeApp() {
                 finishAffinity();
                 System.exit(0);
+            }
+            @JavascriptInterface
+            public void requestHardwarePermission() {
+                runOnUiThread(() -> {
+                    setupSerialPort(currentSerialPort, currentSerialBaud, true);
+                });
             }
         }, "AndroidApp");
 
@@ -247,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
                         "    }\n" +
                         "</script>\n" +
                         "<style>\n" +
-                        "    .abcd-area { position: fixed; z-index: 999999; cursor: pointer; -webkit-tap-highlight-color: transparent; }\n" +
+                        "    .abcd-area { position: fixed; z-index: 999999; cursor: pointer; }\n" +
                         "    @media (orientation: landscape) { .abcd-area { width: 5%; height: 10%; } }\n" +
                         "    @media (orientation: portrait) { .abcd-area { width: 10%; height: 5%; } }\n" +
                         "    #area-A { top: 0; left: 0; }\n" +
@@ -298,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
                     serialBaud = config.optString("serialBaud", "9600");
                 } catch (Exception e) {}
             }
-            setupSerialPort(serialPort, serialBaud);
+            setupSerialPort(serialPort, serialBaud, false);
             
             if (!movie.isEmpty()) {
                 webView.loadUrl("http://localhost:" + PORT + "/index.html");
@@ -762,7 +771,10 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
     }
 
     // Initialize USB or Bluetooth SPP connection based on user settings
-    private void setupSerialPort(String portName, String baudStr) {
+    private void setupSerialPort(String portName, String baudStr, boolean requestPermission) {
+        currentSerialPort = portName;
+        currentSerialBaud = baudStr;
+        
         if (usbIoManager != null) { usbIoManager.stop(); usbIoManager = null; }
         if (usbSerialPort != null) { try { usbSerialPort.close(); } catch(Exception e){} usbSerialPort = null; }
         if (btSocket != null) { try { btSocket.close(); } catch(Exception e){} btSocket = null; }
@@ -804,8 +816,10 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
                 
                 UsbSerialDriver driver = availableDrivers.get(0);
                 if (!manager.hasPermission(driver.getDevice())) {
-                    PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-                    manager.requestPermission(driver.getDevice(), permissionIntent);
+                    if (requestPermission) {
+                        PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+                        manager.requestPermission(driver.getDevice(), permissionIntent);
+                    }
                     return;
                 }
                 
