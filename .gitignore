@@ -56,7 +56,7 @@ showtime/desktop/.env.*.local
 showtime/desktop/*.log
 showtime/desktop/.cache/
 showtime/desktop/.tmp/
-showtime/desktop/config.xml
+showtime/desktop/config.json
 showtime/desktop/tilbuci/movie/*
 !showtime/desktop/tilbuci/movie/movie.txt
 
