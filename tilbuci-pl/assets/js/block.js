@@ -150,7 +150,7 @@
                         onChange: function (value) {
                             setAttributes({ htmlDomRender: value });
                         },
-                        help: __('If enabled, TilBuci content will be rendered using DOM elements instead of the optimized WebGL renderer.', 'tilbuci-pl')
+                        help: __('If enabled, TilBuci content will be rendered using DOM elements instead of the WebGL renderer.', 'tilbuci-pl')
                     })
                 ),
                 createElement(PanelBody, { title: __('Custom Variables', 'tilbuci-pl'), initialOpen: false },
