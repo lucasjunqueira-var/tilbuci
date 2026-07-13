@@ -227,8 +227,14 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
                 in.close();
                 String content = new String(buffer, "UTF-8");
                 
+                String wsFormatted = ws;
+                if (!wsFormatted.isEmpty()) {
+                    if (!wsFormatted.endsWith("/")) wsFormatted += "/";
+                    wsFormatted += "ws/";
+                }
+                
                 content = content.replace("[MOVIE]", movie);
-                content = content.replace("[WS]", ws);
+                content = content.replace("[WS]", wsFormatted);
                 
                 String injectScript = "<script>\n" +
                         "    function TBShowtime_Event(movie, eventName, jsonStr) {\n" +
@@ -742,23 +748,25 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
 
     @Override
     public void onNewData(byte[] data) {
-        String chunk = new String(data);
-        serialBuffer.append(chunk);
-        
-        int newlineIndex;
-        while ((newlineIndex = serialBuffer.indexOf("\n")) != -1) {
-            final String text = serialBuffer.substring(0, newlineIndex).trim();
-            serialBuffer.delete(0, newlineIndex + 1);
+        try {
+            String chunk = new String(data, "UTF-8");
+            serialBuffer.append(chunk);
             
-            if (!text.isEmpty()) {
-                runOnUiThread(() -> {
-                    try {
-                        String jsonStr = JSONObject.quote(text);
-                        webView.evaluateJavascript("if(typeof tilbuci_runaction === 'function') tilbuci_runaction(" + jsonStr + ");", null);
-                    } catch (Exception e) {}
-                });
+            int newlineIndex;
+            while ((newlineIndex = serialBuffer.indexOf("\n")) != -1) {
+                final String text = serialBuffer.substring(0, newlineIndex).trim();
+                serialBuffer.delete(0, newlineIndex + 1);
+                
+                if (!text.isEmpty()) {
+                    runOnUiThread(() -> {
+                        try {
+                            String jsonStr = JSONObject.quote(text);
+                            webView.evaluateJavascript("if(typeof window.tilbuci_runaction === 'function') window.tilbuci_runaction(" + jsonStr + ");", null);
+                        } catch (Exception e) {}
+                    });
+                }
             }
-        }
+        } catch (Exception ex) {}
     }
 
     @Override

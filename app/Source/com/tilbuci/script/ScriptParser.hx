@@ -5006,35 +5006,42 @@ class ScriptParser {
     **/
     private function onDataEvent(ok:Bool, ld:DataLoader):Void {
         var hold:Bool = false;
-        var eventheld:Array<Map<String, String>> = [ ];
+        var eventheld:Array<Map<String, String>> = [];
         try {
             var eventData:SharedObject = SharedObject.getLocal(GlobalPlayer.movie.mvId + '_eventsheld');
-            for (k in Reflect.fields(eventData.data.events)) {
-                eventheld.push(Reflect.field(eventData.data.events, k));
+            if (eventData.data.events != null) {
+                for (k in Reflect.fields(eventData.data.events)) {
+                    eventheld.push(Reflect.field(eventData.data.events, k));
+                }
             }
             eventData.close();
         } catch (e) { }
+
         if (!ok) {
             if (this._lastEvent.exists('name')) hold = true;
         } else {
             if (ld.map['e'] != 0) {
                 if (this._lastEvent.exists('name')) hold = true;
             } else {
-                // are there held events so send?
                 if (eventheld.length > 0) {
-                    // remove previous event?
-                    if (!this._lastEvent.exists('name')) eventheld.shift();
-                    // another one to send?
+                    eventheld.shift();
+                    try {
+                        var eventData:SharedObject = SharedObject.getLocal(GlobalPlayer.movie.mvId + '_eventsheld');
+                        eventData.data.events = eventheld;
+                        eventData.flush();
+                        eventData.close();
+                    } catch (e) { }
+                    // envia o próximo, se houver
                     if (eventheld.length > 0) {
                         GlobalPlayer.ws.send('Visitor/Event', eventheld[0], onDataEvent);
                     }
                 }
             }
         }
-        // hold event to send later?
+
         if (hold) {
             eventheld.push(this._lastEvent);
-            while(eventheld.length > 100) eventheld.shift();
+            while (eventheld.length > 100) eventheld.shift();
             try {
                 var eventData:SharedObject = SharedObject.getLocal(GlobalPlayer.movie.mvId + '_eventsheld');
                 eventData.data.events = eventheld;
@@ -5042,7 +5049,8 @@ class ScriptParser {
                 eventData.close();
             } catch (e) { }
         }
-        this._lastEvent = [ ];
+
+        this._lastEvent = [];
     }
 
     private function applyPlayerShader(num:Int):Void {
@@ -5086,7 +5094,6 @@ class ScriptParser {
     public function TBShowtime_Hardware_Call(data:String):Void {
         if (Syntax.code("typeof TBShowtime_Hardware === 'function'")) {
             Syntax.code("TBShowtime_Hardware({0})", data);
-            trace ('hardware call ok');
         } else {
             trace ('Showtime hardware call:', data);
         }

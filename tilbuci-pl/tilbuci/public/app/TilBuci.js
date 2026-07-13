@@ -938,7 +938,7 @@ ApplicationMain.main = function() {
 };
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
-	app.meta.h["build"] = "146";
+	app.meta.h["build"] = "149";
 	app.meta.h["company"] = "VAR";
 	app.meta.h["file"] = "TilBuci";
 	app.meta.h["name"] = "TilBuci";
@@ -27288,24 +27288,6 @@ com_tilbuci_player_MovieArea.prototype = $extend(openfl_display_Sprite.prototype
 			}
 		}
 		this.setFocus();
-		var h = this._instances.h;
-		var i_h = h;
-		var i_keys = Object.keys(h);
-		var i_length = i_keys.length;
-		var i_current = 0;
-		while(i_current < i_length) {
-			var i = i_keys[i_current++];
-			if(this._instances.h[i].keep && this._instances.h[i].alttext != "") {
-				switch(this._instances.h[i].get_currentType()) {
-				case "picture":
-					window.TBA_setAlt("img",this._instances.h[i].get_currentMedia(),this._instances.h[i].alttext);
-					break;
-				case "spritemap":
-					window.TBA_setAlt("img",this._instances.h[i].get_currentMedia(),this._instances.h[i].alttext);
-					break;
-				}
-			}
-		}
 	}
 	,imgSelect: function(nm) {
 		this._select.clearInstance();
@@ -41747,7 +41729,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 				case "$_ORIENTATION":
 					return com_tilbuci_data_GlobalPlayer.area.get_pOrientation();
 				case "$_RENDER":
-					return "dom";
+					return "webgl";
 				case "$_RUNTIME":
 					return "tilbuci";
 				case "$_SCENEID":
@@ -42328,12 +42310,14 @@ com_tilbuci_script_ScriptParser.prototype = {
 		var eventheld = [];
 		try {
 			var eventData = openfl_net_SharedObject.getLocal(com_tilbuci_data_GlobalPlayer.movie.get_mvId() + "_eventsheld");
-			var _g = 0;
-			var _g1 = Reflect.fields(eventData.data.events);
-			while(_g < _g1.length) {
-				var k = _g1[_g];
-				++_g;
-				eventheld.push(Reflect.field(eventData.data.events,k));
+			if(eventData.data.events != null) {
+				var _g = 0;
+				var _g1 = Reflect.fields(eventData.data.events);
+				while(_g < _g1.length) {
+					var k = _g1[_g];
+					++_g;
+					eventheld.push(Reflect.field(eventData.data.events,k));
+				}
 			}
 			eventData.close();
 		} catch( _g ) {
@@ -42347,8 +42331,13 @@ com_tilbuci_script_ScriptParser.prototype = {
 				hold = true;
 			}
 		} else if(eventheld.length > 0) {
-			if(!Object.prototype.hasOwnProperty.call(this._lastEvent.h,"name")) {
-				eventheld.shift();
+			eventheld.shift();
+			try {
+				var eventData = openfl_net_SharedObject.getLocal(com_tilbuci_data_GlobalPlayer.movie.get_mvId() + "_eventsheld");
+				eventData.data.events = eventheld;
+				eventData.flush();
+				eventData.close();
+			} catch( _g ) {
 			}
 			if(eventheld.length > 0) {
 				com_tilbuci_data_GlobalPlayer.ws.send("Visitor/Event",eventheld[0],$bind(this,this.onDataEvent));
@@ -42394,15 +42383,14 @@ com_tilbuci_script_ScriptParser.prototype = {
 		if(typeof TBShowtime_Event === 'function') {
 			TBShowtime_Event(movie, name, data);
 		} else {
-			haxe_Log.trace("Showtime event:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 5078, className : "com.tilbuci.script.ScriptParser", methodName : "TBShowtime_Event_Call", customParams : [data]});
+			haxe_Log.trace("Showtime event:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 5086, className : "com.tilbuci.script.ScriptParser", methodName : "TBShowtime_Event_Call", customParams : [data]});
 		}
 	}
 	,TBShowtime_Hardware_Call: function(data) {
 		if(typeof TBShowtime_Hardware === 'function') {
 			TBShowtime_Hardware(data);
-			haxe_Log.trace("hardware call ok",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 5089, className : "com.tilbuci.script.ScriptParser", methodName : "TBShowtime_Hardware_Call"});
 		} else {
-			haxe_Log.trace("Showtime hardware call:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 5091, className : "com.tilbuci.script.ScriptParser", methodName : "TBShowtime_Hardware_Call", customParams : [data]});
+			haxe_Log.trace("Showtime hardware call:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 5098, className : "com.tilbuci.script.ScriptParser", methodName : "TBShowtime_Hardware_Call", customParams : [data]});
 		}
 	}
 	,__class__: com_tilbuci_script_ScriptParser
@@ -139771,8 +139759,6 @@ var lime__$internal_backend_html5_HTML5Window = function(parent) {
 	if(!Object.prototype.hasOwnProperty.call(attributes,"context")) {
 		attributes.context = { };
 	}
-	attributes.context.type = "dom";
-	attributes.context.version = "";
 	this.renderType = attributes.context.type;
 	if(Object.prototype.hasOwnProperty.call(attributes,"element")) {
 		parent.element = attributes.element;
@@ -156719,7 +156705,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 111820;
+	this.version = 191876;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";
@@ -178007,7 +177993,6 @@ openfl_display_Stage.prototype = $extend(openfl_display_DisplayObjectContainer.p
 			this.__renderer.__pixelRatio = this.window.__scale;
 			this.__renderer.__worldTransform = this.__displayMatrix;
 			this.__renderer.__stage = this;
-			this.__renderer.__pixelRatio = window.devicePixelRatio;
 			this.__renderer.__resize(windowWidth,windowHeight);
 		}
 	}
@@ -202490,7 +202475,7 @@ var openfl_display3D_Context3D = function(stage,contextState,stage3D) {
 	this.__contextState = contextState;
 	this.__stage3D = stage3D;
 	this.__context = stage.window.context;
-	this.gl = lime_graphics_WebGLRenderContext.fromWebGL2RenderContext(lime_graphics_opengl_GL.context);
+	this.gl = this.__context.webgl;
 	if(this.__contextState == null) {
 		this.__contextState = new openfl_display3D__$internal_Context3DState();
 	}

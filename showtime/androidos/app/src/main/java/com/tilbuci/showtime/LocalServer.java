@@ -72,8 +72,14 @@ public class LocalServer extends NanoHTTPD {
                                 in.close();
                                 String content = new String(tbuf, "UTF-8");
                                 
+                                String wsFormatted = ws;
+                                if (!wsFormatted.isEmpty()) {
+                                    if (!wsFormatted.endsWith("/")) wsFormatted += "/";
+                                    wsFormatted += "ws/";
+                                }
+                                
                                 content = content.replace("[MOVIE]", movie);
-                                content = content.replace("[WS]", ws);
+                                content = content.replace("[WS]", wsFormatted);
                                 
                                 String injectScript = "<script>\n" +
                                         "    function TBShowtime_Event(movie, eventName, jsonStr) {\n" +

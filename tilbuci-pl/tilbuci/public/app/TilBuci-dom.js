@@ -938,7 +938,7 @@ ApplicationMain.main = function() {
 };
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
-	app.meta.h["build"] = "140";
+	app.meta.h["build"] = "149";
 	app.meta.h["company"] = "VAR";
 	app.meta.h["file"] = "TilBuci";
 	app.meta.h["name"] = "TilBuci";
@@ -2732,7 +2732,7 @@ openfl_display_DisplayObject.prototype = $extend(openfl_events_EventDispatcher.p
 			this.__scrollRect = null;
 		}
 		this.__setTransformDirty();
-		if(openfl_display_DisplayObject.__supportDOM) {
+		if(openfl_display_DisplayObject.__supportDOM || this.get_cacheAsBitmap()) {
 			if(!this.__renderDirty) {
 				this.__renderDirty = true;
 				this.__setParentRenderDirty();
@@ -7783,6 +7783,11 @@ com_tilbuci_Editor.prototype = $extend(feathers_controls_Drawer.prototype,{
 			com_tilbuci_data_Global.singleUser = ld.map.h["singleUser"];
 			com_tilbuci_data_Global.validEmail = ld.map.h["validEmail"];
 			com_tilbuci_data_Global.showWindow = $bind(this,this.showWindow);
+			if(Object.prototype.hasOwnProperty.call(ld.map.h,"stAKey")) {
+				com_tilbuci_data_Global.stAKey = ld.map.h["stAKey"];
+			} else {
+				com_tilbuci_data_Global.stAKey = "";
+			}
 			if(Object.prototype.hasOwnProperty.call(ld.map.h,"host")) {
 				com_tilbuci_data_Global.host = ld.map.h["host"];
 			}
@@ -8273,6 +8278,23 @@ com_tilbuci_Editor.prototype = $extend(feathers_controls_Drawer.prototype,{
 		}
 	}
 	,actionWindowSetup: function(ac,data) {
+		switch(ac) {
+		case "menu-close":
+			this.set_opened(false);
+			break;
+		case "showtime-inst":
+			this.showWindow("showtime");
+			var tmp = this._windows.h["showtime"];
+			var _g = new haxe_ds_StringMap();
+			_g.h["name"] = data.h["name"];
+			tmp.action("load",_g);
+			break;
+		case "window-notes":
+			this.showWindow("designnotes");
+			break;
+		}
+	}
+	,actionWindowShowtime: function(ac,data) {
 		switch(ac) {
 		case "menu-close":
 			this.set_opened(false);
@@ -10272,6 +10294,11 @@ com_tilbuci_Editor.prototype = $extend(feathers_controls_Drawer.prototype,{
 				var this1 = this._windows;
 				var v = new com_tilbuci_ui_window_WindowSetup($bind(this,this.actionWindowSetup),this.build);
 				this1.h["setup"] = v;
+				break;
+			case "showtime":
+				var this1 = this._windows;
+				var v = new com_tilbuci_ui_window_WindowShowtime($bind(this,this.actionWindowShowtime));
+				this1.h["showtime"] = v;
 				break;
 			case "snippets":
 				var this1 = this._windows;
@@ -17698,7 +17725,7 @@ com_tilbuci_data_Global.copyText = function(text) {
 		window.TBB_copyText(text);
 		ok = true;
 	} catch( _g ) {
-		haxe_Log.trace(text,{ fileName : "Source/com/tilbuci/data/Global.hx", lineNumber : 325, className : "com.tilbuci.data.Global", methodName : "copyText"});
+		haxe_Log.trace(text,{ fileName : "Source/com/tilbuci/data/Global.hx", lineNumber : 330, className : "com.tilbuci.data.Global", methodName : "copyText"});
 		ok = false;
 	}
 	return ok;
@@ -25867,24 +25894,11 @@ openfl_events_Event.prototype = {
 		event.currentTarget = this.currentTarget;
 		return event;
 	}
-	,formatToString: function(className,p1,p2,p3,p4,p5) {
-		var parameters = [];
-		if(p1 != null) {
-			parameters.push(p1);
-		}
-		if(p2 != null) {
-			parameters.push(p2);
-		}
-		if(p3 != null) {
-			parameters.push(p3);
-		}
-		if(p4 != null) {
-			parameters.push(p4);
-		}
-		if(p5 != null) {
-			parameters.push(p5);
-		}
-		return $bind(this,this.__formatToString).apply(this,[className,parameters]);
+	,formatToString: function(className) {
+		var $l=arguments.length;
+		var args = new Array($l>1?$l-1:0);
+		for(var $i=1;$i<$l;++$i){args[$i-1]=arguments[$i];}
+		return this.__formatToString(className,args.slice());
 	}
 	,isDefaultPrevented: function() {
 		return this.__preventDefault;
@@ -35097,6 +35111,7 @@ var com_tilbuci_script_ActionInfo = function() {
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbarray-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-arrayload"), a : "array.loadfile", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arrayload-p1"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraycreate"), a : "array.create", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraycreate-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arrayremove"), a : "array.remove", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arrayremove-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraypush"), a : "array.push", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraypush-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraypush-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arrayset"), a : "array.set", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arrayset-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-arrayset-p2"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arrayset-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arrayget"), a : "array.get", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arrayget-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-arrayget-p2"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arrayget-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraygetint"), a : "array.getint", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraygetint-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-arraygetint-p2"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraygetint-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraygetfloat"), a : "array.getfloat", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraygetfloat-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-arraygetfloat-p2"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraygetfloat-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraygetbool"), a : "array.getbool", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraygetbool-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-arraygetbool-p2"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraygetbool-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arrayclear"), a : "array.clear", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arrayclear-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraycurrent"), a : "array.current", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraycurrent-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraycurrent-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraynext"), a : "array.next", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraynext-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraynext-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arrayprevious"), a : "array.previous", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arrayprevious-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arrayprevious-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraycurrentint"), a : "array.currentint", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraycurrentint-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraycurrentint-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraynextint"), a : "array.nextint", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraynextint-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraynextint-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraypreviousint"), a : "array.previousint", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraypreviousint-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraypreviousint-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraycurrentfloat"), a : "array.currentfloat", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraycurrentfloat-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraycurrentfloat-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraynextfloat"), a : "array.nextfloat", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraynextfloat-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraynextfloat-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraypreviousfloat"), a : "array.previousfloat", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraypreviousfloat-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraypreviousfloat-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraycurrentbool"), a : "array.currentbool", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraycurrentbool-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraycurrentbool-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraynextbool"), a : "array.nextbool", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraynextbool-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraynextbool-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraypreviousbool"), a : "array.previousbool", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraypreviousbool-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraypreviousbool-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraysetindex"), a : "array.setindex", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraysetindex-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-arraysetindex-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraygetindex"), a : "array.getindex", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraygetindex-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraygetindex-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arraytostring"), a : "array.tostring", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraytostring-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arraytostring-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-arrayfromstring"), a : "array.fromstring", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arrayfromstring-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-arrayfromstring-p2"), v : ""}], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbinstance-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-instancemorezoom"), a : "instance.morezoom", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancemorezoom-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancemorezoom-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancelesszoom"), a : "instance.lesszoom", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancelesszoom-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancelesszoom-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearzoom"), a : "instance.clearzoom", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearzoom-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveup"), a : "instance.moveup", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveup-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveup-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancemovedown"), a : "instance.movedown", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancemovedown-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancemovedown-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveleft"), a : "instance.moveleft", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveleft-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveleft-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveright"), a : "instance.moveright", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveright-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancemoveright-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearmove"), a : "instance.clearmove", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearmove-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancestartdrag"), a : "instance.startdrag", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancestartdrag-p1"), v : "instances"}], e : ["complete"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancestopdrag"), a : "instance.stopdrag", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceisoverlapping"), a : "instance.isoverlapping", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceisoverlapping-p1"), v : "instances"},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceisoverlapping-p2"), v : "instances"}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancepause"), a : "instance.pause", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancepause-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceplay"), a : "instance.play", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceplay-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceplaypause"), a : "instance.playpause", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceplaypause-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancestop"), a : "instance.stop", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancestop-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancenext"), a : "instance.next", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancenext-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceprevious"), a : "instance.previous", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceprevious-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceseek"), a : "instance.seek", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceseek-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instanceseek-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancezoom"), a : "instance.zoom", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancezoom-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetparagraph"), a : "instance.setparagraph", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetparagraph-p1"), v : "instances"},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetparagraph-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceloadasset"), a : "instance.loadasset", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceloadasset-p1"), v : "instances"},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceloadasset-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetx"), a : "instance.setx", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetx-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetx-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesety"), a : "instance.sety", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesety-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesety-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetwidth"), a : "instance.setwidth", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetwidth-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetwidth-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetheight"), a : "instance.setheight", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetheight-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetheight-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetvisible"), a : "instance.setvisible", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetvisible-p1"), v : "instances"},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetvisible-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetalpha"), a : "instance.setalpha", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetalpha-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetalpha-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetwidth"), a : "instance.setwidth", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetwidth-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetwidth-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetorder"), a : "instance.setorder", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetorder-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetorder-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetcolor"), a : "instance.setcolor", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetcolor-p1"), v : "instances"},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetcolor-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetcoloralpha"), a : "instance.setcoloralpha", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetcoloralpha-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetcoloralpha-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfont"), a : "instance.setfont", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfont-p1"), v : "instances"},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfont-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontsize"), a : "instance.setfontsize", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontsize-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontsize-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontalign"), a : "instance.setfontalign", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontalign-p1"), v : "instances"},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontalign-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontbackground"), a : "instance.setfontbackground", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontbackground-p1"), v : "instances"},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontbackground-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontbold"), a : "instance.setfontbold", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontbold-p1"), v : "instances"},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontbold-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontitalic"), a : "instance.setfontitalic", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontitalic-p1"), v : "instances"},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontitalic-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontcolor"), a : "instance.setfontcolor", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontcolor-p1"), v : "instances"},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontcolor-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontleading"), a : "instance.setfontleading", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontleading-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetfontleading-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetvolume"), a : "instance.setvolume", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetvolume-p1"), v : "instances"},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetvolume-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancesetrotation"), a : "instance.setrotation", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetrotation-p1"), v : "instances"},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-instancesetrotation-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancescrolldown"), a : "instance.scrolldown", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancescrolldown-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancescrollup"), a : "instance.scrollup", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancescrollup-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancescrollbottom"), a : "instance.scrollbottom", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancescrollbottom-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancescrolltop"), a : "instance.scrolltop", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancescrolltop-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearall"), a : "instance.clearall", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearall-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearx"), a : "instance.clearx", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearx-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instancecleary"), a : "instance.cleary", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instancecleary-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearwidth"), a : "instance.clearwidth", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearwidth-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearheight"), a : "instance.clearheight", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearheight-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearvisible"), a : "instance.clearvisible", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearvisible-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearalpha"), a : "instance.clearalpha", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearalpha-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearwidth"), a : "instance.clearwidth", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearwidth-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearorder"), a : "instance.clearorder", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearorder-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearcolor"), a : "instance.clearcolor", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearcolor-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearcoloralpha"), a : "instance.clearcoloralpha", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearcoloralpha-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfont"), a : "instance.clearfont", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfont-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontsize"), a : "instance.clearfontsize", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontsize-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontalign"), a : "instance.clearfontalign", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontalign-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontbackground"), a : "instance.clearfontbackground", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontbackground-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontbold"), a : "instance.clearfontbold", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontbold-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontitalic"), a : "instance.clearfontitalic", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontitalic-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontcolor"), a : "instance.clearfontcolor", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontcolor-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontleading"), a : "instance.clearfontleading", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearfontleading-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearvolume"), a : "instance.clearvolume", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearvolume-p1"), v : "instances"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearrotation"), a : "instance.clearrotation", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-instanceclearrotation-p1"), v : "instances"}], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbdata-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-dataevent"), a : "data.event", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-dataevent-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-dataeventclear"), a : "data.eventclear", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-dataliststates"), a : "data.liststates", p : [], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-dataload"), a : "data.load", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-dataload-p1"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-dataloadlocal"), a : "data.loadlocal", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-dataloadlocal-p1"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-dataloadquickstate"), a : "data.loadquickstate", p : [], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-dataloadstatelocal"), a : "data.loadstatelocal", p : [], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-datasave"), a : "data.save", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-datasave-p1"), v : ""},{ t : "v", n : com_tilbuci_data_Global.ln.get("acinfo-datasave-p2"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-datasavelocal"), a : "data.savelocal", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-datasavelocal-p1"), v : ""},{ t : "v", n : com_tilbuci_data_Global.ln.get("acinfo-datasavelocal-p2"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-datasavestate"), a : "data.savestate", p : [], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-datasavequickstate"), a : "data.savequickstate", p : [], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-datasavestatelocal"), a : "data.savestatelocal", p : [], e : ["success","error"]}]));
+	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acshowtime-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-showtimeevent"), a : "showtime.event", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showtimeevent-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-showtimehardware"), a : "showtime.hardware", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-showtimehardware-p1"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-showtimehardware-p2"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-showtimehardware-p3"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-showtimehardware-p4"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-showtimehardware-p5"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-showtimehardware-p6"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-showtimehardware-p7"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-showtimehardware-p8"), v : ""}], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbinput-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-targetshow"), a : "target.show", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-targethide"), a : "target.hide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-targettoggle"), a : "target.toggle", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-targetsetposition"), a : "target.setposition", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-targetsetposition-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-targetsetposition-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-targetclear"), a : "target.clear", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-targetset"), a : "target.set", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-targetset-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-mousehide"), a : "mouse.hide", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-mouseshow"), a : "mouse.show", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputmessage"), a : "input.message", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputmessage-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputmessage-p2"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputstring"), a : "input.string", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputstring-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputstring-p2"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputint"), a : "input.int", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputint-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputint-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputint-p3"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputint-p4"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputint-p5"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputfloat"), a : "input.float", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputfloat-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputfloat-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputfloat-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputfloat-p4"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputfloat-p5"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputlist"), a : "input.list", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputlist-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputlist-p2"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputlist-p3"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputlist-p4"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputlogin"), a : "input.login", p : [], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputemail"), a : "input.email", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputemail-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputemail-p2"), v : ""}], e : ["ok","cancel"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputadd"), a : "input.add", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputadd-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputadd-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputadd-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputadd-p4"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-inputadd-p5"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputplace"), a : "input.place", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputplace-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplace-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplace-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplace-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputsettext"), a : "input.settext", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsettext-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsettext-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputsetpassword"), a : "input.setpassword", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetpassword-p1"), v : ""},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetpassword-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputremove"), a : "input.remove", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputremove-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputremoveall"), a : "input.removeall", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputaddtarea"), a : "input.addtarea", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddtarea-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddtarea-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddtarea-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddtarea-p4"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddtarea-p5"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetarea"), a : "input.placetarea", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetarea-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetarea-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetarea-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetarea-p4"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetarea-p5"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputsettextarea"), a : "input.settextarea", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsettextarea-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsettextarea-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputremovetarea"), a : "input.removetarea", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputremovetarea-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputremovealltareas"), a : "input.removealltareas", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputaddnumeric"), a : "input.addnumeric", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddnumeric-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddnumeric-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddnumeric-p3"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddnumeric-p4"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddnumeric-p5"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputplacenumeric"), a : "input.placenumeric", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacenumeric-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacenumeric-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacenumeric-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacenumeric-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumeric"), a : "input.setnumeric", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumeric-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumeric-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumericbounds"), a : "input.setnumericbounds", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumericbounds-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumericbounds-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumericbounds-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inputsetnumericbounds-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputremovenumeric"), a : "input.removenumeric", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputremovenumeric-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputremoveallnumerics"), a : "input.removeallnumerics", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputaddaddtoggle"), a : "input.addtoggle", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddaddtoggle-p1"), v : ""},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddaddtoggle-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddaddtoggle-p3"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputaddaddtoggle-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetoggle"), a : "input.placetoggle", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetoggle-p1"), v : ""},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetoggle-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-inputplacetoggle-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputsettoggle"), a : "input.settoggle", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputsettoggle-p1"), v : ""},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-inputsettoggle-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputinverttoggle"), a : "input.inverttoggle", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputinverttoggle-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputremovetoggle"), a : "input.removetoggle", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inputremovetoggle-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inputrremovealltoggles"), a : "input.removealltoggles", p : [], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbsystem-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-run"), a : "run", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-run-p1"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p2"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p3"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p4"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p5"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p6"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p7"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-run-p8"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-snippetsload"), a : "snippets.load", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-snippetsload-p1"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-snippetsunload"), a : "snippets.unload", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-snippetsunload-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemfullscreen"), a : "system.fullscreen", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemopenembed"), a : "system.openembed", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemopenembed-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow"), a : "system.embedshow", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p4"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedshow-p5"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemembedtab"), a : "system.embedtab", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemembedtab-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcloseembed"), a : "system.closeembed", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace"), a : "system.embedplace", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p3"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-systemsembedplace-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemembedreset"), a : "system.embedreset", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemopenurl"), a : "system.openurl", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemopenurl-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcopytext"), a : "system.copytext", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemcopytext-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifhorizontal"), a : "system.ifhorizontal", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifvertical"), a : "system.ifvertical", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifwebsite"), a : "system.ifwebsite", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifpwa"), a : "system.ifpwa", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifpwainstalled"), a : "system.ifpwainstalled", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifdesktop"), a : "system.ifdesktop", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifmobile"), a : "system.ifmobile", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifpublish"), a : "system.ifpublish", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemifplayer"), a : "system.ifplayer", p : [], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemvisitoringroup"), a : "system.visitoringroup", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemvisitoringroup-p1"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemlogout"), a : "system.logout", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsendevent"), a : "system.sendevent", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemsendevent-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemsetkftime"), a : "system.setkftime", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemsetkftime-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcalljs"), a : "system.calljs", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-systemcalljs-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr"), a : "system.getqr", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-systemgetqr-p3"), v : ""}], e : ["complete"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-systemcloseqr"), a : "system.closeqr", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-cssset"), a : "css.set", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-cssset-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-cssclear"), a : "css.clear", p : [], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbtimer-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-timerset"), a : "timer.set", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-timerset-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-timerset-p2"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-timerset-p3"), v : ""}], e : ["tick","end"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-timerclear"), a : "timer.clear", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-timerclear-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-timerclearall"), a : "timer.clearall", p : [], e : []}]));
@@ -40907,6 +40922,85 @@ com_tilbuci_script_ScriptParser.prototype = {
 						return false;
 					}
 					break;
+				case "showtime.event":
+					var prData = [];
+					prData.push(this.parseString(param[0]));
+					prData.push(HxOverrides.dateStr(new Date()));
+					prData.push(com_tilbuci_data_GlobalPlayer.movie.get_mvId());
+					prData.push(com_tilbuci_data_GlobalPlayer.mdata.title);
+					prData.push(com_tilbuci_data_GlobalPlayer.movie.get_scId());
+					prData.push(com_tilbuci_data_GlobalPlayer.movie.scene.title);
+					if(param.length > 1) {
+						var _g = 1;
+						var _g1 = param.length;
+						while(_g < _g1) {
+							var i = _g++;
+							if(HxOverrides.substr(Std.string(param[i]),0,1) == "#") {
+								if(Object.prototype.hasOwnProperty.call(this._ints.h,HxOverrides.substr(Std.string(param[i]),1,null))) {
+									prData.push(this._ints.h[HxOverrides.substr(Std.string(param[i]),1,null)]);
+								} else if(Object.prototype.hasOwnProperty.call(this._floats.h,HxOverrides.substr(Std.string(param[i]),1,null))) {
+									prData.push(this._floats.h[HxOverrides.substr(Std.string(param[i]),1,null)]);
+								} else {
+									prData.push(this.parseString(param[i]));
+								}
+							} else if(HxOverrides.substr(Std.string(param[i]),0,1) == "?") {
+								if(Object.prototype.hasOwnProperty.call(this._bools.h,HxOverrides.substr(Std.string(param[i]),1,null))) {
+									prData.push(this._bools.h[HxOverrides.substr(Std.string(param[i]),1,null)]);
+								} else {
+									prData.push(this.parseString(param[i]));
+								}
+							} else {
+								prData.push(this.parseString(param[i]));
+							}
+						}
+					}
+					this.TBShowtime_Event_Call(com_tilbuci_data_GlobalPlayer.movie.get_mvId(),this.parseString(param[0]),com_tilbuci_statictools_StringStatic.jsonStringify(prData));
+					return true;
+				case "showtime.hardware":
+					if(param.length > 0) {
+						var prData = [];
+						prData.push(this.parseString(param[0]));
+						var prParam = "";
+						if(param.length > 1) {
+							var _g = 1;
+							var _g1 = param.length;
+							while(_g < _g1) {
+								var i = _g++;
+								prParam = "";
+								if(HxOverrides.substr(Std.string(param[i]),0,1) == "#") {
+									if(Object.prototype.hasOwnProperty.call(this._ints.h,HxOverrides.substr(Std.string(param[i]),1,null))) {
+										prParam = Std.string(this._ints.h[HxOverrides.substr(Std.string(param[i]),1,null)]);
+									} else if(Object.prototype.hasOwnProperty.call(this._floats.h,HxOverrides.substr(Std.string(param[i]),1,null))) {
+										prParam = Std.string(this._floats.h[HxOverrides.substr(Std.string(param[i]),1,null)]);
+									} else {
+										prParam = this.parseString(param[i]);
+									}
+									if(prParam != "") {
+										prData.push(prParam);
+									}
+								} else if(HxOverrides.substr(Std.string(param[i]),0,1) == "?") {
+									if(Object.prototype.hasOwnProperty.call(this._bools.h,HxOverrides.substr(Std.string(param[i]),1,null))) {
+										prParam = Std.string(this._bools.h[HxOverrides.substr(Std.string(param[i]),1,null)]);
+									} else {
+										prParam = this.parseString(param[i]);
+									}
+									if(prParam != "") {
+										prData.push(prParam);
+									}
+								} else {
+									prParam = this.parseString(param[i]);
+									if(prParam != "") {
+										prData.push(prParam);
+									}
+								}
+							}
+						}
+						this.TBShowtime_Hardware_Call(prData.join("|"));
+						return true;
+					} else {
+						return false;
+					}
+					break;
 				case "snippets.load":
 					if(param.length > 0) {
 						this._acOk = this._acError = null;
@@ -42234,12 +42328,14 @@ com_tilbuci_script_ScriptParser.prototype = {
 		var eventheld = [];
 		try {
 			var eventData = openfl_net_SharedObject.getLocal(com_tilbuci_data_GlobalPlayer.movie.get_mvId() + "_eventsheld");
-			var _g = 0;
-			var _g1 = Reflect.fields(eventData.data.events);
-			while(_g < _g1.length) {
-				var k = _g1[_g];
-				++_g;
-				eventheld.push(Reflect.field(eventData.data.events,k));
+			if(eventData.data.events != null) {
+				var _g = 0;
+				var _g1 = Reflect.fields(eventData.data.events);
+				while(_g < _g1.length) {
+					var k = _g1[_g];
+					++_g;
+					eventheld.push(Reflect.field(eventData.data.events,k));
+				}
 			}
 			eventData.close();
 		} catch( _g ) {
@@ -42253,8 +42349,13 @@ com_tilbuci_script_ScriptParser.prototype = {
 				hold = true;
 			}
 		} else if(eventheld.length > 0) {
-			if(!Object.prototype.hasOwnProperty.call(this._lastEvent.h,"name")) {
-				eventheld.shift();
+			eventheld.shift();
+			try {
+				var eventData = openfl_net_SharedObject.getLocal(com_tilbuci_data_GlobalPlayer.movie.get_mvId() + "_eventsheld");
+				eventData.data.events = eventheld;
+				eventData.flush();
+				eventData.close();
+			} catch( _g ) {
 			}
 			if(eventheld.length > 0) {
 				com_tilbuci_data_GlobalPlayer.ws.send("Visitor/Event",eventheld[0],$bind(this,this.onDataEvent));
@@ -42294,6 +42395,20 @@ com_tilbuci_script_ScriptParser.prototype = {
 				break;
 			}
 			com_tilbuci_data_GlobalPlayer.area.parent.set_filters(filters);
+		}
+	}
+	,TBShowtime_Event_Call: function(movie,name,data) {
+		if(typeof TBShowtime_Event === 'function') {
+			TBShowtime_Event(movie, name, data);
+		} else {
+			haxe_Log.trace("Showtime event:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 5086, className : "com.tilbuci.script.ScriptParser", methodName : "TBShowtime_Event_Call", customParams : [data]});
+		}
+	}
+	,TBShowtime_Hardware_Call: function(data) {
+		if(typeof TBShowtime_Hardware === 'function') {
+			TBShowtime_Hardware(data);
+		} else {
+			haxe_Log.trace("Showtime hardware call:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 5098, className : "com.tilbuci.script.ScriptParser", methodName : "TBShowtime_Hardware_Call", customParams : [data]});
 		}
 	}
 	,__class__: com_tilbuci_script_ScriptParser
@@ -61623,6 +61738,20 @@ var com_tilbuci_ui_window_WindowSetup = function(ac,build) {
 			this.addForm(tmp,tmp1.forge("form-update",[tmp2,{ tp : "Spacer", id : "update-about", ht : 20, ln : false},tmp3,{ tp : "Spacer", id : "update-check", ht : 20, ln : false},{ tp : "Button", id : "update-upload", tx : tmp4, ac : $bind(this,this.onSelectUpdate)}]));
 			this.ui.labels.h["update-about"].set_wordWrap(true);
 		}
+		var tmp = com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-title");
+		var tmp1 = this.ui;
+		var tmp2 = { tp : "Label", id : "showtimeconf-about", tx : com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-about"), vr : ""};
+		var tmp3 = { tp : "Label", id : "showtimeconf-server", tx : com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-server"), vr : feathers_controls_Label.VARIANT_DETAIL};
+		var tmp4 = { tp : "Button", id : "showtimeconf-server", tx : com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-serverbt"), ac : $bind(this,this.onCopyServer)};
+		var tmp5 = { tp : "Label", id : "showtimeconf-key", tx : com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-key"), vr : feathers_controls_Label.VARIANT_DETAIL};
+		var tmp6 = { tp : "TInput", id : "showtimeconf-key", tx : com_tilbuci_data_Global.stAKey, vr : ""};
+		var tmp7 = { tp : "Button", id : "showtimeconf-key", tx : com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-keybt"), ac : $bind(this,this.onSetSTKey)};
+		var tmp8 = { tp : "Label", id : "showtimeconf-list", tx : com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-list"), vr : ""};
+		var tmp9 = com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-listbt");
+		this.addForm(tmp,tmp1.forge("form-showtimeconf",[tmp2,{ tp : "Spacer", id : "showtimeconf-server", ht : 20, ln : true},tmp3,{ tp : "TInput", id : "showtimeconf-server", tx : "", vr : ""},tmp4,tmp5,tmp6,tmp7,{ tp : "Spacer", id : "showtimeconf-list", ht : 20, ln : true},tmp8,{ tp : "List", id : "showtimeconf-list", vl : [], ht : 130, sl : ""},{ tp : "Button", id : "showtimeconf-list", tx : tmp9, ac : $bind(this,this.onStInstance)}]));
+		this.ui.labels.h["showtimeconf-about"].set_wordWrap(true);
+		this.ui.labels.h["showtimeconf-list"].set_wordWrap(true);
+		this.ui.inputs.h["showtimeconf-server"].set_enabled(false);
 	}
 	var langs = [];
 	var h = build.get_languages().h;
@@ -61668,6 +61797,7 @@ com_tilbuci_ui_window_WindowSetup.__super__ = com_tilbuci_ui_window_PopupWindow;
 com_tilbuci_ui_window_WindowSetup.prototype = $extend(com_tilbuci_ui_window_PopupWindow.prototype,{
 	acStart: function() {
 		if(com_tilbuci_data_Global.userLevel == 0) {
+			this.ui.inputs.h["showtimeconf-server"].set_text(com_tilbuci_data_GlobalPlayer.base);
 			if(com_tilbuci_data_Global.host == "") {
 				com_tilbuci_data_Global.ws.send("Email/GetConfig",new haxe_ds_StringMap(),$bind(this,this.onEmailSettings));
 			}
@@ -62108,6 +62238,16 @@ com_tilbuci_ui_window_WindowSetup.prototype = $extend(com_tilbuci_ui_window_Popu
 			com_tilbuci_data_GlobalPlayer.fps = this.ui.selects.h["fps"].get_selectedItem().value;
 		}
 	}
+	,onSetSTKeyReturn: function(ok,ld) {
+		if(!ok) {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-title"),com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-keyerset"),400,180,this.stage);
+		} else if(ld.map.h["e"] != 0) {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-title"),com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-keyerset"),400,180,this.stage);
+		} else {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-title"),com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-keyerok"),400,180,this.stage);
+			com_tilbuci_data_Global.stAKey = this.ui.inputs.h["showtimeconf-key"].get_text();
+		}
+	}
 	,onMovieList: function(ok,ld) {
 		var list = [];
 		var current = "";
@@ -62125,13 +62265,312 @@ com_tilbuci_ui_window_WindowSetup.prototype = $extend(com_tilbuci_ui_window_Popu
 		}
 		this.ui.setSelectOptions("movie-index",list);
 		this.ui.setSelectValue("movie-index",current);
+		com_tilbuci_data_Global.ws.send("Movie/ShowtimeList",new haxe_ds_StringMap(),$bind(this,this.onShowtimeList));
+	}
+	,onShowtimeList: function(ok,ld) {
+		var list = [];
+		var current = "";
+		if(ok) {
+			if(ld.map.h["e"] == 0) {
+				var instlist = ld.map.h["list"];
+				var _g = 0;
+				var _g1 = instlist.length;
+				while(_g < _g1) {
+					var i = _g++;
+					list.push({ text : instlist[i], value : instlist[i]});
+				}
+			}
+		}
+		this.ui.setListValues("showtimeconf-list",list);
 	}
 	,onRelase: function(evt) {
 		var req = new openfl_net_URLRequest("https://tilbuci.com.br/site/latest-version/");
 		req.method = "GET";
 		openfl_Lib.getURL(req);
 	}
+	,onCopyServer: function(evt) {
+		com_tilbuci_data_Global.copyText(com_tilbuci_data_GlobalPlayer.base);
+	}
+	,onSetSTKey: function(evt) {
+		if(this.ui.inputs.h["showtimeconf-key"].get_text().length < 5) {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-title"),com_tilbuci_data_Global.ln.get("window-setup-showtimeconf-keyer"),400,180,this.stage);
+		} else {
+			var tmp = com_tilbuci_data_Global.ws;
+			var _g = new haxe_ds_StringMap();
+			_g.h["stType"] = "accesskey";
+			var value = this.ui.inputs.h["showtimeconf-key"].get_text();
+			_g.h["accesskey"] = value;
+			tmp.send("Movie/SetShowtime",_g,$bind(this,this.onSetSTKeyReturn));
+		}
+	}
+	,onStInstance: function(evt) {
+		if(this.ui.lists.h["showtimeconf-list"].get_selectedItem() != null) {
+			var tmp = this._ac;
+			var _g = new haxe_ds_StringMap();
+			var value = this.ui.lists.h["showtimeconf-list"].get_selectedItem().value;
+			_g.h["name"] = value;
+			tmp("showtime-inst",_g);
+		}
+	}
 	,__class__: com_tilbuci_ui_window_WindowSetup
+});
+var com_tilbuci_ui_window_WindowShowtime = function(ac) {
+	this.stName = "";
+	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-showtime-title"),900,com_tilbuci_ui_base_InterfaceFactory.pickValue(560,640),true,true,true);
+	this.ui.createHContainer("apptype");
+	this.ui.createLabel("apptype",com_tilbuci_data_Global.ln.get("window-showtime-apptype"),"",this.ui.hcontainers.h["apptype"]);
+	this.ui.createTInput("apptype","","",this.ui.hcontainers.h["apptype"]);
+	this.ui.inputs.h["apptype"].set_enabled(false);
+	this.ui.createHContainer("inimovie");
+	this.ui.createLabel("inimovie",com_tilbuci_data_Global.ln.get("window-showtime-inimovie"),"",this.ui.hcontainers.h["inimovie"]);
+	this.ui.createSelect("inimovie",[],null,this.ui.hcontainers.h["inimovie"]);
+	this.ui.createHContainer("appid");
+	this.ui.createLabel("appid",com_tilbuci_data_Global.ln.get("window-showtime-appid"),"",this.ui.hcontainers.h["appid"]);
+	this.ui.createTInput("appid","","",this.ui.hcontainers.h["appid"]);
+	this.ui.createHContainer("accessk");
+	this.ui.createLabel("accessk",com_tilbuci_data_Global.ln.get("window-showtime-accessk"),"",this.ui.hcontainers.h["accessk"]);
+	this.ui.createTInput("accessk","","",this.ui.hcontainers.h["accessk"]);
+	this.ui.createHContainer("mouse");
+	this.ui.createLabel("mouse",com_tilbuci_data_Global.ln.get("window-showtime-mouse"),"",this.ui.hcontainers.h["mouse"]);
+	this.ui.createToggle("mouse",false,this.ui.hcontainers.h["mouse"]);
+	this.ui.createLabel("mouse2","","",this.ui.hcontainers.h["mouse"]);
+	this.ui.createHContainer("startup");
+	this.ui.createLabel("startup",com_tilbuci_data_Global.ln.get("window-showtime-startup"),"",this.ui.hcontainers.h["startup"]);
+	this.ui.createToggle("startup",false,this.ui.hcontainers.h["startup"]);
+	this.ui.createLabel("startup2","","",this.ui.hcontainers.h["startup"]);
+	this.ui.createHContainer("serial");
+	this.ui.createLabel("serial",com_tilbuci_data_Global.ln.get("window-showtime-serial"),"",this.ui.hcontainers.h["serial"]);
+	this.ui.createTInput("serial","","",this.ui.hcontainers.h["serial"]);
+	this.ui.createHContainer("baud");
+	this.ui.createLabel("baud",com_tilbuci_data_Global.ln.get("window-showtime-baud"),"",this.ui.hcontainers.h["baud"]);
+	this.ui.createSelect("baud",[{ text : "9600", value : "9600"},{ text : "19200", value : "19200"},{ text : "38400", value : "38400"},{ text : "57600", value : "57600"},{ text : "115200", value : "115200"}],null,this.ui.hcontainers.h["baud"]);
+	var tmp = com_tilbuci_data_Global.ln.get("window-showtime-conf-title");
+	var tmp1 = this.ui;
+	var tmp2 = { tp : "Label", id : "confabout", tx : com_tilbuci_data_Global.ln.get("window-showtime-confabout"), vr : ""};
+	var tmp3 = { tp : "Custom", cont : this.ui.hcontainers.h["apptype"]};
+	var tmp4 = { tp : "Custom", cont : this.ui.hcontainers.h["inimovie"]};
+	var tmp5 = { tp : "Custom", cont : this.ui.hcontainers.h["appid"]};
+	var tmp6 = { tp : "Custom", cont : this.ui.hcontainers.h["accessk"]};
+	var tmp7 = { tp : "Custom", cont : this.ui.hcontainers.h["mouse"]};
+	var tmp8 = { tp : "Custom", cont : this.ui.hcontainers.h["startup"]};
+	var tmp9 = { tp : "Custom", cont : this.ui.hcontainers.h["serial"]};
+	var tmp10 = { tp : "Custom", cont : this.ui.hcontainers.h["baud"]};
+	var tmp11 = com_tilbuci_data_Global.ln.get("window-showtime-confbt");
+	this.addForm(tmp,tmp1.forge("form-conf",[tmp2,{ tp : "Spacer", id : "confabout", ht : 20, ln : false},tmp3,tmp4,tmp5,tmp6,tmp7,tmp8,tmp9,tmp10,{ tp : "Spacer", id : "confbt", ht : 120, ln : false},{ tp : "Button", id : "confbt", tx : tmp11, ac : $bind(this,this.onConfig)}]));
+	this.ui.labels.h["confabout"].set_wordWrap(true);
+	this.addForm(com_tilbuci_data_Global.ln.get("window-showtime-access-title"),this.ui.forge("form-access",[{ tp : "Label", id : "accessabout", tx : com_tilbuci_data_Global.ln.get("window-showtime-accessabout"), vr : ""},{ tp : "List", id : "accesslist", vl : [], ht : 430, sl : ""}]));
+	this.ui.labels.h["accessabout"].set_wordWrap(true);
+	var tmp = com_tilbuci_data_Global.ln.get("window-showtime-movies-title");
+	var tmp1 = this.ui;
+	var tmp2 = { tp : "Label", id : "remove", tx : com_tilbuci_data_Global.ln.get("window-showtime-removeabout"), vr : ""};
+	var tmp3 = { tp : "Button", id : "remove", tx : com_tilbuci_data_Global.ln.get("window-showtime-removebt"), ac : $bind(this,this.onRemove)};
+	var tmp4 = { tp : "Label", id : "upload", tx : com_tilbuci_data_Global.ln.get("window-showtime-uploadabout"), vr : ""};
+	var tmp5 = com_tilbuci_data_Global.ln.get("window-showtime-uploadbt");
+	this.addForm(tmp,tmp1.forge("form-movie",[tmp2,{ tp : "Select", id : "remove", vl : [], sl : ""},tmp3,{ tp : "Spacer", id : "remove", ht : 40, ln : true},tmp4,{ tp : "Select", id : "upload", vl : [], sl : ""},{ tp : "Button", id : "upload", tx : tmp5, ac : $bind(this,this.onUpload)}]));
+	this.ui.labels.h["remove"].set_wordWrap(true);
+	this.ui.labels.h["upload"].set_wordWrap(true);
+	this.redraw();
+};
+$hxClasses["com.tilbuci.ui.window.WindowShowtime"] = com_tilbuci_ui_window_WindowShowtime;
+com_tilbuci_ui_window_WindowShowtime.__name__ = "com.tilbuci.ui.window.WindowShowtime";
+com_tilbuci_ui_window_WindowShowtime.__super__ = com_tilbuci_ui_window_PopupWindow;
+com_tilbuci_ui_window_WindowShowtime.prototype = $extend(com_tilbuci_ui_window_PopupWindow.prototype,{
+	stName: null
+	,action: function(ac,data) {
+		if(ac == "load") {
+			this.stName = data.h["name"];
+			var tmp = com_tilbuci_data_Global.ws;
+			var _g = new haxe_ds_StringMap();
+			_g.h["name"] = data.h["name"];
+			tmp.send("Movie/ShowtimeInst",_g,$bind(this,this.onInstData));
+		}
+	}
+	,onTab: function(evt) {
+		com_tilbuci_ui_window_PopupWindow.prototype.onTab.call(this,evt);
+		this.ui.hcontainers.h["apptype"].setWidth(860,[250,575]);
+		this.ui.hcontainers.h["inimovie"].setWidth(860,[250,575]);
+		this.ui.hcontainers.h["appid"].setWidth(860,[250,575]);
+		this.ui.hcontainers.h["accessk"].setWidth(860,[250,575]);
+		this.ui.hcontainers.h["mouse"].setWidth(860,[250,75,490]);
+		this.ui.hcontainers.h["startup"].setWidth(860,[250,75,490]);
+		this.ui.hcontainers.h["serial"].setWidth(860,[250,575]);
+		this.ui.hcontainers.h["baud"].setWidth(860,[250,575]);
+	}
+	,acStart: function() {
+		this.ui.hcontainers.h["apptype"].setWidth(860,[250,575]);
+		this.ui.hcontainers.h["inimovie"].setWidth(860,[250,575]);
+		this.ui.hcontainers.h["appid"].setWidth(860,[250,575]);
+		this.ui.hcontainers.h["accessk"].setWidth(860,[250,575]);
+		this.ui.hcontainers.h["mouse"].setWidth(860,[250,75,490]);
+		this.ui.hcontainers.h["startup"].setWidth(860,[250,75,490]);
+		this.ui.hcontainers.h["serial"].setWidth(860,[250,575]);
+		this.ui.hcontainers.h["baud"].setWidth(860,[250,575]);
+	}
+	,kill: function() {
+		com_tilbuci_ui_window_PopupWindow.prototype.kill.call(this);
+	}
+	,onConfig: function(evt) {
+		if(this.ui.inputs.h["appid"].get_text().length < 5 || this.ui.inputs.h["accessk"].get_text().length != 5) {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-showtime-title"),com_tilbuci_data_Global.ln.get("window-showtime-confno"),400,180,this.stage);
+		} else {
+			var regex = new EReg("^[ABCD]{5}$","");
+			if(regex.match(this.ui.inputs.h["accessk"].get_text())) {
+				var tmp = com_tilbuci_data_Global.ws;
+				var _g = new haxe_ds_StringMap();
+				_g.h["name"] = this.stName;
+				var value = this.ui.selects.h["inimovie"].get_selectedItem().value;
+				_g.h["movie"] = value;
+				var value = this.ui.inputs.h["accessk"].get_text();
+				_g.h["accesskey"] = value;
+				var value = this.ui.inputs.h["appid"].get_text();
+				_g.h["identifier"] = value;
+				var value = this.ui.toggles.h["startup"].get_selected();
+				_g.h["autoStart"] = value;
+				var value = this.ui.toggles.h["mouse"].get_selected();
+				_g.h["hideCursor"] = value;
+				var value = this.ui.inputs.h["serial"].get_text();
+				_g.h["serialPort"] = value;
+				var value = this.ui.selects.h["baud"].get_selectedItem().value;
+				_g.h["serialBaud"] = value;
+				tmp.send("Movie/ShowtimeConf",_g,$bind(this,this.onConfigReturn));
+			} else {
+				this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-showtime-title"),com_tilbuci_data_Global.ln.get("window-showtime-confnoakey"),400,180,this.stage);
+			}
+		}
+	}
+	,onConfigReturn: function(ok,ld) {
+		if(!ok) {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-showtime-title"),com_tilbuci_data_Global.ln.get("window-showtime-noconfig"),400,180,this.stage);
+		} else if(ld.map.h["e"] != 0) {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-showtime-title"),com_tilbuci_data_Global.ln.get("window-showtime-noconfig"),400,180,this.stage);
+		} else {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-showtime-title"),com_tilbuci_data_Global.ln.get("window-showtime-okconfig"),400,180,this.stage);
+		}
+	}
+	,onRemove: function(evt) {
+		if(this.ui.selects.h["remove"].get_selectedItem() != null) {
+			var tmp = com_tilbuci_data_Global.ws;
+			var _g = new haxe_ds_StringMap();
+			_g.h["name"] = this.stName;
+			var value = this.ui.selects.h["remove"].get_selectedItem().value;
+			_g.h["movie"] = value;
+			tmp.send("Movie/ShowtimeRemove",_g,$bind(this,this.onRemoveReturn));
+		}
+	}
+	,onRemoveReturn: function(ok,ld) {
+		if(!ok) {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-showtime-title"),com_tilbuci_data_Global.ln.get("window-showtime-removeer"),400,180,this.stage);
+		} else if(ld.map.h["e"] != 0) {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-showtime-title"),com_tilbuci_data_Global.ln.get("window-showtime-removeer"),400,180,this.stage);
+		} else {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-showtime-title"),com_tilbuci_data_Global.ln.get("window-showtime-removeok"),400,180,this.stage);
+		}
+	}
+	,onUpload: function(evt) {
+		if(this.ui.selects.h["upload"].get_selectedItem() != null) {
+			var tmp = com_tilbuci_data_Global.ws;
+			var _g = new haxe_ds_StringMap();
+			_g.h["name"] = this.stName;
+			var value = this.ui.selects.h["upload"].get_selectedItem().value;
+			_g.h["movie"] = value;
+			tmp.send("Movie/ShowtimeUpload",_g,$bind(this,this.onUploadReturn));
+		}
+	}
+	,onUploadReturn: function(ok,ld) {
+		if(!ok) {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-showtime-title"),com_tilbuci_data_Global.ln.get("window-showtime-uploader"),400,180,this.stage);
+		} else if(ld.map.h["e"] != 0) {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-showtime-title"),com_tilbuci_data_Global.ln.get("window-showtime-uploader"),400,180,this.stage);
+		} else {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-showtime-title"),com_tilbuci_data_Global.ln.get("window-showtime-uploadok"),400,180,this.stage);
+		}
+	}
+	,onInstData: function(ok,ld) {
+		if(!ok) {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-showtime-title"),com_tilbuci_data_Global.ln.get("window-showtime-nodata"),400,180,this.stage);
+			feathers_core_PopUpManager.removePopUp(this);
+		} else if(ld.map.h["e"] != 0) {
+			this.ui.createWarning(com_tilbuci_data_Global.ln.get("window-showtime-title"),com_tilbuci_data_Global.ln.get("window-showtime-nodata"),400,180,this.stage);
+			feathers_core_PopUpManager.removePopUp(this);
+		} else {
+			var last = [];
+			var lastlist = ld.map.h["last"];
+			var _g = 0;
+			var _g1 = lastlist.length;
+			while(_g < _g1) {
+				var i = _g++;
+				last.push({ text : lastlist[i], value : lastlist[i]});
+			}
+			this.ui.setListValues("accesslist",last);
+			var mv = [];
+			var mv2 = [];
+			mv.push({ text : com_tilbuci_data_Global.ln.get("window-showtime-inimovienone"), value : ""});
+			var mvlist = ld.map.h["movies"];
+			var _g = 0;
+			var _g1 = mvlist.length;
+			while(_g < _g1) {
+				var i = _g++;
+				mv.push({ text : mvlist[i], value : mvlist[i]});
+				mv2.push({ text : mvlist[i], value : mvlist[i]});
+			}
+			this.ui.setSelectOptions("inimovie",mv);
+			this.ui.setSelectOptions("remove",mv2);
+			var av = [];
+			var avlist = ld.map.h["available"];
+			var _g = 0;
+			var _g1 = avlist.length;
+			while(_g < _g1) {
+				var i = _g++;
+				av.push({ text : avlist[i].title, value : avlist[i].id});
+			}
+			this.ui.setSelectOptions("upload",av);
+			this.ui.inputs.h["apptype"].set_text("");
+			this.ui.setSelectValue("inimovie","");
+			this.ui.setSelectValue("baud","9600");
+			this.ui.inputs.h["appid"].set_text("");
+			this.ui.inputs.h["serial"].set_text("");
+			this.ui.inputs.h["accessk"].set_text("");
+			this.ui.toggles.h["mouse"].set_selected(false);
+			this.ui.toggles.h["startup"].set_selected(false);
+			if(Object.prototype.hasOwnProperty.call(ld.map.h,"type")) {
+				switch(ld.map.h["type"]) {
+				case "androidos":
+					this.ui.inputs.h["apptype"].set_text(com_tilbuci_data_Global.ln.get("window-showtime-typeandroid"));
+					break;
+				case "desktop":
+					this.ui.inputs.h["apptype"].set_text(com_tilbuci_data_Global.ln.get("window-showtime-typedesk"));
+					break;
+				case "raspberrypi":
+					this.ui.inputs.h["apptype"].set_text(com_tilbuci_data_Global.ln.get("window-showtime-typerpi"));
+					break;
+				}
+			}
+			if(Object.prototype.hasOwnProperty.call(ld.map.h,"config")) {
+				if(Object.prototype.hasOwnProperty.call(ld.map.h["config"],"movie")) {
+					this.ui.setSelectValue("inimovie",Reflect.field(ld.map.h["config"],"movie"));
+				}
+				if(Object.prototype.hasOwnProperty.call(ld.map.h["config"],"accesskey")) {
+					this.ui.inputs.h["accessk"].set_text(Reflect.field(ld.map.h["config"],"accesskey"));
+				}
+				if(Object.prototype.hasOwnProperty.call(ld.map.h["config"],"identifier")) {
+					this.ui.inputs.h["appid"].set_text(Reflect.field(ld.map.h["config"],"identifier"));
+				}
+				if(Object.prototype.hasOwnProperty.call(ld.map.h["config"],"autoStart")) {
+					this.ui.toggles.h["startup"].set_selected(Reflect.field(ld.map.h["config"],"autoStart"));
+				}
+				if(Object.prototype.hasOwnProperty.call(ld.map.h["config"],"hideCursor")) {
+					this.ui.toggles.h["mouse"].set_selected(Reflect.field(ld.map.h["config"],"hideCursor"));
+				}
+				if(Object.prototype.hasOwnProperty.call(ld.map.h["config"],"serialPort")) {
+					this.ui.inputs.h["serial"].set_text(Reflect.field(ld.map.h["config"],"serialPort"));
+				}
+				if(Object.prototype.hasOwnProperty.call(ld.map.h["config"],"serialBaud")) {
+					this.ui.setSelectValue("baud",Reflect.field(ld.map.h["config"],"serialBaud"));
+				}
+			}
+		}
+	}
+	,__class__: com_tilbuci_ui_window_WindowShowtime
 });
 var com_tilbuci_ui_window_WindowTestingActions = function(ac) {
 	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-tactions-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(520,530),false,true,true);
@@ -156286,7 +156725,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 908082;
+	this.version = 676101;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";
@@ -167581,6 +168020,9 @@ openfl_display_BitmapData.prototype = {
 		if(matrix != null) {
 			transform.concat(matrix);
 		}
+		if(sourceAsDisplayObject != null && sourceAsDisplayObject.__scrollRect != null) {
+			transform.translate(-sourceAsDisplayObject.__scrollRect.x,-sourceAsDisplayObject.__scrollRect.y);
+		}
 		var clipMatrix = null;
 		if(clipRect != null) {
 			clipMatrix = openfl_geom_Matrix.__pool.get();
@@ -168906,7 +169348,7 @@ openfl_display_DisplayObjectRenderer.prototype = $extend(openfl_events_EventDisp
 		var updated = false;
 		if(displayObject.get_cacheAsBitmap() || renderer.__type != "opengl" && !colorTransform.__isDefault(true)) {
 			var rect = null;
-			var needRender = displayObject.__cacheBitmap == null || displayObject.__renderDirty && (force || displayObject.__children != null && displayObject.__children.length > 0) || displayObject.opaqueBackground != displayObject.__cacheBitmapBackground;
+			var needRender = displayObject.__cacheBitmap == null || displayObject.__renderDirty && (force || displayObject.__cacheBitmap != null || displayObject.__children != null && displayObject.__children.length > 0) || displayObject.opaqueBackground != displayObject.__cacheBitmapBackground;
 			var softwareDirty = needRender || displayObject.__graphics != null && displayObject.__graphics.__softwareDirty || !displayObject.__cacheBitmapColorTransform.__equals(colorTransform,true);
 			var hardwareDirty = needRender || displayObject.__graphics != null && displayObject.__graphics.__hardwareDirty;
 			var renderType = renderer.__type;
@@ -172022,7 +172464,7 @@ openfl_display_FPS.prototype = $extend(openfl_text_TextField.prototype,{
 		this.times.push(this.currentTime);
 		while(this.times[0] < this.currentTime - 1000) this.times.shift();
 		var currentCount = this.times.length;
-		this.currentFPS = Math.round((currentCount + this.cacheCount) / 2);
+		this.currentFPS = (currentCount + this.cacheCount) / 2 | 0;
 		if(currentCount != this.cacheCount) {
 			var newText = "FPS: " + this.currentFPS;
 			if(newText != this.lastText) {
@@ -174231,8 +174673,6 @@ openfl_display_Graphics.prototype = {
 			height = openfl_display_Graphics.maxTextureHeight;
 			scaleY = openfl_display_Graphics.maxTextureHeight / this.__bounds.height;
 		}
-		var newWidth = Math.ceil(width + 1.0);
-		var newHeight = Math.ceil(height + 1.0);
 		var inverseA;
 		var inverseD;
 		if(this.__owner.__worldScale9Grid != null) {
@@ -174241,8 +174681,8 @@ openfl_display_Graphics.prototype = {
 			inverseA = 1 / pixelRatio;
 			inverseD = 1 / pixelRatio;
 		} else {
-			this.__renderTransform.a = newWidth / this.__bounds.width;
-			this.__renderTransform.d = newHeight / this.__bounds.height;
+			this.__renderTransform.a = width / this.__bounds.width;
+			this.__renderTransform.d = height / this.__bounds.height;
 			inverseA = 1 / this.__renderTransform.a;
 			inverseD = 1 / this.__renderTransform.d;
 		}
@@ -174268,6 +174708,8 @@ openfl_display_Graphics.prototype = {
 		var _this = this.__worldTransform;
 		var norm = _this.a * _this.d - _this.b * _this.c;
 		this.__renderTransform.ty = norm == 0 ? -_this.ty : 1.0 / norm * (_this.a * (ty - _this.ty) + _this.b * (_this.tx - tx));
+		var newWidth = Math.ceil(width + 1.0);
+		var newHeight = Math.ceil(height + 1.0);
 		if(newWidth != this.__width || newHeight != this.__height) {
 			this.set___dirty(true);
 		}
@@ -176108,40 +176550,10 @@ openfl_display_OpenGLRenderer.prototype = $extend(openfl_display_DisplayObjectRe
 	,__resize: function(width,height) {
 		this.__width = width;
 		this.__height = height;
-		var w = this.__defaultRenderTarget == null ? this.__stage.stageWidth : this.__defaultRenderTarget.width;
-		var h = this.__defaultRenderTarget == null ? this.__stage.stageHeight : this.__defaultRenderTarget.height;
-		var tmp;
-		if(this.__defaultRenderTarget == null) {
-			var _this = this.__worldTransform;
-			tmp = Math.round(0 * _this.a + 0 * _this.c + _this.tx);
-		} else {
-			tmp = 0;
-		}
-		this.__offsetX = tmp;
-		var tmp;
-		if(this.__defaultRenderTarget == null) {
-			var _this = this.__worldTransform;
-			tmp = Math.round(0 * _this.b + 0 * _this.d + _this.ty);
-		} else {
-			tmp = 0;
-		}
-		this.__offsetY = tmp;
-		var tmp;
-		if(this.__defaultRenderTarget == null) {
-			var _this = this.__worldTransform;
-			tmp = Math.round(w * _this.a + 0 * _this.c + _this.tx - this.__offsetX);
-		} else {
-			tmp = w;
-		}
-		this.__displayWidth = tmp;
-		var tmp;
-		if(this.__defaultRenderTarget == null) {
-			var _this = this.__worldTransform;
-			tmp = Math.round(0 * _this.b + h * _this.d + _this.ty - this.__offsetY);
-		} else {
-			tmp = h;
-		}
-		this.__displayHeight = tmp;
+		this.__offsetX = 0;
+		this.__offsetY = 0;
+		this.__displayWidth = this.__defaultRenderTarget == null ? width : this.__defaultRenderTarget.width;
+		this.__displayHeight = this.__defaultRenderTarget == null ? height : this.__defaultRenderTarget.height;
 		lime_math_Matrix4.createOrtho(this.__projection,0,this.__displayWidth + this.__offsetX * 2,0,this.__displayHeight + this.__offsetY * 2,-1000,1000);
 		lime_math_Matrix4.createOrtho(this.__projectionFlipped,0,this.__displayWidth + this.__offsetX * 2,this.__displayHeight + this.__offsetY * 2,0,-1000,1000);
 	}
@@ -177587,7 +177999,9 @@ openfl_display_Stage.prototype = $extend(openfl_display_DisplayObjectContainer.p
 			break;
 		case "opengl":case "opengles":case "webgl":
 			this.context3D = new openfl_display3D_Context3D(this);
-			this.context3D.configureBackBuffer(this.stageWidth,this.stageHeight,0,true,true,true);
+			var unscaledWindowWidth = this.window.__width | 0;
+			var unscaledWindowHeight = this.window.__height | 0;
+			this.context3D.configureBackBuffer(unscaledWindowWidth,unscaledWindowHeight,0,true,true,true);
 			this.context3D.present();
 			this.__renderer = new openfl_display_OpenGLRenderer(this.context3D);
 			break;
@@ -179418,32 +179832,38 @@ openfl_display_Stage.prototype = $extend(openfl_display_DisplayObjectContainer.p
 		var visibleHeight = this.__logicalHeight - Math.round((scaledHeight - windowHeight) / scaleY);
 		var visibleX = 0.0;
 		var visibleY = 0.0;
-		switch(this.align) {
-		case 0:
+		var _g = this.align;
+		if(_g == null) {
 			visibleX = Math.round((this.__logicalWidth - visibleWidth) / 2);
-			visibleY = Math.round(this.__logicalHeight - visibleHeight);
-			break;
-		case 1:
-			visibleY = Math.round(this.__logicalHeight - visibleHeight);
-			break;
-		case 2:
-			visibleX = Math.round(this.__logicalWidth - visibleWidth);
-			visibleY = Math.round(this.__logicalHeight - visibleHeight);
-			break;
-		case 3:
 			visibleY = Math.round((this.__logicalHeight - visibleHeight) / 2);
-			break;
-		case 4:
-			visibleX = Math.round(this.__logicalWidth - visibleWidth);
-			visibleY = Math.round((this.__logicalHeight - visibleHeight) / 2);
-			break;
-		case 5:
-			visibleX = Math.round((this.__logicalWidth - visibleWidth) / 2);
-			break;
-		case 7:
-			visibleX = Math.round(this.__logicalWidth - visibleWidth);
-			break;
-		default:
+		} else {
+			switch(_g) {
+			case 0:
+				visibleX = Math.round((this.__logicalWidth - visibleWidth) / 2);
+				visibleY = Math.round(this.__logicalHeight - visibleHeight);
+				break;
+			case 1:
+				visibleY = Math.round(this.__logicalHeight - visibleHeight);
+				break;
+			case 2:
+				visibleX = Math.round(this.__logicalWidth - visibleWidth);
+				visibleY = Math.round(this.__logicalHeight - visibleHeight);
+				break;
+			case 3:
+				visibleY = Math.round((this.__logicalHeight - visibleHeight) / 2);
+				break;
+			case 4:
+				visibleX = Math.round(this.__logicalWidth - visibleWidth);
+				visibleY = Math.round((this.__logicalHeight - visibleHeight) / 2);
+				break;
+			case 5:
+				visibleX = Math.round((this.__logicalWidth - visibleWidth) / 2);
+				break;
+			case 7:
+				visibleX = Math.round(this.__logicalWidth - visibleWidth);
+				break;
+			default:
+			}
 		}
 		this.__displayMatrix.translate(-visibleX,-visibleY);
 		this.__displayMatrix.scale(scaleX,scaleY);
@@ -179492,7 +179912,9 @@ openfl_display_Stage.prototype = $extend(openfl_display_DisplayObjectContainer.p
 			}
 		}
 		if(this.context3D != null) {
-			this.context3D.configureBackBuffer(this.stageWidth,this.stageHeight,0,true,true,true);
+			var unscaledWindowWidth = this.window.__width | 0;
+			var unscaledWindowHeight = this.window.__height | 0;
+			this.context3D.configureBackBuffer(unscaledWindowWidth,unscaledWindowHeight,0,true,true,true);
 		}
 		var stage3D = this.stage3Ds.iterator();
 		while(stage3D.hasNext()) {
@@ -179976,22 +180398,37 @@ openfl_display_Stage3D.prototype = $extend(openfl_events_EventDispatcher.prototy
 });
 var openfl_display_StageAlign = {};
 openfl_display_StageAlign.fromString = function(value) {
+	if(value == null) {
+		return null;
+	}
+	var upperCaseValue = value.toUpperCase();
+	var value = "";
+	if(upperCaseValue.indexOf("T") != -1) {
+		value += "T";
+	} else if(upperCaseValue.indexOf("B") != -1) {
+		value += "B";
+	}
+	if(upperCaseValue.indexOf("L") != -1) {
+		value += "L";
+	} else if(upperCaseValue.indexOf("R") != -1) {
+		value += "R";
+	}
 	switch(value) {
-	case "bottom":
+	case "B":
 		return 0;
-	case "bottomLeft":
+	case "BL":
 		return 1;
-	case "bottomRight":
+	case "BR":
 		return 2;
-	case "left":
+	case "L":
 		return 3;
-	case "right":
+	case "R":
 		return 4;
-	case "top":
+	case "T":
 		return 5;
-	case "topLeft":
+	case "TL":
 		return 6;
-	case "topRight":
+	case "TR":
 		return 7;
 	default:
 		return null;
@@ -180000,21 +180437,21 @@ openfl_display_StageAlign.fromString = function(value) {
 openfl_display_StageAlign.toString = function(this1) {
 	switch(this1) {
 	case 0:
-		return "bottom";
+		return "B";
 	case 1:
-		return "bottomLeft";
+		return "BL";
 	case 2:
-		return "bottomRight";
+		return "BR";
 	case 3:
-		return "left";
+		return "L";
 	case 4:
-		return "right";
+		return "R";
 	case 5:
-		return "top";
+		return "T";
 	case 6:
-		return "topLeft";
+		return "TL";
 	case 7:
-		return "topRight";
+		return "TR";
 	default:
 		return null;
 	}
@@ -181984,6 +182421,7 @@ openfl_display__$internal_CanvasBitmapData.renderDrawable = function(bitmapData,
 	}
 	var context = renderer.context;
 	context.globalAlpha = 1;
+	renderer.__setBlendMode(10);
 	renderer.setTransform(bitmapData.__renderTransform,context);
 	context.drawImage(image.get_src(),0,0,image.width,image.height);
 };
@@ -184184,7 +184622,7 @@ openfl_display__$internal_CanvasGraphics.closePath = function(strokeBefore) {
 	}
 	if(!openfl_display__$internal_CanvasGraphics.hitTesting && openfl_display__$internal_CanvasGraphics.strokePattern != null) {
 		var scale9Grid = openfl_display__$internal_CanvasGraphics.graphics.__owner.__scale9Grid;
-		var hasScale9Grid = scale9Grid != null && !openfl_display__$internal_CanvasGraphics.graphics.__owner.__isMask && openfl_display__$internal_CanvasGraphics.graphics.__worldTransform.b == 0 && openfl_display__$internal_CanvasGraphics.graphics.__worldTransform.c == 0;
+		var hasScale9Grid = scale9Grid != null && !openfl_display__$internal_CanvasGraphics.graphics.__owner.__isMask && Math.abs(openfl_display__$internal_CanvasGraphics.graphics.__owner.__rotation) < 0.02;
 		if(openfl_display__$internal_CanvasGraphics.bitmapStrokeMatrix != null || hasScale9Grid && openfl_display__$internal_CanvasGraphics.strokeScale9Bounds != null && openfl_display__$internal_CanvasGraphics.bitmapStroke != null) {
 			var matrix = openfl_geom_Matrix.__pool.get();
 			if(openfl_display__$internal_CanvasGraphics.bitmapStrokeMatrix != null) {
@@ -184242,7 +184680,7 @@ openfl_display__$internal_CanvasGraphics.createGradientPattern = function(type,c
 			point2.x = px * matrix.a + py * matrix.c + matrix.tx;
 			point2.y = px * matrix.b + py * matrix.d + matrix.ty;
 			var scale9Grid = openfl_display__$internal_CanvasGraphics.graphics.__owner.__scale9Grid;
-			var hasScale9Grid = scale9Grid != null && !openfl_display__$internal_CanvasGraphics.graphics.__owner.__isMask && openfl_display__$internal_CanvasGraphics.graphics.__worldTransform.b == 0 && openfl_display__$internal_CanvasGraphics.graphics.__worldTransform.c == 0;
+			var hasScale9Grid = scale9Grid != null && !openfl_display__$internal_CanvasGraphics.graphics.__owner.__isMask && Math.abs(openfl_display__$internal_CanvasGraphics.graphics.__owner.__rotation) < 0.02;
 			if(hasScale9Grid) {
 				point.x = openfl_display__$internal_CanvasGraphics.toScale9Position(point.x,scale9Grid.x,scale9Grid.width,openfl_display__$internal_CanvasGraphics.bounds.width,openfl_display__$internal_CanvasGraphics.graphics.__owner.get_scaleX());
 				point.y = openfl_display__$internal_CanvasGraphics.toScale9Position(point.y,scale9Grid.y,scale9Grid.height,openfl_display__$internal_CanvasGraphics.bounds.height,openfl_display__$internal_CanvasGraphics.graphics.__owner.get_scaleY());
@@ -184388,7 +184826,7 @@ openfl_display__$internal_CanvasGraphics.createGradientPattern = function(type,c
 		point3.x = px * matrix.a + py * matrix.c + matrix.tx;
 		point3.y = px * matrix.b + py * matrix.d + matrix.ty;
 		var scale9Grid = openfl_display__$internal_CanvasGraphics.graphics.__owner.__scale9Grid;
-		var hasScale9Grid = scale9Grid != null && !openfl_display__$internal_CanvasGraphics.graphics.__owner.__isMask && openfl_display__$internal_CanvasGraphics.graphics.__worldTransform.b == 0 && openfl_display__$internal_CanvasGraphics.graphics.__worldTransform.c == 0;
+		var hasScale9Grid = scale9Grid != null && !openfl_display__$internal_CanvasGraphics.graphics.__owner.__isMask && Math.abs(openfl_display__$internal_CanvasGraphics.graphics.__owner.__rotation) < 0.02;
 		if(hasScale9Grid) {
 			point.x = openfl_display__$internal_CanvasGraphics.toScale9Position(point.x,scale9Grid.x,scale9Grid.width,openfl_display__$internal_CanvasGraphics.bounds.width,openfl_display__$internal_CanvasGraphics.graphics.__owner.get_scaleX());
 			point.y = openfl_display__$internal_CanvasGraphics.toScale9Position(point.y,scale9Grid.y,scale9Grid.height,openfl_display__$internal_CanvasGraphics.bounds.height,openfl_display__$internal_CanvasGraphics.graphics.__owner.get_scaleY());
@@ -186153,7 +186591,7 @@ openfl_display__$internal_CanvasGraphics.playCommands = function(commands,stroke
 	openfl_display__$internal_CanvasGraphics.setSmoothing(true);
 	var hasPath = false;
 	var scale9Grid = openfl_display__$internal_CanvasGraphics.graphics.__owner.__scale9Grid;
-	var hasScale9Grid = scale9Grid != null && !openfl_display__$internal_CanvasGraphics.graphics.__owner.__isMask && openfl_display__$internal_CanvasGraphics.graphics.__worldTransform.b == 0 && openfl_display__$internal_CanvasGraphics.graphics.__worldTransform.c == 0;
+	var hasScale9Grid = scale9Grid != null && !openfl_display__$internal_CanvasGraphics.graphics.__owner.__isMask && Math.abs(openfl_display__$internal_CanvasGraphics.graphics.__owner.__rotation) < 0.02;
 	if(!hasScale9Grid) {
 		scale9Grid = null;
 		if(openfl_display__$internal_CanvasGraphics.fillScale9Bounds != null) {
@@ -188356,7 +188794,7 @@ openfl_display__$internal_CanvasGraphics.playCommands = function(commands,stroke
 openfl_display__$internal_CanvasGraphics.render = function(graphics,renderer) {
 	var pixelRatio = renderer.__pixelRatio;
 	var scale9Grid = graphics.__owner.__scale9Grid;
-	var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+	var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
 	if(hasScale9Grid) {
 		graphics.__bitmapScaleX = graphics.__owner.get_scaleX();
 		graphics.__bitmapScaleY = graphics.__owner.get_scaleY();
@@ -192578,7 +193016,7 @@ openfl_display__$internal_Context3DGraphics.buildBuffer = function(graphics,rend
 	var bitmap = null;
 	var bitmapMatrix = null;
 	var scale9Grid = graphics.__owner.__scale9Grid;
-	var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+	var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
 	if(!hasScale9Grid) {
 		scale9Grid = null;
 	}
@@ -194900,7 +195338,7 @@ openfl_display__$internal_Context3DGraphics.render = function(graphics,renderer)
 				openfl_display__$internal_Context3DGraphics.buildBuffer(graphics,renderer);
 			}
 			var scale9Grid = graphics.__owner.__scale9Grid;
-			var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && graphics.__worldTransform.b == 0 && graphics.__worldTransform.c == 0;
+			var hasScale9Grid = scale9Grid != null && !graphics.__owner.__isMask && Math.abs(graphics.__owner.__rotation) < 0.02;
 			if(!hasScale9Grid) {
 				scale9Grid = null;
 			}
@@ -213002,7 +213440,7 @@ openfl_system_Capabilities.get_screenResolutionY = function() {
 };
 openfl_system_Capabilities.get_version = function() {
 	var value = "WEB";
-	value += " " + StringTools.replace("9.5.1",".",",") + ",0";
+	value += " " + StringTools.replace("9.5.2",".",",") + ",0";
 	return value;
 };
 var openfl_system_LoaderContext = function(checkPolicyFile,applicationDomain,securityDomain) {
@@ -222550,6 +222988,7 @@ com_tilbuci_data_Global.singleUser = false;
 com_tilbuci_data_Global.userLevel = -1;
 com_tilbuci_data_Global.validEmail = false;
 com_tilbuci_data_Global.host = "";
+com_tilbuci_data_Global.stAKey = "";
 com_tilbuci_data_Global.fonts = [];
 com_tilbuci_data_Global.mvOwner = false;
 com_tilbuci_data_Global.mvCollaborator = false;

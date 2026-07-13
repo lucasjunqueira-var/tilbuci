@@ -102,7 +102,7 @@ function setupSerialPort() {
                 if (mainWindow && !mainWindow.isDestroyed()) {
                     try {
                         const jsonStr = JSON.stringify(text); // Escape string properly for eval
-                        mainWindow.webContents.executeJavaScript(`if(typeof tilbuci_runaction === 'function') tilbuci_runaction(${jsonStr});`);
+                        mainWindow.webContents.executeJavaScript(`if(typeof window.tilbuci_runaction === 'function') window.tilbuci_runaction(${jsonStr});`);
                     } catch(e) {}
                 }
             });
@@ -407,8 +407,14 @@ function generateIndexHtml() {
     
     if (fs.existsSync(templatePath)) {
         let content = fs.readFileSync(templatePath, 'utf8');
+        let wsFormatted = appConfig.ws || '';
+        if (wsFormatted) {
+            if (!wsFormatted.endsWith('/')) wsFormatted += '/';
+            wsFormatted += 'ws/';
+        }
+        
         content = content.replace(/\[MOVIE\]/g, appConfig.movie || '');
-        content = content.replace(/\[WS\]/g, appConfig.ws || '');
+        content = content.replace(/\[WS\]/g, wsFormatted);
         
         // Inject ABCD areas and TBShowtime_Event
         const injectScript = `
@@ -632,7 +638,8 @@ function createWindow() {
         fullscreen: initialKiosk,
         webPreferences: {
             nodeIntegration: false,
-            contextIsolation: true
+            contextIsolation: true, 
+            webSecurity: false
         }
     });
 
@@ -672,6 +679,7 @@ function createWindow() {
                 mainWindow.setAlwaysOnTop(true, 'screen-saver');
                 mainWindow.focus();
             }
+            //mainWindow.webContents.openDevTools();
         });
     });
 

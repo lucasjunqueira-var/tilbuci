@@ -38,7 +38,7 @@ if %errorlevel% equ 0 (
 echo TilBuci DOM deploy %buildtime%...
 openfl build html5 -Ddom -D haxeJSON -D renderdom -nolaunch
 if %errorlevel% equ 0 (
-    copy %export%Tilbuci.js %server%TilBuci.js
+    copy %export%Tilbuci.js %server%TilBuci-dom.js
     type Externs\browser.js Externs\embedcontent.js Externs\overlayplugin.js Externs\upload.js Externs\qrcode.js Externs\accessibility.js > Externs\externs.js
     copy /Y Externs\externs.js %server%
     xcopy %assets%assets\*.* %server%assets\ /E/Y/Q
