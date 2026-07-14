@@ -149,6 +149,11 @@ extern class ExternBrowser {
     **/
     static function TBB_sendTabsMessage(type:String, message:String):Void;
 
+    /**
+        Sets the alternative text to an HTML element.
+    **/
+    static function TBA_setAlt(element:String, path:String, alt:String):Void;
+
 }
 
 #end

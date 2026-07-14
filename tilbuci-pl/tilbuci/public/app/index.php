@@ -139,13 +139,15 @@ if ($mode != 'editor') {
 	$link .= '?md=editor';
 }
 if ($render == '') {
-    if ($mode != 'player') $render = '';
-    if (isset($_GET['rd'])) {
+    if ($mode != 'player') {
+		$render = '';
+	} else if (isset($_GET['rd'])) {
         if (trim($_GET['rd']) == 'dom') {
             $render = '-dom';
         }
     }
 }
+$render = '';
 ?>
 <!DOCTYPE html>
 <html lang="en">

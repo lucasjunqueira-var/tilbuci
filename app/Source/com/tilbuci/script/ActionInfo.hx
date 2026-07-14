@@ -770,6 +770,26 @@ class ActionInfo {
             ]
         ));
 
+        // showtime application
+        this.groups.push(new ActionInfoGroup(
+            Global.ln.get('window-acshowtime-title'), 
+            [
+                { n: Global.ln.get('acinfo-showtimeevent'), a: 'showtime.event', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showtimeevent-p1'), v: '' }
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-showtimehardware'), a: 'showtime.hardware', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showtimehardware-p1'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-showtimehardware-p2'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-showtimehardware-p3'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-showtimehardware-p4'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-showtimehardware-p5'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-showtimehardware-p6'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-showtimehardware-p7'), v: '' }, 
+                    { t: 'e', n: Global.ln.get('acinfo-showtimehardware-p8'), v: '' }, 
+                ], e: [ ] }, 
+            ]
+        ));
+
         // input handling
         this.groups.push(new ActionInfoGroup(
             Global.ln.get('window-acbinput-title'), 

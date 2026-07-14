@@ -14,6 +14,7 @@ require_once('../../app/WSMovie.php');
 require_once('../../app/WSScene.php');
 require_once('../../app/WSSystem.php');
 require_once('../../app/WSVisitor.php');
+require_once('../../app/WSShowtime.php');
 require_once('../../app/WSUser.php');
 require_once('../../app/WSPlugin.php');
 require_once('../../app/Data.php');
@@ -92,6 +93,9 @@ if (!isset($_POST['a'])) {
 			break;
 		case 'Visitor':
 			$ws = new WSVisitor(trim($_POST['a']));
+			break;
+		case 'Showtime':
+			$ws = new WSShowtime(trim($_POST['a']));
 			break;
 		default:
 			// plugin ws

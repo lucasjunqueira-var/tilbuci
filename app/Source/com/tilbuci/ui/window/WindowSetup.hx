@@ -92,14 +92,14 @@ class WindowSetup extends PopupWindow {
                 { tp: 'Label', id: 'movie-index', tx: Global.ln.get('window-setup-config-index'), vr: '' }, 
                 { tp: 'Select', id: 'movie-index', vl: [ ], sl: '' }, 
                 { tp: 'Button', id: 'movie-index', tx: Global.ln.get('window-setup-config-indexset'), ac: this.onMovieIndex }, 
-                /*{ tp: 'Spacer', id: 'render', ht: 5, ln: false }, 
+                { tp: 'Spacer', id: 'render', ht: 5, ln: false }, 
                 { tp: 'Label', id: 'render', tx: Global.ln.get('window-setup-config-render'), vr: '' }, 
                 { tp: 'Select', id: 'render', vl: [
                     { text: Global.ln.get('window-setup-config-rdopt'), value: 'webgl' }, 
                     { text: Global.ln.get('window-setup-config-rdsite'), value: 'dom' }
                 ], sl: GlobalPlayer.render }, 
                 { tp: 'Label', id: 'renderabout', tx: Global.ln.get('window-setup-config-rdabout'), vr: Label.VARIANT_DETAIL }, 
-                { tp: 'Button', id: 'render', tx: Global.ln.get('window-setup-config-rdset'), ac: this.onRenderSet }, */
+                { tp: 'Button', id: 'render', tx: Global.ln.get('window-setup-config-rdset'), ac: this.onRenderSet },
                 { tp: 'Spacer', id: 'share', ht: 5, ln: false }, 
                 { tp: 'Label', id: 'share', tx: Global.ln.get('window-setup-config-share'), vr: '' }, 
                 { tp: 'Select', id: 'share', vl: [
@@ -183,6 +183,25 @@ class WindowSetup extends PopupWindow {
                 ]));
                 this.ui.labels['update-about'].wordWrap = true;
             }
+
+            // showtime settings
+            this.addForm(Global.ln.get('window-setup-showtimeconf-title'), this.ui.forge('form-showtimeconf', [
+                    { tp: 'Label', id: 'showtimeconf-about', tx: Global.ln.get('window-setup-showtimeconf-about'), vr: '' }, 
+                    { tp: 'Spacer', id: 'showtimeconf-server', ht: 20, ln: true }, 
+                    { tp: 'Label', id: 'showtimeconf-server', tx: Global.ln.get('window-setup-showtimeconf-server'), vr: Label.VARIANT_DETAIL }, 
+                    { tp: 'TInput', id: 'showtimeconf-server', tx: '', vr: '' }, 
+                    { tp: 'Button', id: 'showtimeconf-server', tx: Global.ln.get('window-setup-showtimeconf-serverbt'), ac: this.onCopyServer }, 
+                    { tp: 'Label', id: 'showtimeconf-key', tx: Global.ln.get('window-setup-showtimeconf-key'), vr: Label.VARIANT_DETAIL }, 
+                    { tp: 'TInput', id: 'showtimeconf-key', tx: Global.stAKey, vr: '' }, 
+                    { tp: 'Button', id: 'showtimeconf-key', tx: Global.ln.get('window-setup-showtimeconf-keybt'), ac: this.onSetSTKey }, 
+                    { tp: 'Spacer', id: 'showtimeconf-list', ht: 20, ln: true }, 
+                    { tp: 'Label', id: 'showtimeconf-list', tx: Global.ln.get('window-setup-showtimeconf-list'), vr: '' }, 
+                    { tp: 'List', id: 'showtimeconf-list', vl: [ ], ht: 130, sl: '' }, 
+                    { tp: 'Button', id: 'showtimeconf-list', tx: Global.ln.get('window-setup-showtimeconf-listbt'), ac: this.onStInstance }, 
+                ]));
+                this.ui.labels['showtimeconf-about'].wordWrap = true;
+                this.ui.labels['showtimeconf-list'].wordWrap = true;
+                this.ui.inputs['showtimeconf-server'].enabled = false;
         }
 
         // about form
@@ -230,6 +249,7 @@ class WindowSetup extends PopupWindow {
     **/
     override public function acStart():Void {
         if (Global.userLevel == 0) {
+            this.ui.inputs['showtimeconf-server'].text = GlobalPlayer.base;
             if (Global.host == '') Global.ws.send('Email/GetConfig', [ ], onEmailSettings);
             Global.ws.send('Movie/SetList', [ ], onMovieList);
         }
@@ -767,14 +787,14 @@ class WindowSetup extends PopupWindow {
 
     /**
         Click on render mode button.
-    **
+    **/
     private function onRenderSet(evt:TriggerEvent):Void {
         if (this.ui.selects['render'].selectedItem != null) {
             Global.ws.send('Movie/SetRender', [
                 'rd' => this.ui.selects['render'].selectedItem.value
             ], onRenderReturn);
         }
-    }*/
+    }
 
     /**
         Click on share mode button.
@@ -862,6 +882,22 @@ class WindowSetup extends PopupWindow {
     }
 
     /**
+        Showtime access key set return.
+        @param  ok  response received?
+        @param  ld  loader information
+    **/
+    private function onSetSTKeyReturn(ok:Bool, ld:DataLoader):Void {
+        if (!ok) {
+            this.ui.createWarning(Global.ln.get('window-setup-showtimeconf-title'), Global.ln.get('window-setup-showtimeconf-keyerset'), 400, 180, this.stage);
+        } else if (ld.map['e'] != 0) {
+            this.ui.createWarning(Global.ln.get('window-setup-showtimeconf-title'), Global.ln.get('window-setup-showtimeconf-keyerset'), 400, 180, this.stage);
+        } else {
+            this.ui.createWarning(Global.ln.get('window-setup-showtimeconf-title'), Global.ln.get('window-setup-showtimeconf-keyerok'), 400, 180, this.stage);
+            Global.stAKey = this.ui.inputs['showtimeconf-key'].text;
+        }
+    }
+
+    /**
         Receiving users list.
         @param  ok  list loaded?
         @param  ld  loader information
@@ -872,7 +908,7 @@ class WindowSetup extends PopupWindow {
         if (!ok) {
             // nothing to do
         } else if (ld.map['e'] != 0) {
-            // nothing to fo
+            // nothing to do
         } else {
             // get available movies
             var movielist:Array<MovieList> = cast (ld.map['list']);
@@ -887,6 +923,32 @@ class WindowSetup extends PopupWindow {
         }
         this.ui.setSelectOptions('movie-index', list);
         this.ui.setSelectValue('movie-index', current);
+        Global.ws.send('Movie/ShowtimeList', [ ], onShowtimeList);
+    }
+
+    /**
+        Receiving a list of connected showtime instances.
+        @param  ok  list loaded?
+        @param  ld  loader information
+    **/
+    private function onShowtimeList(ok:Bool, ld:DataLoader):Void {
+        var list:Array<Dynamic> = [ ];
+        var current:String = '';
+        if (!ok) {
+            // nothing to do
+        } else if (ld.map['e'] != 0) {
+            // nothing to do
+        } else {
+            // get available movies
+            var instlist:Array<String> = cast (ld.map['list']);
+            for (i in 0...instlist.length) {
+                list.push({
+                    text: instlist[i], 
+                    value: instlist[i]
+                });
+            }
+        }
+        this.ui.setListValues('showtimeconf-list', list);
     }
 
     /**
@@ -896,6 +958,38 @@ class WindowSetup extends PopupWindow {
         var req:URLRequest = new URLRequest('https://tilbuci.com.br/site/latest-version/');
         req.method = 'GET';
         Lib.getURL(req);
+    }
+
+    /**
+        Copy showtime server URL.
+    **/
+    private function onCopyServer(evt:TriggerEvent):Void {
+        Global.copyText(GlobalPlayer.base);
+    }
+
+    /**
+        Set the showtime access key.
+    **/
+    private function onSetSTKey(evt:TriggerEvent):Void {
+        if (this.ui.inputs['showtimeconf-key'].text.length < 5) {
+            this.ui.createWarning(Global.ln.get('window-setup-showtimeconf-title'), Global.ln.get('window-setup-showtimeconf-keyer'), 400, 180, this.stage);
+        } else {
+            Global.ws.send('Movie/SetShowtime', [
+                'stType' => 'accesskey', 
+                'accesskey' => this.ui.inputs['showtimeconf-key'].text
+            ], onSetSTKeyReturn);
+        }
+    }
+
+    /**
+        Load information about a connected Showtime instance.
+    **/
+    private function onStInstance(evt:TriggerEvent):Void {
+        if (this.ui.lists['showtimeconf-list'].selectedItem != null) {
+            this._ac('showtime-inst', [
+                'name' => this.ui.lists['showtimeconf-list'].selectedItem.value
+            ]);
+        }
     }
     
 }

@@ -108,6 +108,7 @@ import com.tilbuci.ui.menu.MenuContraptions;
 import com.tilbuci.ui.menu.MenuExchange;
 import com.tilbuci.ui.window.PopupWindow;
 import com.tilbuci.ui.window.WindowSetup;
+import com.tilbuci.ui.window.WindowShowtime;
 import com.tilbuci.ui.window.WindowVisitors;
 import com.tilbuci.ui.window.WindowLogin;
 import com.tilbuci.ui.window.movie.WindowMovieNew;
@@ -335,6 +336,8 @@ class Editor extends Drawer {
                 Global.singleUser = ld.map['singleUser'];
                 Global.validEmail = ld.map['validEmail'];
                 Global.showWindow = this.showWindow;
+                if (ld.map.exists('stAKey')) Global.stAKey = ld.map['stAKey'];
+                    else Global.stAKey = '';
 
                 // host
                 if (ld.map.exists('host')) Global.host = ld.map['host'];
@@ -828,6 +831,25 @@ class Editor extends Drawer {
                 this.opened = false;
             case 'window-notes':
                 this.showWindow('designnotes');
+            case 'showtime-inst':
+                this.showWindow('showtime');
+                this._windows['showtime'].action('load', [
+                    'name' => data['name'], 
+                ]);
+        }
+    }
+
+    /**
+        Setup window actions.
+        @param  ac  the action id
+    **/
+    private function actionWindowShowtime(ac:String, data:Map<String, Dynamic> = null):Void {
+        switch (ac) {
+            case 'menu-close':
+                this.opened = false;
+            case 'window-notes':
+                this.showWindow('designnotes');
+            
         }
     }
 
@@ -2366,7 +2388,6 @@ class Editor extends Drawer {
                                 textAlign: 'left'
                             }
                         });
-
                         Global.temp.remove('media/addstage');
                 } else {
                     Global.showPopup(Global.ln.get('window-media-title'), Global.ln.get('window-media-addstageer'), 300, 180, Global.ln.get('default-ok'));
@@ -2526,6 +2547,7 @@ class Editor extends Drawer {
                 case 'designnotes': this._windows['designnotes'] = new WindowNotes(actionWindowNotes);
 
                 case 'setup': this._windows['setup'] = new WindowSetup(actionWindowSetup, this.build);
+                case 'showtime': this._windows['showtime'] = new WindowShowtime(actionWindowShowtime);
                 case 'testactions': this._windows['testactions'] = new WindowTestingActions(actionWindowTestingActions);
                 default: ok = false;
             }

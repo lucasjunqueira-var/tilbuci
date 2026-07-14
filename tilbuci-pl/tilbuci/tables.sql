@@ -354,3 +354,23 @@ CREATE TABLE IF NOT EXISTS `{PR}tilbuci_visitorstate` (
   KEY `vs_user` (`vs_user`),
   KEY `vs_quick` (`vs_quick`)
 );
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_showtime` (
+  `st_id` INT NOT NULL AUTO_INCREMENT , 
+  `st_name` VARCHAR(256) NOT NULL , 
+  `st_type` VARCHAR(16) NOT NULL , 
+  `st_when` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+  `st_config` VARCHAR(4096) NOT NULL , 
+  `st_movies` VARCHAR(4096) NOT NULL , 
+  PRIMARY KEY (`st_id`), 
+  INDEX (`st_name`), 
+  INDEX (`st_when`)
+);
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_showtimeevt` (
+  `se_id` INT NOT NULL AUTO_INCREMENT , 
+  `se_name` VARCHAR(256) NOT NULL , 
+  `se_type` VARCHAR(16) NOT NULL , 
+  `se_data` VARCHAR(4096) NOT NULL , 
+  `se_when` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , 
+  PRIMARY KEY (`se_id`), 
+  INDEX (`se_name`)
+);

@@ -3,7 +3,7 @@
   "author": "Lucas Junqueira",
   "license": "MPL-2.0",
   "description": "TilBuci portable launcher.",
-  "version": "23.0.0",
+  "version": "24.0.0",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

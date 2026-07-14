@@ -258,7 +258,6 @@ class InstanceSelect extends Sprite {
                 GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this.image.getInstName()].collection = asinfo[0];
                 GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this.image.getInstName()].asset = asinfo[1];
                 this.image.load(GlobalPlayer.movie.scene.keyframes[GlobalPlayer.area.currentKf][this.image.getInstName()]);
-
         }
         this.place();
     }

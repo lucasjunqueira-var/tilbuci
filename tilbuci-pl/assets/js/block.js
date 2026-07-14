@@ -142,6 +142,15 @@
                             }
                         },
                         help: __('Percentage of height relative to content display width - the default is 56%, ideal for 16x9 aspect ratio content.', 'tilbuci-pl')
+                    }),
+                    createElement(ToggleControl, {
+                        label: __('HTML DOM Render', 'tilbuci-pl'),
+                        checked: attributes.htmlDomRender,
+                        __nextHasNoMarginBottom: true,
+                        onChange: function (value) {
+                            setAttributes({ htmlDomRender: value });
+                        },
+                        help: __('If enabled, TilBuci content will be rendered using DOM elements instead of the WebGL renderer.', 'tilbuci-pl')
                     })
                 ),
                 createElement(PanelBody, { title: __('Custom Variables', 'tilbuci-pl'), initialOpen: false },
@@ -195,6 +204,10 @@
             height: {
                 type: 'number',
                 default: 56
+            },
+            htmlDomRender: {
+                type: 'boolean',
+                default: false
             },
             customVar1: {
                 type: 'string',

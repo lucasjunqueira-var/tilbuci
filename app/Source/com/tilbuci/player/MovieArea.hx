@@ -7,6 +7,7 @@
  package com.tilbuci.player;
 
 /** OPENFL **/
+import com.tilbuci.js.ExternBrowser;
 import com.tilbuci.shaders.UnfocusShader;
 import openfl.filters.ShaderFilter;
 import com.tilbuci.display.MultiSelect;
@@ -518,6 +519,20 @@ class MovieArea extends Sprite {
 
         // focus mode?
         this.setFocus();
+
+        // accessibility?
+        #if renderdom
+        for (i in this._instances.keys()) {
+            if (this._instances[i].keep && (this._instances[i].alttext != '')) {
+                switch (this._instances[i].currentType) {
+                    case 'picture':
+                        ExternBrowser.TBA_setAlt('img', this._instances[i].currentMedia, this._instances[i].alttext);
+                    case 'spritemap':
+                        ExternBrowser.TBA_setAlt('img', this._instances[i].currentMedia, this._instances[i].alttext);
+                }
+            }
+        }
+        #end
     }
 
     /**

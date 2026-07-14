@@ -1155,15 +1155,22 @@ class Movie extends BaseClass
 	 * Exports a movie.
 	 * @param	string	$user	the requesting user
 	 * @param	string	$movie	the movie id
+     * @param	bool	$all    enable export ao all users
 	 * @return	string|bool the path to the exported file or false on error
 	 */
-	public function export($user, $movie) {
+	public function export($user, $movie, $all = false) {
 		// check user: movie owner?
 		if (!is_null($this->db)) {
-			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:user', [
-				':id' => $movie, 
-				':user' => $user, 
-			]);
+            if ($all) {
+                $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [
+                    ':id' => $movie, 
+                ]);
+            } else {
+                $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:user', [
+                    ':id' => $movie, 
+                    ':user' => $user, 
+                ]);
+            }
 			if (count($ck) > 0) {
                 if (is_dir('../movie/'.$movie.'.movie')) {
                     set_time_limit(0);

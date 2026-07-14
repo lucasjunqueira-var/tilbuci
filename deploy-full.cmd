@@ -27,11 +27,23 @@ echo TilBuci FULL deploy %buildtime%...
 openfl build html5 -D haxeJSON -nolaunch
 if %errorlevel% equ 0 (
     copy %export%Tilbuci.js %server%TilBuci.js
-    type Externs\browser.js Externs\embedcontent.js Externs\overlayplugin.js Externs\upload.js Externs\qrcode.js > Externs\externs.js
+    type Externs\browser.js Externs\embedcontent.js Externs\overlayplugin.js Externs\upload.js Externs\qrcode.js Externs\accessibility.js > Externs\externs.js
     copy /Y Externs\externs.js %server%
     xcopy %assets%assets\*.* %server%assets\ /E/Y/Q
     xcopy %export%lib\*.* %server%lib\ /E/Y/Q
     echo TilBuci FULL ready!
 ) else (
-    echo TilBuci build error!
+    echo TilBuci FULL build error!
+)
+echo TilBuci DOM deploy %buildtime%...
+openfl build html5 -Ddom -D haxeJSON -D renderdom -nolaunch
+if %errorlevel% equ 0 (
+    copy %export%Tilbuci.js %server%TilBuci-dom.js
+    type Externs\browser.js Externs\embedcontent.js Externs\overlayplugin.js Externs\upload.js Externs\qrcode.js Externs\accessibility.js > Externs\externs.js
+    copy /Y Externs\externs.js %server%
+    xcopy %assets%assets\*.* %server%assets\ /E/Y/Q
+    xcopy %export%lib\*.* %server%lib\ /E/Y/Q
+    echo TilBuci DOM ready!
+) else (
+    echo TilBuci DOM build error!
 )

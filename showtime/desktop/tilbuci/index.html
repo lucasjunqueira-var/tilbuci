@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. -->
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>TilBuci Showtime</title>
+	<meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+	<link rel="shortcut icon" type="image/png" href="./favicon.png">
+	<meta property="og:title" content="TilBuci Showtime" />
+	
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="" />
+<!-- head overlay -->
+<style>#overlay_area { position: absolute; left: 0; top: 0; display: none; background-color: #000000; padding: 0 30px 30px 30px; width: 100%; height: 100%; box-sizing: content-box; } #overlay_header { width: 100%; box-sizing: content-box; height: 30px; margin: 5px 0; } #overlay_title { color: #FFFFFF; font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif"; font-size: 20px; font-weight: bold; } #overlay_close { color: #FFFFFF; font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif"; font-size: 20px; font-weight: bold; cursor: pointer; text-align: right; position: absolute; top: 5px; right: 100px; min-width: 100px; } #overlay_frame { display: none; } </style>
+	<script type="text/javascript" src="./TilBuci.js?rd=1782654710"></script>
+	<script type="text/javascript" src="./externs.js?rd=1782654710"></script>
+	<script>
+		window.addEventListener ("touchmove", function (event) { event.preventDefault (); }, { capture: false, passive: false });
+		if (typeof window.devicePixelRatio != 'undefined' && window.devicePixelRatio > 2) {
+			var meta = document.getElementById ("viewport");
+			meta.setAttribute ('content', 'width=device-width, initial-scale=' + (2 / window.devicePixelRatio) + ', user-scalable=no');
+		}
+	</script>
+	<style>
+		@font-face { font-family: "Averia Serif GWF"; src: url("./assetsrt/averiaserifgwf.woff2"); }
+@font-face { font-family: "Liberation Serif"; src: url("./assetsrt/liberationserif.woff2"); }
+@font-face { font-family: "Libra Sans"; src: url("./assetsrt/librasans.woff2"); }
+@font-face { font-family: "Roboto Sans"; src: url("./assetsrt/roboto.woff2"); }
+		html,body { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #666666; }
+        #TilBuciArea { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: #000000; }
+		#openfl-content { background: #000000; width: 100%; height: 100%; }
+	</style>
+</head>
+<body>
+    <div id="TilBuciArea">
+        <noscript>This webpage makes extensive use of JavaScript. Please enable JavaScript in your web browser to view this page.</noscript>
+        <div id="openfl-content"></div>
+        <script type="text/javascript">
+			let params = new URLSearchParams(window.location.search);
+			let vars = params.get("vars");
+			if (vars == null) vars = "";
+			let snippet = params.get("sn");
+			if (snippet == null) snippet = "";
+            lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "mode": "player", "movie": "showtime", "scene": "", "vars":vars, "snippet":snippet, "ws": "" , "fonts": [["Averia Serif GWF","./assetsrt/averiaserifgwf.woff2"], ["Liberation Serif","./assetsrt/liberationserif.woff2"], ["Libra Sans","./assetsrt/librasans.woff2"], ["Roboto Sans","./assetsrt/roboto.woff2"]] } });
+        </script>
+
+<!-- body end overlay -->
+<div id="overlay_area"><div id="overlay_header"><div id="overlay_title"></div><div id="overlay_close" onClick="overlay_close();"><img id="btclose" src="btclose.png" /></div></div><iframe id="overlay_frame" width="0" height="0" src=""></iframe></div>
+    </div>
+
+        <script>
+            function TBShowtime_Event(movie, eventName, jsonStr) {
+                fetch('http://localhost:8080/api/event', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ movie: movie, event: eventName, json: jsonStr })
+                });
+            }
+            function TBShowtime_Hardware(msg) {
+                fetch('http://localhost:8080/api/hardware', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+            }
+            let access = "";
+            let accesskey = "AAAAA";
+            function addAccess(char) {
+                access += char;
+                if (access.length > 5) access = access.substring(access.length - 5);
+                if (access === accesskey) {
+                    window.location.href = "http://localhost:8080/config/config.html";
+                }
+            }
+        </script>
+        <style>
+            
+            .abcd-area { position: fixed; width: 5%; height: 5%; z-index: 999999; cursor: pointer; }
+            #area-A { top: 0; left: 0; }
+            #area-B { top: 0; right: 0; }
+            #area-C { bottom: 0; left: 0; }
+            #area-D { bottom: 0; right: 0; }
+        </style>
+        <div id="area-A" class="abcd-area" onclick="addAccess('A')"></div>
+        <div id="area-B" class="abcd-area" onclick="addAccess('B')"></div>
+        <div id="area-C" class="abcd-area" onclick="addAccess('C')"></div>
+        <div id="area-D" class="abcd-area" onclick="addAccess('D')"></div>
+        
+</body>
+</html>

@@ -1,0 +1,5 @@
+ALTER TABLE `{PR}tilbuci_instances` ADD `in_alt` VARCHAR(512) NOT NULL DEFAULT '';
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_showtime` (`st_id` INT NOT NULL AUTO_INCREMENT , `st_name` VARCHAR(256) NOT NULL , `st_type` VARCHAR(16) NOT NULL , `st_when` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `st_config` VARCHAR(4096) NOT NULL , `st_movies` VARCHAR(4096) NOT NULL , PRIMARY KEY (`st_id`), INDEX (`st_name`), INDEX (`st_when`));
+CREATE TABLE IF NOT EXISTS `{PR}tilbuci_showtimeevt` (`se_id` INT NOT NULL AUTO_INCREMENT , `se_name` VARCHAR(256) NOT NULL , `se_type` VARCHAR(16) NOT NULL , `se_data` VARCHAR(4096) NOT NULL , `se_when` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`se_id`), INDEX (`se_name`));
+INSERT INTO `{PR}tilbuci_config` (`cf_key`, `cf_value`) VALUES ('dbVersion', '24') ON DUPLICATE KEY UPDATE `cf_value`=VALUES(`cf_value`);
+INSERT INTO `{PR}tilbuci_config` (`cf_key`, `cf_value`) VALUES ('shareMode', 'never') ON DUPLICATE KEY UPDATE `cf_value`=VALUES(`cf_value`);

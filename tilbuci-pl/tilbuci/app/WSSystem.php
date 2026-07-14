@@ -90,6 +90,9 @@ class WSSystem extends Webservice
 		}
 		// email configuration
 		$mailer = new Mailer;
+		// showtime access key
+		$stAKey = $this->getConfig('stAKey');
+		if ($stAKey === false) $stAKey = '';
 		// available fonts
 		$fonts = [ ];
 		$ck = $this->data->queryAll('SELECT * FROM `' . $this->data->conf['databasePrefix'] . 'fonts`');
@@ -105,6 +108,7 @@ class WSSystem extends Webservice
 			'autokey' => $autokey, 
 			'autolevel' => $autolevel,
 			'host' => $this->conf['host'], 
+			'stAKey' => $stAKey, 
 		]);
 	}
 	
