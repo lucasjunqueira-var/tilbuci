@@ -8,6 +8,12 @@ Want to chat about the software, ask questions, and find out about TilBuci news?
 
 [![discord](https://github.com/user-attachments/assets/5df8aa51-44b4-4206-92fd-f6e9dd375e18)](http://discord.tilbuci.com.br/)
 
+## TilBuci Showtime
+
+TilBuci Showtime is a complete solution for creating and managing digital content for events, exhibitions, and the like. Create your material using the TilBuci editor and distribute it across kiosks, totems, projections, and more in a simple and manageable way. Use customized hardware built on the Arduino* platform for interactions and send commands to your space's scenography, creating environments that respond to visitor interactions.
+
+[![TilBuci Showtime](https://github.com/user-attachments/assets/8292cadc-52fd-441d-a768-d26a6782f620)](https://youtu.be/-vYDmaokqbY)
+
 ## Easy to use graphic interface
 
 Use a drag-and-drop interface to bring your ideas to life.
