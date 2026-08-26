@@ -210,6 +210,14 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-ifstringemail'), a: 'if.stringemail', p: [
                     { t: 's', n: Global.ln.get('acinfo-ifstringemail-p1'), v: '' }, 
                 ], e: [ 'then', 'else' ] }, 
+                { n: Global.ln.get('acinfo-stringswitch'), a: 'string.switch', p: [
+                    { t: 's', n: Global.ln.get('acinfo-stringswitch-p1'), v: '' }, 
+                ], e: [ 'case' ] }, 
+                { n: Global.ln.get('acinfo-stringswitchcase'), a: 'string.switchcase', p: [
+                    { t: 's', n: Global.ln.get('acinfo-stringswitchcase-p1'), v: '' }, 
+                ], e: [ 'then' ] },
+                { n: Global.ln.get('acinfo-stringswitchdefault'), a: 'string.switchdefault', p: [
+                ], e: [ 'then' ] }, 
             ]
         ));
 
@@ -299,7 +307,14 @@ class ActionInfo {
                 { n: Global.ln.get('acinfo-ifintset'), a: 'if.intset', p: [
                     { t: 's', n: Global.ln.get('acinfo-ifintset-p1'), v: '' }, 
                 ], e: [ 'then', 'else' ] }, 
-
+                { n: Global.ln.get('acinfo-intswitch'), a: 'int.switch', p: [
+                    { t: 's', n: Global.ln.get('acinfo-intswitch-p1'), v: '' }, 
+                ], e: [ 'case' ] }, 
+                { n: Global.ln.get('acinfo-intswitchcase'), a: 'int.switchcase', p: [
+                    { t: 's', n: Global.ln.get('acinfo-intswitchcase-p1'), v: '' }, 
+                ], e: [ 'then' ] },
+                { n: Global.ln.get('acinfo-intswitchdefault'), a: 'int.switchdefault', p: [
+                ], e: [ 'then' ] }, 
             ]
         ));
 
@@ -786,6 +801,39 @@ class ActionInfo {
                     { t: 'e', n: Global.ln.get('acinfo-showtimehardware-p6'), v: '' }, 
                     { t: 'e', n: Global.ln.get('acinfo-showtimehardware-p7'), v: '' }, 
                     { t: 'e', n: Global.ln.get('acinfo-showtimehardware-p8'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-showtimename'), a: 'showtime.getname', p: [
+                ], e: [ 'then' ] }, 
+                { n: Global.ln.get('acinfo-showtimesetname'), a: 'showtime.setname', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showtimesetname-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-showtimeclearname'), a: 'showtime.clearname', p: [
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-showtimesetval'), a: 'showtime.setval', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showtimesetval-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-showtimesetval-p2'), v: '' }
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-showtimegetval'), a: 'showtime.getval', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showtimegetval-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-showtimegetval-p2'), v: '' }, 
+                ], e: [ 'then' ] }, 
+                { n: Global.ln.get('acinfo-showtimedelval'), a: 'showtime.delval', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showtimedelval-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-showtimedelallval'), a: 'showtime.delallval', p: [
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-showtimesetglobal'), a: 'showtime.setglobal', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showtimesetglobal-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-showtimesetglobal-p2'), v: '' }
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-showtimegetglobal'), a: 'showtime.getglobal', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showtimegetglobal-p1'), v: '' }, 
+                    { t: 's', n: Global.ln.get('acinfo-showtimegetglobal-p2'), v: '' }, 
+                ], e: [ 'then' ] }, 
+                { n: Global.ln.get('acinfo-showtimedelglobal'), a: 'showtime.delglobal', p: [
+                    { t: 's', n: Global.ln.get('acinfo-showtimedelglobal-p1'), v: '' }, 
+                ], e: [ ] }, 
+                { n: Global.ln.get('acinfo-showtimedelallglobal'), a: 'showtime.delallglobal', p: [
                 ], e: [ ] }, 
             ]
         ));

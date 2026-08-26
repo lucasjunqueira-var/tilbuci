@@ -24,6 +24,8 @@ class MenuExchange extends DrawerMenu {
         this.addButton('btPublish', Global.ln.get('menu-exchange-publish'), onPublish);
         this.addButton('btDesktop', Global.ln.get('menu-exchange-desktop'), onDesktop);
         this.addButton('btCordova', Global.ln.get('menu-exchange-cordova'), onCordova);
+        this.addButton('btMakers', Global.ln.get('menu-exchange-makers'), onMakers);
+        this.ui.createSpacer('managecol', 5, false, this._holder);
         this.addButton('btImport', Global.ln.get('menu-exchange-import'), onImport);
     }
 
@@ -53,6 +55,8 @@ class MenuExchange extends DrawerMenu {
             this.ui.buttons['btPublish'].toolTip = null;
             this.ui.buttons['btDesktop'].toolTip = null;
             this.ui.buttons['btCordova'].toolTip = null;
+            this.ui.buttons['btMakers'].enabled = true;
+            this.ui.buttons['btMakers'].toolTip = null;
         } else {
             this.ui.buttons['btExport'].enabled = false;
             this.ui.buttons['btIframe'].enabled = false;
@@ -67,6 +71,8 @@ class MenuExchange extends DrawerMenu {
             this.ui.buttons['btPublish'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
             this.ui.buttons['btDesktop'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
             this.ui.buttons['btCordova'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
+            this.ui.buttons['btMakers'].enabled = false;
+            this.ui.buttons['btMakers'].toolTip = Global.ln.get('tooltip-movie-nomovieowner');
         }
     }
 
@@ -124,6 +130,13 @@ class MenuExchange extends DrawerMenu {
     **/
     private  function onCordova(evt:TriggerEvent):Void {
         this._ac('cordova');
+    }
+
+    /**
+        Export current movie as an Apache Cordova project.
+    **/
+    private  function onMakers(evt:TriggerEvent):Void {
+        this._ac('makers');
     }
 
     /**

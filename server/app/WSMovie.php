@@ -319,7 +319,7 @@ class WSMovie extends Webservice
 	 */
 	private function getShowtimeList() {
 		$list = [ ];
-		$ck = $this->queryAll('SELECT `st_name` FROM `' . $this->data->conf['databasePrefix'] . 'showtime` GROUP BY `st_name` ORDER BY `st_when` DESC');
+		$ck = $this->queryAll('SELECT `st_name`, MAX(st_when) AS `ultimo_show` FROM `' . $this->data->conf['databasePrefix'] . 'showtime` GROUP BY `st_name` ORDER BY `ultimo_show` DESC');
 		foreach ($ck as $v) $list[] = $v['st_name'];
 		$this->returnRequest([
 			'e' => 0,

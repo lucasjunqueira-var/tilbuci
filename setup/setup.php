@@ -7,7 +7,7 @@
 
 /**
  TilBuci setup script
- Lucas Junqueira, May 2026
+ Lucas Junqueira, July 2026
  **/
 
 // version info

@@ -397,9 +397,9 @@ class WindowContrInterf extends PopupWindow {
     }
 
     private function saveContr(evt:Event):Void {
-        for (cont in GlobalPlayer.contraptions.forms.keys()) {
-            GlobalPlayer.contraptions.forms[cont].kill();
-            GlobalPlayer.contraptions.forms.remove(cont);
+        for (cont in GlobalPlayer.contraptions.interf.keys()) {
+            GlobalPlayer.contraptions.interf[cont].kill();
+            GlobalPlayer.contraptions.interf.remove(cont);
         }
         for (cont in this._list.keys()) {
             GlobalPlayer.contraptions.interf[cont] = this._list[cont].clone();
