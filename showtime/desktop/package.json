@@ -29,8 +29,7 @@
     },
     "mac": {
       "target": "dir",
-      "icon": "images/tilbuciIcon.icns", 
-      "identity": "-"
+      "icon": "images/tilbuciIcon.icns"
     },
     "linux": {
       "target": "dir",

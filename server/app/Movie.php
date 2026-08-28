@@ -1682,7 +1682,7 @@ class Movie extends BaseClass
 			return (-6);
 		}
 	}
-    
+
     /**
 	 * Exports a movie as a website.
 	 * @param	string	$user	the requesting user
@@ -1936,6 +1936,190 @@ class Movie extends BaseClass
                                 }
                                 return ($this->conf['path'].'sites/'.$movie.'/');
                             }
+                        } else {
+                            return (false);
+                        }
+                    } else {
+                        return (false);
+                    }                    
+                } else {
+                    return (false);
+                }
+			} else {
+                // the current user isn't the movie owner
+				return (false);
+			}
+		} else {
+			return (false);
+		}
+	}
+    
+    /**
+	 * Exports a movie as a Showtime for Makers project..
+	 * @param	string	$user	the requesting user
+	 * @param	string	$movie	the movie id
+     * @param	string	$ip     the server ip
+     * @param   string  $platform   the malers platform
+	 * @return	string|bool the path to the exported file or false on error
+	 */
+	public function exportMakers($user, $movie, $ip, $platform) {
+		// check user: movie owner?
+		if (!is_null($this->db)) {
+			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id AND `mv_user`=:user', [
+				':id' => $movie, 
+				':user' => $user, 
+			]);
+			if (count($ck) > 0) {
+                if (is_dir('../movie/'.$movie.'.movie')) {
+                    set_time_limit(0);
+                    $this->removeFileDir('../../export/makers-'.$movie.'.zip');
+                    $this->removeFileDir('../../export/makers-'.$movie);
+                    $this->createDir('../../export/makers-'.$movie, true);
+                    $this->createDir('../../export/makers-'.$movie.'/card', true);
+                    $this->createDir('../../export/makers-'.$movie.'/sketch', true);
+                    $this->createDir('../../export/makers-'.$movie.'/card/tilbuci', true);
+                    // platform
+                    switch ($platform) {
+                        case 'esp32':
+                            $this->copyDir('../../export/makers/esp32', ('../../export/makers-'.$movie.'/sketch/'));
+                            $readme = file_get_contents('../../export/makers/esp32-readme.html');
+                            $readme = str_replace([
+                                '[SITE]'
+                            ], [
+                                $ip
+                            ], $readme);
+                            file_put_contents('../../export/makers-'.$movie.'/readme.html', $readme);
+                            break;
+                    }
+                    // movie files
+                    $this->copyDir('../../export/site', ('../../export/makers-'.$movie.'/card/tilbuci/'));
+                    if (is_dir('../../export/makers-'.$movie)) {
+                        if ($this->loadMovie($movie)) {
+                            set_time_limit(0);
+                            // re-publish scenes?
+                            $pub = false;
+                            if (($ck[0]['mv_identify'] == '1') || (!is_null($ck[0]['mv_vsgroups']) && ($ck[0]['mv_vsgroups'] != ''))) {
+                                $pub = true;
+                                $this->publishScenes($movie);
+                                $this->publishCollections($movie);
+                            }
+                            // fonts
+                            $fonts = [ ];
+                            $embedft = [ ];
+                            $ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'fonts`');
+                            foreach ($ck as $v) {
+                                $fonts[] = '@font-face { font-family: "' . $v['fn_name'] . '"; src: url("./assetsrt/' . $v['fn_file'] . '"); }';
+                                $embedft[] = '["' . $v['fn_name'] . '","./assetsrt/' . $v['fn_file'] . '"]';
+                                @copy(('../font/' . $v['fn_file']), ('../../export/makers-'.$movie.'/card/tilbuci/assetsrt/' . $v['fn_file']));
+                            }
+                            $ck = $this->queryAll('SELECT `mv_fonts` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id' => $movie]);
+                            if (count($ck) > 0) {
+                                if ($ck[0]['mv_fonts'] != '') {
+                                    $json = json_decode(gzdecode(base64_decode($ck[0]['mv_fonts'])), true);
+                                    if (json_last_error() == JSON_ERROR_NONE) {
+                                        foreach ($json as $k => $v) {
+                                            if (isset($v['name']) && isset($v['file'])) {
+                                                $fonts[] = '@font-face { font-family: "' . $v['name'] . '"; src: url("./assetsrt/' . $v['file'] . '"); }';
+                                                $embedft[] = '["' . $v['name'] . '","./assetsrt/' . $v['file'] . '"]';
+                                                @copy(('../movie/'.$movie.'.movie/media/font/' . $v['file']), ('../../export/makers-'.$movie.'/card/tilbuci/assetsrt/' . $v['file']));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            // plugins
+                            $plhead = [ ];
+                            $plend = [ ];
+                            $ck = $this->queryAll('SELECT `pc_id`, `pc_file` FROM `' . $this->conf['databasePrefix'] . 'pluginconfig` WHERE `pc_active`=:ac AND `pc_index`=:in', [
+                                ':ac' => '1', 
+                                ':in' => '1', 
+                            ]);
+                            foreach ($ck as $v) {
+                                if (is_file('../../app/' . $v['pc_file'] . '.php')) {
+                                    require_once('../../app/' . $v['pc_file'] . '.php');
+                                    $pl = new $v['pc_file'];
+                                    $plhead[] = $pl->indexHead();
+                                    $plend[] = $pl->indexEndBody();
+                                }
+                            }
+                            // index text
+                            $index = file_get_contents('../../export/makers/index.html');
+                            // prepare values
+                            $fonts = implode("\r\n", $fonts);
+                            $plhead = implode("\r\n", $plhead); 
+                            $plend = implode("\r\n", $plend); 
+                            $image = $this->info['image'] == '' ? '' : '<meta property="og:image" content="./movie/'.$movie.'.movie/media/picture/'.$this->info['image'].'" />';
+                            $mode = 'webgl';
+                            $color = str_replace('0x', '#', $this->info['screen']['bgcolor']);
+                            $ws = '';
+                            // index.html
+                            $index = str_replace([
+                                '[SITEMOVIE]', 
+                                '[SITESCENE]', 
+                                '[SITETITLE]', 
+                                '[SITECOLOR]', 
+                                '[SITEABOUT]', 
+                                '[SITESHAREIMG]',
+                                '[SITEFONTS]', 
+                                '[SITEPLUGINHEAD]', 
+                                '[SITEPLUGINEND]', 
+                                '[SITEWS]', 
+                                '[PARAMEXTRA]', 
+                                '[RAND]', 
+                                '[SITE]'
+                            ], [
+                                $movie, 
+                                '', 
+                                $this->info['title'], 
+                                $color, 
+                                $this->info['description'], 
+                                $image, 
+                                $fonts, 
+                                $plhead, 
+                                $plend, 
+                                $ws, 
+                                ', "fonts": [' . implode(', ', $embedft) . ']', 
+                                time(), 
+                                $ip
+                            ], $index);
+                            file_put_contents('../../export/makers-'.$movie.'/card/tilbuci/index.html', $index);
+                            // runtime
+                            @copy('../../export/runtimes/website.js', ('../../export/makers-'.$movie.'/card/tilbuci/TilBuci.js'));
+                            // favicon
+                            if ($this->info['favicon'] != '') {
+                                @unlink('../../export/makers-'.$movie.'/favicon.png');
+                                @copy(('../movie/'.$movie.'.movie/media/picture/'.$this->info['favicon']), ('../../export/makers-'.$movie.'/card/tilbuci/favicon.png'));
+                            }
+                            // movie folder
+                            $this->copyDir(('../movie/'.$movie.'.movie'), ('../../export/makers-'.$movie.'/card/tilbuci/movie/'.$movie.'.movie'));
+                            $this->info['key'] = '';
+                            $this->info['fallback'] = '';
+                            $this->info['identify'] = false;
+                            $this->info['vsgroups'] = '';
+                            file_put_contents(('../../export/makers-'.$movie.'/card/tilbuci/movie/'.$movie.'.movie/movie.json'), json_encode($this->info));
+                            // save zip
+                            $zip = new \ZipArchive;
+                            $zip->open('../../export/makers-'.$movie.'.zip', \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+                            $files = new \RecursiveIteratorIterator(
+                                new \RecursiveDirectoryIterator('../../export/makers-'.$movie),
+                                \RecursiveIteratorIterator::LEAVES_ONLY
+                            );
+                            $rootPath = realpath('../../export/makers-'.$movie);
+                            foreach ($files as $file) {
+                                if (!$file->isDir()) {
+                                    $filePath = $file->getRealPath();
+                                    $relativePath = substr($filePath, strlen($rootPath) + 1);
+                                    $relativePath = str_replace('\\', '/', $relativePath);
+                                    $zip->addFile($filePath, $relativePath);
+                                }
+                            }
+                            $zip->close();
+                            $this->removeFileDir('../../export/makers-'.$movie);
+                            // remove scenes?
+                            if ($pub) {
+                                $this->removePublished($movie);
+                            }
+                            return ('makers-'.$movie.'.zip');
                         } else {
                             return (false);
                         }
@@ -2237,6 +2421,8 @@ class Movie extends BaseClass
 			return (false);
 		}
 	}
+
+
     
     /**
 	 * Exports a movie for publishing services.

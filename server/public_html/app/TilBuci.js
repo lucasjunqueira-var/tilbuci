@@ -938,7 +938,7 @@ ApplicationMain.main = function() {
 };
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
-	app.meta.h["build"] = "153";
+	app.meta.h["build"] = "156";
 	app.meta.h["company"] = "VAR";
 	app.meta.h["file"] = "TilBuci";
 	app.meta.h["name"] = "TilBuci";
@@ -157064,7 +157064,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 197389;
+	this.version = 916441;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";

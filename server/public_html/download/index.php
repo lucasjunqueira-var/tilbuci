@@ -90,6 +90,15 @@ if (isset($_GET['a'])) {
 					}
 				}
 				break;
+			case 'makers':
+				if (isset($_GET['movie'])) {
+					$path = '../../export/makers-'.$_GET['movie'].'.zip';
+					if (is_file($path)) {
+						$name = 'makers-'.$_GET['movie'].'.zip';
+						$mime = 'application/x-zip';
+					}
+				}
+				break;
             case 'pub':
 				if (isset($_GET['movie'])) {
 					$path = '../../export/publish-'.$_GET['movie'].'.zip';
