@@ -227,7 +227,7 @@ class ActionInfo {
             [
                 { n: Global.ln.get('acinfo-intset'), a: 'int.set', p: [
                     { t: 's', n: Global.ln.get('acinfo-intset-p1'), v: '' }, 
-                    { t: 'f', n: Global.ln.get('acinfo-intset-p2'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-intset-p2'), v: '' }, 
                 ], e: [ ] }, 
                 { n: Global.ln.get('acinfo-intsum'), a: 'int.sum', p: [
                     { t: 's', n: Global.ln.get('acinfo-intsum-p1'), v: '' }, 
@@ -308,10 +308,10 @@ class ActionInfo {
                     { t: 's', n: Global.ln.get('acinfo-ifintset-p1'), v: '' }, 
                 ], e: [ 'then', 'else' ] }, 
                 { n: Global.ln.get('acinfo-intswitch'), a: 'int.switch', p: [
-                    { t: 's', n: Global.ln.get('acinfo-intswitch-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-intswitch-p1'), v: '' }, 
                 ], e: [ 'case' ] }, 
                 { n: Global.ln.get('acinfo-intswitchcase'), a: 'int.switchcase', p: [
-                    { t: 's', n: Global.ln.get('acinfo-intswitchcase-p1'), v: '' }, 
+                    { t: 'i', n: Global.ln.get('acinfo-intswitchcase-p1'), v: '' }, 
                 ], e: [ 'then' ] },
                 { n: Global.ln.get('acinfo-intswitchdefault'), a: 'int.switchdefault', p: [
                 ], e: [ 'then' ] }, 

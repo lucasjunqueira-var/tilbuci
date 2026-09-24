@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+    body, html {
+        background-color: #000000;
+        color: #FFFFFF;
+        font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", Verdana, "sans-serif";
+        font-size: 20px;
+        margin: 0 10px;
+        padding: 0;
+    }
+    a {
+        color: #FFC56E;
+    }
+    h1 {
+        font-size: 26px;
+        color: #ff9900;
+        margin-top: 30px;
+    }
+    h2 {
+        font-size: 22px;
+        margin-top: 25px;
+    }
+</style>
+<title>TilBuci Showtime for Makers project</title>
+</head>
+<body>
+    <h1>TilBuci Showtime for Makers / Espressif ESP32</h1>
+
+    <p>This is your <em>Showtime for Makers</em> project for the <strong>Espressif ESP32</strong> platform. With it, you will load your TilBuci movie onto a device that broadcasts its own Wi-Fi network, which people can access to view your content.</p>
+
+    <p>In the compressed file you will find two folders, "card" and "sketch". The contents of the "card" folder should be copied to an SD card formatted in exFAT. The contents of the "card" folder contain both your movie and the TilBuci platform ready for playback.</p>
+
+    <p>The "sketch" folder contains code to be opened in the Arduino* IDE. This code is prepared to configure an ESP32-based board to create a Wi-Fi access point and serve the content of your movie to devices that connect to it. The code is currently designed for a traditional <strong>ESP32-CAM (AI-Thinker)</strong> board that already has both the ESP32 and the SD card reader built-in.</p>
+
+    <p>If your board is different, don't worry: the sketch code has been divided into files according to functionality, so it will be easy to adapt it to your needs (such as adjusting access to the SD card).</p>
+    
+    <p>If your movie needs to interact with hardware beyond just transmitting content, look for the "HardwareHandler.cpp" file to add the necessary code. If you need the card to send commands to connected devices, check the "sendAction" function, also described in that file.</p>
+
+    <p>All the code is well commented so you can easily adapt it to your installation.</p>
+
+    <p><em>* Arduino is a registered trademark. It is mentioned here solely for reference purposes to describe compatibility and usage with Arduino products. This text does not imply any endorsement or affiliation with the Arduino brand.</em></p>
+</body>
+</html>

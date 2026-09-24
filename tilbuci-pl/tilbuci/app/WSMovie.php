@@ -109,6 +109,9 @@ class WSMovie extends Webservice
                 case 'Movie/ExportPwa':
 					$this->exportPwa();
 					break;
+				case 'Movie/ExportMakers':
+					$this->exportMakers();
+					break;
                 case 'Movie/ExportPub':
 					$this->exportPub();
 					break;
@@ -319,7 +322,7 @@ class WSMovie extends Webservice
 	 */
 	private function getShowtimeList() {
 		$list = [ ];
-		$ck = $this->queryAll('SELECT `st_name` FROM `' . $this->data->conf['databasePrefix'] . 'showtime` GROUP BY `st_name` ORDER BY `st_when` DESC');
+		$ck = $this->queryAll('SELECT `st_name`, MAX(st_when) AS `ultimo_show` FROM `' . $this->data->conf['databasePrefix'] . 'showtime` GROUP BY `st_name` ORDER BY `ultimo_show` DESC');
 		foreach ($ck as $v) $list[] = $v['st_name'];
 		$this->returnRequest([
 			'e' => 0,
@@ -574,6 +577,22 @@ class WSMovie extends Webservice
 		if ($this->requiredFields(['movie', 'name', 'shortname', 'lang', 'url', 'location'])) {
 			$mv = new Movie;
             $exp = $mv->exportPwa($this->user, $this->req['movie'], $this->req['name'], $this->req['shortname'], $this->req['lang'], $this->req['url'], $this->req['location']);
+            if ($exp === false) {
+                $this->returnRequest([ 'e' => 1, 'exp' => '' ]);
+            } else {
+                $this->returnRequest([ 'e' => 0, 'exp' => $exp ]);
+            }
+		}
+	}
+
+	/**
+	 * Exports a movie as a Showtime for Makers project.
+	 */
+	private function exportMakers() {
+		// required fields received?
+		if ($this->requiredFields(['movie', 'ip', 'platform'])) {
+			$mv = new Movie;
+            $exp = $mv->exportMakers($this->user, $this->req['movie'], $this->req['ip'], $this->req['platform']);
             if ($exp === false) {
                 $this->returnRequest([ 'e' => 1, 'exp' => '' ]);
             } else {

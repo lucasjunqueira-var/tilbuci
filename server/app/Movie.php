@@ -2084,7 +2084,9 @@ class Movie extends BaseClass
                             ], $index);
                             file_put_contents('../../export/makers-'.$movie.'/card/tilbuci/index.html', $index);
                             // runtime
-                            @copy('../../export/runtimes/website.js', ('../../export/makers-'.$movie.'/card/tilbuci/TilBuci.js'));
+                            @copy('../../export/runtimes/pwa.js', ('../../export/makers-'.$movie.'/card/tilbuci/TilBuci.js'));
+                            // blank video
+                            @copy('../../export/makers/blank.video', ('../../export/makers-'.$movie.'/card/tilbuci/blank.mp4'));
                             // favicon
                             if ($this->info['favicon'] != '') {
                                 @unlink('../../export/makers-'.$movie.'/favicon.png');

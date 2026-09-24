@@ -3,25 +3,22 @@ cd app
 set export="Export\html5\bin\"
 set server="..\server\public_html\app\"
 set assets="..\app\"
-for /F "skip=1 delims=" %%F in ('
-    wmic PATH Win32_LocalTime GET Day^,Month^,Year /FORMAT:TABLE
-') do (
-    for /F "tokens=1-3" %%L in ("%%F") do (
-        set CurrDay=0%%L
-        set CurrMonth=0%%M
-        set CurrYear=%%N
-    )
+rem ---------------------------------------------------------------------------
+rem Build timestamp (YYYYMMDDHHMM)
+rem wmic was deprecated and removed from Windows 11 24H2+ (now a Feature on
+rem Demand, disabled by default), so the date comes from PowerShell instead.
+rem ---------------------------------------------------------------------------
+set buildtime=
+for /F "delims=" %%F in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMddHHmm"') do set buildtime=%%F
+if not defined buildtime (
+    echo TilBuci build number error: could not determine the current date/time.
+    exit /b 1
 )
-set CurrDay=%CurrDay:~-2%
-set CurrMonth=%CurrMonth:~-2%
-set CurrHour=%time:~0,2%
-set CurrHour=00%CurrHour: =%
-set CurrHour=%CurrHour:~-2%
-set CurrMinute=%time:~3,2%
-set CurrMinute=00%CurrMinute: =%
-set CurrMinute=%CurrMinute:~-2%
-set buildtime=%CurrYear%%CurrMonth%%CurrDay%%CurrHour%%CurrMinute%
-powershell -Command "(gc Assets/build-base.json) -replace 'BNUM', %buildtime% | Out-File -encoding UTF8 Assets/build.json"
+powershell -NoProfile -Command "(gc Assets/build-base.json) -replace 'BNUM', '%buildtime%' | Out-File -encoding UTF8 Assets/build.json"
+if errorlevel 1 (
+    echo TilBuci build number error: Assets/build.json was not generated.
+    exit /b 1
+)
 powershell -Command "cp project-full.xml project.xml"
 echo TilBuci DOM build %buildtime%...
 openfl build html5 -Ddom -D haxeJSON -D renderdom -nolaunch

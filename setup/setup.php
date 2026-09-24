@@ -12,7 +12,7 @@
 
 // version info
 $version = [
-    'num' => 24, 
+    'num' => 25, 
 ];
 chdir(__DIR__);
 
