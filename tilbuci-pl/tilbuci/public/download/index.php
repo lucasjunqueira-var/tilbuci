@@ -20,7 +20,7 @@ if (isset($_GET['a'])) {
 		$image = '';
 		switch (trim($_GET['file'])) {
             case 'snippets':
-                if (isset($_GET['movie']) && isset($_GET['media'])) {
+                if (isset($_GET['movie']) && isset($_GET['media']) && preg_match('/^[A-Za-z0-9_-]+$/', $_GET['movie'])) {
                     $data = new Data;
                     $media = str_replace(['.json', ' '], '', mb_strtolower($_GET['media']));
                     $ck = $data->queryAll('SELECT `sn_content` FROM `' . $data->conf['databasePrefix'] . 'snippets` WHERE `sn_movie`=:mv AND `sn_file`=:fl', [':mv' => $_GET['movie'], ':fl' => $media]);
