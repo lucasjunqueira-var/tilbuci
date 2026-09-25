@@ -400,6 +400,44 @@ async function clearConfServer() {
     }
 }
 
+// Get a parameter from a request, checking the body first, then the query string
+function getParam(req, name) {
+    if (req.body && req.body[name] !== undefined) return req.body[name];
+    if (req.query && req.query[name] !== undefined) return req.query[name];
+    return undefined;
+}
+
+// Generate a random 8-character string using safe characters
+function randomName() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < 8; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+// Path to the TBShowtime folder in the user's documents
+function tbShowtimeDir() {
+    return path.join(app.getPath('documents'), 'TBShowtime');
+}
+
+// Ensure the local TBShowtime folder structure exists (names, names/all and global)
+function ensureLocalFolders() {
+    try {
+        const baseDir = tbShowtimeDir();
+        if (!fs.existsSync(baseDir)) fs.mkdirSync(baseDir, { recursive: true });
+        const namesDir = path.join(baseDir, 'names');
+        if (!fs.existsSync(namesDir)) fs.mkdirSync(namesDir, { recursive: true });
+        const namesAllDir = path.join(namesDir, 'all');
+        if (!fs.existsSync(namesAllDir)) fs.mkdirSync(namesAllDir, { recursive: true });
+        const globalDir = path.join(baseDir, 'global');
+        if (!fs.existsSync(globalDir)) fs.mkdirSync(globalDir, { recursive: true });
+    } catch (e) {
+        console.error("Error ensuring TBShowtime folders:", e);
+    }
+}
+
 // Generate index.html dynamically by replacing placeholders in tilbuci.html
 function generateIndexHtml() {
     const templatePath = path.join(tilbuciDir, 'tilbuci.html');
@@ -431,6 +469,81 @@ function generateIndexHtml() {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: msg })
+                });
+            }
+            function TBShowtime_Getname() {
+                const url = 'http://localhost:8080/api/name';
+                return fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                }).then(r => r.text())
+                .catch(() => 'all');
+            }
+            function TBShowtime_Setval(setname, setvalue, name) {
+                const url = 'http://localhost:8080/api/setval';
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ set: setname, value: setvalue, name: name })
+                });
+            }
+            function TBShowtime_Getval(getname, name) {
+                const url = 'http://localhost:8080/api/getval';
+                return fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ get: getname, name: name })
+                }).then(r => r.text())
+                .catch(() => 'all');
+            }
+            function TBShowtime_Delval(delname, name) {
+                const url = 'http://localhost:8080/api/delval';
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ get: delname, name: name })
+                });
+            }
+            function TBShowtime_Delallval(name) {
+                const url = 'http://localhost:8080/api/delallval';
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name })
+                });
+            }
+            function TBShowtime_Setglobal(setname, setvalue) {
+                const url = 'http://localhost:8080/api/setglobal';
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ set: setname, value: setvalue })
+                });
+            }
+            function TBShowtime_Getglobal(getname) {
+                const url = 'http://localhost:8080/api/getglobal';
+                return fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ get: getname })
+                }).then(r => r.text())
+                .catch(() => 'all');
+            }
+            function TBShowtime_Delglobal(delname) {
+                const url = 'http://localhost:8080/api/delglobal';
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ get: delname })
+                });
+            }
+            function TBShowtime_Delallglobal() {
+                const url = 'http://localhost:8080/api/delallglobal';
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
                 });
             }
             let access = "";
@@ -467,6 +580,7 @@ function startServer() {
     const expressApp = express();
     expressApp.use(cors());
     expressApp.use(express.json());
+    expressApp.use(express.urlencoded({ extended: true }));
     
     // Serve tilbuci content at root
     expressApp.use('/', express.static(tilbuciDir, {
@@ -611,6 +725,166 @@ function startServer() {
         res.json({ success: true });
     });
 
+    // --- Local information routes (TBShowtime/names and TBShowtime/global) ---
+
+    // /api/name: create a unique 8-char folder inside names/ and return its name
+    expressApp.post('/api/name', (req, res) => {
+        res.type('text/plain');
+        try {
+            ensureLocalFolders();
+            const namesDir = path.join(tbShowtimeDir(), 'names');
+            const used = new Set(fs.existsSync(namesDir) ? fs.readdirSync(namesDir) : []);
+            let name = randomName();
+            while (used.has(name)) name = randomName();
+            const folder = path.join(namesDir, name);
+            if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+            res.send(name);
+        } catch (e) {
+            res.status(500).send('');
+        }
+    });
+
+    // /api/setval: write names/[name]/[set].value (name optional, default "all")
+    expressApp.post('/api/setval', (req, res) => {
+        res.type('text/plain');
+        const set = getParam(req, 'set');
+        const value = getParam(req, 'value');
+        const name = getParam(req, 'name') !== undefined ? getParam(req, 'name') : 'all';
+        if (set === undefined || value === undefined) {
+            res.send('error');
+            return;
+        }
+        try {
+            ensureLocalFolders();
+            const folder = path.join(tbShowtimeDir(), 'names', String(name));
+            if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
+            fs.writeFileSync(path.join(folder, set + '.value'), String(value), 'utf8');
+            res.send('ok');
+        } catch (e) {
+            res.send('error');
+        }
+    });
+
+    // /api/getval: read names/[name]/[get].value (name optional, default "all")
+    expressApp.post('/api/getval', (req, res) => {
+        res.type('text/plain');
+        const get = getParam(req, 'get');
+        const name = getParam(req, 'name') !== undefined ? getParam(req, 'name') : 'all';
+        if (get === undefined) {
+            res.send('');
+            return;
+        }
+        try {
+            const file = path.join(tbShowtimeDir(), 'names', String(name), get + '.value');
+            if (fs.existsSync(file)) {
+                res.send(fs.readFileSync(file, 'utf8'));
+            } else {
+                res.send('');
+            }
+        } catch (e) {
+            res.send('');
+        }
+    });
+
+    // /api/delval: remove names/[name]/[get].value (name optional, default "all")
+    expressApp.post('/api/delval', (req, res) => {
+        res.type('text/plain');
+        const get = getParam(req, 'get');
+        const name = getParam(req, 'name') !== undefined ? getParam(req, 'name') : 'all';
+        if (get === undefined) {
+            res.send('');
+            return;
+        }
+        try {
+            const file = path.join(tbShowtimeDir(), 'names', String(name), get + '.value');
+            if (fs.existsSync(file)) fs.unlinkSync(file);
+        } catch (e) {}
+        res.send('');
+    });
+
+    // /api/delallval: remove all .value files in names/[name] (name optional, default "all")
+    expressApp.post('/api/delallval', (req, res) => {
+        res.type('text/plain');
+        const name = getParam(req, 'name') !== undefined ? getParam(req, 'name') : 'all';
+        try {
+            const folder = path.join(tbShowtimeDir(), 'names', String(name));
+            if (fs.existsSync(folder)) {
+                for (const f of fs.readdirSync(folder)) {
+                    if (f.endsWith('.value')) fs.unlinkSync(path.join(folder, f));
+                }
+            }
+        } catch (e) {}
+        res.send('');
+    });
+
+    // /api/setglobal: write global/[set].value
+    expressApp.post('/api/setglobal', (req, res) => {
+        res.type('text/plain');
+        const set = getParam(req, 'set');
+        const value = getParam(req, 'value');
+        if (set === undefined || value === undefined) {
+            res.send('error');
+            return;
+        }
+        try {
+            ensureLocalFolders();
+            const folder = path.join(tbShowtimeDir(), 'global');
+            fs.writeFileSync(path.join(folder, set + '.value'), String(value), 'utf8');
+            res.send('ok');
+        } catch (e) {
+            res.send('error');
+        }
+    });
+
+    // /api/getglobal: read global/[get].value
+    expressApp.post('/api/getglobal', (req, res) => {
+        res.type('text/plain');
+        const get = getParam(req, 'get');
+        if (get === undefined) {
+            res.send('');
+            return;
+        }
+        try {
+            const file = path.join(tbShowtimeDir(), 'global', get + '.value');
+            if (fs.existsSync(file)) {
+                res.send(fs.readFileSync(file, 'utf8'));
+            } else {
+                res.send('');
+            }
+        } catch (e) {
+            res.send('');
+        }
+    });
+
+    // /api/delglobal: remove global/[get].value
+    expressApp.post('/api/delglobal', (req, res) => {
+        res.type('text/plain');
+        const get = getParam(req, 'get');
+        if (get === undefined) {
+            res.send('');
+            return;
+        }
+        try {
+            const file = path.join(tbShowtimeDir(), 'global', get + '.value');
+            if (fs.existsSync(file)) fs.unlinkSync(file);
+        } catch (e) {}
+        res.send('');
+    });
+
+    // /api/delallglobal: remove all .value files in global
+    expressApp.post('/api/delallglobal', (req, res) => {
+        res.type('text/plain');
+        try {
+            const folder = path.join(tbShowtimeDir(), 'global');
+            if (fs.existsSync(folder)) {
+                for (const f of fs.readdirSync(folder)) {
+                    if (f.endsWith('.value')) fs.unlinkSync(path.join(folder, f));
+                }
+            }
+        } catch (e) {}
+        res.send('');
+    });
+
     server = expressApp.listen(8080, () => {
         // Server started silently
     });
@@ -620,6 +894,7 @@ function startServer() {
 function createWindow() {
     generateIndexHtml();
     setupSerialPort();
+    ensureLocalFolders();
     startServer();
     
     pingServer();

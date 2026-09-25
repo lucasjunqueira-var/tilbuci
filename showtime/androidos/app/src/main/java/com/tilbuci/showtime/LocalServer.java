@@ -23,6 +23,78 @@ public class LocalServer extends NanoHTTPD {
         super(port);
         this.context = context;
         this.filesDir = filesDir;
+        ensureLocalFolders();
+    }
+
+    // Path to the TBShowtime folder in the public documents directory
+    private File tbShowtimeDir() {
+        File docsDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOCUMENTS);
+        return (docsDir != null) ? new File(docsDir, "TBShowtime") : null;
+    }
+
+    // Ensure the local TBShowtime folder structure exists (names, names/all and global)
+    private void ensureLocalFolders() {
+        try {
+            File baseDir = tbShowtimeDir();
+            if (baseDir == null) return;
+            if (!baseDir.exists()) baseDir.mkdirs();
+            File namesDir = new File(baseDir, "names");
+            if (!namesDir.exists()) namesDir.mkdirs();
+            File namesAllDir = new File(namesDir, "all");
+            if (!namesAllDir.exists()) namesAllDir.mkdirs();
+            File globalDir = new File(baseDir, "global");
+            if (!globalDir.exists()) globalDir.mkdirs();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Generate a random 8-character string using safe characters
+    private String randomName() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        java.util.Random rnd = new java.util.Random();
+        for (int i = 0; i < 8; i++) {
+            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+        }
+        return sb.toString();
+    }
+
+    // Parse the JSON body of a POST request into a JSONObject (or null)
+    private org.json.JSONObject parsePostBody(IHTTPSession session) {
+        try {
+            java.util.Map<String, String> files = new java.util.HashMap<>();
+            session.parseBody(files);
+            String postData = files.get("postData");
+            if (postData == null) return null;
+            File potentialTempFile = new File(postData);
+            if (potentialTempFile.exists() && potentialTempFile.isFile()) {
+                java.io.InputStream is = new java.io.FileInputStream(potentialTempFile);
+                byte[] buf = new byte[is.available()];
+                is.read(buf);
+                is.close();
+                postData = new String(buf, "UTF-8");
+            }
+            return new org.json.JSONObject(postData);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // Check whether a parameter was received either in the JSON body or in the query string
+    private boolean hasPostParam(org.json.JSONObject body, IHTTPSession session, String key) {
+        if (body != null && body.has(key)) return true;
+        return session.getParms().containsKey(key);
+    }
+
+    // Read a parameter from the JSON body or the query string, falling back to a default
+    private String getPostParam(org.json.JSONObject body, IHTTPSession session, String key, String def) {
+        if (body != null && body.has(key)) {
+            try { return body.getString(key); } catch (Exception e) { return def; }
+        }
+        String p = session.getParms().get(key);
+        if (p != null) return p;
+        return def;
     }
 
     // Handle incoming HTTP requests from the WebView and process API routes
@@ -94,6 +166,81 @@ public class LocalServer extends NanoHTTPD {
                                         "            method: 'POST',\n" +
                                         "            headers: { 'Content-Type': 'application/json' },\n" +
                                         "            body: JSON.stringify({ message: msg })\n" +
+                                        "        });\n" +
+                                        "    }\n" +
+                                        "    function TBShowtime_Getname() {\n" +
+                                        "        const url = 'http://localhost:8080/api/name';\n" +
+                                        "        return fetch(url, {\n" +
+                                        "            method: 'POST',\n" +
+                                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                                        "            body: JSON.stringify({})\n" +
+                                        "        }).then(r => r.text())\n" +
+                                        "        .catch(() => 'all');\n" +
+                                        "    }\n" +
+                                        "    function TBShowtime_Setval(setname, setvalue, name) {\n" +
+                                        "        const url = 'http://localhost:8080/api/setval';\n" +
+                                        "        fetch(url, {\n" +
+                                        "            method: 'POST',\n" +
+                                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                                        "            body: JSON.stringify({ set: setname, value: setvalue, name: name })\n" +
+                                        "        });\n" +
+                                        "    }\n" +
+                                        "    function TBShowtime_Getval(getname, name) {\n" +
+                                        "        const url = 'http://localhost:8080/api/getval';\n" +
+                                        "        return fetch(url, {\n" +
+                                        "            method: 'POST',\n" +
+                                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                                        "            body: JSON.stringify({ get: getname, name: name })\n" +
+                                        "        }).then(r => r.text())\n" +
+                                        "        .catch(() => 'all');\n" +
+                                        "    }\n" +
+                                        "    function TBShowtime_Delval(delname, name) {\n" +
+                                        "        const url = 'http://localhost:8080/api/delval';\n" +
+                                        "        fetch(url, {\n" +
+                                        "            method: 'POST',\n" +
+                                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                                        "            body: JSON.stringify({ get: delname, name: name })\n" +
+                                        "        });\n" +
+                                        "    }\n" +
+                                        "    function TBShowtime_Delallval(name) {\n" +
+                                        "        const url = 'http://localhost:8080/api/delallval';\n" +
+                                        "        fetch(url, {\n" +
+                                        "            method: 'POST',\n" +
+                                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                                        "            body: JSON.stringify({ name: name })\n" +
+                                        "        });\n" +
+                                        "    }\n" +
+                                        "    function TBShowtime_Setglobal(setname, setvalue) {\n" +
+                                        "        const url = 'http://localhost:8080/api/setglobal';\n" +
+                                        "        fetch(url, {\n" +
+                                        "            method: 'POST',\n" +
+                                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                                        "            body: JSON.stringify({ set: setname, value: setvalue })\n" +
+                                        "        });\n" +
+                                        "    }\n" +
+                                        "    function TBShowtime_Getglobal(getname) {\n" +
+                                        "        const url = 'http://localhost:8080/api/getglobal';\n" +
+                                        "        return fetch(url, {\n" +
+                                        "            method: 'POST',\n" +
+                                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                                        "            body: JSON.stringify({ get: getname })\n" +
+                                        "        }).then(r => r.text())\n" +
+                                        "        .catch(() => 'all');\n" +
+                                        "    }\n" +
+                                        "    function TBShowtime_Delglobal(delname) {\n" +
+                                        "        const url = 'http://localhost:8080/api/delglobal';\n" +
+                                        "        fetch(url, {\n" +
+                                        "            method: 'POST',\n" +
+                                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                                        "            body: JSON.stringify({ get: delname })\n" +
+                                        "        });\n" +
+                                        "    }\n" +
+                                        "    function TBShowtime_Delallglobal() {\n" +
+                                        "        const url = 'http://localhost:8080/api/delallglobal';\n" +
+                                        "        fetch(url, {\n" +
+                                        "            method: 'POST',\n" +
+                                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                                        "            body: JSON.stringify({})\n" +
                                         "        });\n" +
                                         "    }\n" +
                                         "    let access = \"\";\n" +
@@ -300,6 +447,179 @@ public class LocalServer extends NanoHTTPD {
                 }
             } catch (Exception e) {}
             return newFixedLengthResponse(Response.Status.OK, "application/json", "{\"success\":true}");
+        }
+        
+        // --- Local information routes (TBShowtime/names and TBShowtime/global) ---
+        
+        if (uri.equals("/api/name") && Method.POST.equals(method)) {
+            try {
+                ensureLocalFolders();
+                File namesDir = new File(tbShowtimeDir(), "names");
+                java.util.Set<String> used = new java.util.HashSet<>();
+                File[] existing = namesDir.listFiles();
+                if (existing != null) {
+                    for (File f : existing) {
+                        if (f.isDirectory()) used.add(f.getName());
+                    }
+                }
+                String name = randomName();
+                while (used.contains(name)) name = randomName();
+                File folder = new File(namesDir, name);
+                if (!folder.exists()) folder.mkdirs();
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", name);
+            } catch (Exception e) {
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+            }
+        }
+        
+        if (uri.equals("/api/setval") && Method.POST.equals(method)) {
+            try {
+                org.json.JSONObject body = parsePostBody(session);
+                if (!hasPostParam(body, session, "set") || !hasPostParam(body, session, "value")) {
+                    return newFixedLengthResponse(Response.Status.OK, "text/plain", "error");
+                }
+                String set = getPostParam(body, session, "set", "");
+                String value = getPostParam(body, session, "value", "");
+                String name = getPostParam(body, session, "name", "all");
+                ensureLocalFolders();
+                File folder = new File(new File(tbShowtimeDir(), "names"), name);
+                if (!folder.exists()) folder.mkdirs();
+                java.io.FileOutputStream fos = new java.io.FileOutputStream(new File(folder, set + ".value"));
+                fos.write(value.getBytes("UTF-8"));
+                fos.close();
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "ok");
+            } catch (Exception e) {
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "error");
+            }
+        }
+        
+        if (uri.equals("/api/getval") && Method.POST.equals(method)) {
+            try {
+                org.json.JSONObject body = parsePostBody(session);
+                if (!hasPostParam(body, session, "get")) {
+                    return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+                }
+                String get = getPostParam(body, session, "get", "");
+                String name = getPostParam(body, session, "name", "all");
+                File file = new File(new File(new File(tbShowtimeDir(), "names"), name), get + ".value");
+                if (file.exists()) {
+                    java.io.InputStream is = new java.io.FileInputStream(file);
+                    byte[] buf = new byte[is.available()];
+                    is.read(buf);
+                    is.close();
+                    return newFixedLengthResponse(Response.Status.OK, "text/plain", new String(buf, "UTF-8"));
+                }
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+            } catch (Exception e) {
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+            }
+        }
+        
+        if (uri.equals("/api/delval") && Method.POST.equals(method)) {
+            try {
+                org.json.JSONObject body = parsePostBody(session);
+                if (!hasPostParam(body, session, "get")) {
+                    return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+                }
+                String get = getPostParam(body, session, "get", "");
+                String name = getPostParam(body, session, "name", "all");
+                File file = new File(new File(new File(tbShowtimeDir(), "names"), name), get + ".value");
+                if (file.exists()) file.delete();
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+            } catch (Exception e) {
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+            }
+        }
+        
+        if (uri.equals("/api/delallval") && Method.POST.equals(method)) {
+            try {
+                String name = getPostParam(parsePostBody(session), session, "name", "all");
+                File folder = new File(new File(tbShowtimeDir(), "names"), name);
+                if (folder.exists() && folder.isDirectory()) {
+                    File[] files = folder.listFiles();
+                    if (files != null) {
+                        for (File f : files) {
+                            if (f.isFile() && f.getName().endsWith(".value")) f.delete();
+                        }
+                    }
+                }
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+            } catch (Exception e) {
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+            }
+        }
+        
+        if (uri.equals("/api/setglobal") && Method.POST.equals(method)) {
+            try {
+                org.json.JSONObject body = parsePostBody(session);
+                if (!hasPostParam(body, session, "set") || !hasPostParam(body, session, "value")) {
+                    return newFixedLengthResponse(Response.Status.OK, "text/plain", "error");
+                }
+                String set = getPostParam(body, session, "set", "");
+                String value = getPostParam(body, session, "value", "");
+                ensureLocalFolders();
+                File folder = new File(tbShowtimeDir(), "global");
+                if (!folder.exists()) folder.mkdirs();
+                java.io.FileOutputStream fos = new java.io.FileOutputStream(new File(folder, set + ".value"));
+                fos.write(value.getBytes("UTF-8"));
+                fos.close();
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "ok");
+            } catch (Exception e) {
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "error");
+            }
+        }
+        
+        if (uri.equals("/api/getglobal") && Method.POST.equals(method)) {
+            try {
+                org.json.JSONObject body = parsePostBody(session);
+                if (!hasPostParam(body, session, "get")) {
+                    return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+                }
+                String get = getPostParam(body, session, "get", "");
+                File file = new File(new File(tbShowtimeDir(), "global"), get + ".value");
+                if (file.exists()) {
+                    java.io.InputStream is = new java.io.FileInputStream(file);
+                    byte[] buf = new byte[is.available()];
+                    is.read(buf);
+                    is.close();
+                    return newFixedLengthResponse(Response.Status.OK, "text/plain", new String(buf, "UTF-8"));
+                }
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+            } catch (Exception e) {
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+            }
+        }
+        
+        if (uri.equals("/api/delglobal") && Method.POST.equals(method)) {
+            try {
+                org.json.JSONObject body = parsePostBody(session);
+                if (!hasPostParam(body, session, "get")) {
+                    return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+                }
+                String get = getPostParam(body, session, "get", "");
+                File file = new File(new File(tbShowtimeDir(), "global"), get + ".value");
+                if (file.exists()) file.delete();
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+            } catch (Exception e) {
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+            }
+        }
+        
+        if (uri.equals("/api/delallglobal") && Method.POST.equals(method)) {
+            try {
+                File folder = new File(tbShowtimeDir(), "global");
+                if (folder.exists() && folder.isDirectory()) {
+                    File[] files = folder.listFiles();
+                    if (files != null) {
+                        for (File f : files) {
+                            if (f.isFile() && f.getName().endsWith(".value")) f.delete();
+                        }
+                    }
+                }
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+            } catch (Exception e) {
+                return newFixedLengthResponse(Response.Status.OK, "text/plain", "");
+            }
         }
         
         if (uri.equals("/api/movies")) {

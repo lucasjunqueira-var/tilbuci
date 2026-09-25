@@ -251,6 +251,81 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
                         "            body: JSON.stringify({ message: msg })\n" +
                         "        });\n" +
                         "    }\n" +
+                        "    function TBShowtime_Getname() {\n" +
+                        "        const url = 'http://localhost:8080/api/name';\n" +
+                        "        return fetch(url, {\n" +
+                        "            method: 'POST',\n" +
+                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                        "            body: JSON.stringify({})\n" +
+                        "        }).then(r => r.text())\n" +
+                        "        .catch(() => 'all');\n" +
+                        "    }\n" +
+                        "    function TBShowtime_Setval(setname, setvalue, name) {\n" +
+                        "        const url = 'http://localhost:8080/api/setval';\n" +
+                        "        fetch(url, {\n" +
+                        "            method: 'POST',\n" +
+                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                        "            body: JSON.stringify({ set: setname, value: setvalue, name: name })\n" +
+                        "        });\n" +
+                        "    }\n" +
+                        "    function TBShowtime_Getval(getname, name) {\n" +
+                        "        const url = 'http://localhost:8080/api/getval';\n" +
+                        "        return fetch(url, {\n" +
+                        "            method: 'POST',\n" +
+                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                        "            body: JSON.stringify({ get: getname, name: name })\n" +
+                        "        }).then(r => r.text())\n" +
+                        "        .catch(() => 'all');\n" +
+                        "    }\n" +
+                        "    function TBShowtime_Delval(delname, name) {\n" +
+                        "        const url = 'http://localhost:8080/api/delval';\n" +
+                        "        fetch(url, {\n" +
+                        "            method: 'POST',\n" +
+                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                        "            body: JSON.stringify({ get: delname, name: name })\n" +
+                        "        });\n" +
+                        "    }\n" +
+                        "    function TBShowtime_Delallval(name) {\n" +
+                        "        const url = 'http://localhost:8080/api/delallval';\n" +
+                        "        fetch(url, {\n" +
+                        "            method: 'POST',\n" +
+                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                        "            body: JSON.stringify({ name: name })\n" +
+                        "        });\n" +
+                        "    }\n" +
+                        "    function TBShowtime_Setglobal(setname, setvalue) {\n" +
+                        "        const url = 'http://localhost:8080/api/setglobal';\n" +
+                        "        fetch(url, {\n" +
+                        "            method: 'POST',\n" +
+                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                        "            body: JSON.stringify({ set: setname, value: setvalue })\n" +
+                        "        });\n" +
+                        "    }\n" +
+                        "    function TBShowtime_Getglobal(getname) {\n" +
+                        "        const url = 'http://localhost:8080/api/getglobal';\n" +
+                        "        return fetch(url, {\n" +
+                        "            method: 'POST',\n" +
+                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                        "            body: JSON.stringify({ get: getname })\n" +
+                        "        }).then(r => r.text())\n" +
+                        "        .catch(() => 'all');\n" +
+                        "    }\n" +
+                        "    function TBShowtime_Delglobal(delname) {\n" +
+                        "        const url = 'http://localhost:8080/api/delglobal';\n" +
+                        "        fetch(url, {\n" +
+                        "            method: 'POST',\n" +
+                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                        "            body: JSON.stringify({ get: delname })\n" +
+                        "        });\n" +
+                        "    }\n" +
+                        "    function TBShowtime_Delallglobal() {\n" +
+                        "        const url = 'http://localhost:8080/api/delallglobal';\n" +
+                        "        fetch(url, {\n" +
+                        "            method: 'POST',\n" +
+                        "            headers: { 'Content-Type': 'application/json' },\n" +
+                        "            body: JSON.stringify({})\n" +
+                        "        });\n" +
+                        "    }\n" +
                         "    let access = \"\";\n" +
                         "    let accesskey = \"" + accesskey + "\";\n" +
                         "    function addAccess(char) {\n" +

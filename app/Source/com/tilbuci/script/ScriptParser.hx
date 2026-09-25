@@ -60,6 +60,7 @@ import openfl.display.StageDisplayState;
 import openfl.Lib;
 import haxe.crypto.Base64;
 import js.Syntax;
+import js.lib.Promise;
 
 class ScriptParser {
 
@@ -193,6 +194,11 @@ class ScriptParser {
         instance being dragged
     **/
     public var onDrag:InstanceImage = null;
+
+    /**
+        Showtime unique name.
+    **/
+    private var showtimeName:String = 'all';
 
     /**
         Constructor.
@@ -3175,6 +3181,162 @@ class ScriptParser {
                             } else {
                                 return (false);
                             }
+                    case 'showtime.getname':
+                        if (Syntax.code("typeof TBShowtime_Getname === 'function'")) {
+                            var stName:Dynamic = Syntax.code("TBShowtime_Getname()");
+                            if (Std.isOfType(stName, String) || Std.isOfType(stName, Dynamic)) {
+                                this.showtimeName = stName;
+                                if (Reflect.hasField(inf, 'then')) {
+                                    this.run(Reflect.field(inf, 'then'), true);
+                                }
+                            } else {
+                                var promise:Promise<Dynamic> = cast stName;
+                                promise.then(function(data) {
+                                    this.showtimeName = data;
+                                    if (Reflect.hasField(inf, 'then')) {
+                                        this.run(Reflect.field(inf, 'then'), true);
+                                    }
+                                }).catchError(function(err) {
+                                    this.showtimeName = 'all';
+                                    if (Reflect.hasField(inf, 'then')) {
+                                        this.run(Reflect.field(inf, 'then'), true);
+                                    }
+                                });
+                            }
+                        } else {
+                            trace ('Showtime get name:', this.showtimeName);
+                        }
+                        return (true);
+                    case 'showtime.setname':
+                        if (param.length > 0) {
+                            var cleaned = ~/[^a-zA-Z0-9]/g.replace(this.parseString(param[0]), "");
+                            if (cleaned.length > 16) cleaned = cleaned.substr(0, 16);
+                            this.showtimeName = cleaned;
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'showtime.clearname':
+                        this.showtimeName = 'all';
+                        return (true);
+                    case 'showtime.setval':
+                        if (param.length > 1) {
+                            if (Syntax.code("typeof TBShowtime_Setval === 'function'")) {
+                                Syntax.code("TBShowtime_Setval({0}, {1}, {2})", this.parseString(param[0]), this.parseString(param[1]), this.showtimeName);
+                            } else {
+                                trace ('Showtime set value:', this.parseString(param[0]), this.parseString(param[1]));
+                            }
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'showtime.getval':
+                        if (param.length > 1) {
+                            if (Syntax.code("typeof TBShowtime_Getval === 'function'")) {
+                                var stgetVal:Dynamic = Syntax.code("TBShowtime_Getval({0}, {1})", this.parseString(param[0]), this.showtimeName);
+                                if (Std.isOfType(stgetVal, String) || Std.isOfType(stgetVal, Dynamic)) {
+                                    this.setString(param[1], stgetVal);
+                                    if (Reflect.hasField(inf, 'then')) {
+                                        this.run(Reflect.field(inf, 'then'), true);
+                                    }
+                                } else {
+                                    var promise:Promise<Dynamic> = cast stgetVal;
+                                    promise.then(function(data) {
+                                        this.setString(param[1], data);
+                                        if (Reflect.hasField(inf, 'then')) {
+                                            this.run(Reflect.field(inf, 'then'), true);
+                                        }
+                                    }).catchError(function(err) {
+                                        this.setString(param[1], '');
+                                        if (Reflect.hasField(inf, 'then')) {
+                                            this.run(Reflect.field(inf, 'then'), true);
+                                        }
+                                    });
+                                }
+                            } else {
+                                trace ('Showtime get value:', this.parseString(param[0]));
+                            }
+                            return (true);   
+                        } else {
+                            return (false);
+                        }
+                    case 'showtime.delval':
+                        if (param.length > 0) {
+                            if (Syntax.code("typeof TBShowtime_Delval === 'function'")) {
+                                Syntax.code("TBShowtime_Delval({0}, {1})", this.parseString(param[0]), this.showtimeName);
+                            } else {
+                                trace ('Showtime remove value:', this.parseString(param[0]));
+                            }
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'showtime.delallval':
+                        if (Syntax.code("typeof TBShowtime_Delallval === 'function'")) {
+                            Syntax.code("TBShowtime_Delallval({0})", this.showtimeName);
+                        } else {
+                            trace ('Showtime remove all values.');
+                        }
+                        return (true);
+                    case 'showtime.setglobal':
+                        if (param.length > 1) {
+                            if (Syntax.code("typeof TBShowtime_Setglobal === 'function'")) {
+                                Syntax.code("TBShowtime_Setglobal({0}, {1})", this.parseString(param[0]), this.parseString(param[1]));
+                            } else {
+                                trace ('Showtime set global value:', this.parseString(param[0]), this.parseString(param[1]));
+                            }
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'showtime.getglobal':
+                        if (param.length > 1) {
+                            if (Syntax.code("typeof TBShowtime_Getglobal === 'function'")) {
+                                var stgetVal:Dynamic = Syntax.code("TBShowtime_Getglobal({0})", this.parseString(param[0]));
+                                if (Std.isOfType(stgetVal, String) || Std.isOfType(stgetVal, Dynamic)) {
+                                    this.setString(param[1], stgetVal);
+                                    if (Reflect.hasField(inf, 'then')) {
+                                        this.run(Reflect.field(inf, 'then'), true);
+                                    }
+                                } else {
+                                    var promise:Promise<Dynamic> = cast stgetVal;
+                                    promise.then(function(data) {
+                                        this.setString(param[1], data);
+                                        if (Reflect.hasField(inf, 'then')) {
+                                            this.run(Reflect.field(inf, 'then'), true);
+                                        }
+                                    }).catchError(function(err) {
+                                        this.setString(param[1], '');
+                                        if (Reflect.hasField(inf, 'then')) {
+                                            this.run(Reflect.field(inf, 'then'), true);
+                                        }
+                                    });
+                                }
+                            } else {
+                                trace ('Showtime get global value:', this.parseString(param[0]));
+                            }
+                            return (true);   
+                        } else {
+                            return (false);
+                        }
+                    case 'showtime.delglobal':
+                        if (param.length > 0) {
+                            if (Syntax.code("typeof TBShowtime_Delglobal === 'function'")) {
+                                Syntax.code("TBShowtime_Delglobal({0})", this.parseString(param[0]));
+                            } else {
+                                trace ('Showtime remove global value:', this.parseString(param[0]));
+                            }
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'showtime.delallglobal':
+                        if (Syntax.code("typeof TBShowtime_Delallglobal === 'function'")) {
+                            Syntax.code("TBShowtime_Delallglobal()");
+                        } else {
+                            trace ('Showtime remove all global values.');
+                        }
+                        return (true);
 
                     // accessibility
                     case 'accessibility.setdescription':
@@ -3560,6 +3722,44 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
+                    case 'string.switch':
+                        if ((param.length > 0) && Reflect.hasField(inf, 'case')) {
+                            var cases:Array<Dynamic> = cast Reflect.field(inf, 'case');
+                            if (cases != null) {
+                                var casefound = false;
+                                var casedefault:Dynamic = null;
+                                for (caseck in cases) {
+                                    if (caseck != null) {
+                                        if (Reflect.hasField(caseck, 'ac') && Reflect.hasField(caseck, 'param') && Reflect.hasField(caseck, 'then')) {
+                                            var caseac:String = cast Reflect.field(caseck, 'ac');
+                                            var caseparam:Array<String> = cast Reflect.field(caseck, 'param');
+                                            if ((caseac != null) && (caseparam != null)) {
+                                                if (caseac == 'string.switchdefault') {
+                                                    casedefault = Reflect.field(caseck, 'then');
+                                                } else if (caseac == 'string.switchcase') {
+                                                    if (caseparam.length > 0) {
+                                                        if (this.parseString(param[0]) == this.parseString(caseparam[0])) {
+                                                            casefound = true;
+                                                            this.run(Reflect.field(caseck, 'then'), true);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if (!casefound && (casedefault != null)) this.run(casedefault, true);
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'string.switchcase':
+                        return (false);
+                    case 'string.switchdefault':
+                        return (false);
 
                     // boolean values
                     case 'bool.set':
@@ -4022,6 +4222,44 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
+                    case 'int.switch':
+                        if ((param.length > 0) && Reflect.hasField(inf, 'case')) {
+                            var cases:Array<Dynamic> = cast Reflect.field(inf, 'case');
+                            if (cases != null) {
+                                var casefound = false;
+                                var casedefault:Dynamic = null;
+                                for (caseck in cases) {
+                                    if (caseck != null) {
+                                        if (Reflect.hasField(caseck, 'ac') && Reflect.hasField(caseck, 'param') && Reflect.hasField(caseck, 'then')) {
+                                            var caseac:String = cast Reflect.field(caseck, 'ac');
+                                            var caseparam:Array<String> = cast Reflect.field(caseck, 'param');
+                                            if ((caseac != null) && (caseparam != null)) {
+                                                if (caseac == 'int.switchdefault') {
+                                                    casedefault = Reflect.field(caseck, 'then');
+                                                } else if (caseac == 'int.switchcase') {
+                                                    if (caseparam.length > 0) {
+                                                        if (this.parseInt(param[0]) == this.parseInt(caseparam[0])) {
+                                                            casefound = true;
+                                                            this.run(Reflect.field(caseck, 'then'), true);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if (!casefound && (casedefault != null)) this.run(casedefault, true);
+                                return (true);
+                            } else {
+                                return (false);
+                            }
+                        } else {
+                            return (false);
+                        }
+                    case 'int.switchcase':
+                        return (false);
+                    case 'int.switchdefault':
+                        return (false);
 
                     // array manipulation
                     case 'array.loadfile':
@@ -4493,6 +4731,7 @@ class ScriptParser {
                     case "$_SECOND": return(DateTools.format(Date.now(), "%S"));
                     case "$_DATE": return(DateTools.format(Date.now(), "%Y-%m-%d"));
                     case "$_TIME": return(DateTools.format(Date.now(), "%H:%M:%S"));
+                    case "$_SHOWTIMENAME": return(this.showtimeName);
                     default:
                         if (this._strings.exists(str.substr(1))) { // look on stantard variables
                             return (this._strings[str.substr(1)]);

@@ -137,6 +137,7 @@ class AssistInstance extends PopupWindow {
                     { text: Global.ln.get('window-globals-wsserver'), value: "$_WSSERVER", asset: 'btString' }, 
                     { text: Global.ln.get('window-globals-version'), value: "$_VERSION", asset: 'btString' }, 
                     { text: Global.ln.get('window-globals-session'), value: "$_SESSION", asset: 'btString' }, 
+                    { text: Global.ln.get('window-globals-showtimename'), value: "$_SHOWTIMENAME", asset: 'btString' }, 
                     { text: Global.ln.get('window-globals-date'), value: "$_DATE", asset: 'btString' }, 
                     { text: Global.ln.get('window-globals-time'), value: "$_TIME", asset: 'btString' }, 
                     { text: Global.ln.get('window-globals-year'), value: "$_YEAR", asset: 'btString' }, 

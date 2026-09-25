@@ -46,6 +46,7 @@ import com.tilbuci.ui.window.exchange.WindowExchangeImport;
 import com.tilbuci.ui.window.exchange.WindowExchangeWebsite;
 import com.tilbuci.ui.window.exchange.WindowExchangeIframe;
 import com.tilbuci.ui.window.exchange.WindowExchangePwa;
+import com.tilbuci.ui.window.exchange.WindowExchangeMakers;
 import com.tilbuci.ui.window.exchange.WindowExchangePublish;
 import com.tilbuci.ui.window.exchange.WindowExchangeDesktop;
 import com.tilbuci.ui.window.exchange.WindowExchangeCordova;
@@ -814,6 +815,9 @@ class Editor extends Drawer {
             case 'cordova':
                 this.opened = false;
                 this.showWindow('exchangecord');
+            case 'makers':
+                this.opened = false;
+                this.showWindow('exchangemakers');
             case 'menu-close':
                 this.opened = false;
             case 'window-notes':
@@ -2498,6 +2502,7 @@ class Editor extends Drawer {
                 case 'exchangepub': this._windows['exchangepub'] = new WindowExchangePublish(actionExchange);
                 case 'exchangedesk': this._windows['exchangedesk'] = new WindowExchangeDesktop(actionExchange);
                 case 'exchangecord': this._windows['exchangecord'] = new WindowExchangeCordova(actionExchange);
+                case 'exchangemakers': this._windows['exchangemakers'] = new WindowExchangeMakers(actionExchange);
 
                 case 'mediacollection': this._windows['mediacollection'] = new WindowCollections(actionMedia);
                 case 'mediacollectionadd': this._windows['mediacollectionadd'] = new WindowCollectionsAdd(actionMedia);
