@@ -148,6 +148,11 @@ class MovieArea extends Sprite {
     private var _scene:Sprite;
 
     /**
+        scene current scale value
+    **/
+    private var _sceneScale:Float = 1;
+
+    /**
         input area
     **/
     private var _inputArea:Sprite;
@@ -1905,5 +1910,78 @@ class MovieArea extends Sprite {
             }
         }
         this._lastfocus = GlobalPlayer.focusMode;
+    }
+
+    public function sceneZoom(amount:Float):Void {
+        this._scene.scaleX = this._scene.scaleY = amount;
+        this._sceneScale = this._scene.scaleX;
+        if ((amount > 0.99) && (amount < 1.01)) {
+            this._scene.x = this._scene.y = 0;
+            this._sceneScale = this._scene.scaleX = this._scene.scaleY = 1;
+        }
+    }
+
+    public function sceneChangeZoom(amount:Float):Void {
+        Actuate.stop(this._scene, ['scaleX', 'scaleY'], true, false);
+        this._scene.x = this._scene.y = this._sceneScale;
+        Actuate.tween(this._scene, 0.25, {
+            scaleX: amount, 
+            scaleY: amount
+        });
+        this._sceneScale = amount;
+        if ((this._sceneScale > 0.99) && (this._sceneScale < 1.01)) {
+            this._scene.x = this._scene.y = 0;
+            this._sceneScale = 1;
+        }
+    }
+
+    public function sceneCenter():Void {
+        Actuate.update(function() {
+            this._scene.x = (this._mask.width - this._scene.width) / 2;
+            this._scene.y = (this._mask.height - this._scene.height) / 2;
+        }, 0.25, [ ], [ ]);
+    }
+
+    public function sceneTop():Void {
+        Actuate.stop(this._scene, ['y'], true, false);
+        Actuate.tween(this._scene, 0.25, {
+            y: 0
+        });
+    }
+
+    public function sceneBottom():Void {
+        Actuate.stop(this._scene, ['y'], true, false);
+        Actuate.tween(this._scene, 0.25, {
+            y: (this._mask.height - this._scene.height)
+        });
+    }
+
+    public function sceneLeft():Void {
+        Actuate.stop(this._scene, ['x'], true, false);
+        Actuate.tween(this._scene, 0.25, {
+            x: 0
+        });
+    }
+
+    public function sceneRight():Void {
+        Actuate.stop(this._scene, ['x'], true, false);
+        Actuate.tween(this._scene, 0.25, {
+            x: (this._mask.width - this._scene.width)
+        });
+    }
+
+    public function sceneMove(mx:Float, my:Float):Void {
+        Actuate.stop(this._scene, ['x', 'y'], true, false);
+        mx *= this._scene.width;
+        my *= this._scene.height;
+        Actuate.tween(this._scene, 0.25, {
+            x: this._scene.x + mx, 
+            y: this._scene.y + my, 
+        });
+    }
+
+    public function scenePosReset():Void {
+        Actuate.stop(this._scene, ['x', 'y'], true, false);
+        this._scene.x = this._scene.y = 0;
     }
 }

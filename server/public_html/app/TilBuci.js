@@ -938,7 +938,7 @@ ApplicationMain.main = function() {
 };
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
-	app.meta.h["build"] = "157";
+	app.meta.h["build"] = "159";
 	app.meta.h["company"] = "VAR";
 	app.meta.h["file"] = "TilBuci";
 	app.meta.h["name"] = "TilBuci";
@@ -26907,6 +26907,7 @@ var com_tilbuci_player_MovieArea = function(pl,bgarea,uiArea) {
 	this._scale = 1;
 	this._bloverlays = new haxe_ds_StringMap();
 	this._overlays = new haxe_ds_StringMap();
+	this._sceneScale = 1;
 	this._kftoLoad = -1;
 	this._playing = true;
 	openfl_display_Sprite.call(this);
@@ -26992,6 +26993,7 @@ com_tilbuci_player_MovieArea.prototype = $extend(openfl_display_Sprite.prototype
 	,_holder: null
 	,_mask: null
 	,_scene: null
+	,_sceneScale: null
 	,_inputArea: null
 	,_overlay: null
 	,_overlays: null
@@ -28384,6 +28386,57 @@ com_tilbuci_player_MovieArea.prototype = $extend(openfl_display_Sprite.prototype
 			}
 		}
 		this._lastfocus = com_tilbuci_data_GlobalPlayer.focusMode;
+	}
+	,sceneZoom: function(amount) {
+		this._scene.set_scaleX(this._scene.set_scaleY(amount));
+		this._sceneScale = this._scene.get_scaleX();
+		if(amount > 0.99 && amount < 1.01) {
+			this._scene.set_x(this._scene.set_y(0));
+			this._sceneScale = this._scene.set_scaleX(this._scene.set_scaleY(1));
+		}
+	}
+	,sceneChangeZoom: function(amount) {
+		motion_Actuate.stop(this._scene,["scaleX","scaleY"],true,false);
+		this._scene.set_x(this._scene.set_y(this._sceneScale));
+		motion_Actuate.tween(this._scene,0.25,{ scaleX : amount, scaleY : amount});
+		this._sceneScale = amount;
+		if(this._sceneScale > 0.99 && this._sceneScale < 1.01) {
+			this._scene.set_x(this._scene.set_y(0));
+			this._sceneScale = 1;
+		}
+	}
+	,sceneCenter: function() {
+		var _gthis = this;
+		motion_Actuate.update(function() {
+			_gthis._scene.set_x((_gthis._mask.get_width() - _gthis._scene.get_width()) / 2);
+			_gthis._scene.set_y((_gthis._mask.get_height() - _gthis._scene.get_height()) / 2);
+		},0.25,[],[]);
+	}
+	,sceneTop: function() {
+		motion_Actuate.stop(this._scene,["y"],true,false);
+		motion_Actuate.tween(this._scene,0.25,{ y : 0});
+	}
+	,sceneBottom: function() {
+		motion_Actuate.stop(this._scene,["y"],true,false);
+		motion_Actuate.tween(this._scene,0.25,{ y : this._mask.get_height() - this._scene.get_height()});
+	}
+	,sceneLeft: function() {
+		motion_Actuate.stop(this._scene,["x"],true,false);
+		motion_Actuate.tween(this._scene,0.25,{ x : 0});
+	}
+	,sceneRight: function() {
+		motion_Actuate.stop(this._scene,["x"],true,false);
+		motion_Actuate.tween(this._scene,0.25,{ x : this._mask.get_width() - this._scene.get_width()});
+	}
+	,sceneMove: function(mx,my) {
+		motion_Actuate.stop(this._scene,["x","y"],true,false);
+		mx *= this._scene.get_width();
+		my *= this._scene.get_height();
+		motion_Actuate.tween(this._scene,0.25,{ x : this._scene.get_x() + mx, y : this._scene.get_y() + my});
+	}
+	,scenePosReset: function() {
+		motion_Actuate.stop(this._scene,["x","y"],true,false);
+		this._scene.set_x(this._scene.set_y(0));
 	}
 	,__class__: com_tilbuci_player_MovieArea
 	,__properties__: $extend(openfl_display_Sprite.prototype.__properties__,{get_currentKf:"get_currentKf",get_movieScale:"get_movieScale",get_playing:"get_playing",get_pOrientation:"get_pOrientation",get_aOrientation:"get_aOrientation",get_aHeight:"get_aHeight",get_aWidth:"get_aWidth"})
@@ -35094,7 +35147,7 @@ var com_tilbuci_script_ActionInfo = function() {
 	var value = com_tilbuci_data_Global.ln.get("sharders-grayscale");
 	_g.h["grayscale"] = value;
 	this._aShaders = _g;
-	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbmovie-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-movieload"), a : "movie.load", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-movieload-p1"), v : "movies"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-sceneload"), a : "scene.load", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-sceneload-p1"), v : "scenes"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenehistoryback"), a : "scene.historyback", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenenavigate"), a : "scene.navigate", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-scenenavigate-p1"), v : "navigation"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenepause"), a : "scene.pause", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-sceneplay"), a : "scene.play", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-sceneplaypause"), a : "scene.playpause", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenenextkf"), a : "scene.nextkeyframe", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenepreviouskf"), a : "scene.previouskeyframe", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenefirstkf"), a : "scene.loadfirstkeyframe", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenelastkf"), a : "scene.loadlastkeyframe", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-sceneloadkf"), a : "scene.loadkeyframe", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-sceneloadkf-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-sceneshake"), a : "scene.shake", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-sceneshake-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-sceneshake-p2"), v : ""}], e : ["end"]}]));
+	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbmovie-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-movieload"), a : "movie.load", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-movieload-p1"), v : "movies"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-sceneload"), a : "scene.load", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-sceneload-p1"), v : "scenes"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenehistoryback"), a : "scene.historyback", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenenavigate"), a : "scene.navigate", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-scenenavigate-p1"), v : "navigation"}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenepause"), a : "scene.pause", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-sceneplay"), a : "scene.play", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-sceneplaypause"), a : "scene.playpause", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenenextkf"), a : "scene.nextkeyframe", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenepreviouskf"), a : "scene.previouskeyframe", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenefirstkf"), a : "scene.loadfirstkeyframe", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenelastkf"), a : "scene.loadlastkeyframe", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-sceneloadkf"), a : "scene.loadkeyframe", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-sceneloadkf-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-sceneshake"), a : "scene.shake", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-sceneshake-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-sceneshake-p2"), v : ""}], e : ["end"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenezoomincrease"), a : "scene.zoomincrease", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-scenezoomincrease-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenezoomdecrease"), a : "scene.zoomdecrease", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-scenezoomdecrease-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenezoomreset"), a : "scene.zoomreset", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenezoomset"), a : "scene.zoomset", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-scenezoomset-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenemovecenter"), a : "scene.movecenter", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenemovetop"), a : "scene.movetop", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenemovebottom"), a : "scene.movebottom", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenemoveleft"), a : "scene.moveleft", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenemoveright"), a : "scene.moveright", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenemovereset"), a : "scene.movereset", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-scenemove"), a : "scene.move", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-scenemove-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-scenemove-p2"), v : ""}], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbbool-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-boolset"), a : "bool.set", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-boolset-p1"), v : ""},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-boolset-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifbool"), a : "if.bool", p : [{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-ifbool-p1"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifboolequal"), a : "if.boolequal", p : [{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-ifboolequal-p1"), v : ""},{ t : "b", n : com_tilbuci_data_Global.ln.get("acinfo-ifboolequal-p2"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-boolsetinverse"), a : "bool.setinverse", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-boolsetinverse-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifboolset"), a : "if.boolset", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifboolset-p1"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-boolclear"), a : "bool.clear", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-boolclear-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-boolclearall"), a : "bool.clearall", p : [], e : []}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbstring-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-stringset"), a : "string.set", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringset-p1"), v : ""},{ t : "e", n : com_tilbuci_data_Global.ln.get("acinfo-stringset-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-stringconcat"), a : "string.concat", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringconcat-p1"), v : ""},{ t : "", n : com_tilbuci_data_Global.ln.get("acinfo-stringconcat-p2"), v : ""},{ t : "", n : com_tilbuci_data_Global.ln.get("acinfo-stringconcat-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-stringreplace"), a : "string.replace", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringreplace-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringreplace-p2"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringreplace-p3"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringreplace-p4"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-stringclear"), a : "string.clear", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringclear-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-stringtoint"), a : "string.toint", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringtoint-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringtoint-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-stringtofloat"), a : "string.tofloat", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringtofloat-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringtofloat-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-stringsload"), a : "string.loadfile", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringsload-p1"), v : ""}], e : ["success","error"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-stringsetgroup"), a : "string.setgroup", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringsetgroup-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-stringclearall"), a : "string.clearall", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-stringsetglobal"), a : "string.setglobal", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringsetglobal-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringsetglobal-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-stringclearglobal"), a : "string.clearglobal", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringclearglobal-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifstringsequal"), a : "if.stringsequal", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifstringsequal-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifstringsequal-p2"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifstringsdifferent"), a : "if.stringsdifferent", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifstringsdifferent-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifstringsdifferent-p2"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifstringset"), a : "if.stringset", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifstringset-p1"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifstringcontains"), a : "if.stringcontains", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifstringcontains-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifstringcontains-p2"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifstringstartswith"), a : "if.stringstartswith", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifstringstartswith-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifstringstartswith-p2"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifstringendswith"), a : "if.stringendswith", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifstringendswith-p1"), v : ""},{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifstringendswith-p2"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifstringemail"), a : "if.stringemail", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifstringemail-p1"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-stringswitch"), a : "string.switch", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringswitch-p1"), v : ""}], e : ["case"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-stringswitchcase"), a : "string.switchcase", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-stringswitchcase-p1"), v : ""}], e : ["then"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-stringswitchdefault"), a : "string.switchdefault", p : [], e : ["then"]}]));
 	this.groups.push(new com_tilbuci_script_ActionInfoGroup(com_tilbuci_data_Global.ln.get("window-acbint-title"),[{ n : com_tilbuci_data_Global.ln.get("acinfo-intset"), a : "int.set", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-intset-p1"), v : ""},{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-intset-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-intsum"), a : "int.sum", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-intsum-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intsum-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intsum-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-intsubtract"), a : "int.subtract", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-intsubtract-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intsubtract-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intsubtract-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-intmultiply"), a : "int.multiply", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-intmultiply-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intmultiply-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intmultiply-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-intdivide"), a : "int.divide", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-intdivide-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intdivide-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intdivide-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-intmax"), a : "int.max", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-intmax-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intmax-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intmax-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-intmin"), a : "int.min", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-intmin-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intmin-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intmin-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-intrandom"), a : "int.random", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-intrandom-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intrandom-p2"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intrandom-p3"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-intabs"), a : "int.abs", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-intabs-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-intabs-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-intclear"), a : "int.clear", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-intclear-p1"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-intclearall"), a : "int.clearall", p : [], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inttofloat"), a : "int.tofloat", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inttofloat-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inttofloat-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-inttostring"), a : "int.tostring", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-inttostring-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-inttostring-p2"), v : ""}], e : []},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifintsequal"), a : "if.intsequal", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-ifintsequal-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-ifintsequal-p2"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifintsdifferent"), a : "if.intsdifferent", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-ifintsdifferent-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-ifintsdifferent-p2"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifintgreater"), a : "if.intgreater", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-ifintgreater-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-ifintgreater-p2"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifintlower"), a : "if.intlower", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-ifintlower-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-ifintlower-p2"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifintgreaterequal"), a : "if.intgreaterequal", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-ifintgreaterequal-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-ifintgreaterequal-p2"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifintlowerequal"), a : "if.intlowerequal", p : [{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-ifintlowerequal-p1"), v : ""},{ t : "f", n : com_tilbuci_data_Global.ln.get("acinfo-ifintlowerequal-p2"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-ifintset"), a : "if.intset", p : [{ t : "s", n : com_tilbuci_data_Global.ln.get("acinfo-ifintset-p1"), v : ""}], e : ["then","else"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-intswitch"), a : "int.switch", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-intswitch-p1"), v : ""}], e : ["case"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-intswitchcase"), a : "int.switchcase", p : [{ t : "i", n : com_tilbuci_data_Global.ln.get("acinfo-intswitchcase-p1"), v : ""}], e : ["then"]},{ n : com_tilbuci_data_Global.ln.get("acinfo-intswitchdefault"), a : "int.switchdefault", p : [], e : ["then"]}]));
@@ -40910,6 +40963,32 @@ com_tilbuci_script_ScriptParser.prototype = {
 				case "scene.loadlastkeyframe":
 					com_tilbuci_data_GlobalPlayer.area.loadKeyframe(com_tilbuci_data_GlobalPlayer.movie.scene.keyframes[com_tilbuci_data_GlobalPlayer.movie.scene.keyframes.length - 1],com_tilbuci_data_GlobalPlayer.movie.scene.keyframes.length - 1);
 					return true;
+				case "scene.move":
+					if(param.length > 1) {
+						com_tilbuci_data_GlobalPlayer.area.sceneMove(this.parseFloat(param[0]) / 100,this.parseFloat(param[1]) / 100);
+						return true;
+					} else {
+						return false;
+					}
+					break;
+				case "scene.movebottom":
+					com_tilbuci_data_GlobalPlayer.area.sceneBottom();
+					return true;
+				case "scene.movecenter":
+					com_tilbuci_data_GlobalPlayer.area.sceneCenter();
+					return true;
+				case "scene.moveleft":
+					com_tilbuci_data_GlobalPlayer.area.sceneLeft();
+					return true;
+				case "scene.movereset":
+					com_tilbuci_data_GlobalPlayer.area.scenePosReset();
+					return true;
+				case "scene.moveright":
+					com_tilbuci_data_GlobalPlayer.area.sceneRight();
+					return true;
+				case "scene.movetop":
+					com_tilbuci_data_GlobalPlayer.area.sceneTop();
+					return true;
 				case "scene.navigate":
 					if(param.length > 0) {
 						if(Object.prototype.hasOwnProperty.call(com_tilbuci_data_GlobalPlayer.movie.scene.navigation.h,param[0])) {
@@ -40960,6 +41039,33 @@ com_tilbuci_script_ScriptParser.prototype = {
 						return false;
 					}
 					break;
+				case "scene.zoomdecrease":
+					if(param.length > 0) {
+						com_tilbuci_data_GlobalPlayer.area.sceneChangeZoom(-this.parseFloat(param[0]) / 100);
+						return true;
+					} else {
+						return false;
+					}
+					break;
+				case "scene.zoomincrease":
+					if(param.length > 0) {
+						com_tilbuci_data_GlobalPlayer.area.sceneChangeZoom(this.parseFloat(param[0]) / 100);
+						return true;
+					} else {
+						return false;
+					}
+					break;
+				case "scene.zoomreset":
+					com_tilbuci_data_GlobalPlayer.area.sceneZoom(1);
+					return true;
+				case "scene.zoomset":
+					if(param.length > 0) {
+						com_tilbuci_data_GlobalPlayer.area.sceneZoom(this.parseFloat(param[0]) / 100);
+						return true;
+					} else {
+						return false;
+					}
+					break;
 				case "showtime.clearname":
 					this.showtimeName = "all";
 					return true;
@@ -40967,14 +41073,14 @@ com_tilbuci_script_ScriptParser.prototype = {
 					if(typeof TBShowtime_Delallglobal === 'function') {
 						TBShowtime_Delallglobal();
 					} else {
-						haxe_Log.trace("Showtime remove all global values.",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3337, className : "com.tilbuci.script.ScriptParser", methodName : "exec"});
+						haxe_Log.trace("Showtime remove all global values.",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3388, className : "com.tilbuci.script.ScriptParser", methodName : "exec"});
 					}
 					return true;
 				case "showtime.delallval":
 					if(typeof TBShowtime_Delallval === 'function') {
 						TBShowtime_Delallval(this.showtimeName);
 					} else {
-						haxe_Log.trace("Showtime remove all values.",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3278, className : "com.tilbuci.script.ScriptParser", methodName : "exec"});
+						haxe_Log.trace("Showtime remove all values.",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3329, className : "com.tilbuci.script.ScriptParser", methodName : "exec"});
 					}
 					return true;
 				case "showtime.delglobal":
@@ -40982,7 +41088,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 						if(typeof TBShowtime_Delglobal === 'function') {
 							TBShowtime_Delglobal(this.parseString(param[0]));
 						} else {
-							haxe_Log.trace("Showtime remove global value:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3327, className : "com.tilbuci.script.ScriptParser", methodName : "exec", customParams : [this.parseString(param[0])]});
+							haxe_Log.trace("Showtime remove global value:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3378, className : "com.tilbuci.script.ScriptParser", methodName : "exec", customParams : [this.parseString(param[0])]});
 						}
 						return true;
 					} else {
@@ -40994,7 +41100,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 						if(typeof TBShowtime_Delval === 'function') {
 							TBShowtime_Delval(this.parseString(param[0]), this.showtimeName);
 						} else {
-							haxe_Log.trace("Showtime remove value:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3268, className : "com.tilbuci.script.ScriptParser", methodName : "exec", customParams : [this.parseString(param[0])]});
+							haxe_Log.trace("Showtime remove value:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3319, className : "com.tilbuci.script.ScriptParser", methodName : "exec", customParams : [this.parseString(param[0])]});
 						}
 						return true;
 					} else {
@@ -41059,7 +41165,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 								});
 							}
 						} else {
-							haxe_Log.trace("Showtime get global value:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3316, className : "com.tilbuci.script.ScriptParser", methodName : "exec", customParams : [this.parseString(param[0])]});
+							haxe_Log.trace("Showtime get global value:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3367, className : "com.tilbuci.script.ScriptParser", methodName : "exec", customParams : [this.parseString(param[0])]});
 						}
 						return true;
 					} else {
@@ -41089,7 +41195,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 							});
 						}
 					} else {
-						haxe_Log.trace("Showtime get name:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3207, className : "com.tilbuci.script.ScriptParser", methodName : "exec", customParams : [this.showtimeName]});
+						haxe_Log.trace("Showtime get name:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3258, className : "com.tilbuci.script.ScriptParser", methodName : "exec", customParams : [this.showtimeName]});
 					}
 					return true;
 				case "showtime.getval":
@@ -41116,7 +41222,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 								});
 							}
 						} else {
-							haxe_Log.trace("Showtime get value:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3257, className : "com.tilbuci.script.ScriptParser", methodName : "exec", customParams : [this.parseString(param[0])]});
+							haxe_Log.trace("Showtime get value:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3308, className : "com.tilbuci.script.ScriptParser", methodName : "exec", customParams : [this.parseString(param[0])]});
 						}
 						return true;
 					} else {
@@ -41173,7 +41279,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 						if(typeof TBShowtime_Setglobal === 'function') {
 							TBShowtime_Setglobal(this.parseString(param[0]), this.parseString(param[1]));
 						} else {
-							haxe_Log.trace("Showtime set global value:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3286, className : "com.tilbuci.script.ScriptParser", methodName : "exec", customParams : [this.parseString(param[0]),this.parseString(param[1])]});
+							haxe_Log.trace("Showtime set global value:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3337, className : "com.tilbuci.script.ScriptParser", methodName : "exec", customParams : [this.parseString(param[0]),this.parseString(param[1])]});
 						}
 						return true;
 					} else {
@@ -41198,7 +41304,7 @@ com_tilbuci_script_ScriptParser.prototype = {
 						if(typeof TBShowtime_Setval === 'function') {
 							TBShowtime_Setval(this.parseString(param[0]), this.parseString(param[1]), this.showtimeName);
 						} else {
-							haxe_Log.trace("Showtime set value:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3227, className : "com.tilbuci.script.ScriptParser", methodName : "exec", customParams : [this.parseString(param[0]),this.parseString(param[1])]});
+							haxe_Log.trace("Showtime set value:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 3278, className : "com.tilbuci.script.ScriptParser", methodName : "exec", customParams : [this.parseString(param[0]),this.parseString(param[1])]});
 						}
 						return true;
 					} else {
@@ -42651,14 +42757,14 @@ com_tilbuci_script_ScriptParser.prototype = {
 		if(typeof TBShowtime_Event === 'function') {
 			TBShowtime_Event(movie, name, data);
 		} else {
-			haxe_Log.trace("Showtime event:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 5325, className : "com.tilbuci.script.ScriptParser", methodName : "TBShowtime_Event_Call", customParams : [data]});
+			haxe_Log.trace("Showtime event:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 5376, className : "com.tilbuci.script.ScriptParser", methodName : "TBShowtime_Event_Call", customParams : [data]});
 		}
 	}
 	,TBShowtime_Hardware_Call: function(data) {
 		if(typeof TBShowtime_Hardware === 'function') {
 			TBShowtime_Hardware(data);
 		} else {
-			haxe_Log.trace("Showtime hardware call:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 5337, className : "com.tilbuci.script.ScriptParser", methodName : "TBShowtime_Hardware_Call", customParams : [data]});
+			haxe_Log.trace("Showtime hardware call:",{ fileName : "Source/com/tilbuci/script/ScriptParser.hx", lineNumber : 5388, className : "com.tilbuci.script.ScriptParser", methodName : "TBShowtime_Hardware_Call", customParams : [data]});
 		}
 	}
 	,__class__: com_tilbuci_script_ScriptParser
@@ -157064,7 +157170,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 861211;
+	this.version = 254622;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";

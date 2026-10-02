@@ -10,6 +10,9 @@
 /** CLASS DEFINITIONS **/
 chdir(__DIR__);
 require_once('../../app/Data.php');
+$prefix = preg_replace('/[^a-zA-Z0-9_]/', '', $data->conf['databasePrefix']);
+$movie = isset($_GET['movie']) ? preg_replace('/[^a-zA-Z0-9_-]/', '', $_GET['movie']) : '';
+$media = isset($_GET['media']) ? preg_replace('/[^a-zA-Z0-9_-]/', '', $_GET['media']) : '';
 
 // process request
 if (isset($_GET['a'])) {
@@ -22,11 +25,11 @@ if (isset($_GET['a'])) {
             case 'snippets':
                 if (isset($_GET['movie']) && isset($_GET['media'])) {
                     $data = new Data;
-                    $media = str_replace(['.json', ' '], '', mb_strtolower($_GET['media']));
-                    $ck = $data->queryAll('SELECT `sn_content` FROM `' . $data->conf['databasePrefix'] . 'snippets` WHERE `sn_movie`=:mv AND `sn_file`=:fl', [':mv' => $_GET['movie'], ':fl' => $media]);
+                    $media = str_replace(['.json', ' '], '', mb_strtolower($media));
+                    $ck = $data->queryAll('SELECT `sn_content` FROM `' . $prefix . 'snippets` WHERE `sn_movie`=:mv AND `sn_file`=:fl', [':mv' => $movie, ':fl' => $media]);
                     if (count($ck) > 0) {
-                        file_put_contents(('../../export/'.$_GET['movie'].'-snippets.json'), gzdecode(base64_decode($ck[0]['sn_content'])));
-                        $path = '../../export/'.$_GET['movie'].'-snippets.json';
+                        file_put_contents(('../../export/'.$movie.'-snippets.json'), gzdecode(base64_decode($ck[0]['sn_content'])));
+                        $path = '../../export/'.$movie.'-snippets.json';
                         if (is_file($path)) {
                             $name = $media.'.json';
                             $mime = 'application/json';
@@ -37,11 +40,11 @@ if (isset($_GET['a'])) {
 			case 'strings':
                 if (isset($_GET['movie']) && isset($_GET['media'])) {
                     $data = new Data;
-                    $media = str_replace(['.json', ' '], '', mb_strtolower($_GET['media']));
-                    $ck = $data->queryAll('SELECT `st_content` FROM `' . $data->conf['databasePrefix'] . 'strings` WHERE `st_movie`=:mv AND `st_file`=:fl', [':mv' => $_GET['movie'], ':fl' => $media]);
+                    $media = str_replace(['.json', ' '], '', mb_strtolower($media));
+                    $ck = $data->queryAll('SELECT `st_content` FROM `' . $prefix . 'strings` WHERE `st_movie`=:mv AND `st_file`=:fl', [':mv' => $movie, ':fl' => $media]);
                     if (count($ck) > 0) {
-                        file_put_contents(('../../export/'.$_GET['movie'].'-string.json'), gzdecode(base64_decode($ck[0]['st_content'])));
-                        $path = '../../export/'.$_GET['movie'].'-string.json';
+                        file_put_contents(('../../export/'.$movie.'-string.json'), gzdecode(base64_decode($ck[0]['st_content'])));
+                        $path = '../../export/'.$movie.'-string.json';
                         if (is_file($path)) {
                             $name = $media.'.json';
                             $mime = 'application/json';
@@ -52,10 +55,10 @@ if (isset($_GET['a'])) {
 			case 'strings.json':
 				if (isset($_GET['movie'])) {
                     $data = new Data;
-                    $ck = $data->queryAll('SELECT `mv_strings` FROM `' . $data->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:mv', [':mv' => $_GET['movie']]);
+                    $ck = $data->queryAll('SELECT `mv_strings` FROM `' . $prefix . 'movies` WHERE `mv_id`=:mv', [':mv' => $movie]);
                     if (count($ck) > 0) {
-                        file_put_contents(('../../export/'.$_GET['movie'].'-string.json'), gzdecode(base64_decode($ck[0]['mv_strings'])));
-                        $path = '../../export/'.$_GET['movie'].'-string.json';
+                        file_put_contents(('../../export/'.$movie.'-string.json'), gzdecode(base64_decode($ck[0]['mv_strings'])));
+                        $path = '../../export/'.$movie.'-string.json';
                         if (is_file($path)) {
                             $name = 'strings.json';
                             $mime = 'application/json';
@@ -65,45 +68,45 @@ if (isset($_GET['a'])) {
 				break;
             case 'export':
 				if (isset($_GET['movie'])) {
-					$path = '../../export/'.$_GET['movie'].'.zip';
+					$path = '../../export/'.$movie.'.zip';
 					if (is_file($path)) {
-						$name = $_GET['movie'].'.zip';
+						$name = $movie.'.zip';
 						$mime = 'application/x-zip';
 					}
 				}
 				break;
             case 'website':
 				if (isset($_GET['movie'])) {
-					$path = '../../export/site-'.$_GET['movie'].'.zip';
+					$path = '../../export/site-'.$movie.'.zip';
 					if (is_file($path)) {
-						$name = 'site-'.$_GET['movie'].'.zip';
+						$name = 'site-'.$movie.'.zip';
 						$mime = 'application/x-zip';
 					}
 				}
 				break;
             case 'pwa':
 				if (isset($_GET['movie'])) {
-					$path = '../../export/pwa-'.$_GET['movie'].'.zip';
+					$path = '../../export/pwa-'.$movie.'.zip';
 					if (is_file($path)) {
-						$name = 'pwa-'.$_GET['movie'].'.zip';
+						$name = 'pwa-'.$movie.'.zip';
 						$mime = 'application/x-zip';
 					}
 				}
 				break;
 			case 'makers':
 				if (isset($_GET['movie'])) {
-					$path = '../../export/makers-'.$_GET['movie'].'.zip';
+					$path = '../../export/makers-'.$movie.'.zip';
 					if (is_file($path)) {
-						$name = 'makers-'.$_GET['movie'].'.zip';
+						$name = 'makers-'.$movie.'.zip';
 						$mime = 'application/x-zip';
 					}
 				}
 				break;
             case 'pub':
 				if (isset($_GET['movie'])) {
-					$path = '../../export/publish-'.$_GET['movie'].'.zip';
+					$path = '../../export/publish-'.$movie.'.zip';
 					if (is_file($path)) {
-						$name = 'publish-'.$_GET['movie'].'.zip';
+						$name = 'publish-'.$movie.'.zip';
 						$mime = 'application/x-zip';
 					}
 				}

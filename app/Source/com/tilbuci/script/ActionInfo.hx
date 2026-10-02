@@ -109,6 +109,26 @@ class ActionInfo {
                     { t: 'f', n: Global.ln.get('acinfo-sceneshake-p1'), v: '' }, 
                     { t: 'f', n: Global.ln.get('acinfo-sceneshake-p2'), v: '' }, 
                 ], e: [ 'end' ] },
+                { n: Global.ln.get('acinfo-scenezoomincrease'), a: 'scene.zoomincrease', p: [
+                    { t: 'f', n: Global.ln.get('acinfo-scenezoomincrease-p1'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-scenezoomdecrease'), a: 'scene.zoomdecrease', p: [
+                    { t: 'f', n: Global.ln.get('acinfo-scenezoomdecrease-p1'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-scenezoomreset'), a: 'scene.zoomreset', p: [ ], e: [ ] },
+                { n: Global.ln.get('acinfo-scenezoomset'), a: 'scene.zoomset', p: [
+                    { t: 'f', n: Global.ln.get('acinfo-scenezoomset-p1'), v: '' }, 
+                ], e: [ ] },
+                { n: Global.ln.get('acinfo-scenemovecenter'), a: 'scene.movecenter', p: [ ], e: [ ] },
+                { n: Global.ln.get('acinfo-scenemovetop'), a: 'scene.movetop', p: [ ], e: [ ] },
+                { n: Global.ln.get('acinfo-scenemovebottom'), a: 'scene.movebottom', p: [ ], e: [ ] },
+                { n: Global.ln.get('acinfo-scenemoveleft'), a: 'scene.moveleft', p: [ ], e: [ ] },
+                { n: Global.ln.get('acinfo-scenemoveright'), a: 'scene.moveright', p: [ ], e: [ ] },
+                { n: Global.ln.get('acinfo-scenemovereset'), a: 'scene.movereset', p: [ ], e: [ ] },
+                { n: Global.ln.get('acinfo-scenemove'), a: 'scene.move', p: [
+                    { t: 'f', n: Global.ln.get('acinfo-scenemove-p1'), v: '' }, 
+                    { t: 'f', n: Global.ln.get('acinfo-scenemove-p2'), v: '' }, 
+                ], e: [ ] },
             ]
         ));
 

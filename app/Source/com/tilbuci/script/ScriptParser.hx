@@ -1980,6 +1980,57 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
+                    case 'scene.zoomset':
+                        if (param.length > 0) {
+                            GlobalPlayer.area.sceneZoom(this.parseFloat(param[0]) / 100);
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'scene.zoomreset':
+                        GlobalPlayer.area.sceneZoom(1);
+                        return (true);
+                    case 'scene.zoomincrease':
+                        if (param.length > 0) {
+                            GlobalPlayer.area.sceneChangeZoom(this.parseFloat(param[0]) / 100);
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                    case 'scene.zoomdecrease':
+                        if (param.length > 0) {
+                            GlobalPlayer.area.sceneChangeZoom(-this.parseFloat(param[0]) / 100);
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+
+                    case 'scene.movecenter':
+                        GlobalPlayer.area.sceneCenter();
+                        return (true);
+                    case 'scene.movetop':
+                        GlobalPlayer.area.sceneTop();
+                        return (true);
+                    case 'scene.movebottom':
+                        GlobalPlayer.area.sceneBottom();
+                        return (true);
+                    case 'scene.moveleft':
+                        GlobalPlayer.area.sceneLeft();
+                        return (true);
+                    case 'scene.moveright':
+                        GlobalPlayer.area.sceneRight();
+                        return (true);
+                    case 'scene.movereset':
+                        GlobalPlayer.area.scenePosReset();
+                        return (true);
+                    case 'scene.move':
+                        if (param.length > 1) {
+                            GlobalPlayer.area.sceneMove((this.parseFloat(param[0]) / 100), (this.parseFloat(param[1]) / 100));
+                            return (true);
+                        } else {
+                            return (false);
+                        }
+                        
                         
                     // instance actions
                     case 'instance.morezoom':
