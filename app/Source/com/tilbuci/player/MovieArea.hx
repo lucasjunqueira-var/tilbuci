@@ -1331,6 +1331,7 @@ class MovieArea extends Sprite {
         }
         this._uiBg.visible = false;
         this._inputPanel.visible = false;
+        this.resetScene();
     }
 
     /**
@@ -1983,5 +1984,11 @@ class MovieArea extends Sprite {
     public function scenePosReset():Void {
         Actuate.stop(this._scene, ['x', 'y'], true, false);
         this._scene.x = this._scene.y = 0;
+    }
+
+    public function resetScene():Void {
+        Actuate.stop(this._scene, null, true, false);
+        this._scene.x = this._scene.y = 0;
+        this._sceneScale = this._scene.scaleX = this._scene.scaleY = 1;
     }
 }

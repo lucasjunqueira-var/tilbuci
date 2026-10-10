@@ -2054,6 +2054,7 @@
 	"acinfo-scenemove": "move scene display position", 
 	"acinfo-scenemove-p1": "horizontal amount (% of width)",
 	"acinfo-scenemove-p2": "vertical amount (% of height)",
+	"acinfo-scenereset": "reset scene size and position",
 	
 	"window-acbbool-title": "Boolean values actions and conditions", 
 	"acinfo-ifbool": "check a boolean value", 

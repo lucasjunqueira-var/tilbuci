@@ -2004,7 +2004,9 @@ class ScriptParser {
                         } else {
                             return (false);
                         }
-
+                    case 'scene.reset':
+                        GlobalPlayer.area.resetScene();
+                        return (true);
                     case 'scene.movecenter':
                         GlobalPlayer.area.sceneCenter();
                         return (true);

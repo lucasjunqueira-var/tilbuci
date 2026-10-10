@@ -129,6 +129,7 @@ class ActionInfo {
                     { t: 'f', n: Global.ln.get('acinfo-scenemove-p1'), v: '' }, 
                     { t: 'f', n: Global.ln.get('acinfo-scenemove-p2'), v: '' }, 
                 ], e: [ ] },
+                { n: Global.ln.get('acinfo-scenereset'), a: 'scene.reset', p: [ ], e: [ ] },
             ]
         ));
 
