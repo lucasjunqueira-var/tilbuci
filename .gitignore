@@ -84,3 +84,7 @@ showtime/androidos/*.apk
 showtime/androidos/*.ap_
 showtime/androidos/*.aab
 showtime/androidos/.ndk/
+
+# Docker container
+!docker/
+!docker/**

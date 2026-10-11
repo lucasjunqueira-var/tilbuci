@@ -1,0 +1,34 @@
+# TilBuci — all-in-one image (Docker Compose example)
+#
+# Build and run locally:
+#   docker compose up --build      # attached: answers the e-mail/mode prompt
+#   docker compose up -d           # detached (set TILBUCI_EMAIL first)
+#
+# Use a prebuilt multi-arch image by replacing the `build:` block with:
+#   image: <registry>/<owner>/tilbuci:25.0
+
+services:
+  tilbuci:
+    build:
+      context: .
+    image: tilbuci:25.0
+    container_name: tilbuci
+    restart: unless-stopped
+    # A TTY lets the first-run prompt work when running attached; for detached
+    # runs set TILBUCI_EMAIL instead.
+    stdin_open: true
+    tty: true
+    ports:
+      - "8080:80"
+    environment:
+      # Public URL used by the browser. Must match the published port.
+      TILBUCI_URL: "http://localhost:8080/"
+      # TILBUCI_EMAIL: "admin@example.com"
+      # TILBUCI_INSTALL_MODE: "multi"   # multi (default) or single
+      # TILBUCI_AUTO_UPDATE: "true"
+      # TILBUCI_KEEP_SETUP: "false"
+    volumes:
+      - tilbuci-data:/data
+
+volumes:
+  tilbuci-data:

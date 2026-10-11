@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#
+# Change the public base URL of the running TilBuci installation.
+#
+# Usage:
+#   docker exec -it <container> tilbuci-set-url http://localhost:8080/
+#
+set -euo pipefail
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: tilbuci-set-url <url>" >&2
+    exit 2
+fi
+
+exec php /usr/local/bin/tilbuci-set-url.php "$1"

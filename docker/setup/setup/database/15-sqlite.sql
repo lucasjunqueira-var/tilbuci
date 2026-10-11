@@ -1,0 +1,1 @@
+INSERT OR REPLACE INTO config (cf_key, cf_value) VALUES ('dbVersion', '16');
