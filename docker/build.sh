@@ -8,7 +8,7 @@
 #
 # Configuration (environment variables):
 #   IMAGE      image name, e.g. ghcr.io/<owner>/tilbuci or <user>/tilbuci  (default: tilbuci)
-#   TAG        version tag, e.g. 25.0                                       (default: from ./VERSION)
+#   TAG        version tag, e.g. 25                                       (default: from ./VERSION)
 #   LATEST     moving tag                                                   (default: latest)
 #   PLATFORMS  target platforms                                             (default: linux/amd64,linux/arm64)
 #   PUSH       true to push to a registry                                   (default: false)
@@ -23,7 +23,7 @@ if [ -z "${TAG:-}" ]; then
     if [ -f "${SCRIPT_DIR}/VERSION" ]; then
         TAG="$(tr -d '[:space:]' < "${SCRIPT_DIR}/VERSION")"
     else
-        TAG="25.0"
+        TAG="25"
     fi
 fi
 LATEST="${LATEST:-latest}"

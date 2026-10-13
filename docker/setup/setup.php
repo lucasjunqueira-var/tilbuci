@@ -7,7 +7,7 @@
 
 /**
  TilBuci setup script
- Lucas Junqueira, July 2026
+ Lucas Junqueira, October 2026
  **/
 
 // version info
@@ -55,6 +55,7 @@ if ($sinfo['https']) $sinfo['host'] = 'https://' . $sinfo['host'];
 if (substr($sinfo['host'], -1) != '/') $sinfo['host'] .= '/';
 
 // install information
+$from = 'install';
 $iinfo = [
     'page' => 0, 
 	'databaseServ' => '', 
@@ -63,8 +64,26 @@ $iinfo = [
 	'databaseName' => '', 
 	'databasePort' => '',
 	'email' => '', 
+    'password' => 'password', 
+    'password2' => 'password',  
 	'mode' => 'multi', 
 ];
+
+// automatic setup?
+if (isset($_GET['docker'])) {
+    $iinfo = [
+        'page' => -1, 
+        'databaseServ' => '', 
+        'databaseUser' => '', 
+        'databasePass' => '',
+        'databaseName' => '', 
+        'databasePort' => '',
+        'email' => '', 
+        'password' => 'password', 
+        'password2' => 'password', 
+        'mode' => 'multi', 
+    ];
+}
 
 // input
 $warn = '';
@@ -200,11 +219,25 @@ if (isset($_POST['ac'])) {
             }
             break;
         case '1': // new installation
-			$iinfo['databaseServ'] = trim($_POST['databaseServ']);
-			$iinfo['databaseUser'] = trim($_POST['databaseUser']);
-			$iinfo['databasePass'] = trim($_POST['databasePass']);
-			$iinfo['databaseName'] = trim($_POST['databaseName']);
-			$iinfo['databasePort'] = trim($_POST['databasePort']);
+            $from = isset($_POST['from']) ? trim ($_POST['from']) : 'install';
+            if ($from == 'docker') {
+                // use docker container default values
+                $iinfo['databaseServ'] = 'localhost';
+                $iinfo['databaseUser'] = 'tilbuci';
+                $iinfo['databasePass'] = 'S3nh4Dogg0';
+                $iinfo['databaseName'] = 'tilbuci';
+                $iinfo['databasePort'] = '3306';
+                $iinfo['password'] = isset($_POST['passw']) ? trim ($_POST['passw']) : 'password';
+                $iinfo['password2'] = isset($_POST['passw2']) ? trim ($_POST['passw2']) : 'password';
+            } else {
+                $iinfo['databaseServ'] = trim($_POST['databaseServ']);
+                $iinfo['databaseUser'] = trim($_POST['databaseUser']);
+                $iinfo['databasePass'] = trim($_POST['databasePass']);
+                $iinfo['databaseName'] = trim($_POST['databaseName']);
+                $iinfo['databasePort'] = trim($_POST['databasePort']);
+                $iinfo['password'] = 'password';
+                $iinfo['password2'] = 'password';
+            }
 			$iinfo['email'] = trim($_POST['email']);
 			$iinfo['mode'] = trim($_POST['mode']);
 			if ($iinfo['email'] == '') {
@@ -213,6 +246,10 @@ if (isset($_POST['ac'])) {
 				$warn = 'Please check out your e-mail address confirmation.';
 			} else if (($iinfo['databaseServ'] == '') || ($iinfo['databaseName'] == '')) {
 				$warn = 'Please provide the database server and name.';
+            } else if ($iinfo['password'] == '') {
+                $warn = 'You must provide the initial access password.';
+            } else if ($iinfo['password'] != trim($iinfo['password2'])) {
+				$warn = 'Please check out your the initial password confirmation.';
 			} else {
 				// check database connection
 				$db = null;
@@ -284,7 +321,7 @@ if (isset($_POST['ac'])) {
                                                 ]);
                                                 executeDb($db, 'INSERT INTO users (us_email, us_pass, us_passtemp, us_key, us_level) VALUES (:em, :ps, :pt, :ke, :lv)', [
                                                     ':em' => $iinfo['email'], 
-                                                    ':ps' => md5('password'), 
+                                                    ':ps' => md5($iinfo['password']), 
                                                     ':pt' => '', 
                                                     ':ke' => md5(time().rand(1000, 9999)), 
                                                     ':lv' => '0', 
@@ -377,12 +414,15 @@ if (isset($_POST['ac'])) {
 					}
 				}
 			}
+            if ($iinfo['page'] != 1) {
+                if ($from == 'docker') $iinfo['page'] = -1;
+            }
 			break;
     }
 }
 
 // update?
-if ($iinfo['page'] == 0) {
+if ($iinfo['page'] <= 0) {
     if (is_file('../app/Config.php')) {
         // trying to load database config
         $iinfo['page'] = 2;
@@ -510,7 +550,30 @@ if ($iinfo['page'] == 0) {
 </head>
 <body>
     <div id="holder">
-    <?php if ($iinfo['page'] == 0) { ?>
+    <?php if ($iinfo['page'] == -1) { ?>
+        <h1>Welcome to the TilBuci setup script!</h1>
+        <hr />
+        <?= $warn == '' ? '' : '<p class="warn">' . $warn . '</p>' ?>
+        <p>You are running TilBuci from a Docker image. Since this is the first time you are opening this container, please provide the following information to adjust the initial settings.</p>
+        <form method="post">
+            <p>Your e-mail address</p>
+            <input type="text" name="email" value="<?= $iinfo['email'] ?>" required />
+            <p>Confirm your e-mail address</p>
+            <input type="text" name="email2" value="" required />
+            <p>The initial password</p>
+            <input type="text" name="passw" value="<?= $iinfo['password'] == 'password' ? '' : $iinfo['password'] ?>" required />
+            <p>Confirm the initial password</p>
+            <input type="text" name="passw2" value="" required />
+            <p>Access mode<br /><small>If you plan to share this TilBuci installation with others or if it will be accessible over the Internet, choose <strong>multi-user</strong> mode. If it is restricted to your system and you are the only user, choose <strong>single-user</strong> mode.</small></p>
+            <select name="mode">
+                <option value="multi" <?= $iinfo['mode'] != 'single' ? 'selected' : '' ?>>multi user</option>
+                <option value="single" <?= $iinfo['mode'] == 'single' ? 'selected' : '' ?>>single user</option>
+            </select>
+            <input type="hidden" name="ac" value="1" />
+            <input type="hidden" name="from" value="docker" />
+            <input type="submit" class="button" value="Check information and configure" />
+        </form>
+    <?php } else if ($iinfo['page'] == 0) { ?>
         <h1>Welcome to the TilBuci setup script!</h1>
         <hr />
         <?= $warn == '' ? '' : '<p class="warn">' . $warn . '</p>' ?>
@@ -536,12 +599,18 @@ if ($iinfo['page'] == 0) {
                 <option value="single" <?= $iinfo['mode'] == 'single' ? 'selected' : '' ?>>single user</option>
             </select>
             <input type="hidden" name="ac" value="1" />
+            <input type="hidden" name="from" value="install" />
             <input type="submit" class="button" value="Check information and install" />
         </form>
     <?php } else if ($iinfo['page'] == 1) { ?>
         <h1>TilBuci setup script</h1>
         <hr />
-        <p>Your TilBuci system was configured. For multiple user installation mode, acess the editor with the provided e-mail address and use <em>password</em> as your password. Please, remember to change this password on your first access.</p>
+        <p><?php if ($from == 'docker') { ?>
+            Your TilBuci system was configured. For multiple user installation mode, acess the editor with the provided e-mail address (<em><?= $iinfo['email'] ?></em>) and use <em><?= $iinfo['password'] ?></em> as your password.
+            <?php } else { ?>
+            Your TilBuci system was configured. For multiple user installation mode, acess the editor with the provided e-mail address (<em><?= $iinfo['email'] ?></em>) and use <em>password</em> as your password. Please, remember to change this password on your first access.
+            <?php } ?>
+        </p>
         <?php /*@unlink('setup.php');*/ ?>
     <?php } else if ($iinfo['page'] == 2) { ?>
         <h1>TilBuci setup script</h1>
@@ -554,6 +623,7 @@ if ($iinfo['page'] == 0) {
         <form method="post">
             <input type="hidden" name="ac" value="3" />
             <input type="hidden" name="current" value="<?= $dbVersion ?>" />
+            <input type="hidden" name="from" value="install" />
             <input type="submit" class="button" value="Update the current TilBuci installation" />
         </form>
     <?php } else if ($iinfo['page'] == 4) { ?>
@@ -562,6 +632,7 @@ if ($iinfo['page'] == 0) {
         <p>The installed TilBuci version, <strong><?= $dbVersion ?></strong>, is the same one provided by this install script. You may look for a newer installer version at <a href="https://tilbuci.com.br/">tilbuci.com.br</a>. You may also override your current files if needed by clicking the button below.</p>
         <form method="post">
             <input type="hidden" name="ac" value="4" />
+            <input type="hidden" name="from" value="install" />
             <input type="submit" class="button" value="Override current TilBuci files with version <?= $dbVersion ?>" />
         </form>
     <?php } else if ($iinfo['page'] == 5) { ?>

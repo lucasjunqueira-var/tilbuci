@@ -10,8 +10,8 @@
 FROM ubuntu:24.04
 
 # Image version. Override at build time with:
-#   docker build --build-arg TILBUCI_VERSION=25.0 ...
-ARG TILBUCI_VERSION=25.0
+#   docker build --build-arg TILBUCI_VERSION=25 ...
+ARG TILBUCI_VERSION=25
 
 LABEL org.opencontainers.image.title="TilBuci" \
       org.opencontainers.image.description="All-in-one TilBuci image: Apache, PHP 8 and MariaDB with a headless, prompt-driven installer." \
@@ -26,8 +26,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     TILBUCI_PUBLIC=/var/www/tilbuci/public_html \
     TILBUCI_INSTALLER=/opt/tilbuci-installer \
     TILBUCI_DATA_DIR=/data \
-    TILBUCI_INSTALL_MODE=multi \
-    TILBUCI_AUTO_INSTALL=true \
     TILBUCI_AUTO_UPDATE=true \
     TILBUCI_KEEP_SETUP=false
 
@@ -96,10 +94,12 @@ COPY bin/install.php        /usr/local/bin/tilbuci-install.php
 COPY bin/tilbuci-update     /usr/local/bin/tilbuci-update
 COPY bin/tilbuci-set-url.php /usr/local/bin/tilbuci-set-url.php
 COPY bin/tilbuci-set-url    /usr/local/bin/tilbuci-set-url
+COPY bin/tilbuci-postinstall.sh /usr/local/bin/tilbuci-postinstall.sh
 COPY docker-entrypoint.sh   /usr/local/bin/docker-entrypoint.sh
 COPY supervisord.conf       /etc/supervisor/conf.d/tilbuci.conf
 
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh /usr/local/bin/tilbuci-update /usr/local/bin/tilbuci-set-url
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh /usr/local/bin/tilbuci-update \
+             /usr/local/bin/tilbuci-set-url /usr/local/bin/tilbuci-postinstall.sh
 
 # ---------------------------------------------------------------------------
 # MariaDB data directory inside the persistent volume.

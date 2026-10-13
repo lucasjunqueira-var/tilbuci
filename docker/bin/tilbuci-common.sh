@@ -243,3 +243,24 @@ ensure_application_files() {
         log "Application files restored."
     fi
 }
+
+# True when TilBuci is already installed (marker present or a saved Config.php).
+is_installed() {
+    [ -f "${TILBUCI_DATA_DIR}/.tilbuci-installed" ] || [ -s "${TILBUCI_DATA_DIR}/app/Config.php" ]
+}
+
+# First-run helper: make the application root load the installer with the
+# docker flag (setup.php?docker=true), so the first visit to the address
+# completes the installation from the browser.
+ensure_setup_redirect() {
+    if [ -f "${TILBUCI_PUBLIC}/setup.php" ]; then
+        cat > "${TILBUCI_PUBLIC}/index.php" <<'PHP'
+<?php
+// Temporary first-run redirect (replaced by the installer and removed
+// automatically once the installation is complete).
+header('Location: setup.php?docker=true');
+echo 'Redirecting to the TilBuci installer...';
+PHP
+        chown www-data:www-data "${TILBUCI_PUBLIC}/index.php" 2>/dev/null || true
+    fi
+}

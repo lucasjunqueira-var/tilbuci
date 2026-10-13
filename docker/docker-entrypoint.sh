@@ -16,7 +16,10 @@ source /usr/local/bin/tilbuci-common.sh
 
 DB_NAME="${TILBUCI_DB_NAME:-tilbuci}"
 DB_USER="${TILBUCI_DB_USER:-tilbuci}"
+# Default database password, used when TILBUCI_DB_PASSWORD is not provided and
+# no password was stored yet. Override with TILBUCI_DB_PASSWORD in production.
 DB_PASS="${TILBUCI_DB_PASSWORD:-}"
+DB_PASS_DEFAULT="S3nh4Dogg0"
 MARKER="${TILBUCI_DATA_DIR}/.tilbuci-installed"
 PASS_FILE="${TILBUCI_DATA_DIR}/.db_password"
 
@@ -38,13 +41,13 @@ chown -R mysql:mysql "${TILBUCI_DATA_DIR}/mysql" 2>/dev/null || true
 chown mysql:mysql /run/mysqld 2>/dev/null || true
 
 # ---------------------------------------------------------------------------
-# 2. Database password (generated once and persisted in the volume)
+# 2. Database password (default: S3nh4Dogg0; overridable and persisted)
 # ---------------------------------------------------------------------------
 if [ -z "${DB_PASS}" ]; then
     if [ -f "${PASS_FILE}" ]; then
         DB_PASS="$(cat "${PASS_FILE}")"
     else
-        DB_PASS="$(head -c 32 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | cut -c1-24)"
+        DB_PASS="${DB_PASS_DEFAULT}"
         printf '%s' "${DB_PASS}" > "${PASS_FILE}"
         chmod 600 "${PASS_FILE}"
     fi
@@ -72,7 +75,7 @@ log "Starting temporary MariaDB server..."
 mariadbd --user=mysql \
     --datadir="${TILBUCI_DATA_DIR}/mysql" \
     --socket="${TILBUCI_MYSQL_SOCKET}" \
-    --skip-networking >/dev/null 2>&1 &
+    --bind-address=127.0.0.1 >/dev/null 2>&1 &
 TMP_PID=$!
 trap cleanup_tmp_db EXIT
 
@@ -99,62 +102,15 @@ FLUSH PRIVILEGES;
 SQL
 
 # ---------------------------------------------------------------------------
-# 7. First run: collect e-mail and mode, then install headless
+# 7. First run (browser-driven) vs existing installation
+#
+# On the first run nothing is asked at startup: the container starts exactly
+# like subsequent runs and the application root redirects to the installer
+# (setup.php?docker=true). A helper running under supervisord detects the
+# completed installation, persists the configuration and removes the installer.
+# Updates keep the previous behaviour (see ensure_application_files).
 # ---------------------------------------------------------------------------
-if [ ! -f "${MARKER}" ]; then
-    if [ "${TILBUCI_AUTO_INSTALL:-true}" != "true" ]; then
-        log "TILBUCI_AUTO_INSTALL is disabled. Leaving the installer for manual use."
-        restore_installer
-    else
-        EMAIL="${TILBUCI_EMAIL:-}"
-        MODE="${TILBUCI_INSTALL_MODE:-multi}"
-
-        if [ -z "${EMAIL}" ]; then
-            if [ -t 0 ]; then
-                printf 'TilBuci admin e-mail: '
-                read -r EMAIL
-                printf 'Install mode [multi/single] (default: multi): '
-                read -r MODE_IN
-                [ -n "${MODE_IN}" ] && MODE="${MODE_IN}"
-            else
-                log "ERROR: TILBUCI_EMAIL is not set and no interactive terminal is available."
-                log "Run the container with 'docker run -it ...' to answer the prompts,"
-                log "or set TILBUCI_EMAIL and TILBUCI_INSTALL_MODE environment variables."
-                exit 1
-            fi
-        fi
-
-        if [ -z "${EMAIL}" ]; then
-            log "ERROR: an administrator e-mail address is required."
-            exit 1
-        fi
-        case "${MODE}" in
-            multi|single) ;;
-            *) log "ERROR: invalid install mode '${MODE}' (use 'multi' or 'single')."; exit 1 ;;
-        esac
-
-        restore_installer
-
-        log "Running the TilBuci installer (mode: ${MODE})..."
-        php /usr/local/bin/tilbuci-install.php \
-            --action=1 \
-            --email="${EMAIL}" \
-            --mode="${MODE}" \
-            --url="${TILBUCI_URL:-http://localhost/}" \
-            --db-host=localhost \
-            --db-name="${DB_NAME}" \
-            --db-user="${DB_USER}" \
-            --db-pass="${DB_PASS}"
-
-        # Move the generated configuration into the volume and link it back.
-        preserve_files
-        apply_dir_symlinks
-        fix_permissions
-        cleanup_setup_entry
-        touch "${MARKER}"
-        log "Installation completed."
-    fi
-else
+if is_installed; then
     log "Existing installation detected."
     restore_installer
     cleanup_setup_entry
@@ -164,12 +120,24 @@ else
     preserve_files
     apply_dir_symlinks
     fix_permissions
+    [ -f "${MARKER}" ] || touch "${MARKER}"
+else
+    log "First run detected: the installer will run from the browser."
+    restore_installer
+    apply_dir_symlinks
+    ensure_setup_redirect
+    # The installer runs as the web server user (www-data), so the tree must be
+    # writable by it before Apache starts.
+    fix_permissions
+    log "Open the application address to finish the installation (setup.php?docker=true)."
 fi
 
 # ---------------------------------------------------------------------------
 # 8. Keep the stored base URL in sync, then hand over to supervisord
 # ---------------------------------------------------------------------------
-apply_base_url
+if is_installed; then
+    apply_base_url
+fi
 cleanup_tmp_db
 trap - EXIT
 

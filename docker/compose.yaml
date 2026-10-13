@@ -5,13 +5,13 @@
 #   docker compose up -d           # detached (set TILBUCI_EMAIL first)
 #
 # Use a prebuilt multi-arch image by replacing the `build:` block with:
-#   image: <registry>/<owner>/tilbuci:25.0
+#   image: <registry>/<owner>/tilbuci:25
 
 services:
   tilbuci:
     build:
       context: .
-    image: tilbuci:25.0
+    image: tilbuci:25
     container_name: tilbuci
     restart: unless-stopped
     # A TTY lets the first-run prompt work when running attached; for detached
