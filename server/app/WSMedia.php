@@ -302,7 +302,9 @@ class WSMedia extends Webservice
 	 */
 	private function saveExtern() {
 		// path to the file
-        if ($this->req['type'] == 'movie') {
+		if ($this->req['type'] == 'pdfmovie') {
+            $path = '../../export/pdfmovie.pdf';
+        } else if ($this->req['type'] == 'movie') {
             $path = '../../export/' . $this->req['movie'] . '.zip';
 		} else if ($this->req['type'] == 'update') {
             $path = '../../export/update.zip';

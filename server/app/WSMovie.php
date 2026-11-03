@@ -36,6 +36,9 @@ class WSMovie extends Webservice
 				case 'Movie/New':
 					$this->newMovie();
 					break;
+				case 'Movie/NewPdf':
+					$this->newMoviePdf();
+					break;
 				case 'Movie/List':
 					$this->listMovies();
 					break;
@@ -195,6 +198,46 @@ class WSMovie extends Webservice
 					$this->returnRequest([ 'e' => 3 ]);
 				}
 				
+			}
+		}
+	}
+
+	/**
+	 * Creating a movie from a PDF file.
+	 */
+	private function newMoviePdf() {
+		// required fields received?
+		if ($this->requiredFields(['id', 'author', 'interval', 'model'])) {
+			// uploaded PDF file?
+			if (!is_file('../../export/pdfmovie.pdf')) {
+				// pdf file not found
+				$this->returnRequest([ 'e' => 1 ]);
+			} else {
+				// rename source file
+				$sourcefl = '../../export/pdfmovie_'.time().'.pdf';
+				rename('../../export/pdfmovie.pdf', $sourcefl);
+
+				// preparing movie
+				$mv = new Movie;
+				$id = $mv->createMoviePdf($this->req['id'], $this->user, $this->req['author'], $this->req['interval'], $sourcefl, ('../../third/' . $this->req['model']), '../movie');
+
+				if ($id === false) {
+					// error while creating the movie
+					@unlink($sourcefl);
+					$this->returnRequest([ 'e' => 2 ]);
+				} else {
+					// importing the movie
+					$erimp = $mv->importZip($this->user, $id, true);
+					if ($erimp == 0) {
+						// movie created
+						@unlink($sourcefl);
+						$this->returnRequest([ 'e' => 0, 'id' => $id ]);
+					} else {
+						// error while importing the movie
+						@unlink($sourcefl);
+						$this->returnRequest([ 'e' => 3 ]);
+					}
+				}
 			}
 		}
 	}

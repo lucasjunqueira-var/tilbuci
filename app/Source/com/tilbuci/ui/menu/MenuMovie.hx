@@ -23,6 +23,7 @@ class MenuMovie extends DrawerMenu {
         this.addButton('btNew', Global.ln.get('menu-movie-new'), onNew);
         this.addButton('btOpen', Global.ln.get('menu-movie-open'), onOpen);
         this.addButton('btProperties', Global.ln.get('menu-movie-properties'), onProp);
+        this.addButton('btNewPDF', Global.ln.get('menu-movie-newpdf'), onNewPDF);
         this.addButton('btUsers', Global.ln.get('menu-movie-users'), onUsers);
         this.addButton('btRemove', Global.ln.get('menu-movie-remove'), onRemove);
         this.addButton('btNavigation', Global.ln.get('menu-movie-navigation'), onNavigation);
@@ -41,9 +42,13 @@ class MenuMovie extends DrawerMenu {
         if (Global.ws.level <= 50) {
             this.ui.buttons['btNew'].enabled = true;
             this.ui.buttons['btNew'].toolTip = null;
+            this.ui.buttons['btNewPDF'].enabled = true;
+            this.ui.buttons['btNewPDF'].toolTip = null;
         } else {
             this.ui.buttons['btNew'].enabled = false;
             this.ui.buttons['btNew'].toolTip = Global.ln.get('tooltip-movie-nolevel');
+            this.ui.buttons['btNewPDF'].enabled = false;
+            this.ui.buttons['btNewPDF'].toolTip = Global.ln.get('tooltip-movie-nolevel');
         }
         if (GlobalPlayer.movie.mvId != '') {
             this.ui.buttons['btRemove'].toolTip = Global.ln.get('tooltip-movie-remove');
@@ -110,6 +115,13 @@ class MenuMovie extends DrawerMenu {
     **/
     private  function onNew(evt:TriggerEvent):Void {
         this._ac('new');
+    }
+
+    /**
+        Shows the new movie frm PDF window.
+    **/
+    private  function onNewPDF(evt:TriggerEvent):Void {
+        this._ac('newpdf');
     }
 
     /**

@@ -1924,7 +1924,8 @@ class MovieArea extends Sprite {
 
     public function sceneChangeZoom(amount:Float):Void {
         Actuate.stop(this._scene, ['scaleX', 'scaleY'], true, false);
-        this._scene.x = this._scene.y = this._sceneScale;
+        this._scene.scaleX = this._scene.scaleY = this._sceneScale;
+        amount = this._scene.scaleX + amount;
         Actuate.tween(this._scene, 0.25, {
             scaleX: amount, 
             scaleY: amount
