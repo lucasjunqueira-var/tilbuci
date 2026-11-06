@@ -34,7 +34,7 @@ class WindowMovieQR extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-qr-title'), 800, InterfaceFactory.pickValue(490, 540), false, true, true);
+        super(ac, Global.ln.get('window-qr-title'), 800, InterfaceFactory.pickValue(540, 590), false, true, true);
     }
 
     /**
@@ -74,6 +74,8 @@ class WindowMovieQR extends PopupWindow {
             { tp: 'Custom', cont: this.ui.hcontainers['var1'] }, 
             { tp: 'Custom', cont: this.ui.hcontainers['var2'] }, 
             { tp: 'Spacer', id: 'variables', ht: 20, ln: false },
+            { tp: 'Label', id: 'serverurl', tx: Global.ln.get('window-qr-serverurl'), vr: Label.VARIANT_DETAIL }, 
+            { tp: 'TInput', id: 'serverurl', tx: '', vr: '' }, 
             { tp: 'Custom', cont: this.ui.hcontainers['url'] }, 
             { tp: 'Spacer', id: 'url', ht: 20, ln: false },
             { tp: 'Button', id: 'download', tx: Global.ln.get('window-qr-download'), ac: this.onDownload }
@@ -97,6 +99,7 @@ class WindowMovieQR extends PopupWindow {
         this.ui.hcontainers['url'].setWidth(600, [50, 10, 510]);
         this.ui.hcontainers['var1'].setWidth(760, [110, 220, 60, 80, 250]);
         this.ui.hcontainers['var2'].setWidth(760, [110, 220, 60, 80, 250]);
+        this.ui.inputs['serverurl'].text = GlobalPlayer.base;
         Global.ws.send('Scene/List', [ 'movie' => GlobalPlayer.movie.mvId ], this.onList);
     }
 
@@ -134,7 +137,10 @@ class WindowMovieQR extends PopupWindow {
             var link:String = '';
             var name:String = '';
             if (sc != '') {
-                if (this.ui.toggles['url'].selected) link += (GlobalPlayer.base + '?');
+                if (this.ui.toggles['url'].selected) {
+                    if (this.ui.inputs['serverurl'].text == '') this.ui.inputs['serverurl'].text = GlobalPlayer.base;
+                    link += (this.ui.inputs['serverurl'].text + '?');
+                }
                 link += 'mv=' + GlobalPlayer.movie.mvId + '&sc=' + sc;
                 name = sc;
             }

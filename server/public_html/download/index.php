@@ -149,6 +149,7 @@ if (isset($_GET['a'])) {
 			exit();
 		} else if ($mime == 'qrcode') {
 			// download qrcode png
+			while (ob_get_level()) ob_end_clean();
 			header("Content-Type: image/png");
 			header("Content-Transfer-Encoding: Binary");
 			header("Content-disposition: attachment; filename=\"" . $name . "\"");
@@ -160,6 +161,7 @@ if (isset($_GET['a'])) {
 			exit();
 		} else {
 			// download file
+			while (ob_get_level()) ob_end_clean();
 			header("Content-Type: $mime");
 			header("Content-Transfer-Encoding: Binary");
 			header("Content-disposition: attachment; filename=\"" . basename($name) . "\"");

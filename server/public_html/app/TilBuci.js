@@ -938,7 +938,7 @@ ApplicationMain.main = function() {
 };
 ApplicationMain.create = function(config) {
 	var app = new openfl_display_Application();
-	app.meta.h["build"] = "165";
+	app.meta.h["build"] = "166";
 	app.meta.h["company"] = "VAR";
 	app.meta.h["file"] = "TilBuci";
 	app.meta.h["name"] = "TilBuci";
@@ -72359,7 +72359,7 @@ com_tilbuci_ui_window_movie_WindowMovieProperties.prototype = $extend(com_tilbuc
 	,__class__: com_tilbuci_ui_window_movie_WindowMovieProperties
 });
 var com_tilbuci_ui_window_movie_WindowMovieQR = function(ac) {
-	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-qr-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(490,540),false,true,true);
+	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-qr-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(540,590),false,true,true);
 };
 $hxClasses["com.tilbuci.ui.window.movie.WindowMovieQR"] = com_tilbuci_ui_window_movie_WindowMovieQR;
 com_tilbuci_ui_window_movie_WindowMovieQR.__name__ = "com.tilbuci.ui.window.movie.WindowMovieQR";
@@ -72389,9 +72389,10 @@ com_tilbuci_ui_window_movie_WindowMovieQR.prototype = $extend(com_tilbuci_ui_win
 		var tmp4 = { tp : "Label", id : "variables", tx : com_tilbuci_data_Global.ln.get("window-qr-variables"), vr : feathers_controls_Label.VARIANT_DETAIL};
 		var tmp5 = { tp : "Custom", cont : this.ui.hcontainers.h["var1"]};
 		var tmp6 = { tp : "Custom", cont : this.ui.hcontainers.h["var2"]};
-		var tmp7 = { tp : "Custom", cont : this.ui.hcontainers.h["url"]};
-		var tmp8 = com_tilbuci_data_Global.ln.get("window-qr-download");
-		this.addForm("intr",tmp.forge("interface",[tmp1,{ tp : "Spacer", id : "about", ht : 10, ln : false},tmp2,{ tp : "Select", id : "scenes", vl : [], sl : ""},{ tp : "Spacer", id : "scenes", ht : 10, ln : false},tmp3,{ tp : "TInput", id : "snippet", tx : "", vr : ""},{ tp : "Spacer", id : "snippet", ht : 10, ln : false},tmp4,tmp5,tmp6,{ tp : "Spacer", id : "variables", ht : 20, ln : false},tmp7,{ tp : "Spacer", id : "url", ht : 20, ln : false},{ tp : "Button", id : "download", tx : tmp8, ac : $bind(this,this.onDownload)}]));
+		var tmp7 = { tp : "Label", id : "serverurl", tx : com_tilbuci_data_Global.ln.get("window-qr-serverurl"), vr : feathers_controls_Label.VARIANT_DETAIL};
+		var tmp8 = { tp : "Custom", cont : this.ui.hcontainers.h["url"]};
+		var tmp9 = com_tilbuci_data_Global.ln.get("window-qr-download");
+		this.addForm("intr",tmp.forge("interface",[tmp1,{ tp : "Spacer", id : "about", ht : 10, ln : false},tmp2,{ tp : "Select", id : "scenes", vl : [], sl : ""},{ tp : "Spacer", id : "scenes", ht : 10, ln : false},tmp3,{ tp : "TInput", id : "snippet", tx : "", vr : ""},{ tp : "Spacer", id : "snippet", ht : 10, ln : false},tmp4,tmp5,tmp6,{ tp : "Spacer", id : "variables", ht : 20, ln : false},tmp7,{ tp : "TInput", id : "serverurl", tx : "", vr : ""},tmp8,{ tp : "Spacer", id : "url", ht : 20, ln : false},{ tp : "Button", id : "download", tx : tmp9, ac : $bind(this,this.onDownload)}]));
 		this.ui.labels.h["about"].set_wordWrap(true);
 		com_tilbuci_ui_window_PopupWindow.prototype.startInterface.call(this);
 	}
@@ -72403,6 +72404,7 @@ com_tilbuci_ui_window_movie_WindowMovieQR.prototype = $extend(com_tilbuci_ui_win
 		this.ui.hcontainers.h["url"].setWidth(600,[50,10,510]);
 		this.ui.hcontainers.h["var1"].setWidth(760,[110,220,60,80,250]);
 		this.ui.hcontainers.h["var2"].setWidth(760,[110,220,60,80,250]);
+		this.ui.inputs.h["serverurl"].set_text(com_tilbuci_data_GlobalPlayer.base);
 		var tmp = com_tilbuci_data_Global.ws;
 		var _g = new haxe_ds_StringMap();
 		var value = com_tilbuci_data_GlobalPlayer.movie.get_mvId();
@@ -72440,7 +72442,10 @@ com_tilbuci_ui_window_movie_WindowMovieQR.prototype = $extend(com_tilbuci_ui_win
 			var name = "";
 			if(sc != "") {
 				if(this.ui.toggles.h["url"].get_selected()) {
-					link += com_tilbuci_data_GlobalPlayer.base + "?";
+					if(this.ui.inputs.h["serverurl"].get_text() == "") {
+						this.ui.inputs.h["serverurl"].set_text(com_tilbuci_data_GlobalPlayer.base);
+					}
+					link += this.ui.inputs.h["serverurl"].get_text() + "?";
 				}
 				link += "mv=" + com_tilbuci_data_GlobalPlayer.movie.get_mvId() + "&sc=" + sc;
 				name = sc;
@@ -75529,7 +75534,7 @@ com_tilbuci_ui_window_scene_WindowSceneNew.prototype = $extend(com_tilbuci_ui_wi
 	,__class__: com_tilbuci_ui_window_scene_WindowSceneNew
 });
 var com_tilbuci_ui_window_scene_WindowSceneNewPdf = function(ac) {
-	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-scenenewpdf-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(250,360),false,true,true);
+	com_tilbuci_ui_window_PopupWindow.call(this,ac,com_tilbuci_data_Global.ln.get("window-scenenewpdf-title"),800,com_tilbuci_ui_base_InterfaceFactory.pickValue(230,340),false,true,true);
 };
 $hxClasses["com.tilbuci.ui.window.scene.WindowSceneNewPdf"] = com_tilbuci_ui_window_scene_WindowSceneNewPdf;
 com_tilbuci_ui_window_scene_WindowSceneNewPdf.__name__ = "com.tilbuci.ui.window.scene.WindowSceneNewPdf";
@@ -75547,7 +75552,7 @@ com_tilbuci_ui_window_scene_WindowSceneNewPdf.prototype = $extend(com_tilbuci_ui
 		var tmp = this.ui;
 		var tmp1 = { tp : "Label", id : "aboutpdf", tx : com_tilbuci_data_Global.ln.get("window-scenenewpdf-about"), vr : ""};
 		var tmp2 = com_tilbuci_data_Global.ln.get("window-scenenewpdf-buttonselect");
-		this._uploadform = tmp.forge("upload",[tmp1,{ tp : "Spacer", id : "import", ht : 120},{ tp : "Button", id : "importsend", tx : tmp2, ac : $bind(this,this.onSelect)}]);
+		this._uploadform = tmp.forge("upload",[tmp1,{ tp : "Spacer", id : "import", ht : 100},{ tp : "Button", id : "importsend", tx : tmp2, ac : $bind(this,this.onSelect)}]);
 		this.addForm("uploadform",this._uploadform);
 		this.ui.labels.h["aboutpdf"].set_wordWrap(true);
 		com_tilbuci_ui_window_PopupWindow.prototype.startInterface.call(this);
@@ -158186,7 +158191,7 @@ var lime_utils_AssetCache = function() {
 	this.audio = new haxe_ds_StringMap();
 	this.font = new haxe_ds_StringMap();
 	this.image = new haxe_ds_StringMap();
-	this.version = 192294;
+	this.version = 248803;
 };
 $hxClasses["lime.utils.AssetCache"] = lime_utils_AssetCache;
 lime_utils_AssetCache.__name__ = "lime.utils.AssetCache";

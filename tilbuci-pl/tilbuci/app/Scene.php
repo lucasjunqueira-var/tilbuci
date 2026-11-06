@@ -89,6 +89,116 @@ class Scene extends BaseClass
 			return (false);
 		}
 	}
+
+	/**
+	 * Imports one PDF page as a new scene in an existing movie.
+     * @param   string   $id the target movie ID
+     * @param   string   $user   system user information
+     * @param   string   $title  the scene title
+     * @param   string   $pdfpath    path to the original PDF file
+     * @param   int      $page   the PDF page to import
+     * @param   string   $model  movie model path (path to the "-base" files)
+     * @param   string   $output movie output path
+	 * @return string|bool the scene ID or false on error
+	 */
+	public function createScenePdf($id, $user, $title, $pdfpath, $page, $model, $output) {
+
+        // loading PDF parser
+        require_once('../../third/tbpdf.php');
+        set_time_limit(0);
+        $success = false;
+
+        // checking the movie ID
+        $id = is_string($id) ? trim($id) : '';
+        if ($id === '' || preg_match('/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/', $id) !== 1) {
+            return (false);
+        }
+
+        // checking the page number
+        $page = is_numeric($page) ? (int) $page : 0;
+        if ($page < 1) {
+            return (false);
+        }
+
+        // checking the PDF file
+        $pdfpath = is_string($pdfpath) ? trim($pdfpath) : '';
+        if ($pdfpath === '' || !is_file($pdfpath) || !is_readable($pdfpath)) {
+            return (false);
+        }
+
+        // checking the output directory and the target movie
+        $output = is_string($output) ? rtrim(trim($output), '/\\') : '';
+        if ($output === '' || !is_dir($output) || !is_writable($output)) {
+            return (false);
+        }
+        $moviePath = $output . DIRECTORY_SEPARATOR . $id . '.movie';
+        if (!is_dir($moviePath) || !is_file($moviePath . DIRECTORY_SEPARATOR . 'movie.json')) {
+            return (false);
+        }
+
+        // checking the model files
+        $model = is_string($model) ? rtrim(trim($model), '/\\') : '';
+        if ($model === '' || !is_dir($model)) {
+            return (false);
+        }
+        $collectionTemplate = $model . DIRECTORY_SEPARATOR . 'collection-base.json';
+        $sceneTemplate = $model . DIRECTORY_SEPARATOR . 'scene-base.json';
+        if (
+            !is_file($collectionTemplate) || !is_readable($collectionTemplate) ||
+            !is_file($sceneTemplate) || !is_readable($sceneTemplate)
+        ) {
+            return (false);
+        }
+
+        // normalizing the caller metadata
+        $title = is_string($title) ? trim($title) : '';
+        $user = is_string($user) ? trim($user) : '';
+
+        // stage 1: analyzing the PDF
+        $analysisJson = tbpdf_analyze_to_json($pdfpath);
+        $analysis = json_decode($analysisJson, true);
+        if (!is_array($analysis) || isset($analysis['error'])) {
+            return (false);
+        }
+        if ((int) ($analysis['pages'] ?? 0) < $page) {
+            return (false);
+        }
+        if ((int) ($analysis['width'] ?? 0) <= 0 || (int) ($analysis['height'] ?? 0) <= 0) {
+            return (false);
+        }
+
+        // importing the page as a scene in the target movie
+        $scene = tbpdf_import_scene_into_movie(
+            $analysisJson,
+            $id,
+            $title,
+            $page,
+            $output,
+            [
+                'collection_template' => $collectionTemplate,
+                'scene_template' => $sceneTemplate,
+            ]
+        );
+        if (isset($scene['error'])) {
+            return (false);
+        }
+
+        // checking the created scene ID
+        $sceneId = isset($scene['scene_id']) ? trim((string) $scene['scene_id']) : '';
+        if ($sceneId === '') {
+            return (false);
+        }
+
+        $success = true;
+
+        // returning the created scene ID
+        if ($success) {
+            return ($sceneId);
+        } else {
+            return (false);
+        }
+
+    }
 	
 	/**
 	 * Loads a scene from its UID.
@@ -206,7 +316,7 @@ class Scene extends BaseClass
                         'timedac' => ($vi['in_timedac'] == '' ? '' : gzdecode(base64_decode($vi['in_timedac']))), 
 						'play' => $vi['in_play'] == '1', 
 						'focus' => $vi['in_focus'] == '1', 
-						'alttext' => $vi['in_alt'], 
+						'alttext' => isset($vi['in_alt']) ? $vi['in_alt'] : '', 
 						'horizontal' => [
 								'order' => 0, 
 								'x' => 0, 
@@ -849,4 +959,196 @@ class Scene extends BaseClass
             $this->publish();
         }
     }
+
+	/**
+	 * Imports a scene file into a movie.
+	 * @param	string	$user	current user
+	 * @param	string	$movie	the movie id
+     * @param   string	$scene	the scene id
+	 * @return	bool	was the scene file found and imported?
+	 */
+	public function importSceneFile($user, $movie, $scene) {
+		// database avilable?
+		if (!is_null($this->db)) {
+
+			// does the movie exist?
+			if (!is_dir('../movie/'.$movie.'.movie')) {
+				return (false);
+			} 
+
+			// does the scene file exist?
+			if (!is_file('../movie/'.$movie.'.movie/scene/'.$scene.'.json')) {
+				return (false);
+			}
+
+			// checking the scene file and collections
+			$scjson = json_decode(file_get_contents('../movie/'.$movie.'.movie/scene/'.$scene.'.json'), true);
+			if (json_last_error() != JSON_ERROR_NONE) {
+				return (false);
+			}
+			foreach ($scjson['collections'] as $col) {
+				if (!is_file('../movie/'.$movie.'.movie/collection/'.$col.'.json')) {
+					return (false);
+				}
+			}
+
+			// setting scene properties
+			$scjson['movie'] = $movie;
+			file_put_contents(('../movie/'.$movie.'.movie/scene/'.$scene.'.json'), json_encode($scjson));
+
+			// importing collections
+			foreach ($scjson['collections'] as $col) {
+				$json = json_decode(file_get_contents('../movie/'.$movie.'.movie/collection/'.$col.'.json'), true);
+                if (json_last_error() == JSON_ERROR_NONE) {
+                    $uid = $movie . $json['id'];
+                    $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'collections` (`cl_uid`, `cl_id`, `cl_movie`, `cl_title`, `cl_transition`, `cl_time`) VALUES (:cl_uid, :cl_id, :cl_movie, :cl_title, :cl_transition, :cl_time)', [
+                        ':cl_uid' => $uid, 
+                        ':cl_id' => $json['id'], 
+                        ':cl_movie' => $movie, 
+                        ':cl_title' => $json['name'], 
+                        ':cl_transition' => $json['transition'], 
+                        ':cl_time' => $json['time'], 
+                    ]);
+                    foreach ($json['assets'] as $kas => $vas) {
+                        $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'assets` (`at_id`, `at_collection`, `at_order`, `at_name`, `at_type`, `at_time`, `at_action`, `at_frames`, `at_frtime`, `at_file1`, `at_file2`, `at_file3`, `at_file4`, `at_file5`) VALUES (:at_id, :at_collection, :at_order, :at_name, :at_type, :at_time, :at_action, :at_frames, :at_frtime, :at_file1, :at_file2, :at_file3, :at_file4, :at_file5)', [
+                            ':at_id' => $kas, 
+                            ':at_collection' => $uid, 
+                            ':at_order' => $json['assets'][$kas]['order'], 
+                            ':at_name' => $json['assets'][$kas]['name'], 
+                            ':at_type' => $json['assets'][$kas]['type'], 
+                            ':at_time' => $json['assets'][$kas]['time'], 
+                            ':at_action' => base64_encode(gzencode($json['assets'][$kas]['action'])), 
+                            ':at_frames' => $json['assets'][$kas]['frames'], 
+                            ':at_frtime' => $json['assets'][$kas]['frtime'], 
+                            ':at_file1' => $json['assets'][$kas]['file']['@1'], 
+                            ':at_file2' => $json['assets'][$kas]['file']['@2'], 
+                            ':at_file3' => $json['assets'][$kas]['file']['@3'], 
+                            ':at_file4' => $json['assets'][$kas]['file']['@4'], 
+                            ':at_file5' => $json['assets'][$kas]['file']['@5'], 
+                        ]);
+                    }
+                } else {
+					return (false);
+				}
+			}
+
+			// import the scene
+			$json = json_decode(file_get_contents('../movie/'.$movie.'.movie/scene/'.$scene.'.json'), true);
+            if (json_last_error() == JSON_ERROR_NONE) {
+                $ackeyframes = [ ];
+                foreach ($json['ackeyframes'] as $ack) $ackeyframes[] = $ack == '' ? '' : base64_encode(gzencode($ack));
+                $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'scenes` (`sc_id`, `sc_movie`, `sc_published`, `sc_title`, `sc_about`, `sc_image`, `sc_up`, `sc_down`, `sc_left`, `sc_right`, `sc_nin`, `sc_nout`, `sc_collections`, `sc_loop`, `sc_acstart`, `sc_ackeyframes`, `sc_user`, `sc_date`, `sc_static`) VALUES (:sc_id, :sc_movie, :sc_published, :sc_title, :sc_about, :sc_image, :sc_up, :sc_down, :sc_left, :sc_right, :sc_nin, :sc_nout, :sc_collections, :sc_loop, :sc_acstart, :sc_ackeyframes, :sc_user, :sc_date, :sc_static)', [
+                    ':sc_id' => $json['id'], 
+                    ':sc_movie' => $movie, 
+                    ':sc_published' => '1', 
+                    ':sc_title' => $json['title'], 
+                    ':sc_about' => $json['about'], 
+                    ':sc_image' => $json['image'], 
+                    ':sc_up' => $json['navigation']['up'], 
+                    ':sc_down' => $json['navigation']['down'], 
+                    ':sc_left' => $json['navigation']['left'], 
+                    ':sc_right' => $json['navigation']['right'], 
+                    ':sc_nin' => $json['navigation']['nin'], 
+                    ':sc_nout' => $json['navigation']['nout'], 
+                    ':sc_collections' => implode(',', $json['collections']), 
+                    ':sc_loop' => $json['loop'], 
+                    ':sc_acstart' => ($json['acstart'] == '' ? '' : base64_encode(gzencode($json['acstart']))), 
+                    ':sc_ackeyframes' => implode(',', $ackeyframes), 
+                    ':sc_user' => $user, 
+                    ':sc_date' => date('Y-m-d H:i:s'), 
+                    ':sc_static' => (isset($json['staticsc']) ? ($json['staticsc'] === true ? '1' : '0') : '0'), 
+                ]);
+                $sceneid = $this->insertID();
+                $kforder = 0;
+                foreach ($json['keyframes'] as $kf) {
+                    $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'keyframes` (`kf_scene`, `kf_order`) VALUES (:kf_scene, :kf_order)', [
+                        ':kf_scene' => $sceneid,
+                        ':kf_order' => $kforder, 
+                    ]);
+                    $kfid = $this->insertID();
+                    foreach ($kf as $kin => $vin) {
+                        $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instances` (`in_keyframe`, `in_name`, `in_collection`, `in_asset`, `in_action`, `in_play`, `in_actionover`, `in_timedac` , `in_focus`) VALUES (:in_keyframe, :in_name, :in_collection, :in_asset, :in_action, :in_play, :in_actionover, :in_timedac, :in_focus)', [
+                            ':in_keyframe' => $kfid, 
+                            ':in_name' => $kin, 
+                            ':in_collection' => $vin['collection'], 
+                            ':in_asset' => $vin['asset'], 
+                            ':in_action' => $vin['action'] == '' ? '' : base64_encode(gzencode($vin['action'])), 
+                            ':in_play' => $vin['play'] == true ? '1' : '0', 
+                            ':in_actionover' => (isset($vin['actionover']) ? ($vin['actionover'] == '' ? '' : base64_encode(gzencode($vin['actionover']))) : ''), 
+                            ':in_timedac' => (isset($vin['timedac']) ? ($vin['timedac'] == '' ? '' : base64_encode(gzencode($vin['timedac']))) : ''), 
+                            ':in_focus' => isset($vin['focus']) ? ($vin['focus'] == true ? '1' : '0') : '0', 
+                        ]);
+                        $inid = $this->insertID();
+                        $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instancedesc` (`id_instance`, `id_position`, `id_order`, `id_x`, `id_y`, `id_alpha`, `id_width`, `id_height`, `id_rotation`, `id_visible`, `id_color`, `id_coloralpha`, `id_volume`, `id_pan`, `id_blur`, `id_dropshadow`, `id_textfont`, `id_textsize`, `id_textcolor`, `id_textbold`, `id_textitalic`, `id_textleading`, `id_textspacing`, `id_textbackground`, `id_textalign`, `id_glow`, `id_blend`) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign, :glow, :blend)', [
+                            ':instance' => $inid, 
+                            ':position' => 'h', 
+                            ':order' => $vin['horizontal']['order'], 
+                            ':x' => $vin['horizontal']['x'], 
+                            ':y' => $vin['horizontal']['y'], 
+                            ':alpha' => $vin['horizontal']['alpha'], 
+                            ':width' => $vin['horizontal']['width'], 
+                            ':height' => $vin['horizontal']['height'], 
+                            ':rotation' => $vin['horizontal']['rotation'], 
+                            ':visible' => $vin['horizontal']['visible'] ? '1' : '0', 
+                            ':color' => $vin['horizontal']['color'], 
+                            ':coloralpha' => $vin['horizontal']['colorAlpha'], 
+                            ':volume' => $vin['horizontal']['volume'], 
+                            ':pan' => $vin['horizontal']['pan'], 
+                            ':blur' => $vin['horizontal']['blur'], 
+                            ':dropshadow' => $vin['horizontal']['dropshadow'], 
+                            ':textfont' => $vin['horizontal']['textFont'], 
+                            ':textsize' => $vin['horizontal']['textSize'], 
+                            ':textcolor' => $vin['horizontal']['textColor'], 
+                            ':textbold' => $vin['horizontal']['textBold'] ? '1' : '0', 
+                            ':textitalic' => $vin['horizontal']['textItalic'] ? '1' : '0', 
+                            ':textleading' => $vin['horizontal']['textLeading'], 
+                            ':textspacing' => $vin['horizontal']['textSpacing'], 
+                            ':textbackground' => $vin['horizontal']['textBackground'], 
+                            ':textalign' => $vin['horizontal']['textAlign'], 
+                            ':glow' => (isset($vin['horizontal']['glow']) ? $vin['horizontal']['glow'] : ''), 
+                            ':blend' => (isset($vin['horizontal']['blend']) ? $vin['horizontal']['blend'] : ''), 
+                        ]);
+                        $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instancedesc` (`id_instance`, `id_position`, `id_order`, `id_x`, `id_y`, `id_alpha`, `id_width`, `id_height`, `id_rotation`, `id_visible`, `id_color`, `id_coloralpha`, `id_volume`, `id_pan`, `id_blur`, `id_dropshadow`, `id_textfont`, `id_textsize`, `id_textcolor`, `id_textbold`, `id_textitalic`, `id_textleading`, `id_textspacing`, `id_textbackground`, `id_textalign`, `id_glow`, `id_blend`) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign, :glow, :blend)', [
+                            ':instance' => $inid, 
+                            ':position' => 'v', 
+                            ':order' => $vin['vertical']['order'], 
+                            ':x' => $vin['vertical']['x'], 
+                            ':y' => $vin['vertical']['y'], 
+                            ':alpha' => $vin['vertical']['alpha'], 
+                            ':width' => $vin['vertical']['width'], 
+                            ':height' => $vin['vertical']['height'], 
+                            ':rotation' => $vin['vertical']['rotation'], 
+                            ':visible' => $vin['vertical']['visible'] ? '1' : '0', 
+                            ':color' => $vin['vertical']['color'], 
+                            ':coloralpha' => $vin['vertical']['colorAlpha'], 
+                            ':volume' => $vin['vertical']['volume'], 
+                            ':pan' => $vin['vertical']['pan'], 
+                            ':blur' => $vin['vertical']['blur'], 
+                            ':dropshadow' => $vin['vertical']['dropshadow'], 
+                            ':textfont' => $vin['vertical']['textFont'], 
+                            ':textsize' => $vin['vertical']['textSize'], 
+                            ':textcolor' => $vin['vertical']['textColor'], 
+                            ':textbold' => $vin['vertical']['textBold'] ? '1' : '0', 
+                            ':textitalic' => $vin['vertical']['textItalic'] ? '1' : '0', 
+                            ':textleading' => $vin['vertical']['textLeading'], 
+                            ':textspacing' => $vin['vertical']['textSpacing'], 
+                            ':textbackground' => $vin['vertical']['textBackground'], 
+                            ':textalign' => $vin['vertical']['textAlign'], 
+                            ':glow' => (isset($vin['horizontal']['glow']) ? $vin['horizontal']['glow'] : ''), 
+                            ':blend' => (isset($vin['horizontal']['blend']) ? $vin['horizontal']['blend'] : ''), 
+                        ]);
+                    }
+                    $kforder++;
+                }
+            } else {
+				return (false);
+			}
+
+			// scene imported!
+			return (true);
+
+		} else {
+			return (false);
+		}
+	}
 }

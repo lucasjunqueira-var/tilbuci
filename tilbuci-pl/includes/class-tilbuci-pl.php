@@ -217,13 +217,17 @@ class TilBuci_WP {
         wp_register_script(
             'tilbuci-block',
             TILBUCI_WP_PLUGIN_URL . 'assets/js/block.js',
-            array('wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n'),
+            array('wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-i18n', 'wp-data', 'wp-api-fetch'),
             TILBUCI_WP_VERSION,
             true
         );
 
         // Register block
         register_block_type('tilbuci-pl/tilbuci-block', array(
+            'title' => __('TilBuci Movie', 'tilbuci-pl'),
+            'description' => __('Display an interactive movie created with TilBuci.', 'tilbuci-pl'),
+            'category' => 'embed',
+            'icon' => 'video-alt',
             'editor_script' => 'tilbuci-block',
             'render_callback' => array($this, 'render_tilbuci_block'),
             'attributes' => array(
@@ -237,7 +241,7 @@ class TilBuci_WP {
                 ),
                 'height' => array(
                     'type' => 'number',
-                    'default' => 56,
+                    'default' => 60,
                 ),
                 'htmlDomRender' => array(
                     'type' => 'boolean',
@@ -302,6 +306,12 @@ class TilBuci_WP {
             return '';
         }
 
+        // Only the first TilBuci movie block of the page is rendered
+        if (self::$first_block_rendered) {
+            return '';
+        }
+        self::$first_block_rendered = true;
+
         // Visitor handling - if there is a logged visitor
         $user = '';
         $uk = '';
@@ -349,14 +359,8 @@ class TilBuci_WP {
         }
 
         $site_url = get_option('siteurl');
-        $iframe_url = $site_url . '/wp-content/plugins/tilbuci-pl/tilbuci/public/app/?mv=' . urlencode($movie_id);
-        
-        // Append user parameters if user is logged in
-        if (!empty($user) && !empty($uk)) {
-            $iframe_url .= '&us=' . urlencode($user) . '&uk=' . $uk;
-        }
-        
-        // Append custom variables as Base64-encoded JSON
+
+        // Custom variables as Base64-encoded JSON
         $custom_vars = array();
         for ($i = 1; $i <= 5; $i++) {
             $var_key = 'customVar' . $i;
@@ -370,27 +374,19 @@ class TilBuci_WP {
             }
         }
         
-        // If any custom variables are defined, add them as Base64-encoded JSON
+        // If any custom variables are defined, encode them as Base64 JSON
         $base64_vars = '';
         if (!empty($custom_vars)) {
-            $json_vars = json_encode($custom_vars);
-            $base64_vars = base64_encode($json_vars);
-            $iframe_url .= '&vars=' . urlencode($base64_vars);
+            $base64_vars = base64_encode(json_encode($custom_vars));
         }
         
         // Get display settings
-        $full_screen = isset($attributes['fullScreen']) ? $attributes['fullScreen'] : false;
+        $full_screen = isset($attributes['fullScreen']) ? (bool) $attributes['fullScreen'] : false;
         $height_percentage = isset($attributes['height']) ? intval($attributes['height']) : 60;
         
         // Ensure height percentage is between 0 and 100
         if ($height_percentage < 0) $height_percentage = 0;
         if ($height_percentage > 100) $height_percentage = 100;
-        
-        // Only render the first TilBuci block on the page
-        if (self::$first_block_rendered) {
-            return '';
-        }
-        self::$first_block_rendered = true;
 
         // Get snippet value
         $snippet = isset($attributes['snippet']) ? sanitize_text_field($attributes['snippet']) : '';
@@ -414,20 +410,22 @@ class TilBuci_WP {
         $output .= '<script type="text/javascript">';
         $output .= 'lime.embed ("TilBuci", "openfl-content", 0, 0, { parameters: { "assets": "' . esc_js($assets_path) . '", "moviePath": "' . esc_js($movie_path) . '", "mode" : "player", "movie": "' . esc_js($movie) . '", "scene": "", "snippet": "' . esc_js($snippet) . '", "vars": "' . esc_js($vars) . '"' . $userlogin . ' } });';
         $output .= '</script>';
+        $output .= '<div id="embed_area"><iframe id="embed_frame" width="0" height="0" src="" frameborder="0"></iframe></div>';
         $output .= '</div>';
-        
-        // Apply full screen settings if enabled
+
+        // Apply full screen display settings if enabled
         if ($full_screen) {
-            // Add CSS to hide other content and set black background
+            // Black page and the TilBuci area covering the whole visible area
             $output .= '<style id="tilbuci-full-screen-styles">';
-            $output .= 'body { background-color: #000000 !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }';
-            $output .= '#TilBuciArea { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999999999; margin: 0; padding: 0; overflow: unset; background: #000; max-width: none; max-height: none;}';
+            $output .= 'html, body { background-color: #000000 !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; }';
+            $output .= '#TilBuciArea { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; max-width: none !important; max-height: none !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; background: #000000 !important; z-index: 9000000000 !important; }';
+            $output .= '#TilBuciArea #openfl-content { width: 100% !important; height: 100% !important; }';
             $output .= '</style>';
-            
-            // Add JavaScript to hide other content
+
+            // Hide every other page content (text, titles, widgets...)
             $output .= '<script>';
             $output .= '(function() {';
-            $output .= '    function hideOtherContent() {';
+            $output .= '    function tilbuciHideOtherContent() {';
             $output .= '        var tilbuciArea = document.getElementById("TilBuciArea");';
             $output .= '        if (!tilbuciArea) return;';
             $output .= '        var ancestors = [];';
@@ -445,19 +443,19 @@ class TilBuci_WP {
             $output .= '        }';
             $output .= '    }';
             $output .= '    if (document.readyState === "loading") {';
-            $output .= '        document.addEventListener("DOMContentLoaded", hideOtherContent);';
+            $output .= '        document.addEventListener("DOMContentLoaded", tilbuciHideOtherContent);';
             $output .= '    } else {';
-            $output .= '        hideOtherContent();';
+            $output .= '        tilbuciHideOtherContent();';
             $output .= '    }';
             $output .= '})();';
             $output .= '</script>';
         } else {
-            // Normal mode: apply height percentage via JavaScript
+            // Normal mode: the area height is a percentage of its own width
             $output .= '<script>';
             $output .= '(function() {';
             $output .= '    var tilbuciArea = document.getElementById("TilBuciArea");';
             $output .= '    var heightPercentage = ' . $height_percentage . ';';
-            $output .= '    function updateHeight() {';
+            $output .= '    function tilbuciUpdateHeight() {';
             $output .= '        if (!tilbuciArea) return;';
             $output .= '        var width = tilbuciArea.offsetWidth;';
             $output .= '        var height = (width * heightPercentage) / 100;';
@@ -465,12 +463,12 @@ class TilBuci_WP {
             $output .= '    }';
             $output .= '    if (document.readyState === "loading") {';
             $output .= '        document.addEventListener("DOMContentLoaded", function() {';
-            $output .= '            updateHeight();';
-            $output .= '            window.addEventListener("resize", updateHeight);';
+            $output .= '            tilbuciUpdateHeight();';
+            $output .= '            window.addEventListener("resize", tilbuciUpdateHeight);';
             $output .= '        });';
             $output .= '    } else {';
-            $output .= '        updateHeight();';
-            $output .= '        window.addEventListener("resize", updateHeight);';
+            $output .= '        tilbuciUpdateHeight();';
+            $output .= '        window.addEventListener("resize", tilbuciUpdateHeight);';
             $output .= '    }';
             $output .= '})();';
             $output .= '</script>';
@@ -550,10 +548,15 @@ class TilBuci_WP {
      */
     public function check_for_updates() {
         require_once dirname(__FILE__) . '/class-tilbuci-pl-db.php';
-        
-        $remote_version = TilBuci_WP_DB::check_remote_version();
+
+        // the remote version is cached to avoid a HTTP request on every admin page
+        $remote_version = get_transient('tilbuci_remote_version');
         if ($remote_version === false) {
-            return 0;
+            $remote_version = TilBuci_WP_DB::check_remote_version();
+            if ($remote_version === false) {
+                return 0;
+            }
+            set_transient('tilbuci_remote_version', $remote_version, 6 * HOUR_IN_SECONDS);
         }
         
         // Get current version from database
@@ -585,17 +588,47 @@ class TilBuci_WP {
     public function display_version_page() {
         require_once dirname(__FILE__) . '/class-tilbuci-pl-db.php';
         
-        // Check and update plugin version before proceeding
-        TilBuci_WP_DB::check_and_update_version();
-        
-        // Check remote version
-        $remote_version = TilBuci_WP_DB::check_remote_version();
-        
-        // Get current version from database - flush cache first if update was successful
         global $wpdb;
-        if (!isset($update_result)) $update_result = null;
-        if ($update_result !== null && $update_result['success']) {
-            $wpdb->flush(); // Clear query cache to get fresh version
+        
+        // Process a requested update before reading the current version
+        $update_result = null;
+        if (isset($_POST['tilbuci_update_action'])) {
+            if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'tilbuci_update_plugin')) {
+                wp_die(__('Security check failed', 'tilbuci-pl'));
+            }
+            
+            $update_action = sanitize_text_field(wp_unslash($_POST['tilbuci_update_action']));
+            if ($update_action === 'auto_update') {
+                // Automatic update (download from the TilBuci server)
+                $update_result = TilBuci_WP_DB::update_tilbuci_plugin();
+            } elseif ($update_action === 'upload_update' && isset($_FILES['update_zip'])) {
+                // Manual update using an uploaded file
+                $uploaded_file = $_FILES['update_zip'];
+                if (($uploaded_file['error'] === UPLOAD_ERR_OK) && is_uploaded_file($uploaded_file['tmp_name'])) {
+                    $update_result = TilBuci_WP_DB::update_tilbuci_plugin($uploaded_file['tmp_name']);
+                } else {
+                    $update_result = array(
+                        'success' => false,
+                        'message' => __('File upload failed.', 'tilbuci-pl')
+                    );
+                }
+            }
+            // the cached remote version may be outdated after an update
+            delete_transient('tilbuci_remote_version');
+        }
+        
+        // Run pending database updates and read the current version
+        TilBuci_WP_DB::check_and_update_version();
+        $wpdb->flush();
+        
+        // Latest available version (uses the value already cached by the menu badge,
+        // so the page and the indicator always show the same information)
+        $remote_version = get_transient('tilbuci_remote_version');
+        if ($remote_version === false) {
+            $remote_version = TilBuci_WP_DB::check_remote_version();
+            if ($remote_version !== false) {
+                set_transient('tilbuci_remote_version', $remote_version, 6 * HOUR_IN_SECONDS);
+            }
         }
         
         $table_prefix = $wpdb->prefix;
@@ -608,30 +641,6 @@ class TilBuci_WP {
         
         if ($current_version === null) {
             $current_version = 0;
-        }
-        
-        // Process form submission if any
-        $update_result = null;
-        if (isset($_POST['tilbuci_update_action'])) {
-            if (!wp_verify_nonce($_POST['_wpnonce'], 'tilbuci_update_plugin')) {
-                wp_die(__('Security check failed', 'tilbuci-pl'));
-            }
-            
-            if ($_POST['tilbuci_update_action'] === 'auto_update') {
-                // Automatic update (download from server)
-                $update_result = TilBuci_WP_DB::update_tilbuci_plugin();
-            } elseif ($_POST['tilbuci_update_action'] === 'upload_update' && isset($_FILES['update_zip'])) {
-                // Manual update via uploaded file
-                $uploaded_file = $_FILES['update_zip'];
-                if ($uploaded_file['error'] === UPLOAD_ERR_OK) {
-                    $update_result = TilBuci_WP_DB::update_tilbuci_plugin($uploaded_file['tmp_name']);
-                } else {
-                    $update_result = array(
-                        'success' => false,
-                        'message' => __('File upload failed.', 'tilbuci-pl')
-                    );
-                }
-            }
         }
         
         ?>
@@ -650,39 +659,69 @@ class TilBuci_WP {
             }
             ?>
             
-            <div class="card">
-                <h2><?php _e('Current Version', 'tilbuci-pl'); ?></h2>
-                <p><strong><?php echo esc_html($current_version); ?></strong></p>
-            </div>
+            <?php
+            $update_available = false;
+            if ($remote_version !== false) {
+                $current_float = floatval($current_version);
+                $remote_float = floatval($remote_version);
+                if ($update_result !== null && $update_result['success']) {
+                    $current_float = $remote_float;
+                }
+                $update_available = ($remote_float > $current_float);
+            }
+            ?>
             
-            <div class="card">
-                <h2><?php _e('Latest Available Version', 'tilbuci-pl'); ?></h2>
-                <?php if ($remote_version !== false): ?>
+            <?php if ($remote_version === false): ?>
+                <div class="card">
+                    <h2><?php _e('Latest Available Version', 'tilbuci-pl'); ?></h2>
+                    <div class="notice notice-error">
+                        <p><?php _e('Unable to check for updates. Please check your internet connection or try again later.', 'tilbuci-pl'); ?></p>
+                    </div>
+                </div>
+            <?php elseif ($update_available): ?>
+                <div class="card">
+                    <h2><?php _e('Latest Available Version', 'tilbuci-pl'); ?></h2>
+                    <p><strong><?php echo esc_html($remote_version); ?></strong></p>
+                    <div class="notice notice-warning">
+                        <p><?php _e('An update is available! The remote version is newer than your current version.', 'tilbuci-pl'); ?></p>
+                    </div>
+                    <h2><?php _e('Current Version', 'tilbuci-pl'); ?></h2>
+                    <p><strong><?php echo esc_html($current_version); ?></strong></p>
+                    <form method="post" style="margin: 20px 0;">
+                        <?php wp_nonce_field('tilbuci_update_plugin'); ?>
+                        <input type="hidden" name="tilbuci_update_action" value="auto_update">
+                        <button type="submit" class="button button-primary button-large">
+                            <?php _e('Click here to automatically update your TilBuci plugin', 'tilbuci-pl'); ?>
+                        </button>
+                        <p class="description"><?php _e('This will download the latest version from the TilBuci server and install it.', 'tilbuci-pl'); ?></p>
+                    </form>
+                </div>
+                
+                <!-- Manual update form -->
+                <div class="card">
+                    <h2><?php _e('Select the TilBuci plugin update file', 'tilbuci-pl'); ?></h2>
+                    <form method="post" enctype="multipart/form-data">
+                        <?php wp_nonce_field('tilbuci_update_plugin'); ?>
+                        <input type="hidden" name="tilbuci_update_action" value="upload_update">
+                        <p>
+                            <label for="update_zip">
+                                <strong><?php _e('ZIP file:', 'tilbuci-pl'); ?></strong>
+                            </label>
+                            <input type="file" name="update_zip" id="update_zip" accept=".zip" required>
+                        </p>
+                        <p>
+                            <button type="submit" class="button button-secondary">
+                                <?php _e('Send the update file', 'tilbuci-pl'); ?>
+                            </button>
+                        </p>
+                    </form>
+                </div>
+            <?php else: ?>
+                <div class="card">
+                    <h2><?php _e('Latest Available Version', 'tilbuci-pl'); ?></h2>
                     <p><strong><?php echo esc_html($remote_version); ?></strong></p>
                     
-                    <?php
-                    $current_float = floatval($current_version);
-                    $remote_float = floatval($remote_version);
-
-                    if ($update_result !== null && $update_result['success']) {
-                        $current_float = $remote_float;
-                    }
-                    
-                    if ($remote_float > $current_float): ?>
-                        <div class="notice notice-warning">
-                            <p><?php _e('An update is available! The remote version is newer than your current version.', 'tilbuci-pl'); ?></p>
-                        </div>
-                        
-                        <!-- Automatic update button (only shown when update is available) -->
-                        <form method="post" style="margin: 20px 0;">
-                            <?php wp_nonce_field('tilbuci_update_plugin'); ?>
-                            <input type="hidden" name="tilbuci_update_action" value="auto_update">
-                            <button type="submit" class="button button-primary button-large">
-                                <?php _e('Click here to automatically update your TilBuci plugin', 'tilbuci-pl'); ?>
-                            </button>
-                            <p class="description"><?php _e('This will download the latest version from the TilBuci server and install it.', 'tilbuci-pl'); ?></p>
-                        </form>
-                    <?php elseif ($remote_float < $current_float): ?>
+                    <?php if (floatval($remote_version) < floatval($current_version)): ?>
                         <div class="notice notice-info">
                             <p><?php _e('Your version is newer than the remote version. This may indicate a development or beta version.', 'tilbuci-pl'); ?></p>
                         </div>
@@ -691,34 +730,11 @@ class TilBuci_WP {
                             <p><?php _e('You are running the latest version.', 'tilbuci-pl'); ?></p>
                         </div>
                     <?php endif; ?>
-                <?php else: ?>
-                    <div class="notice notice-error">
-                        <p><?php _e('Unable to check for updates. Please check your internet connection or try again later.', 'tilbuci-pl'); ?></p>
-                    </div>
-                <?php endif; ?>
-                
-                <hr>
-            </div>
-            
-            <!-- Manual update form -->
-            <div class="card">
-                <h2><?php _e('Update TilBuci using the plugin install ZIP file', 'tilbuci-pl'); ?></h2>
-                <form method="post" enctype="multipart/form-data">
-                    <?php wp_nonce_field('tilbuci_update_plugin'); ?>
-                    <input type="hidden" name="tilbuci_update_action" value="upload_update">
-                    <p>
-                        <label for="update_zip">
-                            <strong><?php _e('ZIP file:', 'tilbuci-pl'); ?></strong>
-                        </label>
-                        <input type="file" name="update_zip" id="update_zip" accept=".zip" required>
-                    </p>
-                    <p>
-                        <button type="submit" class="button button-secondary">
-                            <?php _e('Send the update file', 'tilbuci-pl'); ?>
-                        </button>
-                    </p>
-                </form>
-            </div>
+                    
+                    <h2><?php _e('Current Version', 'tilbuci-pl'); ?></h2>
+                    <p><strong><?php echo esc_html($current_version); ?></strong></p>
+                </div>
+            <?php endif; ?>
         </div>
         <?php
     }
@@ -729,14 +745,14 @@ class TilBuci_WP {
     public function display_tilbuci_page() {
         global $wpdb;
         
-        // 1 in 5 chance of executing backup function when this submenu page loads
-        if (mt_rand(1, 5) === 1) {
-            $this->create_movie_backups();
-        }
-        
-        // Check and update plugin version before proceeding
+        // Run pending database updates (compares version.md with the database version)
         require_once dirname(__FILE__) . '/class-tilbuci-pl-db.php';
         TilBuci_WP_DB::check_and_update_version();
+        
+        // 1 in 10 chance of executing the backup function when this submenu page loads
+        if (mt_rand(1, 10) === 1) {
+            $this->create_movie_backups();
+        }
         
         // 1. Generate random key as MD5 of random string
         $random_string = wp_generate_password(32, false);
@@ -897,20 +913,24 @@ class TilBuci_WP {
             // Create ZIP archive
             $zip = new ZipArchive();
             if ($zip->open($zip_file, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
-                $files = new RecursiveIteratorIterator(
-                    new RecursiveDirectoryIterator($movie_folder),
-                    RecursiveIteratorIterator::LEAVES_ONLY
+                $items = new RecursiveIteratorIterator(
+                    new RecursiveDirectoryIterator($movie_folder, RecursiveDirectoryIterator::SKIP_DOTS),
+                    RecursiveIteratorIterator::SELF_FIRST
                 );
                 
-                foreach ($files as $file) {
-                    if (!$file->isDir()) {
-                        $file_path = $file->getRealPath();
-                        $relative_path = substr($file_path, strlen($movie_folder));
-                        // Normalize directory separators to forward slash for ZIP
-                        $relative_path = str_replace('\\', '/', $relative_path);
-                        // Remove leading slash if present
-                        $relative_path = ltrim($relative_path, '/');
-                        $zip->addFile($file_path, $relative_path);
+                foreach ($items as $item) {
+                    $item_path = $item->getPathname();
+                    $relative_path = substr($item_path, strlen($movie_folder));
+                    // Normalize directory separators to forward slash for ZIP
+                    $relative_path = str_replace('\\', '/', ltrim($relative_path, '/\\'));
+                    if ($relative_path === '') {
+                        continue;
+                    }
+                    if ($item->isDir()) {
+                        // empty folders are part of the movie structure
+                        $zip->addEmptyDir($relative_path);
+                    } else {
+                        $zip->addFile($item_path, $relative_path);
                     }
                 }
                 
@@ -939,58 +959,42 @@ class TilBuci_WP {
         $backup_dir = $this->get_backup_dir();
         $sql_file = $backup_dir . 'data.sql';
         
-        // Get all tables with tilbuci_ prefix (including WordPress prefix)
+        // Get all tables that have "tilbuci_" in the name
         $tables = $wpdb->get_col($wpdb->prepare("SHOW TABLES LIKE %s", '%tilbuci_%'));
         
-        if (empty($tables)) {
-            // No tables found, create empty file or return false
-            file_put_contents($sql_file, "-- No tilbuci_ tables found in database\n");
-            return true;
-        }
+        $sql_content = "-- TilBuci data backup\n-- generated on " . date('c') . "\n\n";
         
-        $sql_content = "";
+        if (empty($tables)) {
+            $sql_content .= "-- no tilbuci_ table found in the database\n";
+            return file_put_contents($sql_file, $sql_content) !== false;
+        }
         
         foreach ($tables as $table) {
-            // Get table structure (SHOW CREATE TABLE)
-            $create_table = $wpdb->get_var($wpdb->prepare("SHOW CREATE TABLE %i", $table));
-            if ($create_table) {
-                // Extract CREATE TABLE statement (second column)
-                if (is_array($create_table)) {
-                    $create_table = $create_table[1];
-                }
-                $sql_content .= "--\n-- Table structure for table `$table`\n--\n";
-                $sql_content .= $create_table . ";\n\n";
-            }
-            
-            // Get all rows from table
+            // Get all rows from the table
             $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i", $table), ARRAY_A);
             
-            if (!empty($rows)) {
-                $sql_content .= "--\n-- Dumping data for table `$table`\n--\n";
-                
-                foreach ($rows as $row) {
-                    // Escape values
-                    $escaped_values = array();
-                    foreach ($row as $value) {
-                        if (is_null($value)) {
-                            $escaped_values[] = 'NULL';
-                        } else {
-                            $escaped_values[] = "'" . $wpdb->_real_escape($value) . "'";
-                        }
-                    }
-                    
-                    $columns = implode('`, `', array_keys($row));
-                    $values = implode(', ', $escaped_values);
-                    $sql_content .= "INSERT INTO `$table` (`$columns`) VALUES ($values);\n";
-                }
-                $sql_content .= "\n";
+            if (empty($rows)) {
+                continue;
             }
+            
+            $sql_content .= "--\n-- data for table `" . $table . "`\n--\n";
+            
+            foreach ($rows as $row) {
+                $escaped_values = array();
+                foreach ($row as $value) {
+                    if (is_null($value)) {
+                        $escaped_values[] = 'NULL';
+                    } else {
+                        $escaped_values[] = "'" . esc_sql($value) . "'";
+                    }
+                }
+                $columns = '`' . implode('`, `', array_keys($row)) . '`';
+                $sql_content .= "INSERT INTO `" . $table . "` (" . $columns . ") VALUES (" . implode(', ', $escaped_values) . ");\n";
+            }
+            $sql_content .= "\n";
         }
         
-        // Write to file
-        $result = file_put_contents($sql_file, $sql_content);
-        
-        return $result !== false;
+        return file_put_contents($sql_file, $sql_content) !== false;
     }
 
     /**
@@ -1176,6 +1180,8 @@ class TilBuci_WP {
         echo '    @font-face { font-family: "Roboto Sans"; src: url("' . esc_url($font_path . 'roboto.woff2') . '"); }' . "\n";
         echo '	#TilBuciArea { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: #000000; }' . "\n";
         echo '	#openfl-content { background: #000000; width: 100%; height: 100%; }' . "\n";
+        echo '    #embed_area { position: absolute; left: 0; top: 0; display: none; padding: 0; width: 100%; height: 100%; box-sizing: content-box; margin: 0; border: none; overflow: hidden; background-color: transparent; }' . "\n";
+        echo '    #embed_frame { display: none; padding: 0; box-sizing: content-box; margin: 0; border: none; width: 100%; height: 100%; background-color: transparent; }' . "\n";
         echo '</style>' . "\n";
     }
 

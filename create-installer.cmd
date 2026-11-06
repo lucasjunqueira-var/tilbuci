@@ -96,10 +96,17 @@ if exist events\events.txt (
     copy events\events.txt temp_part1\events\ /Y
 )
 
-REM Copy third party libraries
-if exist third\qrcode.php (
-    if not exist temp_part1\third mkdir temp_part1\third
-    copy third\qrcode.php temp_part1\third\ /Y
+REM Copy third party libraries (entire folder, including its subfolders)
+if exist third (
+    echo Copying third party libraries
+    xcopy third temp_part1\third /E /I /Y
+    if !errorlevel! neq 0 (
+        echo ERROR: Failed to copy the third party libraries folder.
+        rmdir /s /q temp_part1
+        exit /b 1
+    )
+) ELSE (
+    echo WARNING: third party libraries not found, skipping.
 )
 
 REM Copy export subfolders

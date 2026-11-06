@@ -42,6 +42,16 @@ class TilBuci_WP_DB {
             // Execute data.sql using regular query execution
             self::execute_sql_file('data.sql');
         }
+        
+        /*
+         * "tables.sql" is the base structure of the release and does not contain
+         * everything added by the update scripts (for example the "in_alt" column
+         * of the instances table, added by 24.sql). As "data.sql" already stores
+         * the current dbVersion, the regular upgrade chain would be skipped on a
+         * fresh install, so the update scripts are always applied here. They are
+         * additive: statements that are already in place fail and are ignored.
+         */
+        self::run_schema_updates();
 
         // Update Config.php with WordPress database settings (just failsafe - on WordPress, use $wpdb instead)
         self::update_config_file();
@@ -115,13 +125,15 @@ class TilBuci_WP_DB {
     public static function restore_previous_data() {
         global $wpdb;
         
-        // Ensure uploads/tilbuci directory exists
+        // Ensure the uploads/tilbuci directory exists
         $upload_dir = wp_upload_dir();
         $backup_dir = trailingslashit($upload_dir['basedir']) . 'tilbuci/';
         
         if (!is_dir($backup_dir)) {
-            // No backup directory, nothing to restore
-            return;
+            if (!wp_mkdir_p($backup_dir)) {
+                // the folder could not be created, there is nothing to restore
+                return;
+            }
         }
         
         // 1. Restore data.sql if exists
@@ -151,79 +163,53 @@ class TilBuci_WP_DB {
         }
         
         // Replace {PR} placeholder with actual table prefix
-        $table_prefix = $wpdb->prefix;
-        $sql_content = str_replace('{PR}', $table_prefix, $sql_content);
-        
-        // Split SQL statements by semicolon, handling multi-line statements
-        // First normalize line endings
-        $sql_content = str_replace(["\r\n", "\r"], "\n", $sql_content);
-        
-        // Remove SQL comments (-- comment)
-        $sql_content = preg_replace('/--.*$/m', '', $sql_content);
-        
-        // Split SQL statements by semicolon, being careful with semicolons inside strings
-        $statements = preg_split('/;(?=\s*\n|$)/', $sql_content);
+        $sql_content = str_replace('{PR}', $wpdb->prefix, $sql_content);
         
         // Group INSERT statements by table
         $inserts_by_table = [];
         
-        foreach ($statements as $stmt) {
-            $stmt = trim($stmt);
-            if (empty($stmt)) {
+        foreach (self::split_sql_statements(self::strip_sql_comments($sql_content)) as $stmt) {
+            if ($stmt === '') {
                 continue;
             }
             
-            // Skip lines that are just table names (e.g., "tb_tilbuci_assets;")
-            if (preg_match('/^[a-z_]+$/i', $stmt)) {
+            // Only INSERT commands are used when restoring data
+            if (stripos($stmt, 'INSERT INTO') !== 0) {
                 continue;
             }
             
-            // Skip CREATE TABLE statements entirely
-            if (stripos($stmt, 'CREATE TABLE') === 0) {
+            // Extract the table name
+            if (preg_match('/INSERT\s+INTO\s+`([^`]+)`/i', $stmt, $matches)) {
+                $table_name = $matches[1];
+            } elseif (preg_match('/INSERT\s+INTO\s+([^\s\(]+)/i', $stmt, $matches)) {
+                $table_name = trim($matches[1], '`');
+            } else {
                 continue;
             }
             
-            // Skip TRUNCATE TABLE statements (we'll handle truncation ourselves)
-            if (stripos($stmt, 'TRUNCATE TABLE') === 0) {
+            // Only tables of the plugin are restored
+            if (strpos($table_name, 'tilbuci_') === false) {
                 continue;
             }
             
-            // Process INSERT INTO statements
-            if (stripos($stmt, 'INSERT INTO') === 0) {
-                // Extract table name with backticks
-                if (preg_match('/INSERT INTO\s+`([^`]+)`/i', $stmt, $matches)) {
-                    $table_name = $matches[1];
-                } elseif (preg_match('/INSERT INTO\s+([^\s\(]+)/i', $stmt, $matches)) {
-                    $table_name = $matches[1];
-                } else {
-                    continue;
-                }
-                
-                // Check if it's a tilbuci table
-                if (strpos($table_name, 'tilbuci_') !== false) {
-                    if (!isset($inserts_by_table[$table_name])) {
-                        $inserts_by_table[$table_name] = [];
-                    }
-                    // Ensure statement ends with semicolon
-                    if (substr($stmt, -1) !== ';') {
-                        $stmt .= ';';
-                    }
-                    $inserts_by_table[$table_name][] = $stmt;
-                }
+            if (!isset($inserts_by_table[$table_name])) {
+                $inserts_by_table[$table_name] = [];
             }
+            $inserts_by_table[$table_name][] = $stmt;
         }
         
-        // For each table, truncate once then execute all INSERTs
+        // For each table, clear it once and then run all its INSERTs
         foreach ($inserts_by_table as $table_name => $inserts) {
-            // Truncate table (clear existing data)
-            $wpdb->query($wpdb->prepare("TRUNCATE TABLE %i", $table_name));
+            if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name)) !== $table_name) {
+                // table does not exist in the current installation
+                continue;
+            }
             
-            // Execute all INSERTs for this table
+            self::truncate_table($table_name);
+            
             foreach ($inserts as $insert_stmt) {
-                $result = $wpdb->query($insert_stmt);
-                // Optional: log errors for debugging
-                if ($result === false) {
-                    error_log("Failed to execute SQL for table $table_name: " . $wpdb->last_error . " - Statement: " . substr($insert_stmt, 0, 200));
+                if ($wpdb->query($insert_stmt) === false) {
+                    // debug only: error_log('TilBuci WP: failed restoring data: ' . $wpdb->last_error . ' - ' . substr($insert_stmt, 0, 200));
                 }
             }
         }
@@ -249,15 +235,35 @@ class TilBuci_WP_DB {
         }
         
         // Check if ZipArchive is available
-        if (!class_exists('ZipArchive')) {
-            return;
+        if (class_exists('ZipArchive')) {
+            $zip = new ZipArchive();
+            if ($zip->open($zip_file) === TRUE) {
+                // Extract all contents to movie folder
+                $zip->extractTo($movie_folder);
+                $zip->close();
+            }
         }
         
-        $zip = new ZipArchive();
-        if ($zip->open($zip_file) === TRUE) {
-            // Extract all contents to movie folder
-            $zip->extractTo($movie_folder);
-            $zip->close();
+        // guarantee the standard movie folder structure
+        $folders = array(
+            'media',
+            'media/picture',
+            'media/video',
+            'media/audio',
+            'media/html',
+            'media/font',
+            'media/spritemap',
+            'media/strings',
+            'media/snippets',
+            'media/dialogues',
+            'scene',
+            'collection',
+        );
+        foreach ($folders as $folder) {
+            $path = $movie_folder . $folder;
+            if (!is_dir($path)) {
+                wp_mkdir_p($path);
+            }
         }
     }
 
@@ -390,8 +396,6 @@ class TilBuci_WP_DB {
      * @param string $filename SQL file name (tables.sql or data.sql)
      */
     private static function execute_sql_file($filename) {
-        global $wpdb;
-
         $sql_file = dirname(dirname(__FILE__)) . '/tilbuci/' . $filename;
         
         if (!file_exists($sql_file)) {
@@ -399,27 +403,115 @@ class TilBuci_WP_DB {
             return;
         }
 
-        // Read SQL file
         $sql = file_get_contents($sql_file);
         if ($sql === false) {
             // debug only: error_log('TilBuci WP: Failed to read SQL file: ' . $sql_file);
             return;
         }
 
-        // Get WordPress table prefix and replace {PR} placeholder
-        $table_prefix = $wpdb->prefix;
-        $sql = str_replace('{PR}', $table_prefix, $sql);
-
-        // Split SQL statements (assuming each statement ends with ; and newline)
-        $queries = explode(';', $sql);
+        self::run_sql_script($sql);
+    }
+    
+    /**
+     * Runs a SQL script (several statements) on the WordPress database.
+     *
+     * @param string $sql the script contents
+     */
+    private static function run_sql_script($sql) {
+        global $wpdb;
         
-        foreach ($queries as $query) {
-            $query = trim($query);
-            if (!empty($query)) {
-                // Execute query as-is (table names must be preserved as per specification)
-                $wpdb->query($wpdb->prepare($query));
+        // Replace the table prefix placeholder
+        $sql = str_replace('{PR}', $wpdb->prefix, $sql);
+        
+        // Several statements are idempotent and may fail on an installation that
+        // already has them (duplicated columns, existing tables). Nothing must be
+        // printed: the output is also used by JSON responses and admin pages.
+        $suppress = $wpdb->suppress_errors(true);
+        
+        foreach (self::split_sql_statements(self::strip_sql_comments($sql)) as $query) {
+            if ($query === '') {
+                continue;
+            }
+            if ($wpdb->query($query) === false) {
+                // debug only: error_log('TilBuci WP: SQL error: ' . $wpdb->last_error . ' - ' . substr($query, 0, 200));
             }
         }
+        
+        $wpdb->suppress_errors($suppress);
+    }
+    
+    /**
+     * Removes SQL comment lines from a script.
+     *
+     * @param string $sql the script contents
+     * @return string the script without comment lines
+     */
+    private static function strip_sql_comments($sql) {
+        $lines = preg_split('/\r\n|\r|\n/', $sql);
+        $clean = [];
+        foreach ($lines as $line) {
+            $trimmed = ltrim($line);
+            if ((strpos($trimmed, '--') === 0) || (strpos($trimmed, '#') === 0)) {
+                continue;
+            }
+            $clean[] = $line;
+        }
+        return implode("\n", $clean);
+    }
+    
+    /**
+     * Splits a SQL script into single statements, respecting quoted strings.
+     *
+     * @param string $sql the script contents
+     * @return array the statements (without the trailing semicolon)
+     */
+    private static function split_sql_statements($sql) {
+        $statements = [];
+        $current = '';
+        $length = strlen($sql);
+        $quote = null;
+        for ($i = 0; $i < $length; $i++) {
+            $char = $sql[$i];
+            if ($quote !== null) {
+                $current .= $char;
+                if (($char === '\\') && ($quote !== '`')) {
+                    $i++;
+                    if ($i < $length) {
+                        $current .= $sql[$i];
+                    }
+                } elseif ($char === $quote) {
+                    $quote = null;
+                }
+                continue;
+            }
+            if (($char === "'") || ($char === '"') || ($char === '`')) {
+                $quote = $char;
+                $current .= $char;
+            } elseif ($char === ';') {
+                $statements[] = trim($current);
+                $current = '';
+            } else {
+                $current .= $char;
+            }
+        }
+        if (trim($current) !== '') {
+            $statements[] = trim($current);
+        }
+        return $statements;
+    }
+    
+    /**
+     * Removes all records of a table (TRUNCATE with fallback to DELETE).
+     *
+     * @param string $table the complete table name
+     */
+    private static function truncate_table($table) {
+        global $wpdb;
+        $suppress = $wpdb->suppress_errors(true);
+        if ($wpdb->query($wpdb->prepare("TRUNCATE TABLE %i", $table)) === false) {
+            $wpdb->query($wpdb->prepare("DELETE FROM %i", $table));
+        }
+        $wpdb->suppress_errors($suppress);
     }
 
     /**
@@ -638,6 +730,59 @@ $gconf = [
     }
 
     /**
+     * Applies every SQL update script of the TilBuci release, from the lowest to
+     * the highest version, so the database structure contains everything that was
+     * added after the base "tables.sql" structure.
+     *
+     * The scripts are additive and idempotent: statements already applied
+     * (existing columns or tables) fail and are skipped.
+     *
+     * @return int number of executed update files
+     */
+    public static function run_schema_updates() {
+        $tilbuci_dir = dirname(dirname(__FILE__)) . '/tilbuci/';
+        $update_dir = $tilbuci_dir . 'update/';
+        
+        if (!is_dir($update_dir)) {
+            return 0;
+        }
+        
+        // latest version known by this release
+        $max_version = 0;
+        $version_file = $tilbuci_dir . 'version.md';
+        if (file_exists($version_file)) {
+            $max_version = intval(trim(file_get_contents($version_file)));
+        }
+        
+        // collecting the update files by version number
+        $updates = [];
+        foreach (glob($update_dir . '*.sql') as $file) {
+            $version = intval(basename($file, '.sql'));
+            if ($version <= 0) {
+                continue;
+            }
+            if (($max_version > 0) && ($version > $max_version)) {
+                continue;
+            }
+            $updates[$version] = $file;
+        }
+        
+        if (empty($updates)) {
+            return 0;
+        }
+        
+        ksort($updates);
+        
+        $executed = 0;
+        foreach ($updates as $file) {
+            self::execute_sql_update_file($file);
+            $executed++;
+        }
+        
+        return $executed;
+    }
+    
+    /**
      * Check and update plugin version by executing SQL update files
      * This should be called when the plugin page loads in WordPress dashboard
      */
@@ -770,8 +915,6 @@ $gconf = [
      * @param string $filename Full path to SQL update file
      */
     private static function execute_sql_update_file($filename) {
-        global $wpdb;
-        
         if (!file_exists($filename)) {
             // debug only: error_log('TilBuci WP: SQL update file not found: ' . $filename);
             return;
@@ -784,20 +927,7 @@ $gconf = [
             return;
         }
 
-        // Get WordPress table prefix and replace {PR} placeholder
-        $table_prefix = $wpdb->prefix;
-        $sql = str_replace('{PR}', $table_prefix, $sql);
-
-        // Split SQL statements (assuming each statement ends with ; and newline)
-        $queries = explode(';', $sql);
-        
-        foreach ($queries as $query) {
-            $query = trim($query);
-            if (!empty($query)) {
-                // Execute query as-is (table names must be preserved as per specification)
-                $wpdb->query($wpdb->prepare($query));
-            }
-        }
+        self::run_sql_script($sql);
     }
 
     /**

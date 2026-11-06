@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `{PR}tilbuci_instancedesc` (
 CREATE TABLE IF NOT EXISTS `{PR}tilbuci_instances` (
   `in_id` int(11) NOT NULL AUTO_INCREMENT,
   `in_keyframe` int(11) NOT NULL,
-  `in_name` varchar(32) NOT NULL,
+  `in_name` varchar(64) NOT NULL,
   `in_collection` varchar(32) NOT NULL,
   `in_asset` varchar(32) NOT NULL,
   `in_action` text DEFAULT NULL,
@@ -112,6 +112,7 @@ CREATE TABLE IF NOT EXISTS `{PR}tilbuci_instances` (
   `in_actionover` text DEFAULT NULL,
   `in_timedac` mediumtext DEFAULT NULL,
   `in_focus` tinyint(4) NOT NULL DEFAULT 1,
+  `in_alt` VARCHAR(512) NOT NULL DEFAULT '', 
   PRIMARY KEY (`in_id`),
   KEY `in_keyframe` (`in_keyframe`)
 );

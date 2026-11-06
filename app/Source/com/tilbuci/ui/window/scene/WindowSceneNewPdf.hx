@@ -41,7 +41,7 @@ class WindowSceneNewPdf extends PopupWindow {
     **/
     public function new(ac:Dynamic) {
         // creating window
-        super(ac, Global.ln.get('window-scenenewpdf-title'), 800, InterfaceFactory.pickValue(250, 360), false, true, true);
+        super(ac, Global.ln.get('window-scenenewpdf-title'), 800, InterfaceFactory.pickValue(230, 340), false, true, true);
     }
 
     /**
@@ -62,7 +62,7 @@ class WindowSceneNewPdf extends PopupWindow {
         // upload form
         this._uploadform = this.ui.forge('upload', [
             { tp: 'Label', id: 'aboutpdf', tx: Global.ln.get('window-scenenewpdf-about'), vr: '' },  
-            { tp: 'Spacer', id: 'import', ht: 120 },  
+            { tp: 'Spacer', id: 'import', ht: 100 },  
             { tp: 'Button', id: 'importsend', tx: Global.ln.get('window-scenenewpdf-buttonselect'), ac: this.onSelect },
         ]);
         this.addForm('uploadform', this._uploadform);
