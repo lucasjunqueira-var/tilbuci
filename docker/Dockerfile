@@ -9,13 +9,15 @@
 
 FROM ubuntu:24.04
 
-# Image version. Override at build time with:
-#   docker build --build-arg TILBUCI_VERSION=25 ...
-ARG TILBUCI_VERSION=25
+# Application version (TilBuci itself).
+ARG TILBUCI_VERSION=26
+# Docker package version (image/package), independent from the application version.
+ARG DOCKER_VERSION=26.0.0
 
 LABEL org.opencontainers.image.title="TilBuci" \
       org.opencontainers.image.description="All-in-one TilBuci image: Apache, PHP 8 and MariaDB with a headless, prompt-driven installer." \
-      org.opencontainers.image.version="${TILBUCI_VERSION}" \
+      org.opencontainers.image.version="${DOCKER_VERSION}" \
+      org.tilbuci.app.version="${TILBUCI_VERSION}" \
       org.opencontainers.image.licenses="MPL-2.0" \
       org.opencontainers.image.source="https://github.com/lucasjunqueira-var/tilbuci"
 

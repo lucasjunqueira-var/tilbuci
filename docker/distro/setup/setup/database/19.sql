@@ -1,0 +1,2 @@
+CREATE TABLE snippets (sn_id INT NOT NULL AUTO_INCREMENT , sn_movie VARCHAR(32) NOT NULL , sn_file VARCHAR(128) NOT NULL , sn_content LONGTEXT NOT NULL , PRIMARY KEY (sn_id), INDEX (sn_movie), INDEX (sn_file)); 
+INSERT INTO config (cf_key, cf_value) VALUES ('dbVersion', '20') ON DUPLICATE KEY UPDATE cf_value=VALUES(cf_value);
