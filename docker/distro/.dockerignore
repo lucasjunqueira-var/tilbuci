@@ -1,0 +1,7 @@
+# Files that are not needed inside the image.
+README.md
+VERSION
+build.sh
+compose.yaml
+.dockerignore
+*.md

@@ -19,7 +19,7 @@ class Movie extends BaseClass
 	/**
      * TilBuci expected version
      */
-    private $version = 22;
+    private $version = 26;
     
 	/**
 	 * current movie information
@@ -112,6 +112,167 @@ class Movie extends BaseClass
 			return (false);
 		}
 	}
+
+
+    /**
+	 * Creates a movie from a PDF file.
+     * @param   string   $id the movie ID
+     * @param   string   $user   system user information
+     * @param   string   $author movie author name
+     * @param   integer  $interval   scene transition time
+     * @param   string   $pdfpath    path to the original PDF file
+     * @param   string   $model  movie model path (path to te "-base" files)
+     * @param   string   $output movie output path
+	 * @return string|bool the created movie ID or false on error
+	 */
+	public function createMoviePdf($id, $user, $author, $interval, $pdfpath, $model, $output) {
+
+        // loading PDF parser
+        require_once('../../third/tbpdf.php');
+        set_time_limit(0);
+        $success = false;
+
+        // checking id
+		if ($id != '') {
+			$id = substr($this->cleanString($id), 0, 32);
+			$ck = $this->queryAll('SELECT `mv_id` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id' => $id]);
+			if (count($ck) > 0) $id = '';
+		}
+		// create id?
+		if ($id == '') {
+			$ckid = true;
+			while ($ckid) {
+				$id = md5(time() . rand(0, 9999));
+				$ck = $this->queryAll('SELECT `mv_id` FROM `' . $this->conf['databasePrefix'] . 'movies` WHERE `mv_id`=:id', [':id' => $id]);
+				if (count($ck) == 0) $ckid = false;
+			}
+		}
+
+        // checking the PDF file
+        $pdfpath = is_string($pdfpath) ? trim($pdfpath) : '';
+        if ($pdfpath === '' || !is_file($pdfpath) || !is_readable($pdfpath)) {
+            return (false);
+        }
+
+        // checking the output directory
+        $output = is_string($output) ? rtrim(trim($output), '/\\') : '';
+        if ($output === '') {
+            return (false);
+        }
+        if (!is_dir($output) && !@mkdir($output, 0777, true) && !is_dir($output)) {
+            return (false);
+        }
+        if (!is_writable($output)) {
+            return (false);
+        }
+
+        // checking the model files
+        $model = is_string($model) ? rtrim(trim($model), '/\\') : '';
+        if ($model === '' || !is_dir($model)) {
+            return (false);
+        }
+        $movieTemplate = $model . DIRECTORY_SEPARATOR . 'movie-base.json';
+        $collectionTemplate = $model . DIRECTORY_SEPARATOR . 'collection-base.json';
+        $sceneTemplate = $model . DIRECTORY_SEPARATOR . 'scene-base.json';
+        $templateFiles = [
+            $movieTemplate,
+            $collectionTemplate,
+            $sceneTemplate,
+            $model . DIRECTORY_SEPARATOR . 'contraptions-base.json',
+            $model . DIRECTORY_SEPARATOR . 'strings-base.json',
+            $model . DIRECTORY_SEPARATOR . 'narrative-base.json',
+        ];
+        foreach ($templateFiles as $templateFile) {
+            if (!is_file($templateFile) || !is_readable($templateFile)) {
+                return (false);
+            }
+        }
+
+        // normalizing the caller metadata
+        $user = is_string($user) ? trim($user) : '';
+        $author = is_string($author) ? trim($author) : '';
+        if ($author === '') {
+            $author = $user;
+        }
+        $interval = is_numeric($interval) ? (float) $interval : 1.0;
+        if ($interval < 0) {
+            $interval = 1.0;
+        }
+
+        // stage 1: analyzing the PDF
+        $analysisJson = tbpdf_analyze_to_json($pdfpath);
+        $analysis = json_decode($analysisJson, true);
+        if (!is_array($analysis) || isset($analysis['error'])) {
+            return (false);
+        }
+        if ((int) ($analysis['pages'] ?? 0) <= 0) {
+            return (false);
+        }
+        if ((int) ($analysis['width'] ?? 0) <= 0 || (int) ($analysis['height'] ?? 0) <= 0) {
+            return (false);
+        }
+
+        // stage 2: extracting media
+        $media = tbpdf_extract_media($analysisJson, $id, $output);
+        if (isset($media['error'])) {
+            return (false);
+        }
+
+        // stage 3: creating movie.json
+        $movie = tbpdf_create_movie($analysisJson, $id, $output, $movieTemplate);
+        if (isset($movie['error'])) {
+            return (false);
+        }
+
+        // applying author and transition time
+        $metadata = tbpdf_apply_movie_metadata($id, $output, $author, $interval, $user);
+        if (isset($metadata['error'])) {
+            return (false);
+        }
+
+        // stage 4: creating collections
+        $collections = tbpdf_create_collections($analysisJson, $id, $output, $collectionTemplate);
+        if (isset($collections['error'])) {
+            return (false);
+        }
+
+        // stage 5: creating scenes
+        $scenes = tbpdf_create_scenes($analysisJson, $id, $output, $sceneTemplate);
+        if (isset($scenes['error'])) {
+            return (false);
+        }
+
+        // stage 6: finalizing the movie
+        $finalization = tbpdf_finalize_movie($analysisJson, $id, $output, $model);
+        if (isset($finalization['error'])) {
+            return (false);
+        }
+
+        // stage 7: extracting embedded fonts
+        $fonts = tbpdf_extract_font_files($analysisJson, $id, $output);
+        if (isset($fonts['error'])) {
+            return (false);
+        }
+
+        // stage 8: copy interface and adjust position (interface is always 776x186 pixels)
+        @mkdir('../movie/' . $id . '.movie/media/picture/inteface', 0777, true);
+        $this->copyDir(($model . '/media/picture/interface'), ('../movie/' . $id . '.movie/media/picture/inteface'));
+        $interfx = ($analysis['width'] - 776) / 2;
+        $interfy = $analysis['height'] - 186 - 10;
+        $moviefile = file_get_contents('../movie/' . $id . '.movie/movie.json');
+        $moviefile = str_replace(['[INTERFACEX]', '[INTERFACEY]'], [$interfx, $interfy], $moviefile);
+        file_put_contents('../movie/' . $id . '.movie/movie.json', $moviefile);
+
+        $success = true;
+
+        // returning
+        if ($success) {
+            return ($id);
+        } else {
+            return (false);
+        }
+
+    }
 
 	/**
 	 * Loads a movie informarion.
@@ -1257,6 +1418,7 @@ class Movie extends BaseClass
 	 * Checks a movie zip for importing.
 	 * @param	string	$user	the requesting user
 	 * @param	string	$movie	the movie id
+     * @param   bool    $already    zip file already uncompressed on movie folder?
 	 * @return	int zip import error
      * 0 => movie imported
      * 1 => user can't import movies
@@ -1265,7 +1427,7 @@ class Movie extends BaseClass
      * 4 => error creating new movie folder
      * 5 => corrupted zip file
 	 */
-	public function importZip($user, $movie) {
+	public function importZip($user, $movie, $already = false) {
 		// check user: at least editor?
 		if (!is_null($this->db)) {
 			$ck = $this->queryAll('SELECT * FROM `' . $this->conf['databasePrefix'] . 'users` WHERE `us_email`=:user AND `us_level`<=:level', [
@@ -1275,7 +1437,7 @@ class Movie extends BaseClass
 			if (count($ck) == 0) {
                 // user can't import
                 return (1);
-			} else if (!is_file('../../export/' . $movie . '.zip')) {
+			} else if (!is_file('../../export/' . $movie . '.zip') && !$already) {
                 // movie zip not found
 				return (2);
 			} else {
@@ -1284,22 +1446,30 @@ class Movie extends BaseClass
                 ]);
                 if (count($ck) > 0) {
                     // movie ID already taken
-                    @unlink('../../export/' . $movie . '.zip');
+                    if (!$already) @unlink('../../export/' . $movie . '.zip');
                     return (3);
                 } else {
                     // create new movie folder
                     set_time_limit(0);
-                    if (!$this->createDir('../movie/'.$movie.'.movie/')) {
+                    if ($already && !is_dir('../movie/'.$movie.'.movie/')) {
+                        // movie folder not found
+                        return (4);
+                    } else if (!$already && !$this->createDir('../movie/'.$movie.'.movie/')) {
                         // error creating folder
                         @unlink('../../export/' . $movie . '.zip');
                         return (4);
                     } else {
-                        // load zip
-                        $zip = new \ZipArchive;
-                        $res = $zip->open('../../export/' . $movie . '.zip');
+                        // load zip?
+                        $res = true;
+                        if (!$already) {
+                            $zip = new \ZipArchive;
+                            $res = $zip->open('../../export/' . $movie . '.zip');
+                        }
                         if ($res === true) {
-                            $zip->extractTo('../movie/'.$movie.'.movie/');
-                            $zip->close();
+                            if (!$already) {
+                                $zip->extractTo('../movie/'.$movie.'.movie/');
+                                $zip->close();
+                            }
                             // check movie.json
                             if (!is_file('../movie/'.$movie.'.movie/movie.json')) {
                                 // no movie.json file
@@ -1313,7 +1483,7 @@ class Movie extends BaseClass
                                     $todo($fileinfo->getRealPath());
                                 }
                                 @rmdir($dir);
-                                @unlink('../../export/' . $movie . '.zip');
+                                if (!$already) @unlink('../../export/' . $movie . '.zip');
                                 return (6);
                             } else {
                                 $json = json_decode(file_get_contents('../movie/'.$movie.'.movie/movie.json'), true);
@@ -1329,7 +1499,7 @@ class Movie extends BaseClass
                                         $todo($fileinfo->getRealPath());
                                     }
                                     @rmdir($dir);
-                                    @unlink('../../export/' . $movie . '.zip');
+                                    if (!$already) @unlink('../../export/' . $movie . '.zip');
                                     return (6);
                                 } else {
                                     if (!isset($json['version']) || !isset($json['title']) || !isset($json['screen']) || !isset($json['screen']['big']) || !isset($json['screen']['small'])) {
@@ -1344,7 +1514,7 @@ class Movie extends BaseClass
                                             $todo($fileinfo->getRealPath());
                                         }
                                         @rmdir($dir);
-                                        @unlink('../../export/' . $movie . '.zip');
+                                        if (!$already) @unlink('../../export/' . $movie . '.zip');
                                         return (6);
                                     } else {
                                         // extra files
@@ -1445,7 +1615,7 @@ class Movie extends BaseClass
                                                 $todo($fileinfo->getRealPath());
                                             }
                                             @rmdir($dir);
-                                            @unlink('../../export/' . $movie . '.zip');
+                                            if (!$already) @unlink('../../export/' . $movie . '.zip');
                                             return (6);
                                         } else {
                                             // strings.json
@@ -1541,7 +1711,7 @@ class Movie extends BaseClass
                                                                     ':in_play' => $vin['play'] == true ? '1' : '0', 
                                                                     ':in_actionover' => (isset($vin['actionover']) ? ($vin['actionover'] == '' ? '' : base64_encode(gzencode($vin['actionover']))) : ''), 
                                                                     ':in_timedac' => (isset($vin['timedac']) ? ($vin['timedac'] == '' ? '' : base64_encode(gzencode($vin['timedac']))) : ''), 
-                                                                    ':in_focus' => $vin['focus'] == true ? '1' : '0', 
+                                                                    ':in_focus' => isset($vin['focus']) ? ($vin['focus'] == true ? '1' : '0') : '0', 
                                                                 ]);
                                                                 $inid = $this->insertID();
                                                                 $this->execute('INSERT INTO `' . $this->conf['databasePrefix'] . 'instancedesc` (`id_instance`, `id_position`, `id_order`, `id_x`, `id_y`, `id_alpha`, `id_width`, `id_height`, `id_rotation`, `id_visible`, `id_color`, `id_coloralpha`, `id_volume`, `id_pan`, `id_blur`, `id_dropshadow`, `id_textfont`, `id_textsize`, `id_textcolor`, `id_textbold`, `id_textitalic`, `id_textleading`, `id_textspacing`, `id_textbackground`, `id_textalign`, `id_glow`, `id_blend`) VALUES (:instance, :position, :order, :x, :y, :alpha, :width, :height, :rotation, :visible, :color, :coloralpha, :volume, :pan, :blur, :dropshadow, :textfont, :textsize, :textcolor, :textbold, :textitalic, :textleading, :textspacing, :textbackground, :textalign, :glow, :blend)', [
@@ -1664,7 +1834,7 @@ class Movie extends BaseClass
                                             }
                                             
                                             // movie imported
-                                            @unlink('../../export/' . $movie . '.zip');
+                                            if (!$already) @unlink('../../export/' . $movie . '.zip');
                                             return (0);
                                         }
                                     }
@@ -1672,7 +1842,7 @@ class Movie extends BaseClass
                             }
                         } else {
                             // error opening zip
-                            @unlink('../../export/' . $movie . '.zip');
+                            if (!$already) @unlink('../../export/' . $movie . '.zip');
                             return (5);
                         }
                     }

@@ -84,9 +84,9 @@ if [ -f "events/events.txt" ]; then
 else
     echo "WARNING: events/events.txt not found, skipping."
 fi
-# Add third party libraries
-if [ -f "third/qrcode.php" ]; then
-    zip -r "$PART1_ZIP" third/qrcode.php
+# Add third party libraries (entire folder, including its subfolders)
+if [ -d "third" ]; then
+    zip -r "$PART1_ZIP" third/
 else
     echo "WARNING: third party libraries not found, skipping."
 fi

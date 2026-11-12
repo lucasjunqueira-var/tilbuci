@@ -1,0 +1,36 @@
+# TilBuci — all-in-one image (Docker Compose)
+#
+# Usage:
+#   docker compose up -d        # start using the published image
+#   docker compose pull         # fetch a newer image, then: docker compose up -d
+#
+# Then open the application address to finish the setup in the browser:
+#   http://localhost:8080/      (redirects to setup.php?docker=true)
+#
+# Override the host port with TILBUCI_PORT (the public URL follows it):
+#   TILBUCI_PORT=9090 docker compose up -d
+#
+# For a remote/production host, set the real public URL (behind HTTPS):
+#   TILBUCI_URL=https://tilbuci.example.com/ docker compose up -d
+#
+# To build locally instead of pulling, replace the `image:` line with:
+#   build:
+#     context: .
+
+services:
+  tilbuci:
+    image: tilbuci/tilbuci:latest
+    container_name: tilbuci
+    restart: unless-stopped
+    ports:
+      - "${TILBUCI_PORT:-8080}:80"
+    environment:
+      # Public URL used by the browser. Must match the published port.
+      TILBUCI_URL: "${TILBUCI_URL:-http://localhost:${TILBUCI_PORT:-8080}/}"
+      # TILBUCI_AUTO_UPDATE: "true"
+      # TILBUCI_KEEP_SETUP: "false"
+    volumes:
+      - tilbuci-data:/data
+
+volumes:
+  tilbuci-data:

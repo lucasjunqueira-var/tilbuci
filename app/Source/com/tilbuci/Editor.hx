@@ -113,6 +113,7 @@ import com.tilbuci.ui.window.WindowShowtime;
 import com.tilbuci.ui.window.WindowVisitors;
 import com.tilbuci.ui.window.WindowLogin;
 import com.tilbuci.ui.window.movie.WindowMovieNew;
+import com.tilbuci.ui.window.movie.WindowMovieNewPDF;
 import com.tilbuci.ui.window.movie.WindowMovieOpen;
 import com.tilbuci.ui.window.movie.WindowMovieProperties;
 import com.tilbuci.ui.window.movie.WindowMovieSequences;
@@ -123,6 +124,7 @@ import com.tilbuci.ui.window.movie.WindowMoviePlugins;
 import com.tilbuci.ui.window.movie.WindowMovieUsers;
 import com.tilbuci.ui.window.movie.WindowMovieRemove;
 import com.tilbuci.ui.window.scene.WindowSceneNew;
+import com.tilbuci.ui.window.scene.WindowSceneNewPdf;
 import com.tilbuci.ui.window.scene.WindowSceneOpen;
 import com.tilbuci.ui.window.keyframe.WindowKeyframeManage;
 import com.tilbuci.ui.window.media.WindowMediaPicture;
@@ -539,6 +541,9 @@ class Editor extends Drawer {
             case 'new':
                 this.opened = false;
                 this.showWindow('newmovie');
+            case 'newpdf':
+                this.opened = false;
+                this.showWindow('newmoviepdf');
             case 'open':
                 this.opened = false;
                 this.showWindow('openmovie');
@@ -582,6 +587,9 @@ class Editor extends Drawer {
             case 'new':
                 this.opened = false;
                 this.showWindow('newscene');
+            case 'newpdf':
+                this.opened = false;
+                this.showWindow('newscenepdf');
             case 'open':
                 this.opened = false;
                 this.showWindow('openscene');
@@ -1441,7 +1449,7 @@ class Editor extends Drawer {
                 this._player.player.load(data['id']);
             case 'browsefavicon':
                 Global.temp['Media/Single'] = [
-                    'type' => '´picture', 
+                    'type' => 'picture', 
                     'call' => 'browsefavicon'
                 ];
                 this.showWindow('mediapicture');
@@ -1450,7 +1458,7 @@ class Editor extends Drawer {
                 ]);
             case 'browseimage':
                 Global.temp['Media/Single'] = [
-                    'type' => '´picture', 
+                    'type' => 'picture', 
                     'call' => 'browseimage'
                 ];
                 this.showWindow('mediapicture');
@@ -2475,6 +2483,7 @@ class Editor extends Drawer {
             switch (name) {
                 case 'login': this._windows['login'] = new WindowLogin(actionWindowLogin);
                 case 'newmovie': this._windows['newmovie'] = new WindowMovieNew(actionMovie);
+                case 'newmoviepdf': this._windows['newmoviepdf'] = new WindowMovieNewPDF(actionMovie);
                 case 'openmovie': this._windows['openmovie'] = new WindowMovieOpen(actionMovie);
                 case 'propmovie': this._windows['propmovie'] = new WindowMovieProperties(actionMovie);
                 case 'seqmovie': this._windows['seqmovie'] = new WindowMovieSequences(actionMovie);
@@ -2486,6 +2495,7 @@ class Editor extends Drawer {
                 case 'pluginmovie': this._windows['pluginmovie'] = new WindowMoviePlugins(actionMovie);
 
                 case 'newscene': this._windows['newscene'] = new WindowSceneNew(actionScene);
+                case 'newscenepdf': this._windows['newscenepdf'] = new WindowSceneNewPdf(actionScene);
                 case 'openscene': this._windows['openscene'] = new WindowSceneOpen(actionScene);
                 case 'versionscene': this._windows['versionscene'] = new WindowSceneVersions(actionScene);
                 case 'saveasscene': this._windows['saveasscene'] = new WindowSceneSaveas(actionScene);

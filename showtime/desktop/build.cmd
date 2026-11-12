@@ -9,14 +9,15 @@ rem Output folders:
 rem   dist\win-unpacked          Windows x64
 rem   dist\win-arm64-unpacked    Windows arm64
 rem
-rem Note: electron-builder rebuilds the native serialport module for each target
-rem architecture, so after the build node_modules\@serialport\bindings-cpp
-rem \build\Release holds the binding of the last built architecture (arm64).
-rem Because node-gyp-build checks that folder before the prebuilt binaries, that
-rem leftover breaks local "npm start" runs with:
-rem     bindings.node is not a valid Win32 application
-rem The script therefore validates the binding when the build finishes and
-rem removes the leftover, so the correct prebuilt binary is used again.
+rem Note: electron-builder does NOT compile the native serialport module. The
+rem "build" block of package.json sets "npmRebuild": false, because
+rem @serialport/bindings-cpp ships N-API prebuilt binaries for win32-x64 and
+rem win32-arm64 (node_modules\@serialport\bindings-cpp\prebuilds) that load in
+rem Electron without any C++ toolchain. Visual Studio / MSVC is therefore not
+rem required and the old "MSB8020: v145 platform toolset not found" failure
+rem cannot happen. The script also removes a stale bindings-cpp\build folder,
+rem which would take precedence over the prebuilds and break "npm start" with
+rem "bindings.node is not a valid Win32 application".
 rem
 rem Usage:
 rem   build.cmd                builds Windows x64 and arm64 (default)
@@ -107,23 +108,21 @@ echo.
 if not "%BUILD_RESULT%"=="0" goto :build_failed
 
 rem ---------------------------------------------------------------------------
-rem 6. Restore the native binding for local development
+rem 6. Check the prebuilt serialport binding
 rem ---------------------------------------------------------------------------
-rem The native module now matches the last built architecture. If it no longer
-rem loads on this machine, it is removed so the prebuilt binary is used again.
-node -e "require('node-gyp-build')(require('path').join(process.cwd(),'node_modules','@serialport','bindings-cpp'))" >nul 2>&1
-if not errorlevel 1 goto :binding_restored
-
-echo [setup] restoring the native serialport binding for local runs...
+rem Nothing is compiled by the build: the binding comes from the N-API binaries
+rem shipped in node_modules\@serialport\bindings-cpp\prebuilds. A "build" folder
+rem left by an old toolchain-based build takes precedence over those prebuilds
+rem and breaks "npm start", so it is removed before the check.
 if exist "node_modules\@serialport\bindings-cpp\build" rmdir /s /q "node_modules\@serialport\bindings-cpp\build"
 node -e "require('node-gyp-build')(require('path').join(process.cwd(),'node_modules','@serialport','bindings-cpp'))" >nul 2>&1
 if errorlevel 1 goto :binding_failed
-echo [setup] native binding restored.
+echo [done] serialport prebuilt binding loaded (no native compilation required).
 goto :binding_restored
 
 :binding_failed
-echo [warn]  could not restore the native binding. Run test.cmd, or "npm ci",
-echo [warn]  before running "npm start".
+echo [warn]  the prebuilt serialport binding could not be loaded.
+echo [warn]  run "npm ci" or test.cmd before running "npm start".
 :binding_restored
 
 echo [done] build finished successfully.

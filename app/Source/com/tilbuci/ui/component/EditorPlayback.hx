@@ -192,6 +192,7 @@ class EditorPlayback extends Panel {
     private function startTest():Void {
         var st:Stage = this._st;
         var hd:PlayerHolder = this._hd;
+        GlobalPlayer.area.resetScene();
         GlobalPlayer.area.maskArea(true);
         GlobalPlayer.area.pause();
         GlobalPlayer.movie.data.applySets();
@@ -243,6 +244,7 @@ class EditorPlayback extends Panel {
         Centers the player display on window.
     **/
     private function centerPlayer():Void {
+        GlobalPlayer.area.resetScene();
         var ht:Float = this._top.minHeight - 20;
         var wd:Float = ht * (GlobalPlayer.mdata.screen.big / GlobalPlayer.mdata.screen.small);
         if (Global.displayType == 'portrait') {
@@ -320,6 +322,7 @@ class EditorPlayback extends Panel {
         GlobalPlayer.contraptions.removeContraptions(true);
         GlobalPlayer.area.removeInputInterfaces();
         GlobalPlayer.mode = Player.MODE_EDITOR;
+        GlobalPlayer.area.resetScene();
         GlobalPlayer.area.maskArea(false);
         GlobalPlayer.area.pause();
         GlobalPlayer.area.releaseAllProperties();

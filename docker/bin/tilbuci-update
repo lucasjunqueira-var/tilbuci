@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+#
+# Update the TilBuci installation inside the running container.
+#
+# It restores the pristine installer, updates the database and files using the
+# installer itself, then re-applies the persistence symlinks.
+#
+set -euo pipefail
+
+# shellcheck source=/dev/null
+source /usr/local/bin/tilbuci-common.sh
+
+DB_NAME="${TILBUCI_DB_NAME:-tilbuci}"
+DB_USER="${TILBUCI_DB_USER:-tilbuci}"
+PASS_FILE="${TILBUCI_DATA_DIR}/.db_password"
+DB_PASS="${TILBUCI_DB_PASSWORD:-$(cat "${PASS_FILE}" 2>/dev/null || true)}"
+
+log "Reading current database version..."
+CURRENT="$(mysql --socket="${TILBUCI_MYSQL_SOCKET}" -u "${DB_USER}" -p"${DB_PASS}" \
+    "${DB_NAME}" -N -B -e "SELECT cf_value FROM config WHERE cf_key='dbVersion';" 2>/dev/null | head -n1 || true)"
+CURRENT="${CURRENT:-1}"
+log "Current database version: ${CURRENT}"
+
+log "Restoring the installer into the web root..."
+restore_installer
+
+log "Running the update..."
+php /usr/local/bin/tilbuci-install.php \
+    --action=3 \
+    --current="${CURRENT}" \
+    --url="${TILBUCI_URL:-http://localhost/}" \
+    --db-host=localhost \
+    --db-name="${DB_NAME}" \
+    --db-user="${DB_USER}" \
+    --db-pass="${DB_PASS}"
+
+# The update overwrites the web files, so re-apply the persistence links.
+preserve_files
+apply_dir_symlinks
+fix_permissions
+cleanup_setup_entry
+apply_base_url
+
+log "Update finished. Restart the container to fully re-apply persistence links."

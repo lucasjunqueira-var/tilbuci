@@ -121,6 +121,7 @@ class MovieInfo {
         this.scene.clear();
         GlobalPlayer.parser.clearStringFile();
         GlobalPlayer.area.clear();
+        GlobalPlayer.area.resetScene();
         for (n in this._cacheScene.keys()) this._cacheScene.remove(n);
         if ((path.substr(0, 4) != 'http') && (path.substr(0, 4) != 'file')) {
             path = GlobalPlayer.base + 'movie/' + path;

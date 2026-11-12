@@ -36,6 +36,9 @@ class WSScene extends Webservice
 				case 'Scene/New':
 					$this->newScene();
 					break;
+				case 'Scene/NewPdf':
+					$this->newScenePdf();
+					break;
 				case 'Scene/Load':
 					$this->loadScene();
 					break;
@@ -84,6 +87,48 @@ class WSScene extends Webservice
 			} else {
 				// return scene id
 				$this->returnRequest([ 'e' => 0, 'id' => $id ]);
+			}
+		}
+	}
+
+	/**
+	 * Creating a scene from a pdf page.
+	 */
+	private function newScenePdf() {
+		// required fields received?
+		if ($this->requiredFields(['title', 'movie', 'page'])) {
+
+			// uploaded PDF file?
+			if (!is_file('../../export/pdfmovie.pdf')) {
+				// pdf file not found
+				$this->returnRequest([ 'e' => 1 ]);
+			} else {
+				// rename source file
+				$sourcefl = '../../export/pdfmovie_'.time().'.pdf';
+				rename('../../export/pdfmovie.pdf', $sourcefl);
+
+				// create the scene
+				$sc = new Scene;
+				set_time_limit(0);
+				$id = $sc->createScenePdf($this->req['movie'], $this->user, $this->req['title'], $sourcefl, $this->req['page'], '../../third/pdfbase', '../movie');
+				if ($id === false) {
+					// error while creating the scene
+					@unlink($sourcefl);
+					$this->returnRequest([ 'e' => 1 ]);
+				} else {
+					// import the scene
+					if ($sc->importSceneFile($this->user, $this->req['movie'], $id)) {
+						// return scene id
+						@unlink($sourcefl);
+						$this->returnRequest([ 'e' => 0, 'id' => $id ]);
+					} else {
+						// error importing the scene file
+						@unlink($sourcefl);
+						$this->returnRequest([ 'e' => 2 ]);
+					}
+					
+				}
+
 			}
 		}
 	}

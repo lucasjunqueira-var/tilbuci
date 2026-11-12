@@ -141,7 +141,7 @@
                                 setAttributes({ height: num });
                             }
                         },
-                        help: __('Percentage of height relative to content display width - the default is 56%, ideal for 16x9 aspect ratio content.', 'tilbuci-pl')
+                        help: __('Percentage of the display width used as the height of the content - the default is 60%.', 'tilbuci-pl')
                     }),
                     createElement(ToggleControl, {
                         label: __('HTML DOM Render', 'tilbuci-pl'),
@@ -203,7 +203,7 @@
             },
             height: {
                 type: 'number',
-                default: 56
+                default: 60
             },
             htmlDomRender: {
                 type: 'boolean',

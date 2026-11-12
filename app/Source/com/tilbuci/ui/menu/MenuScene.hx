@@ -23,6 +23,7 @@ class MenuScene extends DrawerMenu {
         this.addButton('btNew', Global.ln.get('menu-scene-new'), onNew);
         this.addButton('btOpen', Global.ln.get('menu-scene-open'), onOpen);
         this.addButton('btProperties', Global.ln.get('menu-scene-properties'), onProp);
+        this.addButton('btNewPdf', Global.ln.get('menu-scene-newpdf'), onNewPdf);
         this.addButton('btDflow', Global.ln.get('menu-scene-dflow'), onDflow);
         this.addButton('btSave', Global.ln.get('menu-scene-save'), onSave);
         this.addButton('btSaveAs', Global.ln.get('menu-scene-saveas'), onSaveAs);
@@ -38,6 +39,7 @@ class MenuScene extends DrawerMenu {
         super.onShow();
         if (GlobalPlayer.movie.mvId == '') {
             this.ui.buttons['btNew'].enabled = false;
+            this.ui.buttons['btNewPdf'].enabled = false;
             this.ui.buttons['btOpen'].enabled = false;
             this.ui.buttons['btProperties'].enabled = false;
             this.ui.buttons['btDflow'].enabled = false;
@@ -52,8 +54,10 @@ class MenuScene extends DrawerMenu {
         } else {
             this.ui.buttons['btNew'].enabled = true;
             this.ui.buttons['btOpen'].enabled = true;
+            this.ui.buttons['btNewPdf'].enabled = true;
             this.ui.buttons['btNew'].toolTip = null;
             this.ui.buttons['btOpen'].toolTip = null;
+            this.ui.buttons['btNewPdf'].toolTip = null;
             if (GlobalPlayer.movie.scId == '') {
                 this.ui.buttons['btProperties'].enabled = false;
                 this.ui.buttons['btDflow'].enabled = false;
@@ -96,14 +100,21 @@ class MenuScene extends DrawerMenu {
     }
 
     /**
-        Shows the new movie window.
+        Shows the new scene window.
     **/
     private  function onNew(evt:TriggerEvent):Void {
         this._ac('new');
     }
 
     /**
-        Shows the open movie window.
+        Shows the new scene from pdf window.
+    **/
+    private  function onNewPdf(evt:TriggerEvent):Void {
+        this._ac('newpdf');
+    }
+
+    /**
+        Shows the open scene window.
     **/
     private  function onOpen(evt:TriggerEvent):Void {
         this._ac('open');
